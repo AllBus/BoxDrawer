@@ -28,8 +28,6 @@ class DrawerViewModel {
 
     val pageFile = mutableStateOf<Path?>(null)
 
-
-
     fun previewDxf(path: String) {
 
         CoroutineScope(Dispatchers.Default).launch {
@@ -76,11 +74,13 @@ class TortoiseData{
         }
     }
 
+
+
     fun saveTortoise(fileName: String, lines:String) {
-        val program = TortoiseProgram( commands = listOf(TortoiseParser.extractTortoiseCommands(lines)))
+        val program = tortoiseProgram(lines)
         val fig = t.draw(program, Vec2.Zero, ds, memory)
 
-        val dxfDocument = DXFDocument("Example");
+        val dxfDocument = DXFDocument("Figure");
         val graphics = dxfDocument.getGraphics();
 
         // set pen characteristics
@@ -100,11 +100,15 @@ class TortoiseData{
         fileWriter.close();
     }
 
+    private fun tortoiseProgram(lines: String): TortoiseProgram {
+        return TortoiseProgram(commands = lines.split("\n").map {line ->
+            TortoiseParser.extractTortoiseCommands(line)
+        })
+    }
+
     fun createTortoise(lines:String){
-        val program = TortoiseProgram( commands = listOf(TortoiseParser.extractTortoiseCommands(lines)))
+        val program = tortoiseProgram(lines)
         figures.value = t.draw(program, Vec2.Zero, ds, memory)
-
-
     }
 
 

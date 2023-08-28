@@ -6,7 +6,7 @@ class TurtoiseParserStackItem(
 ) {
 
     private val inner = mutableListOf<TurtoiseParserStackItem>()
-    private val blocks = mutableListOf<TurtoiseParserStackItem>()
+    val blocks = mutableListOf<TurtoiseParserStackItem>()
 
     companion object {
         const val ARGUMENT_NAME = '~'
@@ -27,7 +27,7 @@ class TurtoiseParserStackItem(
         arguments.forEach { add(it) }
     }
 
-    fun Add(argument: TurtoiseParserStackItem) {
+    fun add(argument: TurtoiseParserStackItem) {
         inner.add(argument)
         blocks.add(argument)
     }
