@@ -1,5 +1,6 @@
 package figure
 
+import com.kos.boxdrawe.drawer.IFigureGraphics
 import vectors.Vec2
 import vectors.Vec2.Companion.casteljauLine
 import vectors.Vec2.Companion.getCubicRoots
@@ -44,6 +45,12 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points) {
         if (figures.isEmpty())
             return Empty
         return FigureBezierList(figures.toList())
+    }
+
+    override fun draw(g: IFigureGraphics) {
+        if (points.size>=4) {
+            g.drawBezier(points)
+        }
     }
 }
 

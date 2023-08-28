@@ -1733,7 +1733,7 @@ public class DXFGraphics extends Graphics2D {
         dxfDocument.addEntity(spline);
     }
 
-    private double[] bezierKnots = {0,0,0,0,1,1,1,1};
+    private final double[] bezierKnots = {0,0,0,0,1,1,1,1};
 
     public void drawBezier(double[] controlPoints){
         graphicsMatrix.transform(controlPoints, 0, controlPoints, 0, controlPoints.length / 2);

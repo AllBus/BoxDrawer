@@ -1,5 +1,6 @@
 package figure
 
+import com.kos.boxdrawe.drawer.IFigureGraphics
 import vectors.Vec2
 import vectors.Vec2.Companion.calcXPosition
 import vectors.Vec2.Companion.calcYPosition
@@ -85,6 +86,12 @@ class FigureLine private constructor(points: List<Vec2>): FigurePolygon(points){
                 return FigureLine(Vec2(c, k), if (points[1].y < points[0].y) points[1] else points[0])
 
             }
+        }
+    }
+
+    override fun draw(g: IFigureGraphics) {
+        if (points.size>=2) {
+            g.drawLine(points[0], points[1])
         }
     }
 }

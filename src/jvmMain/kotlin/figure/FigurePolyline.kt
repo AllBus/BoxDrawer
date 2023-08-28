@@ -1,5 +1,6 @@
 package figure
 
+import com.kos.boxdrawe.drawer.IFigureGraphics
 import vectors.Vec2
 import vectors.Vec2.Companion.calcXPosition
 import vectors.Vec2.Companion.calcYPosition
@@ -76,6 +77,12 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points) {
             figures.first()
         }else{
             FigureList(figures.toList())
+        }
+    }
+
+    override fun draw(g: IFigureGraphics) {
+        if (points.size>=2) {
+            g.drawPolyline(points)
         }
     }
 }

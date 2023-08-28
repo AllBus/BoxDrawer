@@ -1,5 +1,6 @@
 package figure
 
+import com.kos.boxdrawe.drawer.IFigureGraphics
 import vectors.BoundingRectangle
 import vectors.Vec2
 
@@ -40,6 +41,10 @@ class FigureList(
 
     override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
         return FigureList(list().map { it.rotate(angle, rotateCenter) })
+    }
+
+    override fun draw(g: IFigureGraphics) {
+        list().forEach { it.draw(g) }
     }
 
     fun simple(): FigureList {

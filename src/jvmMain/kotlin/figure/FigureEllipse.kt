@@ -1,18 +1,18 @@
 package figure
 
+import com.kos.boxdrawe.drawer.IFigureGraphics
 import vectors.BoundingRectangle
 import vectors.Vec2
 import kotlin.math.*
 
-class FigureEllipse(
-    center: Vec2,
-    radius: Double,
-    override val radiusMinor: Double,
-    override val rotation: Double,
-    segmentStart: Double = 0.0,
-    segmentEnd: Double = 0.0,
-
-    ) : FigureCircle(center, radius, segmentStart, segmentEnd) {
+open class FigureEllipse(
+    val center: Vec2,
+    val radius: Double,
+    val radiusMinor: Double,
+    val rotation: Double,
+    val segmentStart: Double = 0.0,
+    val segmentEnd: Double = 0.0,
+    ) : Figure(){
 
     override fun crop(k: Double, cropSide: CropSide): IFigure {
         return if (radius <= 0) Empty else when (cropSide) {
@@ -90,6 +90,10 @@ class FigureEllipse(
             segmentStart = segmentStart,
             segmentEnd = segmentEnd
         )
+    }
+
+    override fun draw(g: IFigureGraphics) {
+        g.drawArc(center, radius, radiusMinor, segmentStart, segmentEnd)
     }
 
     private fun calculateSegments(s1: Double, e1: Double): IFigure {
