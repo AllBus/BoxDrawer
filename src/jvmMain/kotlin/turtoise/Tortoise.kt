@@ -250,7 +250,25 @@ class Tortoise {
                     if (points.size > 1) {
                         res.add(FigureBezier(points.toList()))
                     }
+                }
+                TortoiseCommand.TURTOISE_SPLINE -> {
+                    saveLine()
+                    state.move(com[0, memory])
+                    val angle = state.angle
 
+                    val points = mutableListOf<Vec2>()
+                    points.add(state.xy)
+                    for (d in 1..com.size - 2 step 2) {
+                        val xy =  Vec2(
+                            com[d + 0, memory],
+                            com[d + 1, memory]
+                        ).rotate(angle) + state.xy
+                        points.add(xy)
+                        state.moveTo(xy)
+                    }
+                    if (points.size > 1) {
+                        res.add(FigureSpline(points.toList()))
+                    }
                 }
 
                 TortoiseCommand.TURTOISE_LOOP -> {

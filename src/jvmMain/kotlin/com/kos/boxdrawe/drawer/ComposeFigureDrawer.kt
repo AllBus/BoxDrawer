@@ -2,13 +2,14 @@ package com.kos.boxdrawe.drawer
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PointMode
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.DrawStyle
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.*
 import vectors.Vec2
+import java.awt.geom.AffineTransform
 
 class ComposeFigureDrawer(
     private val scope: DrawScope,
@@ -16,10 +17,17 @@ class ComposeFigureDrawer(
     private val style: DrawStyle = Stroke(width = 1.0f),
 ) : IFigureGraphics {
 
+    private var transform = Matrix()
+    private var saveTransform = Matrix()
+
     override fun drawLine(a: Vec2, b: Vec2) {
         val p = Path()
         line(p, a, b)
         scope.drawPath(p, penColor, style = style)
+    }
+
+    override fun drawRect(leftTop: Vec2, size: Vec2) {
+        scope.drawRect(penColor, leftTop.vec, Size(size.x.toFloat(), size.y.toFloat()), style = style)
     }
 
     override fun drawPolyline(points: List<Vec2>) {
@@ -46,6 +54,31 @@ class ComposeFigureDrawer(
 
     override fun drawCircle(center: Vec2, radius: Double) {
         scope.drawCircle(penColor, radius.toFloat(), center.vec, style = style)
+    }
+
+    override fun drawSpline(points: List<Vec2>) {
+        val p = Path()
+        splinePoints(p, points)
+        scope.drawPath(p, penColor, style = style)
+    }
+
+    override fun save() {
+        transform = Matrix()
+    }
+
+    override fun translate(x: Double, y: Double) {
+        transform.translate(x.toFloat(), y.toFloat())
+        scope.drawContext.transform.transform(transform)
+    }
+
+    override fun scale(scaleX: Double, scaleY: Double) {
+        transform.scale(scaleX.toFloat(), scaleY.toFloat())
+        scope.drawContext.transform.transform(transform)
+    }
+
+    override fun load() {
+        scope.drawContext.transform.transform(transform)
+        transform = Matrix()
     }
 
     inline val Vec2.vec get(): Offset = Offset(this.x.toFloat(), this.y.toFloat())
@@ -88,6 +121,18 @@ class ComposeFigureDrawer(
                 val c = points[r + 1]
                 val d = points[r + 2]
 
+                p.cubicTo(b.x.toFloat(), b.y.toFloat(), c.x.toFloat(), c.y.toFloat(), d.x.toFloat(), d.y.toFloat())
+            }
+        }
+    }
+
+    private fun splinePoints(p: Path, points: List<Vec2>) {
+        if (points.isNotEmpty()) {
+            p.moveTo(points[0].x.toFloat(), points[0].y.toFloat())
+            for (r in 1..points.size - 3 step 1) {
+                val b = points[r]
+                val c = points[r + 1]
+                val d = points[r + 2]
                 p.cubicTo(b.x.toFloat(), b.y.toFloat(), c.x.toFloat(), c.y.toFloat(), d.x.toFloat(), d.y.toFloat())
             }
         }

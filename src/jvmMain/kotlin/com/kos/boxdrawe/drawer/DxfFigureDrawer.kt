@@ -3,13 +3,19 @@ package com.kos.boxdrawe.drawer
 import com.jsevy.jdxf.DXFDocument
 import com.jsevy.jdxf.DXFGraphics
 import vectors.Vec2
+import java.awt.geom.AffineTransform
 
 class DxfFigureDrawer(
     private val document: DXFDocument
 ) : IFigureGraphics {
+
+    private var transform = AffineTransform()
     private val g = document.graphics
     override fun drawLine(a: Vec2, b: Vec2) {
         g.drawLine(a.x, a.y, b.x, b.y)
+    }
+    override fun drawRect(leftTop: Vec2, size: Vec2) {
+        g.drawRect(leftTop.x, leftTop.y, size.x, size.y)
     }
 
     override fun drawPolyline(points: List<Vec2>) {
@@ -32,6 +38,34 @@ class DxfFigureDrawer(
 
     override fun drawCircle(center: Vec2, radius: Double) {
         g.drawCircle(center, radius)
+    }
+
+    override fun drawSpline(points: List<Vec2>) {
+        val m = IntArray(points.size) { 1 }
+        val controls = DoubleArray(points.size * 2)
+
+        for (i in points.indices) {
+            controls[i * 2] = points[i].x
+            controls[i * 2 + 1] = points[i].y
+        }
+
+        g.drawSpline(3, controls, m, false)
+    }
+
+    override fun save() {
+        transform = g.transform
+    }
+
+    override fun translate(x: Double, y: Double) {
+        g.translate(x, y)
+    }
+
+    override fun scale(scaleX: Double, scaleY: Double) {
+        g.scale(scaleX, scaleY)
+    }
+
+    override fun load() {
+        g.transform = transform
     }
 
     private fun drawArc(

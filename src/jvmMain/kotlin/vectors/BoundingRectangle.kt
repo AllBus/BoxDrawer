@@ -4,6 +4,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 data class BoundingRectangle(val min: Vec2, val max: Vec2) {
+    val width: Double get() = max.x - min.x
+    val height: Double get() = max.y - min.y
+
     fun union(rect: BoundingRectangle): BoundingRectangle {
 
         return BoundingRectangle(

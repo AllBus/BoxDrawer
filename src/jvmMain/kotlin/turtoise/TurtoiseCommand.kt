@@ -25,13 +25,14 @@ interface TortoiseCommand {
         }
 
         const val TURTOISE_ZIGZAG = 'z';
+        const val TURTOISE_VERTICAL = 'v';
+        const val TURTOISE_SPLINE = 's';
         const val TURTOISE_RECTANGLE = 'x';
         const val TURTOISE_MOVE = 'm';
         const val TURTOISE_LINE = 'l';
         const val TURTOISE_LINE_WITH_ANGLE = 'л';
         const val TURTOISE_LINE_PERPENDICULAR = 'p';
         const val TURTOISE_HORIZONTAL = 'h';
-        const val TURTOISE_VERTICAL = 'v';
         const val TURTOISE_ELLIPSE = 'e';
         const val TURTOISE_CIRCLE = 'c';
         const val TURTOISE_BEZIER = 'b';
@@ -40,7 +41,7 @@ interface TortoiseCommand {
         const val TURTOISE_SPLIT = '|';
         const val TURTOISE_CLEAR = '!';
         const val TURTOISE_CLOSE = '`';
-        const val TURTOISE_SAVE = 's';
+        const val TURTOISE_SAVE = 't';
         const val TURTOISE_LOAD = 'y';
         const val TURTOISE_METHOD_NAME = '@';
         const val TURTOISE_METHOD_RUN = '=';

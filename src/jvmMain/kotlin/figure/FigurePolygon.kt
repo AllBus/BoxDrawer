@@ -15,6 +15,21 @@ abstract class FigurePolygon(val points: List<Vec2>) : Figure() {
         if (points.size < 2) {
             return Empty
         }
+
+        val predicate = when (cropSide) {
+            CropSide.LEFT ->
+                {a: Vec2 -> a.x > k}
+            CropSide.RIGHT ->
+                {a -> a.x < k}
+            CropSide.BOTTOM ->
+                {a -> a.y > k}
+            CropSide.TOP ->
+                {a -> a.y < k}
+        }//end when
+
+        if (points.all { !predicate(it) })
+            return Empty
+
         return this
     }
 

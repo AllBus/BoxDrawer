@@ -13,11 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.DrawerViewModel
+import com.kos.boxdrawe.presentation.SoftRezData
 import com.kos.boxdrawe.presentation.TortoiseData
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
+import figure.IFigure
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
 
@@ -49,7 +51,7 @@ fun TabBar(tabs: List<TabInfo>, vm: DrawerViewModel) {
                 TAB_BOX -> ToolbarForBox(vm)
                 TAB_TORTOISE -> ToolbarForTortoise(vm.tortoise)
                 TAB_GRID -> ToolbarForGrid(vm)
-                TAB_SOFT -> ToolbarForSoft(vm)
+                TAB_SOFT -> ToolbarForSoft(vm.softRez, { vm.tortoise.figures.value })
             }
         }
         Box(
@@ -59,15 +61,15 @@ fun TabBar(tabs: List<TabInfo>, vm: DrawerViewModel) {
 }
 
 @Composable
-fun ToolbarForSoft(vm: DrawerViewModel) {
-    var innerChecked by remember { mutableStateOf(true) }
+fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
+    var innerChecked by remember {vm.innerChecked }
 
-    val width = remember { NumericTextFieldState(60.0) }
-    val height = remember { NumericTextFieldState(60.0) }
-    val cellWidthCount = remember { NumericTextFieldState(5.0,0, 1000.0) }
-    val cellHeightCount = remember { NumericTextFieldState(6.0,0, 1000.0) }
-    val cellWidthDistance = remember { NumericTextFieldState(2.0,2) }
-    val cellHeightDistance = remember { NumericTextFieldState(2.0,2) }
+    val width = remember { vm.width }
+    val height = remember { vm.height }
+    val cellWidthCount = remember { vm.cellWidthCount }
+    val cellHeightCount = remember { vm.cellHeightCount }
+    val cellWidthDistance = remember { vm.cellWidthDistance }
+    val cellHeightDistance = remember { vm.cellHeightDistance }
 
     Row(
         modifier = TabContentModifier
@@ -115,7 +117,7 @@ fun ToolbarForSoft(vm: DrawerViewModel) {
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            RunButton("Нарисовать деталь", {})
+            RunButton("Нарисовать деталь", { showFileChooser{f -> vm.saveRez(f, figures())}})
         }
     }
 }

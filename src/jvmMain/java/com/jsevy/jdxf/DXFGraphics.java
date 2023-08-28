@@ -2978,7 +2978,6 @@ public class DXFGraphics extends Graphics2D {
         setMatrix();
     }
 
-
     /**
      * Utility method to map a set of vectors using an Affine transformation; basically ignores translation.
      *
