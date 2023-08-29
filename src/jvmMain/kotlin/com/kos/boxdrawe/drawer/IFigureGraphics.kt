@@ -19,7 +19,8 @@ interface IFigureGraphics {
 
     fun drawSpline(points: List<Vec2>)
     fun save()
-    abstract fun translate(x: Double, y: Double)
-    abstract fun scale(scaleX: Double, scaleY: Double)
-    fun load()
+    fun translate(x: Double, y: Double)
+    fun scale(scaleX: Double, scaleY: Double)
+    fun rotate(degrees: Double, pivot: Vec2)
+    fun restore()
 }

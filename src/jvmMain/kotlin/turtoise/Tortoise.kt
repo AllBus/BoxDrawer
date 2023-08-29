@@ -1,6 +1,9 @@
 package turtoise
 
 import figure.*
+import figure.matrix.FigureMatrixRotate
+import figure.matrix.FigureMatrixScale
+import figure.matrix.FigureMatrixTranslate
 import vectors.Vec2
 import kotlin.math.min
 import kotlin.math.truncate
@@ -8,7 +11,7 @@ import kotlin.math.truncate
 class Tortoise {
 
     fun draw(program: TortoiseProgram, startPoint: Vec2, ds: DrawerSettings, memory: TortoiseMemory): FigureList {
-
+        memory.reset()
         val commands = program.commands.flatMap { a -> a.names.flatMap { n -> a.commands(n, ds) } }
         val state = TortoiseState()
         state.moveTo(startPoint)
@@ -298,6 +301,19 @@ class Tortoise {
                     }
                 }
 
+                TortoiseCommand.TURTOISE_MATRIX_TRANSLATE -> {
+                    res.add(FigureMatrixTranslate(com[0, memory], com[1, memory]))
+                }
+                TortoiseCommand.TURTOISE_MATRIX_SCALE -> {
+                    res.add(FigureMatrixScale(com[0, 1.0,  memory], com[1, 1.0, memory]))
+                }
+                TortoiseCommand.TURTOISE_MATRIX_ROTATE -> {
+                    res.add(FigureMatrixRotate(com[0, 1.0,  memory], state.xy))
+                }
+
+                TortoiseCommand.TURTOISE_MEMORY_ASSIGN -> {
+                    com.assign(memory)
+                }
 
                 else -> {
 

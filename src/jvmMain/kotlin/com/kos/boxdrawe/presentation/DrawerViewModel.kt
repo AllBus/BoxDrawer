@@ -1,9 +1,6 @@
 package com.kos.boxdrawe.presentation
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import com.groupdocs.comparison.Document
 import com.groupdocs.comparison.options.PreviewOptions
 import com.groupdocs.comparison.options.enums.PreviewFormats
@@ -25,7 +22,10 @@ import turtoise.*
 import vectors.Vec2
 import java.awt.BasicStroke
 import java.awt.Color
-import java.io.*
+import java.io.BufferedOutputStream
+import java.io.ByteArrayOutputStream
+import java.io.FileOutputStream
+import java.io.FileWriter
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -40,15 +40,15 @@ class DrawerViewModel {
     fun previewDxf(path: String) {
 
         CoroutineScope(Dispatchers.Default).launch {
-              withContext(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
                 Document(path).use { document ->
                     document.generatePreview(PreviewOptions { pageNumber ->
                         if (pageNumber == 1) {
                             val f = Files.createTempFile("preview_", ".png")
                             pageFile.value = f
-                            if (f == null){
+                            if (f == null) {
                                 ByteArrayOutputStream()
-                            }else {
+                            } else {
                                 println("Preview path: $pageFile")
                                 BufferedOutputStream(FileOutputStream(f.toFile()))
                             }
@@ -67,32 +67,25 @@ class DrawerViewModel {
     }
 }
 
-class TortoiseData{
+class TortoiseData {
     val figures = mutableStateOf<IFigure>(Figure.Empty)
 
     private val t = Tortoise()
 
     private val ds = DrawerSettings()
 
-    private val memory = object: TortoiseMemory {
-        override fun value(variable: String, defaultValue: Double): Double {
-            val d = variable.toDoubleOrNull()
-            if (d != null)
-                return d
-            return defaultValue
-        }
-    }
+    private val memory = SimpleTortoiseMemory()
 
-    fun saveTortoise(fileName: String, lines:String) {
+    fun saveTortoise(fileName: String, lines: String) {
         val program = tortoiseProgram(lines)
         val fig = t.draw(program, Vec2.Zero, ds, memory)
 
         val dxfDocument = DXFDocument("Figure");
-        val graphics = dxfDocument.getGraphics();
+        val graphics = dxfDocument.getGraphics()
 
         // set pen characteristics
-        graphics.setColor(Color.BLACK);
-        graphics.setStroke(BasicStroke(1f));
+        graphics.setColor(Color.BLACK)
+        graphics.setStroke(BasicStroke(1f))
 
         FigureDxf.draw(dxfDocument, fig)
 
@@ -107,12 +100,12 @@ class TortoiseData{
     }
 
     private fun tortoiseProgram(lines: String): TortoiseProgram {
-        return TortoiseProgram(commands = lines.split("\n").map {line ->
+        return TortoiseProgram(commands = lines.split("\n").map { line ->
             TortoiseParser.extractTortoiseCommands(line)
         })
     }
 
-    fun createTortoise(lines:String){
+    fun createTortoise(lines: String) {
         val program = tortoiseProgram(lines)
         figures.value = t.draw(program, Vec2.Zero, ds, memory)
     }
@@ -123,7 +116,7 @@ class TortoiseData{
 
 class SoftRezData(
 
-){
+) {
     val sr = SoftRez()
 
     fun saveRez(fileName: String, figure: IFigure) {
@@ -136,7 +129,7 @@ class SoftRezData(
         graphics.setStroke(BasicStroke(1f));
         val g = DxfFigureDrawer(dxfDocument)
 
-        drawRez(figure, g)
+        drawRez(figure).draw(g)
 
         val dxfText = dxfDocument.toDXFString();
         val filePath = fileName
@@ -144,17 +137,15 @@ class SoftRezData(
         fileWriter.write(dxfText);
         fileWriter.flush();
         fileWriter.close();
-
     }
 
-    fun drawRez(figure: IFigure, g: IFigureGraphics) {
+    fun drawRez(figure: IFigure):IFigure {
         val f = if (figure.count == 0) {
             FigureLine(Vec2(0.0, 0.0), Vec2(2.0, 0.0))
         } else
             figure
 
-        sr.drawRect(
-            g = g,
+        return sr.drawRect(
             w = width.decimal,
             h = height.decimal,
             sdx = cellWidthDistance.decimal,
@@ -162,17 +153,15 @@ class SoftRezData(
             xCount = cellWidthCount.decimal.toInt(),
             yCount = cellHeightCount.decimal.toInt(),
             fit = innerChecked.value,
-            form = figure,
+            form = f,
         )
     }
 
     var innerChecked = mutableStateOf(true)
-    val width =NumericTextFieldState(60.0)
-    val height =  NumericTextFieldState(60.0)
-    val cellWidthCount = NumericTextFieldState(5.0,0, 1000.0)
-    val cellHeightCount = NumericTextFieldState(6.0,0, 1000.0)
-    val cellWidthDistance = NumericTextFieldState(2.0,2)
-    val cellHeightDistance = NumericTextFieldState(2.0,2)
-
-
+    val width = NumericTextFieldState(60.0)
+    val height = NumericTextFieldState(60.0)
+    val cellWidthCount = NumericTextFieldState(5.0, 0, 1000.0)
+    val cellHeightCount = NumericTextFieldState(6.0, 0, 1000.0)
+    val cellWidthDistance = NumericTextFieldState(2.0, 2)
+    val cellHeightDistance = NumericTextFieldState(2.0, 2)
 }

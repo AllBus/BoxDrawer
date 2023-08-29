@@ -8,17 +8,15 @@ import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.drawscope.*
+import androidx.compose.ui.graphics.rotate
 import vectors.Vec2
 import java.awt.geom.AffineTransform
 
 class ComposeFigureDrawer(
     private val scope: DrawScope,
-    private val penColor: Color = Color.Gray,
-    private val style: DrawStyle = Stroke(width = 1.0f),
+    var penColor: Color = Color.Gray,
+    var style: DrawStyle = Stroke(width = 1.0f),
 ) : IFigureGraphics {
-
-    private var transform = Matrix()
-    private var saveTransform = Matrix()
 
     override fun drawLine(a: Vec2, b: Vec2) {
         val p = Path()
@@ -63,22 +61,27 @@ class ComposeFigureDrawer(
     }
 
     override fun save() {
-        transform = Matrix()
+        scope.drawContext.canvas.save()
     }
 
     override fun translate(x: Double, y: Double) {
-        transform.translate(x.toFloat(), y.toFloat())
-        scope.drawContext.transform.transform(transform)
+        scope.drawContext.canvas.translate(x.toFloat(), y.toFloat())
     }
 
     override fun scale(scaleX: Double, scaleY: Double) {
-        transform.scale(scaleX.toFloat(), scaleY.toFloat())
-        scope.drawContext.transform.transform(transform)
+        scope.drawContext.canvas.scale(scaleX.toFloat(), scaleY.toFloat())
     }
 
-    override fun load() {
-        scope.drawContext.transform.transform(transform)
-        transform = Matrix()
+    override fun rotate(degrees: Double, pivot: Vec2) {
+        if (pivot.x ==0.0 && pivot.y == 0.0){
+            scope.drawContext.canvas.rotate(degrees.toFloat())
+        } else {
+            scope.drawContext.canvas.rotate(degrees.toFloat(), pivot.x.toFloat(), pivot.y.toFloat())
+        }
+    }
+
+    override fun restore() {
+        scope.drawContext.canvas.restore()
     }
 
     inline val Vec2.vec get(): Offset = Offset(this.x.toFloat(), this.y.toFloat())

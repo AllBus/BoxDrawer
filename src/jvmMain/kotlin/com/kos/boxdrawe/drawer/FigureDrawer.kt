@@ -17,4 +17,7 @@ fun DrawScope.drawFigures(figureLine: IFigure) {
 
     val drawer = ComposeFigureDrawer(this, penColor, style)
     figureLine.draw(drawer)
+    val bound = figureLine.rect()
+    drawer.penColor = Color.Green
+    drawer.drawRect(bound.min, bound.max-bound.min)
 }

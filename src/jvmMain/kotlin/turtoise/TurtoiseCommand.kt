@@ -5,6 +5,8 @@ interface TortoiseCommand {
     val size: Int
     fun take(index: Int, defaultValue: Double, memory: TortoiseMemory): Double
 
+    fun assign(memory: TortoiseMemory) {}
+
     operator fun get(index: Int, memory: TortoiseMemory) = take(index, 0.0, memory)
 
     operator fun get(index: Int, defaultValue: Double, memory: TortoiseMemory) = take(index, defaultValue, memory)
@@ -47,6 +49,10 @@ interface TortoiseCommand {
         const val TURTOISE_METHOD_RUN = '=';
         const val TURTOISE_LOOP = '>';
         const val TURTOISE_END_LOOP = '<';
+        const val TURTOISE_MATRIX_ROTATE = 'R';
+        const val TURTOISE_MATRIX_TRANSLATE = 'T';
+        const val TURTOISE_MATRIX_SCALE = 'S';
+        const val TURTOISE_MEMORY_ASSIGN = '='
 
         fun Move(x: Double) = DoubleTortoiseCommand(TURTOISE_MOVE, x)
         fun Move(x: Double, y: Double) = TwoDoubleTortoiseCommand(TURTOISE_MOVE, x, y)
@@ -109,6 +115,10 @@ class SmallTortoiseCommand(
         if (index == 0)
             return memory.value(value, defaultValue)
         return defaultValue
+    }
+
+    override fun assign(memory: TortoiseMemory) {
+        memory.clear(value)
     }
 }
 
@@ -200,8 +210,22 @@ class UniTortoiseCommand(
             return memory.value(values[index], defaultValue)
         return defaultValue
     }
+
+    override fun assign(memory: TortoiseMemory) {
+        if (values.isNotEmpty()) {
+            if (values.size == 1) {
+                memory.clear(values.first())
+            } else {
+                memory.assign(values.first(), values.drop(1).sumOf { memory.value(it, 0.0) })
+            }
+        }
+    }
 }
 
 interface TortoiseMemory {
     fun value(variable: String, defaultValue: Double): Double
+    fun assign(variable: String, value: Double)
+    fun clear(variable: String)
+
+    fun reset()
 }

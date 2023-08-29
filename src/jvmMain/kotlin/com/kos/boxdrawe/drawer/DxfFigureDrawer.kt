@@ -2,14 +2,17 @@ package com.kos.boxdrawe.drawer
 
 import com.jsevy.jdxf.DXFDocument
 import com.jsevy.jdxf.DXFGraphics
+import org.jetbrains.skia.defaultLanguageTag
 import vectors.Vec2
 import java.awt.geom.AffineTransform
+import java.util.*
+import kotlin.math.PI
 
 class DxfFigureDrawer(
     private val document: DXFDocument
 ) : IFigureGraphics {
 
-    private var transform = AffineTransform()
+    private val transforms = Stack<AffineTransform>()
     private val g = document.graphics
     override fun drawLine(a: Vec2, b: Vec2) {
         g.drawLine(a.x, a.y, b.x, b.y)
@@ -53,7 +56,7 @@ class DxfFigureDrawer(
     }
 
     override fun save() {
-        transform = g.transform
+        transforms.push(g.transform)
     }
 
     override fun translate(x: Double, y: Double) {
@@ -64,8 +67,14 @@ class DxfFigureDrawer(
         g.scale(scaleX, scaleY)
     }
 
-    override fun load() {
-        g.transform = transform
+    override fun rotate(degrees: Double, pivot: Vec2) {
+        g.rotate(degrees* PI /180.0, pivot.x, pivot.y)
+    }
+
+    override fun restore() {
+        if (transforms.isNotEmpty()){
+            g.transform = transforms.pop()
+        }
     }
 
     private fun drawArc(

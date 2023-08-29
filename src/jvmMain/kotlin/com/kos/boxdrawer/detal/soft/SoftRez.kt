@@ -1,25 +1,40 @@
 package com.kos.boxdrawer.detal.soft
 
 import com.kos.boxdrawe.drawer.IFigureGraphics
-import figure.CropSide
-import figure.IFigure
+import figure.*
+import figure.composition.FigureArray
+import figure.matrix.FigureMatrixSave
+import figure.matrix.FigureMatrixScale
+import figure.matrix.FigureMatrixTranslate
 import vectors.Vec2
 
 
 class SoftRez {
 
     fun drawRect(
-        g: IFigureGraphics,
         w: Double, h: Double, sdx: Double, sdy: Double, xCount: Int, yCount: Int, fit: Boolean, form: IFigure,
-    ) {
+    ): IFigure {
 
-        g.drawRect(Vec2(0.0, 0.0), Vec2(w, h))
+
+        val res = mutableListOf<IFigure>()
+
+        res.add(
+            FigurePolyline(
+                listOf(
+                    Vec2(0.0, 0.0),
+                    Vec2(w, 0.0),
+                    Vec2(w, h),
+                    Vec2(0.0, h),
+                    Vec2(0.0, 0.0),
+                )
+            )
+        )
 
         if (xCount <= 0 || (yCount <= 0 && !fit))
-            return
+            return Figure.Empty
 
         if (form.count == 0)
-            return
+            return Figure.Empty
 
         val rr = form.rect()
 
@@ -30,12 +45,12 @@ class SoftRez {
         var sh = 0.0
         var scaleY = 1.0
 
-        if (sw <= 0) return
+        if (sw <= 0) return Figure.Empty
 
         if (fit) {
             scaleY = scaleX
             if (rr.width == 0.0) {
-                return
+                return Figure.Empty
             }
             sh = sw * rr.height / rr.width
         } else {
@@ -44,7 +59,7 @@ class SoftRez {
             scaleY = if (rr.height <= 1) 1.0 else sh / rr.height
         }
 
-        if (sh < 0.001 && sdy < 0.001) return
+        if (sh < 0.001 && sdy < 0.001) return Figure.Empty
 
         val trX = -rr.min.x
         val trY = -rr.min.y
@@ -55,8 +70,8 @@ class SoftRez {
 
         val dy = (sh * 0.5) + sdy
 
-        if (sww<0.01 || dy< 0.01)
-            return
+        if (sww < 0.01 || dy < 0.01)
+            return Figure.Empty
 
         var y = -0.5 * sh
         while (y < h) {
@@ -66,36 +81,45 @@ class SoftRez {
                 else -> fa
             }
 
-            j++;
+            j++
 
-            var x = sdx + (j % 2) * -0.5 * (sww)
-            while (x < w) {
-                val f = when {
-                    x < sdx -> fy.crop((-x) / scaleX, CropSide.LEFT);
-                    x + sw > w -> fy.crop((w - x) / scaleX, CropSide.RIGHT);
-                    else -> fy
-                }
+            val x1 = sdx + (j % 2) * -0.5 * (sww)
 
-                val a = createSoft(g, x, y, scaleX, scaleY, f);
-                x += sww
+            val (ff1, xs) = if (x1<sdx) {
+                Pair(
+                    fy.crop((-x1) / scaleX, CropSide.LEFT),
+                    x1 + sww
+                )
+            } else
+                Pair(null,x1)
+
+            // количество целых элементов в линии
+            val sx = ((w-xs)/sww ).toInt()
+            val x2 = xs+sx*sww
+
+            val ffe =
+            if (x2+sw > w){
+                fy.crop((w - x2) / scaleX, CropSide.RIGHT)
+            } else
+                fy
+
+            if (sx>0){
+                res.add(FigureArray(
+                    fy, Vec2(x1, y),
+                    distance = Vec2(sww, 0.0),
+                    size = sx,
+                    angle = 0.0,
+                    scaleX = scaleX,
+                    scaleY = scaleY,
+                    figureStart = ff1,
+                    figureEnd = ffe
+                ))
             }
 
             y += dy
         }
+
+        return FigureList(res.toList())
     }
 
-    private fun createSoft(
-        g: IFigureGraphics,
-        x: Double,
-        y: Double,
-        scaleX: Double,
-        scaleY: Double,
-        form: IFigure
-    ) {
-        g.save()
-        g.translate(x, y)
-        g.scale(scaleX, scaleY)
-        form.draw(g)
-        g.load()
-    }
 }

@@ -948,13 +948,19 @@ public class DXFGraphics extends Graphics2D {
     }
 
     public void drawCircle(@NotNull Vec2 center, double radius) {
-        Point2D c = new Point2D.Double(center.x, center.y);
-        Point2D r = new Point2D.Double(radius, radius);
-        Point2D c2 = graphicsMatrix.transform(c, null);
-        Point2D r2 = graphicsMatrix.transform(r, null);
-        //Todo: not support all transform matrix
-        DXFCircle circle = new DXFCircle(new RealPoint(c2.getX(), c2.getY(), 0.0), r2.getX(), this);
-        dxfDocument.addEntity(circle);
+        double sx = graphicsMatrix.getScaleX();
+        double sy = graphicsMatrix.getScaleY();
+
+        if (sx == sy) {
+            //Todo: not support all transform matrix
+            Point2D c = new Point2D.Double(center.x, center.y);
+            double r = radius * sx;
+            Point2D c2 = graphicsMatrix.transform(c, null);
+            DXFCircle circle = new DXFCircle(new RealPoint(c2.getX(), c2.getY(), 0.0), r, this);
+            dxfDocument.addEntity(circle);
+        } else {
+            drawOval( (center.x - radius), (center.y - radius),radius * 2,radius * 2);
+        }
     }
 
 
@@ -1733,9 +1739,9 @@ public class DXFGraphics extends Graphics2D {
         dxfDocument.addEntity(spline);
     }
 
-    private final double[] bezierKnots = {0,0,0,0,1,1,1,1};
+    private final double[] bezierKnots = {0, 0, 0, 0, 1, 1, 1, 1};
 
-    public void drawBezier(double[] controlPoints){
+    public void drawBezier(double[] controlPoints) {
         graphicsMatrix.transform(controlPoints, 0, controlPoints, 0, controlPoints.length / 2);
         DXFSpline spline = new DXFSpline(3, controlPoints, bezierKnots, this);
         dxfDocument.addEntity(spline);

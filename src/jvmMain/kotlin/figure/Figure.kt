@@ -35,7 +35,26 @@ abstract class Figure : IFigure {
     }
 
     companion object {
-        val Empty = FigureList(emptyList())
-
+        val Empty = FigureEmpty
     }
+}
+
+object FigureEmpty: IFigure{
+    override val count: Int
+        get() = 0
+
+    override fun crop(k: Double, cropSide: CropSide): IFigure = this
+
+    override fun list(): List<Figure> = emptyList()
+
+    override fun rect(): BoundingRectangle = BoundingRectangle.Empty
+
+    override fun translate(translateX: Double, translateY: Double): IFigure = this
+
+    override fun rotate(angle: Double): IFigure = this
+
+    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure = this
+
+    override fun draw(g: IFigureGraphics) {}
+
 }

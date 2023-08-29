@@ -11,7 +11,21 @@ data class BoundingRectangle(val min: Vec2, val max: Vec2) {
 
         return BoundingRectangle(
             Vec2(min(this.min.x, rect.min.x), min(this.min.y, rect.min.y)),
-            Vec2(min(this.max.x, rect.max.x), min(this.max.y, rect.max.y))
+            Vec2(max(this.max.x, rect.max.x), max(this.max.y, rect.max.y))
+        )
+    }
+
+    fun translate(delta: Vec2): BoundingRectangle {
+        return BoundingRectangle(
+            min + delta,
+            max + delta,
+        )
+    }
+
+    fun scale(scaleX: Double, scaleY: Double): BoundingRectangle {
+        return BoundingRectangle(
+            Vec2(min.x*scaleX, min.y*scaleY) ,
+            Vec2(max.x*scaleX, max.y*scaleY) ,
         )
     }
 
