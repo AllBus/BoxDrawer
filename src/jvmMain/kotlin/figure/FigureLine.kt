@@ -23,7 +23,7 @@ class FigureLine private constructor(points: List<Vec2>): FigurePolygon(points){
         return cropLine(k, cropSide);
     }
 
-    fun  cropLine(k :Double, cropSide: CropSide): IFigure
+    private fun cropLine(k :Double, cropSide: CropSide): IFigure
     {
         when (cropSide)
         {

@@ -144,7 +144,7 @@ object TortoiseParser {
             startHeight = items.doubleValue(0, 0.0),
             polkaBottomOffset = items.doubleValue(1, 20.0),
             polkaTopOffset = items.doubleValue(2, 20.0),
-            parts = items.blocks.map<TurtoiseParserStackItem, PolkaPart> { b ->
+            parts = items.blocks.map { b ->
                 PolkaPart(
 
                     width = b.doubleValue(0, 0.0),

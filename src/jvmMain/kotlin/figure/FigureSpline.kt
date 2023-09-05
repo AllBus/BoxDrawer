@@ -10,7 +10,6 @@ class FigureSpline(points: List<Vec2>): FigurePolygon(points) {
     }
 
     override fun draw(g: IFigureGraphics) {
-
         g.drawSpline(points)
     }
 }

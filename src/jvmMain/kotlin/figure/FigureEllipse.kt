@@ -34,7 +34,7 @@ open class FigureEllipse(
                 calculateSegments(s1, s2)
             }
 
-            CropSide.BOTTOM -> {
+            CropSide.TOP -> {
                 if (center.y + radius <= k) return Empty
                 if (center.y - radius >= k) return this
                 val s = (k - center.y) / radius
@@ -43,7 +43,7 @@ open class FigureEllipse(
                 calculateSegments(s1, s2)
             }
 
-            CropSide.TOP -> {
+            CropSide.BOTTOM -> {
                 if (center.y + radius <= k) return this
                 if (center.y - radius >= k) return Empty
                 val s = (k - center.y) / radius
@@ -58,10 +58,18 @@ open class FigureEllipse(
         return BoundingRectangle.apply(center, radius, radiusMinor, rotation)
     }
 
+    open fun create(center: Vec2,
+                    radius: Double,
+                    radiusMinor: Double,
+                    rotation: Double,
+                    segmentStart: Double,
+                    segmentEnd: Double): FigureEllipse {
+        return FigureEllipse(center, radius, radiusMinor, rotation, segmentStart, segmentEnd)
+    }
 
     override fun translate(translateX: Double, translateY: Double): IFigure {
-        return FigureEllipse(
-            center = center - Vec2(translateX, translateX),
+        return create(
+            center = center + Vec2(translateX, translateY),
             radius = radius,
             radiusMinor = radiusMinor,
             rotation = rotation,
@@ -71,7 +79,7 @@ open class FigureEllipse(
     }
 
     override fun rotate(angle: Double): IFigure {
-        return FigureEllipse(
+        return create(
             center = center.rotate(angle),
             radius = radius,
             radiusMinor = radiusMinor,
@@ -96,7 +104,7 @@ open class FigureEllipse(
         g.drawArc(center, radius, radiusMinor, segmentStart, segmentEnd)
     }
 
-    private fun calculateSegments(s1: Double, e1: Double): IFigure {
+    protected fun calculateSegments(s1: Double, e1: Double): IFigure {
         var ls = segmentEnd - segmentStart
         if (ls < 0) ls += 360.0
         var le = e1 - s1
@@ -107,7 +115,7 @@ open class FigureEllipse(
         val atE = atS + le
 
         if (stS == stE) {
-            return FigureEllipse(
+            return create(
                 center = center,
                 radius = radius,
                 radiusMinor = radiusMinor,
@@ -122,7 +130,7 @@ open class FigureEllipse(
             if (atS >= stE || atE <= stS)
                 return Empty;
 
-            val f1 = FigureEllipse(
+            val f1 = create(
                 center = center,
                 radius = radius,
                 radiusMinor = radiusMinor,
@@ -137,7 +145,7 @@ open class FigureEllipse(
             if (atS >= stE || atE <= stS)
                 return f1;
 
-            val f2 = FigureEllipse(
+            val f2 = create(
                 center = center,
                 radius = radius,
                 radiusMinor = radiusMinor,

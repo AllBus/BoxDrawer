@@ -2,17 +2,17 @@ package turtoise
 
 
 class DrawerSettings {
-    var boardWeight = 4.4
+    var boardWeight = 4.0
 
     /**
     /// Ширина отверстия
      */
-    var holeWeight = 4.47
+    var holeWeight = 4.05
 
     /**
     ///  Уменьшение длины отверстия
      */
-    var holeDrop = 0.5
+    var holeDrop = 0.1
     var holeOffset = 2.0
 }
 

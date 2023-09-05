@@ -1,102 +1,52 @@
 package com.kos.boxdrawe.presentation
 
 import androidx.compose.runtime.mutableStateOf
-import com.groupdocs.comparison.Document
-import com.groupdocs.comparison.options.PreviewOptions
-import com.groupdocs.comparison.options.enums.PreviewFormats
 import com.jsevy.jdxf.DXFDocument
 import com.kos.boxdrawe.drawer.DxfFigureDrawer
 import com.kos.boxdrawe.drawer.FigureDxf
-import com.kos.boxdrawe.drawer.IFigureGraphics
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.boxdrawe.widget.NumericTextFieldState
+import com.kos.boxdrawer.detal.box.BoxCad
+import com.kos.boxdrawer.detal.box.BoxInfo
+import com.kos.boxdrawer.detal.box.PazForm
+import com.kos.boxdrawer.detal.box.WaldParam
+import turtoise.ZigzagInfo
 import com.kos.boxdrawer.detal.soft.SoftRez
+import figure.CropSide
 import figure.Figure
 import figure.FigureLine
 import figure.IFigure
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import turtoise.*
 import vectors.Vec2
 import java.awt.BasicStroke
 import java.awt.Color
-import java.io.BufferedOutputStream
-import java.io.ByteArrayOutputStream
-import java.io.FileOutputStream
 import java.io.FileWriter
-import java.nio.file.Files
-import java.nio.file.Path
 
 class DrawerViewModel {
 
-    val tortoise = TortoiseData()
-    val softRez = SoftRezData()
+    val tools = Tools()
+    val tortoise = TortoiseData(tools)
+    val softRez = SoftRezData(tools)
+    val box = BoxData(tools)
+    val grid = GridData(tools)
+    val options = ToolsData(tools)
     val tabIndex = mutableStateOf(BoxDrawerToolBar.TAB_TORTOISE)
 
-    val pageFile = mutableStateOf<Path?>(null)
 
-    fun previewDxf(path: String) {
-
-        CoroutineScope(Dispatchers.Default).launch {
-            withContext(Dispatchers.IO) {
-                Document(path).use { document ->
-                    document.generatePreview(PreviewOptions { pageNumber ->
-                        if (pageNumber == 1) {
-                            val f = Files.createTempFile("preview_", ".png")
-                            pageFile.value = f
-                            if (f == null) {
-                                ByteArrayOutputStream()
-                            } else {
-                                println("Preview path: $pageFile")
-                                BufferedOutputStream(FileOutputStream(f.toFile()))
-                            }
-
-                        } else {
-                            pageFile.value = null
-                            println("Preview for page $pageNumber was ignored")
-                            // Just ignoring other pages in the example
-                            ByteArrayOutputStream()
-                        }
-                    }.apply { previewFormat = PreviewFormats.PNG })
-                }
-
-            }
-        }
-    }
 }
 
-class TortoiseData {
+class TortoiseData(val tools :ITools) {
     val figures = mutableStateOf<IFigure>(Figure.Empty)
+    val fig = mutableStateOf<IFigure>(Figure.Empty)
 
     private val t = Tortoise()
-
-    private val ds = DrawerSettings()
 
     private val memory = SimpleTortoiseMemory()
 
     fun saveTortoise(fileName: String, lines: String) {
         val program = tortoiseProgram(lines)
-        val fig = t.draw(program, Vec2.Zero, ds, memory)
-
-        val dxfDocument = DXFDocument("Figure");
-        val graphics = dxfDocument.getGraphics()
-
-        // set pen characteristics
-        graphics.setColor(Color.BLACK)
-        graphics.setStroke(BasicStroke(1f))
-
-        FigureDxf.draw(dxfDocument, fig)
-
-
-        /* Get the DXF output as a string - it's just text - and  save  in a file for use with a CAD package */
-        val dxfText = dxfDocument.toDXFString();
-        val filePath = fileName;
-        val fileWriter = FileWriter(filePath);
-        fileWriter.write(dxfText);
-        fileWriter.flush();
-        fileWriter.close();
+        val fig = t.draw(program, Vec2.Zero, tools.ds(), memory)
+        tools.saveFigures(fileName, fig)
     }
 
     private fun tortoiseProgram(lines: String): TortoiseProgram {
@@ -107,36 +57,22 @@ class TortoiseData {
 
     fun createTortoise(lines: String) {
         val program = tortoiseProgram(lines)
-        figures.value = t.draw(program, Vec2.Zero, ds, memory)
+        fig.value = t.draw(program, Vec2.Zero, tools.ds(), memory)
+        figures.value = t.draw(program, Vec2.Zero, tools.ds(), memory)
     }
 
+    fun drop(dropValueX: Float, dropValueY :Float) {
+        figures.value = fig.value.crop(dropValueX.toDouble(), CropSide.BOTTOM).crop(dropValueY.toDouble(), CropSide.LEFT)
+    }
 
     val text = mutableStateOf("")
 }
 
-class SoftRezData(
-
-) {
+class SoftRezData(val tools :ITools){
     val sr = SoftRez()
 
     fun saveRez(fileName: String, figure: IFigure) {
-
-        val dxfDocument = DXFDocument("Figure");
-        val graphics = dxfDocument.getGraphics();
-
-        // set pen characteristics
-        graphics.setColor(Color.BLACK);
-        graphics.setStroke(BasicStroke(1f));
-        val g = DxfFigureDrawer(dxfDocument)
-
-        drawRez(figure).draw(g)
-
-        val dxfText = dxfDocument.toDXFString();
-        val filePath = fileName
-        val fileWriter = FileWriter(filePath);
-        fileWriter.write(dxfText);
-        fileWriter.flush();
-        fileWriter.close();
+        tools.saveFigures(fileName, drawRez(figure))
     }
 
     fun drawRez(figure: IFigure):IFigure {
@@ -165,3 +101,74 @@ class SoftRezData(
     val cellWidthDistance = NumericTextFieldState(2.0, 2)
     val cellHeightDistance = NumericTextFieldState(2.0, 2)
 }
+class BoxData(val tools :ITools) {
+
+    val figures = mutableStateOf<IFigure>(Figure.Empty)
+
+    private val box = BoxCad()
+    private val wald = WaldParam(
+        topOffset = 2.0,
+        bottomOffset = 4.0,
+        holeOffset = 4.0,
+        holeDrop = 0.05,
+        topForm = PazForm.Paz,
+        bottomForm = PazForm.Hole,
+    )
+
+    fun boxFigures(line: String): IFigure{
+        return box.box(
+            boxInfo = BoxInfo(width.decimal, height.decimal, weight.decimal),
+            zigW = ZigzagInfo(
+                width = 15.0,
+                delta = 35.0
+            ),
+            zigH = ZigzagInfo(
+                width = 15.0,
+                delta = 35.0
+            ),
+            zigWe = ZigzagInfo(
+                width = 15.0,
+                delta = 35.0
+            ),
+            drawerSettings = tools.ds(),
+            wald = wald
+        )
+    }
+    fun createBox(line: String) {
+        val fig = boxFigures(line)
+        figures.value = fig
+    }
+
+    fun saveBox(fileName: String, line:String) {
+        val fig = boxFigures(line)
+        figures.value = fig
+
+        tools.saveFigures(fileName, fig)
+    }
+
+    val width =  NumericTextFieldState(100.0)
+    val height = NumericTextFieldState(50.0)
+    val weight = NumericTextFieldState(60.0)
+    var insideChecked = mutableStateOf(false)
+    val text = mutableStateOf("")
+}
+
+class GridData(val tools :ITools) {
+
+    var roundChecked = mutableStateOf(false)
+    var innerChecked = mutableStateOf(false)
+
+    val widthCell = NumericTextFieldState(6.0)
+    val widthFrame =  NumericTextFieldState(6.0)
+    val radius =  NumericTextFieldState(3.0)
+    val cellWidthCount = NumericTextFieldState(40.0,0, 1000.0)
+    val cellHeightCount = NumericTextFieldState(30.0,0, 1000.0)
+    val innerWidth = NumericTextFieldState(1.0,2)
+    val innerRadius = NumericTextFieldState(0.5,2)
+
+}
+
+class ToolsData(val tools :ITools) {
+
+}
+

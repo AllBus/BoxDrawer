@@ -21,8 +21,6 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points) {
 
 
     fun cropPolyline(k: Double, cropSide: CropSide): IFigure {
-
-
         val figures = mutableListOf<IFigure>()
         var result = mutableListOf<Vec2>()
 

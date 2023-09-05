@@ -12,12 +12,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.kos.boxdrawe.presentation.DrawerViewModel
-import com.kos.boxdrawe.presentation.SoftRezData
-import com.kos.boxdrawe.presentation.TortoiseData
+import com.kos.boxdrawe.presentation.*
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
+import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TOOLS
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
 import figure.IFigure
 import javax.swing.JFileChooser
@@ -48,10 +47,11 @@ fun TabBar(tabs: List<TabInfo>, vm: DrawerViewModel) {
         Box(
             Modifier.fillMaxWidth().height(240.dp).background(Color.LightGray)) {
             when(tabIndex) {
-                TAB_BOX -> ToolbarForBox(vm)
+                TAB_BOX -> ToolbarForBox(vm.box)
                 TAB_TORTOISE -> ToolbarForTortoise(vm.tortoise)
-                TAB_GRID -> ToolbarForGrid(vm)
+                TAB_GRID -> ToolbarForGrid(vm.grid)
                 TAB_SOFT -> ToolbarForSoft(vm.softRez, { vm.tortoise.figures.value })
+                TAB_TOOLS -> ToolbarForTools(vm.options)
             }
         }
         Box(
@@ -123,17 +123,17 @@ fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
 }
 
 @Composable
-fun ToolbarForGrid(vm: DrawerViewModel) {
-    var roundChecked by remember { mutableStateOf(false) }
-    var innerChecked by remember { mutableStateOf(false) }
+fun ToolbarForGrid(vm: GridData) {
+    var roundChecked by remember {vm.roundChecked }
+    var innerChecked by remember { vm.innerChecked }
 
-    val widthCell = remember { NumericTextFieldState(6.0) }
-    val widthFrame = remember { NumericTextFieldState(6.0) }
-    val radius = remember { NumericTextFieldState(3.0) }
-    val cellWidthCount = remember { NumericTextFieldState(40.0,0, 1000.0) }
-    val cellHeightCount = remember { NumericTextFieldState(30.0,0, 1000.0) }
-    val innerWidth = remember { NumericTextFieldState(1.0,2) }
-    val innerRadius = remember { NumericTextFieldState(0.5,2) }
+    val widthCell = remember { vm.widthCell }
+    val widthFrame = remember { vm.widthFrame }
+    val radius = remember {  vm.radius }
+    val cellWidthCount = remember { vm.cellWidthCount }
+    val cellHeightCount = remember { vm.cellHeightCount }
+    val innerWidth = remember { vm.innerWidth }
+    val innerRadius = remember { vm.innerRadius }
 
     Row(
         modifier = TabContentModifier
@@ -192,19 +192,20 @@ fun ToolbarForTortoise(vm: TortoiseData) {
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            RunButton("Нарисовать деталь", { showFileChooser{f -> vm.saveTortoise(f, text.value)} })
+            RunButton("Нарисовать деталь") { showFileChooser { f -> vm.saveTortoise(f, text.value) } }
         }
     }
 }
 
 @Composable
-fun ToolbarForBox(vm: DrawerViewModel) {
+fun ToolbarForBox(vm: BoxData) {
 
-    var insideChecked by remember{ mutableStateOf(false) }
+    var insideChecked by remember{ vm.insideChecked }
 
-    val width = remember { NumericTextFieldState(100.0) }
-    val height = remember { NumericTextFieldState(50.0) }
-    val weight = remember { NumericTextFieldState(60.0) }
+    val width = remember { vm.width }
+    val height = remember { vm.height }
+    val weight = remember { vm.weight }
+    val text = rememberSaveable(key = "ToolbarForBox.Text") { vm.text }
 
     Row(
        modifier = TabContentModifier
@@ -224,13 +225,20 @@ fun ToolbarForBox(vm: DrawerViewModel) {
                 title = "Размеры по внутреннему объёму",
                 onCheckedChange = { c -> insideChecked = c },
             )
+            EditText("Фигуры", "", text, true ){vm.createBox(it)}
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            RunButton("Нарисовать коробку", { showFileChooser(vm::previewDxf)})
+            RunButton("Нарисовать коробку") { showFileChooser { f -> vm.saveBox(f, text.value) } }
         }
     }
+}
+
+@Composable
+fun ToolbarForTools(vm: ToolsData) {
+
+
 }
 
 fun showFileChooser(action: (String)-> Unit) {
@@ -270,12 +278,14 @@ object BoxDrawerToolBar{
     const val TAB_TORTOISE = 1
     const val TAB_GRID = 2
     const val TAB_SOFT = 3
+    const val TAB_TOOLS = 4
 
     val tabs = listOf(
         TabInfo(TAB_BOX, "Коробка"),
         TabInfo(TAB_TORTOISE, "Фигуры"),
         TabInfo(TAB_GRID, "Сетка"),
         TabInfo(TAB_SOFT, "Мягкий рез"),
+        TabInfo(TAB_TOOLS, "Инструменты"),
     )
 
 }

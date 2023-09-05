@@ -208,12 +208,14 @@ class Tortoise {
                         points = result,
                         origin = result.last(),
                         width = com.value(memory),
-                        zigzagWidth = com.take(2, state.zigWidth, memory),
-                        delta = com.take(1, state.zigDelta, memory),
+                        zig = ZigzagInfo(
+                            com.take(2, state.zigWidth, memory),
+                            com.take(1, state.zigDelta, memory),
+                        ),
                         angle = state.angle,
                         param = state.zigParam,
                         boardWeight = com.take(3, ds.boardWeight, memory)
-                    );
+                    )
 
                     state.moveTo(result.last());
 
@@ -318,10 +320,7 @@ class Tortoise {
                 else -> {
 
                 }
-
             } // end when
-
-
             i++
         }//end while
         saveLine()
@@ -329,49 +328,95 @@ class Tortoise {
 
     }
 
-    fun zigzag(
-        points: MutableList<Vec2>,
-        origin: Vec2,
-        width: Double,
-        zigzagWidth: Double,
-        delta: Double,
-        angle: Double,
-        param: DrawingParam,
-        boardWeight: Double
-    ) {
-        var zigzagWidthV = zigzagWidth
-        var deltaV = delta
+    companion object {
+        fun zigzag(
+            points: MutableList<Vec2>,
+            origin: Vec2,
+            width: Double,
+            zig: ZigzagInfo,
+            angle: Double,
+            param: DrawingParam,
+            boardWeight: Double
+        ) {
+            var zigzagWidthV = zig.width
+            var deltaV = zig.delta
 
-        if (deltaV > width) {
-            deltaV = width
+            if (deltaV > width) {
+                deltaV = width
+            }
+            if (zigzagWidthV > deltaV) {
+                zigzagWidthV = deltaV - boardWeight * 2
+                if (zigzagWidthV < boardWeight) return
+            }
+            val bot = if (param.back) -1 else 1
+            val distance = deltaV - zigzagWidthV
+            val count = truncate(width / deltaV).toInt()
+
+            var offset: Double = (width - deltaV * count + distance) / 2 * bot
+
+            val weight = if (param.reverse) -boardWeight else boardWeight
+            val angleV = if (param.orientation == Orientation.Vertical) (angle+Math.PI/2) else angle
+
+            deltaV *= bot.toDouble()
+            val zw = zigzagWidthV * bot
+            if (count > 10000) return
+
+            offset += 0.0
+            val z = 0.0
+            for (i in 0 until count) {
+                points.add(Vec2(offset, z).rotate(angleV) + origin)
+                points.add(Vec2(offset, z + weight).rotate(angleV) + origin)
+                points.add(Vec2(offset + zw, z + weight).rotate(angleV) + origin)
+                points.add(Vec2(offset + zw, z).rotate(angleV) + origin)
+                offset += deltaV
+            }
+            points.add(Vec2(width * bot, z).rotate(angleV) + origin)
         }
-        if (zigzagWidthV > deltaV) {
-            zigzagWidthV = deltaV - boardWeight * 2
-            if (zigzagWidthV < boardWeight) return
+
+        fun holes(
+            origin: Vec2,
+            width: Double,
+            zig: ZigzagInfo,
+            angle: Double,
+            param: DrawingParam,
+            boardWeight: Double
+        ): List<IFigure> {
+            var zigzagWidthV = zig.width
+            var deltaV = zig.delta
+
+            if (deltaV > width) {
+                deltaV = width
+            }
+            if (zigzagWidthV > deltaV) {
+                zigzagWidthV = deltaV - boardWeight * 2
+                if (zigzagWidthV < boardWeight) return emptyList()
+            }
+            val bot = if (param.back) -1 else 1
+            val distance = deltaV - zigzagWidthV
+            val count = truncate(width / deltaV).toInt()
+
+            var offset: Double = (width - deltaV * count + distance) / 2 * bot
+
+            val weight = if (param.reverse) -boardWeight else boardWeight
+
+            deltaV *= bot.toDouble()
+            val zw = zigzagWidthV * bot
+            if (count > 10000) return emptyList()
+
+            offset += 0.0
+            val z = 0.0
+
+            return (0 until count).map { i ->
+                val v = FigurePolyline(listOf(
+                    Vec2(offset, z).rotate(angle) + origin,
+                    Vec2(offset, z + weight).rotate(angle) + origin,
+                    Vec2(offset + zw, z + weight).rotate(angle) + origin,
+                    Vec2(offset + zw, z).rotate(angle) + origin,
+                    Vec2(offset, z).rotate(angle) + origin,
+                ))
+                offset += deltaV
+                v
+            }
         }
-        val bot = if (param.back) -1 else 1
-        val distance = deltaV - zigzagWidthV
-        val count = truncate(width / deltaV).toInt()
-
-        var offset: Double = (width - deltaV * count + distance) / 2 * bot
-
-        val weight = if (param.reverse) -boardWeight else boardWeight
-
-        deltaV *= bot.toDouble()
-        val zw = zigzagWidthV * bot
-        if (count > 10000) return
-
-        offset += 0.0
-        val z = 0.0
-        for (i in 0 until count) {
-            points.add(Vec2(offset, z).rotate(angle) + origin)
-            points.add(Vec2(offset, z + weight).rotate(angle) + origin)
-            points.add(Vec2(offset + zw, z + weight).rotate(angle) + origin)
-            points.add(Vec2(offset + zw, z).rotate(angle) + origin)
-            offset += deltaV
-        }
-        points.add(Vec2(width * bot, z).rotate(angle) + origin)
     }
-
-
 }

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -33,27 +34,23 @@ import javax.swing.UIManager
 @Composable
 @Preview
 fun App() {
-    var text by remember { mutableStateOf("Hello, World!") }
-
     val vm = DrawerViewModel()
 
     val figures by remember { vm.tortoise.figures }
 
+    val boxFigures by remember { vm.box.figures }
+
     var displayScale by remember { mutableStateOf(2.0f) }
 
-    val tabIndex by remember { vm.tabIndex }
+    var dropValueX by remember { mutableStateOf(0f) }
+    var dropValueY by remember { mutableStateOf(0f) }
 
-    val previewPage by remember { vm.pageFile }
+    val tabIndex by remember { vm.tabIndex }
 
     MaterialTheme {
         Column {
             TabBar(tabs, vm)
-            Slider(
-                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-                onValueChange = { displayScale = it },
-                value = displayScale,
-                valueRange = 1f..100f
-            )
+
             Box(modifier = Modifier.fillMaxSize().background(Color(0xFF02007C))) {
                 when (tabIndex) {
                     TAB_TORTOISE -> {
@@ -61,10 +58,9 @@ fun App() {
                     }
                     TAB_SOFT -> {
                         DisplayTortoise(displayScale, vm.softRez.drawRez(figures))
-                       // DisplaySoft(displayScale, vm, figures)
                     }
                     TAB_BOX -> {
-                        DisplayBox(previewPage)
+                        DisplayTortoise(displayScale, boxFigures)
                     }
                     TAB_GRID -> {
                         DisplayGrid()
@@ -73,6 +69,27 @@ fun App() {
 
                     }
                 }
+
+                Slider(
+                    modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.TopEnd),
+                    onValueChange = { dropValueX = it; vm.tortoise.drop(dropValueX,dropValueY) },
+                    value = dropValueX,
+                    valueRange = -100f..100f
+                )
+
+                Slider(
+                    modifier = Modifier.padding(top = 50.dp).width(300.dp).wrapContentHeight().align(Alignment.TopEnd),
+                    onValueChange = { dropValueY = it; vm.tortoise.drop(dropValueX,dropValueY) },
+                    value = dropValueY,
+                    valueRange = -100f..100f
+                )
+
+                Slider(
+                    modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.BottomEnd),
+                    onValueChange = { displayScale = it },
+                    value = displayScale,
+                    valueRange = 1f..100f
+                )
             }
         }
     }

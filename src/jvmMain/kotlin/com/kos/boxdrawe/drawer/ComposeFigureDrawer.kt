@@ -18,6 +18,8 @@ class ComposeFigureDrawer(
     var style: DrawStyle = Stroke(width = 1.0f),
 ) : IFigureGraphics {
 
+    val strokeWidth = 1.0f
+
     override fun drawLine(a: Vec2, b: Vec2) {
         val p = Path()
         line(p, a, b)
@@ -29,7 +31,12 @@ class ComposeFigureDrawer(
     }
 
     override fun drawPolyline(points: List<Vec2>) {
-        scope.drawPoints(pointsFrom(points), PointMode.Polygon, penColor)
+        scope.drawPoints(
+            points = pointsFrom(points),
+            pointMode = PointMode.Polygon,
+            color = penColor,
+            strokeWidth = strokeWidth
+        )
     }
 
     override fun drawBezier(points: List<Vec2>) {
@@ -73,7 +80,7 @@ class ComposeFigureDrawer(
     }
 
     override fun rotate(degrees: Double, pivot: Vec2) {
-        if (pivot.x ==0.0 && pivot.y == 0.0){
+        if (pivot.x == 0.0 && pivot.y == 0.0) {
             scope.drawContext.canvas.rotate(degrees.toFloat())
         } else {
             scope.drawContext.canvas.rotate(degrees.toFloat(), pivot.x.toFloat(), pivot.y.toFloat())
