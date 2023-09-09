@@ -125,19 +125,28 @@ fun NumericUpDownPreview() {
     }
 }
 
-class NumericTextFieldState(value: Double, private val digits: Int = 2, private val maxValue: Double= 1000000.0){
+class NumericTextFieldState(
+    value: Double,
+    private val digits: Int = 2,
+    private val maxValue: Double= 1000000.0,
+    private val updateAction: (Double) -> Unit = {}
+){
     var decimal: Double by mutableStateOf(value)
 
     private val spaceReg = "[\\s\\u00A0]+".toRegex()
 
     fun update(newValue: String){
         val v = newValue.replace(spaceReg, "").replace(',','.').toDoubleOrNull()
-        if (v != null){
+        if (v != null && v != decimal){
             if (v>maxValue)
                 decimal = maxValue
             else
                 decimal = v
+
+            updateAction(decimal)
         }
+
+
     }
 
     val text get() = String.format("%1$,.${digits}f", decimal);

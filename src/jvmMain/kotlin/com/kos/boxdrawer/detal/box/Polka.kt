@@ -29,6 +29,7 @@ class WaldParam(
 
     val holeOffset: Double,
     val holeDrop: Double,
+    val holeWeight: Double,
 
     val topForm: PazForm,
     val bottomForm: PazForm,

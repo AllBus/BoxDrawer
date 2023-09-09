@@ -1,19 +1,22 @@
 package turtoise
 
 
-class DrawerSettings {
-    var boardWeight = 4.0
+data class DrawerSettings(
+    val boardWeight : Double = 4.0,
 
     /**
     /// Ширина отверстия
      */
-    var holeWeight = 4.05
+    val holeWeight : Double = 4.05,
 
     /**
     ///  Уменьшение длины отверстия
      */
-    var holeDrop = 0.1
-    var holeOffset = 2.0
+    val holeDrop : Double = 0.5,
+    val holeOffset : Double = 2.0,
+
+) {
+
 }
 
 enum class Orientation {

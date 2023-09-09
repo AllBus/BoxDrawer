@@ -58,7 +58,7 @@ class BoxCad {
                             hole,
                             0.0,
                             ph,
-                            boardWeight
+                            wald.holeWeight
                         )
                     );
                 else -> {}

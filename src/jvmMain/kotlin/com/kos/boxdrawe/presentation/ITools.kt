@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.mutableStateOf
 import com.jsevy.jdxf.DXFDocument
 import com.kos.boxdrawe.drawer.DxfFigureDrawer
 import figure.IFigure
@@ -16,10 +17,12 @@ interface ITools {
 
 class Tools() : ITools {
 
-    private val ds = DrawerSettings()
+    var drawingSettings = DrawerSettings()
     override fun ds(): DrawerSettings {
-        return ds
+        return drawingSettings
     }
+
+
 
     override fun saveFigures(fileName: String, figures: IFigure) {
         val dxfDocument = DXFDocument("Figure")

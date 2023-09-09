@@ -18,11 +18,14 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TOOLS
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
-import figure.IFigure
+import com.kos.boxdrawe.widget.tabbar.ToolbarForBox
+import com.kos.boxdrawe.widget.tabbar.ToolbarForGrid
+import com.kos.boxdrawe.widget.tabbar.ToolbarForSoft
+import com.kos.boxdrawe.widget.tabbar.ToolbarForTortoise
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
 
-private val TabContentModifier =  Modifier.fillMaxWidth().fillMaxHeight().padding(vertical = 4.dp, horizontal = 16.dp)
+val TabContentModifier =  Modifier.fillMaxWidth().fillMaxHeight().padding(vertical = 4.dp, horizontal = 16.dp)
 
 @Composable
 fun TabBar(tabs: List<TabInfo>, vm: DrawerViewModel) {
@@ -61,184 +64,38 @@ fun TabBar(tabs: List<TabInfo>, vm: DrawerViewModel) {
 }
 
 @Composable
-fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
-    var innerChecked by remember {vm.innerChecked }
-
-    val width = remember { vm.width }
-    val height = remember { vm.height }
-    val cellWidthCount = remember { vm.cellWidthCount }
-    val cellHeightCount = remember { vm.cellHeightCount }
-    val cellWidthDistance = remember { vm.cellWidthDistance }
-    val cellHeightDistance = remember { vm.cellHeightDistance }
-
-    Row(
-        modifier = TabContentModifier
-    ) {
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            Text(
-                text = "Область",
-                modifier = Modifier,
-                softWrap = false,
-            )
-            NumericUpDown("Длина", "мм", width)
-            NumericUpDown("Высота", "мм", height)
-
-        }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            Text(
-                text = "Количество элементов",
-                modifier = Modifier,
-                softWrap = false,
-            )
-            NumericUpDown("По длине", "шт", cellWidthCount)
-            NumericUpDown("По высоте", "шт", cellHeightCount, enabled = !innerChecked)
-            RunCheckBox(
-                checked = innerChecked,
-                title = "Сохранять пропорции",
-                onCheckedChange = { c -> innerChecked = c },
-            )
-        }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            Text(
-                text = "Растояние между резами",
-                modifier = Modifier,
-                softWrap = false,
-            )
-
-            NumericUpDown("X", "мм", cellWidthDistance)
-            NumericUpDown("Y", "мм", cellHeightDistance)
-        }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            RunButton("Нарисовать деталь", { showFileChooser{f -> vm.saveRez(f, figures())}})
-        }
-    }
-}
-
-@Composable
-fun ToolbarForGrid(vm: GridData) {
-    var roundChecked by remember {vm.roundChecked }
-    var innerChecked by remember { vm.innerChecked }
-
-    val widthCell = remember { vm.widthCell }
-    val widthFrame = remember { vm.widthFrame }
-    val radius = remember {  vm.radius }
-    val cellWidthCount = remember { vm.cellWidthCount }
-    val cellHeightCount = remember { vm.cellHeightCount }
-    val innerWidth = remember { vm.innerWidth }
-    val innerRadius = remember { vm.innerRadius }
-
-    Row(
-        modifier = TabContentModifier
-    ) {
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            NumericUpDown("Ширина ячейки", "мм", widthCell)
-            NumericUpDown("Ширина рамки", "мм", widthFrame)
-            RunCheckBox(
-                checked = roundChecked,
-                title = "Скруглять углы",
-                onCheckedChange = { c -> roundChecked = c },
-            )
-            NumericUpDown("Радиус скругления", "мм", radius, enabled = roundChecked)
-        }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            NumericUpDown("По горизонтали", "ячеек", cellWidthCount)
-            NumericUpDown("По вертикали", "ячеек", cellHeightCount)
-        }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            RunCheckBox(
-                checked = innerChecked,
-                title = "Внутрение квадраты",
-                onCheckedChange = { c -> innerChecked = c },
-            )
-            NumericUpDown("Сторона", "мм", innerWidth)
-            NumericUpDown("Радиус", "мм", innerRadius)
-        }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            RunButton("Нарисовать деталь", {})
-            RunButton("Посторить по тексту", {})
-            RunButton("Получить текст", {})
-        }
-    }
-}
-
-@Composable
-fun ToolbarForTortoise(vm: TortoiseData) {
-    val text = rememberSaveable(key = "ToolbarForTortoise.Text") { vm.text }
-
-    Row(
-        modifier = TabContentModifier
-    ) {
-        Column(
-            modifier = Modifier.weight(weight = 2f, fill = true).padding(end = 8.dp)
-        ) {
-            EditText("Фигуры", "", text, true ){vm.createTortoise(it)}
-        }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            RunButton("Нарисовать деталь") { showFileChooser { f -> vm.saveTortoise(f, text.value) } }
-        }
-    }
-}
-
-@Composable
-fun ToolbarForBox(vm: BoxData) {
-
-    var insideChecked by remember{ vm.insideChecked }
-
-    val width = remember { vm.width }
-    val height = remember { vm.height }
-    val weight = remember { vm.weight }
-    val text = rememberSaveable(key = "ToolbarForBox.Text") { vm.text }
-
-    Row(
-       modifier = TabContentModifier
-    ) {
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            NumericUpDown("Длина", "мм", width)
-            NumericUpDown("Ширина", "мм", height)
-            NumericUpDown("Высота", "мм", weight)
-        }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            RunCheckBox(
-                checked = insideChecked,
-                title = "Размеры по внутреннему объёму",
-                onCheckedChange = { c -> insideChecked = c },
-            )
-            EditText("Фигуры", "", text, true ){vm.createBox(it)}
-        }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            RunButton("Нарисовать коробку") { showFileChooser { f -> vm.saveBox(f, text.value) } }
-        }
-    }
-}
-
-@Composable
 fun ToolbarForTools(vm: ToolsData) {
+    val boardWeight = remember { vm.boardWeight}
+    val holeWeight = remember { vm.holeWeight}
+    val holeDrop  = remember { vm.holeDrop}
+    val holeOffset = remember { vm.holeOffset}
 
-
+    Row(
+        modifier = TabContentModifier
+    ) {
+        Column(
+            modifier = Modifier.weight(weight = 1f, fill = true)
+        ) {
+            Text(
+                text = "Доска",
+                modifier = Modifier,
+                softWrap = false,
+            )
+            NumericUpDown("Толщина", "мм", boardWeight)
+        }
+        Column(
+            modifier = Modifier.weight(weight = 1f, fill = true)
+        ) {
+            Text(
+                text = "Отверстие",
+                modifier = Modifier,
+                softWrap = false,
+            )
+            NumericUpDown("Ширина", "мм", holeWeight)
+            NumericUpDown("Уменьшение длины", "мм", holeDrop)
+            NumericUpDown("Отступ от края", "мм", holeOffset)
+        }
+    }
 }
 
 fun showFileChooser(action: (String)-> Unit) {
