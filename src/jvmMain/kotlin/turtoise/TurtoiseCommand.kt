@@ -44,8 +44,9 @@ interface TortoiseCommand {
         const val TURTOISE_SPLIT = '|';
         const val TURTOISE_CLEAR = '!';
         const val TURTOISE_CLOSE = '`';
-        const val TURTOISE_SAVE = 't';
-        const val TURTOISE_LOAD = 'y';
+        const val TURTOISE_SAVE = 'Q';
+        const val TURTOISE_LOAD = 'W';
+        const val TURTOISE_PEEK = 'E';
         const val TURTOISE_METHOD_NAME = '@';
         const val TURTOISE_METHOD_RUN = '=';
         const val TURTOISE_LOOP = '>';
@@ -107,6 +108,8 @@ interface TortoiseCommand {
         fun ClosePolygon() = ZeroTortoiseCommand(TURTOISE_CLOSE)
         fun Save() = ZeroTortoiseCommand(TURTOISE_SAVE)
         fun Load() = ZeroTortoiseCommand(TURTOISE_LOAD)
+
+        fun Peek() = ZeroTortoiseCommand(TURTOISE_PEEK)
         fun Clear() = ZeroTortoiseCommand(TURTOISE_CLEAR)
 
     }

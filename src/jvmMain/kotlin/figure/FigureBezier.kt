@@ -37,6 +37,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points) {
                 ps.all(predicate) -> figures.add(ps)
                 !ps.all { !predicate(it) } -> {
                     val roots = getCubicRoots(ps.map(napr).map { it - k })
+                    //Todo: Правильно фильтровать
                     figures.addAll(casteljauLine(ps, roots).filter { l -> predicate(l[1]) })
                 }
             }

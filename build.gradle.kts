@@ -26,7 +26,7 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3")
                 implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
-                implementation("com.groupdocs:groupdocs-comparison:22.3")
+               // implementation("com.groupdocs:groupdocs-comparison:22.3")
             }
         }
         val jvmTest by getting

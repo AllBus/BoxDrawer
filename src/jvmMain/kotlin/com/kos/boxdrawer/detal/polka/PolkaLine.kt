@@ -1,9 +1,7 @@
 package com.kos.boxdrawer.detal.polka
 
-import turtoise.DrawerSettings
-import turtoise.TortoiseAlgorithm
-import turtoise.TortoiseBlock
-import turtoise.TortoiseCommand
+import androidx.compose.ui.text.AnnotatedString
+import turtoise.*
 
 class PolkaLine(
     val startHeight: Double,
@@ -174,7 +172,57 @@ class PolkaLine(
         }
 
     companion object {
+
         private val names_ = listOf("figure", "side")
+        fun help(): AnnotatedString {
+            val sb = AnnotatedString.Builder()
+            sb.append(TortoiseParser.helpTitle("Команды для рисования полки."))
+            sb.appendLine()
+            sb.append(TortoiseParser.helpArgument("sH bOff? tOff? (w a ay? (hw hp hh ha)* )*"))
+
+            sb.append(TortoiseParser.helpName("", "sH", "Высота в начале полки"))
+            sb.append(TortoiseParser.helpName("", "bOff", "отступ от нижнего края для стенки"))
+            sb.append(TortoiseParser.helpName("", "tOff", "отступ от верхнего края для стенки"))
+            sb.append(TortoiseParser.helpName("", "w", "длина сегмента"))
+            sb.append(TortoiseParser.helpName("", "a", "Угол наклона семента"))
+            sb.append(TortoiseParser.helpName("", "ay", "угол наклона сегмента для стенки"))
+            sb.append(TortoiseParser.helpName("", "hw", "ширина паза"))
+            sb.append(TortoiseParser.helpName("", "hp", "позиция центра паза относительно начала сегмента"))
+            sb.append(TortoiseParser.helpName("", "hh", "высота паза"))
+            sb.append(TortoiseParser.helpName("", "ha", "угол наклона паза относительно сегмента"))
+
+            sb.appendLine()
+            return sb.toAnnotatedString()
+        }
+
+        fun parsePolka(a: String, useAlgorithms: Array<String>?): TortoiseAlgorithm {
+            val items: TurtoiseParserStackItem = TortoiseParser.parseSkobki(a)
+
+            val polka = PolkaLine(
+                useAlgorithms = useAlgorithms,
+                startHeight = items.doubleValue(0, 0.0),
+                polkaBottomOffset = items.doubleValue(1, 20.0),
+                polkaTopOffset = items.doubleValue(2, 20.0),
+                parts = items.blocks.map { b ->
+                    PolkaPart(
+
+                        width = b.doubleValue(0, 0.0),
+                        angle = b.doubleValue(1, 0.0),
+                        angleY = b.doubleValue(2, 0.0),
+                        holes = b.blocks.map { h ->
+                            PolkaHole(
+                                width = h.doubleValue(0, 0.0),
+                                position = h.doubleValue(1, 0.0),
+                                height = h.doubleValue(2, 0.0),
+                                angle = h.doubleValue(3, 0.0),
+                            )
+                        }.toList()
+                    )
+                }.toList()
+            )
+
+            return polka;
+        }
     }
 }
 

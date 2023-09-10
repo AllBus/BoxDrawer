@@ -55,7 +55,10 @@ class RobotRect(
 }
 
 class RobotHand(
-    params: List<String>
+    params: List<String>,
+    val leftForm: List<IRobotCommand>,
+    val rightForm: List<IRobotCommand>,
+
 ): RobotCommandWithParams(params) {
     override fun draw(ds: DrawerSettings): TortoiseBlock {
         val width = this[0,0.0]
@@ -94,22 +97,23 @@ class RobotHand(
                 z2,  h2,
                 w2, h2
             )),
-            TortoiseCommand.Move(-w2+center1D, 0.0),
-            TortoiseCommand.Rectangle(center1W, center1H),
-            TortoiseCommand.Move(-center1D, 0.0),
+            TortoiseCommand.Save(), // 1
+            TortoiseCommand.Move(-w2, 0.0),
             TortoiseCommand.Arc(height/2, 90.0, 270.0),
-
-            TortoiseCommand.Move(width, 0.0),
+            TortoiseCommand.Move(+center1D, 0.0),
+            )+ listOfNotNull(
+                TortoiseCommand.Rectangle(center1W, center1H).takeIf { (center1W!= 0.0) },
+            ) + leftForm.flatMap { it.draw(ds).commands } +
+            listOf(
+            TortoiseCommand.Peek(), // 1
+            TortoiseCommand.Move(w2, 0.0),
             TortoiseCommand.Arc(height/2, 270.0, 450.0),
-        ) + (
-            if ( center2W!= 0.0)
-                listOf(
-                    TortoiseCommand.Move(-center2D, 0.0),
-                    TortoiseCommand.Rectangle(center2W, center2H),
-                    TortoiseCommand.Move(+center2D-w2, 0.0)
-                )
-            else
-                listOf(TortoiseCommand.Move(-w2,0.0))
+            TortoiseCommand.Move(-center2D, 0.0),
+            ) + listOfNotNull(
+                TortoiseCommand.Rectangle(center2W, center2H).takeIf { (center2W!= 0.0) },
+            ) + rightForm.flatMap { it.draw(ds).commands } +
+            listOf(
+                TortoiseCommand.Load() // 1
             )
         )
     }
@@ -153,12 +157,17 @@ class RobotUnion(
 
 class RobotCircle(
     val radius: String,
-    val height: String,
+    val holeWidth: String,
+    val holeHeight: String,
 ): IRobotCommand {
     override fun draw(ds: DrawerSettings): TortoiseBlock {
-        return TortoiseBlock(listOf(
-            TortoiseCommand.Circle(radius)
-        ))
+        return TortoiseBlock(
+            listOfNotNull(
+            TortoiseCommand.Circle(radius),
+            TortoiseCommand.Rectangle(holeWidth, holeHeight.ifEmpty { ds.holeWeight.toString() }).takeIf { holeWidth.isNotEmpty() }
+        )
+        )
+
     }
 }
 
@@ -168,7 +177,7 @@ class RobotHole(
 ): IRobotCommand {
     override fun draw(ds: DrawerSettings): TortoiseBlock {
         return TortoiseBlock(listOf(
-            TortoiseCommand.Rectangle(width, if (height.isEmpty()) ds.holeWeight.toString() else height)
+            TortoiseCommand.Rectangle(width, height.ifEmpty { ds.holeWeight.toString() })
         ))
     }
 }

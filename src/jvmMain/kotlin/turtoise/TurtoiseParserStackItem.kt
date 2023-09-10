@@ -33,6 +33,9 @@ class TurtoiseParserStackItem(
         inner.add(argument)
         blocks.add(argument)
     }
+    fun arguments(): List<String> {
+        return inner.filter { it.isArgument() }.map { it.argument }
+    }
 
     fun get(index: Int): String? {
         return if (index < 0 || index >= inner.size) null else inner[index].argument

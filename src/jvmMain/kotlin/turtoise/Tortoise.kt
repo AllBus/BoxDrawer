@@ -5,6 +5,7 @@ import figure.matrix.FigureMatrixRotate
 import figure.matrix.FigureMatrixScale
 import figure.matrix.FigureMatrixTranslate
 import vectors.Vec2
+import java.util.*
 import kotlin.math.min
 import kotlin.math.truncate
 
@@ -37,7 +38,10 @@ class Tortoise {
         var result = mutableListOf<Vec2>()
         val le = commands.size
         var i = 0
+
+        /** стак вызовов циклов */
         var stack: TortoiseStack? = null
+        var stateStack = Stack<TortoiseState>()
         var cancel = false
 
         fun saveLine() {
@@ -72,8 +76,8 @@ class Tortoise {
                                 FigureCircle(
                                     center = state.xy,
                                     radius = r,
-                                    segmentStart = com.take(d + 0, 0.0, memory)-state.a,
-                                    segmentEnd = com.take(d + 1, 0.0, memory)-state.a,
+                                    segmentStart = com.take(d + 0, 0.0, memory) - state.a,
+                                    segmentEnd = com.take(d + 1, 0.0, memory) - state.a,
                                 )
                             )
                         }
@@ -110,7 +114,7 @@ class Tortoise {
                                         radius = r1,
                                         radiusMinor = r2,
                                         rotation = state.angle,
-                                        segmentStart = com.take(d , 0.0, memory),
+                                        segmentStart = com.take(d, 0.0, memory),
                                         segmentEnd = com.take(d + 1, 0.0, memory),
                                     )
                                 )
@@ -265,7 +269,7 @@ class Tortoise {
                     val points = mutableListOf<Vec2>()
                     points.add(state.xy)
                     for (d in 1..com.size - 2 step 2) {
-                        val xy =  Vec2(
+                        val xy = Vec2(
                             com[d + 0, memory],
                             com[d + 1, memory]
                         ).rotate(angle) + state.xy
@@ -283,7 +287,7 @@ class Tortoise {
                     val angle = state.angle
 
                     val points = mutableListOf<Vec2>()
-                    for (d in 0.. com.size - 2 step 2) {
+                    for (d in 0..com.size - 2 step 2) {
                         points.add(
                             Vec2(
                                 com[d + 0, memory],
@@ -326,15 +330,32 @@ class Tortoise {
                 TortoiseCommand.TURTOISE_MATRIX_TRANSLATE -> {
                     res.add(FigureMatrixTranslate(com[0, memory], com[1, memory]))
                 }
+
                 TortoiseCommand.TURTOISE_MATRIX_SCALE -> {
-                    res.add(FigureMatrixScale(com[0, 1.0,  memory], com[1, 1.0, memory]))
+                    res.add(FigureMatrixScale(com[0, 1.0, memory], com[1, 1.0, memory]))
                 }
+
                 TortoiseCommand.TURTOISE_MATRIX_ROTATE -> {
-                    res.add(FigureMatrixRotate(com[0, 1.0,  memory], state.xy))
+                    res.add(FigureMatrixRotate(com[0, 1.0, memory], state.xy))
                 }
 
                 TortoiseCommand.TURTOISE_MEMORY_ASSIGN -> {
                     com.assign(memory)
+                }
+
+                TortoiseCommand.TURTOISE_SAVE -> {
+                    stateStack.push(TortoiseState().from(state))
+                }
+
+                TortoiseCommand.TURTOISE_LOAD -> {
+                    if (stateStack.isNotEmpty()) {
+                        state.from(stateStack.pop())
+                    }
+                }
+                TortoiseCommand.TURTOISE_PEEK -> {
+                    if (stateStack.isNotEmpty()) {
+                        state.from(stateStack.peek())
+                    }
                 }
 
                 else -> {
@@ -375,7 +396,7 @@ class Tortoise {
             var offset: Double = (width - deltaV * count + distance) / 2 * bot
 
             val weight = if (param.reverse) -boardWeight else boardWeight
-            val angleV = if (param.orientation == Orientation.Vertical) (angle+Math.PI/2) else angle
+            val angleV = if (param.orientation == Orientation.Vertical) (angle + Math.PI / 2) else angle
 
             deltaV *= bot.toDouble()
             val zw = zigzagWidthV * bot
@@ -427,13 +448,15 @@ class Tortoise {
             val z = 0.0
 
             return (0 until count).map { i ->
-                val v = FigurePolyline(listOf(
-                    Vec2(offset, z).rotate(angle) + origin,
-                    Vec2(offset, z + weight).rotate(angle) + origin,
-                    Vec2(offset + zw, z + weight).rotate(angle) + origin,
-                    Vec2(offset + zw, z).rotate(angle) + origin,
-                    Vec2(offset, z).rotate(angle) + origin,
-                ))
+                val v = FigurePolyline(
+                    listOf(
+                        Vec2(offset, z).rotate(angle) + origin,
+                        Vec2(offset, z + weight).rotate(angle) + origin,
+                        Vec2(offset + zw, z + weight).rotate(angle) + origin,
+                        Vec2(offset + zw, z).rotate(angle) + origin,
+                        Vec2(offset, z).rotate(angle) + origin,
+                    )
+                )
                 offset += deltaV
                 v
             }

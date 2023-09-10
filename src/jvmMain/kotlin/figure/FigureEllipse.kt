@@ -15,6 +15,7 @@ open class FigureEllipse(
     ) : Figure(){
 
     override fun crop(k: Double, cropSide: CropSide): IFigure {
+        //Todo: Правильно отрезать
         return if (radius <= 0) Empty else when (cropSide) {
             CropSide.LEFT -> {
                 if (center.x + radius <= k) return Empty

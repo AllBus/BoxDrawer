@@ -100,19 +100,14 @@ fun ToolbarForTools(vm: ToolsData) {
 
 fun showFileChooser(action: (String)-> Unit) {
 
-//    val choice = BetterFileDialog.saveFile(null, "Сохранить деталь как?", "",
-//        BetterFileDialog.Filter("AutoCad", "*.dxf"),
-//        BetterFileDialog.ANY_FILTER
-//        )
-//
-//    if (choice != null){
-//        action(choice)
-//    }
-
     JFileChooser().apply {
         this.fileFilter = FileNameExtensionFilter("Autocad (*.dxf)", "dxf")
         if (showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-            action(this.selectedFile.path)
+            val p = if (this.selectedFile.extension.lowercase() !="dxf"){
+                ".dxf"
+            }else
+                ""
+            action(this.selectedFile.path+p)
         }
     }
 }

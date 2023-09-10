@@ -12,6 +12,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -32,6 +33,34 @@ fun EditText(title:String, postfix:String, value: MutableState<String>, enabled 
             enabled = enabled,
 
         )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = postfix,
+            fontSize = LocalTextStyle.current.fontSize,
+            modifier = Modifier.align(Alignment.CenterVertically),
+            softWrap = false,
+        )
+    }
+}
+
+@Composable
+fun EditTextField(title:String, postfix:String, value: MutableState<TextFieldValue>, enabled : Boolean = true, onChange: (TextFieldValue) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = value.value,
+            onValueChange = {
+                value.value = it
+                onChange(it)
+            },
+            label = { Text(title) },
+            singleLine = false,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            modifier = Modifier.fillMaxSize(),
+            enabled = enabled,
+
+            )
         Spacer(Modifier.width(8.dp))
         Text(
             text = postfix,

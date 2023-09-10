@@ -28,6 +28,7 @@ class FigureBezierList(val points : List<List<Vec2>>): Figure() {
                 ps.all(predicate) -> figures.add(ps)
                 !ps.all { !predicate(it) } -> {
                     val roots = Vec2.getCubicRoots(ps.map(napr).map { it - k })
+                    //Todo: Правильно фильтровать
                     figures.addAll(Vec2.casteljauLine(ps, roots).filter { l -> predicate(l[1]) })
                 }
             }

@@ -1,6 +1,9 @@
 package com.kos.boxdrawe.presentation
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.substring
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.box.BoxCad
@@ -25,12 +28,12 @@ class DrawerViewModel {
     val options = ToolsData(tools)
     val tabIndex = mutableStateOf(BoxDrawerToolBar.TAB_TORTOISE)
 
-
 }
 
 class TortoiseData(val tools: ITools) {
     val figures = mutableStateOf<IFigure>(Figure.Empty)
     val fig = mutableStateOf<IFigure>(Figure.Empty)
+    val helpText = mutableStateOf(AnnotatedString(""))
 
     private val t = Tortoise()
 
@@ -57,6 +60,22 @@ class TortoiseData(val tools: ITools) {
     fun drop(dropValueX: Float, dropValueY: Float) {
         figures.value =
             fig.value.crop(dropValueX.toDouble(), CropSide.BOTTOM).crop(dropValueY.toDouble(), CropSide.LEFT)
+    }
+
+
+    private val helpSeparator = charArrayOf('\n','\r')
+    private val helpSpaceSeparator = charArrayOf('\n','\r', ' ', '\t',  ';', '@')
+    fun findHelp(text:String, selection: TextRange) {
+        val s = selection.start
+        val p = text.lastIndexOfAny(helpSeparator, s)+1
+        val e = Math.min(text.length-1,  text.indexOfAny(helpSpaceSeparator, p+1))
+
+
+        val subStr = if (p in 0 until e){ text.substring(p, e) } else ""
+
+        val help = TortoiseParser.helpFor(subStr)
+        helpText.value = help
+
     }
 
     val text = mutableStateOf("")

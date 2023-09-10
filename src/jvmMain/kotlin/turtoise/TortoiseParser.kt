@@ -1,5 +1,9 @@
 package turtoise
 
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import com.kos.boxdrawer.detal.polka.PolkaHole
 import com.kos.boxdrawer.detal.polka.PolkaLine
 import com.kos.boxdrawer.detal.polka.PolkaPart
@@ -35,8 +39,8 @@ object TortoiseParser {
         } else {
             val f = a.first().split('@')
             when (f[0]) {
-                "polka" -> parsePolka(a.drop(1).joinToString(" "), f.drop(1).toTypedArray())
-                "robot" -> parseRobot(a.drop(1).joinToString(" "), f.drop(1).toTypedArray())
+                "polka" -> PolkaLine.parsePolka(a.drop(1).joinToString(" "), f.drop(1).toTypedArray())
+                "robot" -> RobotLine.parseRobot(a.drop(1).joinToString(" "), f.drop(1).toTypedArray())
                 else ->
                     parseSimpleLine(a)
             }
@@ -99,7 +103,6 @@ object TortoiseParser {
                         skobka = c
                     )
 
-
                     item.add(d.split(' ').filter { v -> v.isNotEmpty() })
                     item.add(next)
 
@@ -138,76 +141,115 @@ object TortoiseParser {
         return top;
     }
 
-    fun parsePolka(a: String, useAlgorithms: Array<String>?): TortoiseAlgorithm {
-        val items: TurtoiseParserStackItem = parseSkobki(a)
 
-        val polka = PolkaLine(
-            useAlgorithms = useAlgorithms,
-            startHeight = items.doubleValue(0, 0.0),
-            polkaBottomOffset = items.doubleValue(1, 20.0),
-            polkaTopOffset = items.doubleValue(2, 20.0),
-            parts = items.blocks.map { b ->
-                PolkaPart(
 
-                    width = b.doubleValue(0, 0.0),
-                    angle = b.doubleValue(1, 0.0),
-                    angleY = b.doubleValue(2, 0.0),
-                    holes = b.blocks.map { h ->
-                        PolkaHole(
-                            width = h.doubleValue(0, 0.0),
-                            position = h.doubleValue(1, 0.0),
-                            height = h.doubleValue(2, 0.0),
-                            angle = h.doubleValue(3, 0.0),
-                        )
-                    }.toList()
-                )
-            }.toList()
-        )
 
-        return polka;
-    }
 
-    fun parseRobot(a: String, useAlgorithms: Array<String>?): TortoiseAlgorithm {
-        val items: TurtoiseParserStackItem = parseSkobki(a)
 
-        val result = mutableListOf<IRobotCommand>()
-
-        items.inner.forEach { v ->
-            if (v.isArgument()) {
-
-            } else
-                if (!v.isArgument()) {
-                    val args = v.inner.filter { it.isArgument() }.map { it.argument }
-                    if (args.size > 1) {
-                        val com = args.first()
-
-                        result.add(
-                            when (com) {
-                                "x" -> RobotRect(args.drop(1))
-
-                                "c" -> RobotCircle(args.getOrElse(1) { "" }, args.getOrElse(2) { "" })
-
-                                "h",
-                                "hole" -> RobotHole(args.getOrElse(1) { "" }, args.getOrElse(2) { "" })
-
-                                "line",
-                                "l",
-                                "connect" -> RobotHand(args.drop(1))
-
-                                "u",
-                                "union" -> RobotUnion(args.drop(1))
-
-                                "a" -> RobotAngle(args.getOrElse(1) { "" })
-                                "m" -> RobotMove(args.getOrElse(1) { "" }, args.getOrElse(2) { "" })
-                                else ->
-                                    RobotEmpty()
-                            }
-                        )
-
-                    }
-                }
+    fun helpFor(subStr: String): AnnotatedString {
+        return when (subStr){
+            "" -> helpFigures()
+            "robot" -> RobotLine.help()
+            "polka"-> PolkaLine.help()
+            "hide"-> AnnotatedString("")
+            else -> helpCommands()
         }
 
-        return RobotLine(result.toList())
     }
+
+    private fun helpCommands(): AnnotatedString {
+        val sb = AnnotatedString.Builder()
+        sb.append(helpTitle("Команды черепашки"))
+        sb.appendLine()
+        sb.append(helpName(TortoiseCommand.TURTOISE_MOVE, "x y", "переместить позицию"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_ANGLE, "a", "повернуть направление движение на угол a "))
+        sb.append(helpName(TortoiseCommand.TURTOISE_ANGLE_ADD, "a", "повернуть направление движение на угол a относительно текущего угла "))
+        sb.append(helpName(TortoiseCommand.TURTOISE_LINE, "d+", "нарисовать длиной d. Последующие значения ресуют перпендикулярно"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_CLOSE, "", "закрыть многоугольник"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_CIRCLE, "r (sa ea)*", "круг радиуса r.\n" +
+                "     sa se необязательны задают начальный и конечный угол дуги"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_ELLIPSE, "r rm (sa ea)*", "эллипс с радиусами r rm.\n" +
+                "     sa se необязательны задают начальный и конечный угол дуги"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_RECTANGLE, "w h?", "прямоугольник шириной w и высотой h. Если h не задан, то квадрат"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_ZIGZAG, "w delta zigWidth board", "Рисовать зигзаги:\n" +
+                "     w - общая длина,\n" +
+                "     delta - расстояние между началами двух зигзагов,\n" +
+                "     zigWidth- длина одноо зигзага,\n" +
+                "     board - толщина доски"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_BEZIER, "(tx1 ty1 tx2 ty2 ex ey)*", "Рисовать линию безье из текущей позиции"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_LOOP, "c commands* <", "выполнить c раз команды между > <"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_MEMORY_ASSIGN, "var arg*", "присвоить переменной var сумму значений arg"))
+        sb.append(helpName("", "@var", "подставить значение переменной var"))
+        sb.appendLine()
+        return sb.toAnnotatedString()
+    }
+
+    private fun helpFigures():AnnotatedString {
+        val sb = AnnotatedString.Builder()
+        sb.append(helpTitle("Доступные фигуры"))
+        sb.appendLine()
+
+        sb.append(helpName("polka"))
+        sb.append(helpArgument("@figure"))
+        sb.append(helpArgument("@side"))
+        sb.appendLine()
+        sb.append(helpArgument("@figure"))
+        sb.append(helpDescr(" - Рисовать симметричный многоугольник"))
+        sb.appendLine()
+        sb.append(helpArgument("@side"))
+        sb.append(helpDescr(" - Рисовать стенку под многоугольник figure"))
+
+        sb.appendLine()
+        sb.appendLine()
+
+        sb.append(helpName("robot"))
+        sb.append(helpDescr(" - Рисовать части робота"))
+        sb.appendLine()
+        sb.appendLine()
+
+        sb.append(helpCommands())
+
+        return  sb.toAnnotatedString()
+
+    }
+
+    fun helpTitle(text:String): AnnotatedString{
+        return AnnotatedString(text, SpanStyle(
+            color = Color(0x60FFE900),
+            fontWeight = FontWeight(600)
+        ))
+    }
+    fun helpName(text:String): AnnotatedString{
+        return AnnotatedString(text, SpanStyle(
+            color = Color(0x60FF6A00),
+            fontWeight = FontWeight(600)
+        ))
+    }
+
+    fun helpName(text:Char, arguments:String, description:String): AnnotatedString{
+        return helpName(text.toString(), arguments, description)
+    }
+    fun helpName(text:String, arguments:String, description:String): AnnotatedString{
+        val sb = AnnotatedString.Builder()
+        sb.append(helpName(text))
+        sb.append(" ")
+        sb.append(helpArgument(arguments))
+        //sb.append(" ")
+        sb.append(helpDescr(" - "+description))
+        sb.appendLine()
+        return sb.toAnnotatedString()
+    }
+
+    fun helpArgument(text:String): AnnotatedString{
+        return AnnotatedString(text, SpanStyle(
+            color = Color(0x60FFAA00),
+        ))
+    }
+
+    fun helpDescr(text:String): AnnotatedString{
+        return AnnotatedString(text, SpanStyle(
+            color = Color(0x60A1FF00),
+        ))
+    }
+
 }

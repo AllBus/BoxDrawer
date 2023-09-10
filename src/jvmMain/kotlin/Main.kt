@@ -29,6 +29,9 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar.tabs
 import figure.IFigure
 import java.nio.file.Path
 import javax.swing.UIManager
+import androidx.compose.material.Text
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -46,6 +49,7 @@ fun App() {
     var dropValueY by remember { mutableStateOf(0f) }
 
     val tabIndex by remember { vm.tabIndex }
+    val helpText by remember { vm.tortoise.helpText }
 
     MaterialTheme {
         Column {
@@ -55,6 +59,11 @@ fun App() {
                 when (tabIndex) {
                     TAB_TORTOISE -> {
                         DisplayTortoise(displayScale, figures)
+                        Text(
+                            text = helpText,
+                            modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.TopStart).padding(8.dp),
+                            fontSize = 10.sp
+                        )
                     }
                     TAB_SOFT -> {
                         DisplayTortoise(displayScale, vm.softRez.drawRez(figures))
@@ -69,6 +78,7 @@ fun App() {
 
                     }
                 }
+
 
                 Slider(
                     modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.TopEnd),

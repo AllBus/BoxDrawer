@@ -55,8 +55,6 @@ fun DisplayBox(previewPage: Path?) {
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun DisplayTortoise(displayScale: Float, figures: IFigure) {
-    val list = figures.list()
-    val s = list.map { it.javaClass.name }.joinToString("\n")
     val posX = rememberSaveable("DisplayTortoiseX") { mutableStateOf(0f) }
     val posY = rememberSaveable("DisplayTortoiseY") { mutableStateOf(0f) }
 
@@ -78,5 +76,4 @@ fun DisplayTortoise(displayScale: Float, figures: IFigure) {
             }
 
         })
-    Text(s)
 }
