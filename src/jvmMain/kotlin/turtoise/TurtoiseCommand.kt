@@ -30,6 +30,7 @@ interface TortoiseCommand {
         const val TURTOISE_VERTICAL = 'v';
         const val TURTOISE_SPLINE = 's';
         const val TURTOISE_RECTANGLE = 'x';
+        const val TURTOISE_POLYLINE = 'L';
         const val TURTOISE_MOVE = 'm';
         const val TURTOISE_LINE = 'l';
         const val TURTOISE_LINE_WITH_ANGLE = 'л';
@@ -56,16 +57,23 @@ interface TortoiseCommand {
 
         fun Move(x: Double) = DoubleTortoiseCommand(TURTOISE_MOVE, x)
         fun Move(x: Double, y: Double) = TwoDoubleTortoiseCommand(TURTOISE_MOVE, x, y)
+        fun Move(x: String, y: String) = UniTortoiseCommand(TURTOISE_MOVE, listOf(x, y))
         fun Line(x: Double) = DoubleTortoiseCommand(TURTOISE_LINE, x)
         fun Line(x: Double, y: Double) = TwoDoubleTortoiseCommand(TURTOISE_LINE, x, y)
 
         fun Rectangle(width: Double, height: Double) = TwoDoubleTortoiseCommand(TURTOISE_RECTANGLE, width, height)
+        fun Rectangle(width: String, height: String) = UniTortoiseCommand(TURTOISE_RECTANGLE, listOf(width, height))
 
         fun Circle(r: Double) = DoubleTortoiseCommand(TURTOISE_CIRCLE, r)
+        fun Circle(r: String) = SmallTortoiseCommand(TURTOISE_CIRCLE, r)
         fun Arc(r: Double, startAngle: Double, endAngle: Double) =
             ThreeDoubleTortoiseCommand(TURTOISE_CIRCLE, r, startAngle, endAngle)
 
         fun Angle(angle: Double) = DoubleTortoiseCommand(TURTOISE_ANGLE, angle)
+        fun Angle(angle: String) = SmallTortoiseCommand(TURTOISE_ANGLE, angle)
+
+        fun Polyline(points: List<String>) = UniTortoiseCommand(TURTOISE_POLYLINE, points)
+        fun PolylineDouble(points: List<Double>) = ListDoubleTortoiseCommand(TURTOISE_POLYLINE, points)
 
         fun Zig(startPosition: Double, height: Double, length: Double) = ListDoubleTortoiseCommand(
             TURTOISE_LINE, listOf(
@@ -142,7 +150,7 @@ class TwoDoubleTortoiseCommand(
     private val value1: Double,
 ) : TortoiseCommand {
     override val size: Int
-        get() = 1
+        get() = 2
 
     override fun take(index: Int, defaultValue: Double, memory: TortoiseMemory): Double {
         if (index == 0)
@@ -160,7 +168,7 @@ class ThreeDoubleTortoiseCommand(
     private val value2: Double,
 ) : TortoiseCommand {
     override val size: Int
-        get() = 1
+        get() = 3
 
     override fun take(index: Int, defaultValue: Double, memory: TortoiseMemory): Double {
         if (index == 0)

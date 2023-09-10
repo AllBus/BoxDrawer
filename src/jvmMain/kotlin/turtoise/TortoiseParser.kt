@@ -3,6 +3,7 @@ package turtoise
 import com.kos.boxdrawer.detal.polka.PolkaHole
 import com.kos.boxdrawer.detal.polka.PolkaLine
 import com.kos.boxdrawer.detal.polka.PolkaPart
+import com.kos.boxdrawer.detal.robot.*
 import java.util.*
 
 
@@ -35,6 +36,7 @@ object TortoiseParser {
             val f = a.first().split('@')
             when (f[0]) {
                 "polka" -> parsePolka(a.drop(1).joinToString(" "), f.drop(1).toTypedArray())
+                "robot" -> parseRobot(a.drop(1).joinToString(" "), f.drop(1).toTypedArray())
                 else ->
                     parseSimpleLine(a)
             }
@@ -165,4 +167,47 @@ object TortoiseParser {
         return polka;
     }
 
+    fun parseRobot(a: String, useAlgorithms: Array<String>?): TortoiseAlgorithm {
+        val items: TurtoiseParserStackItem = parseSkobki(a)
+
+        val result = mutableListOf<IRobotCommand>()
+
+        items.inner.forEach { v ->
+            if (v.isArgument()) {
+
+            } else
+                if (!v.isArgument()) {
+                    val args = v.inner.filter { it.isArgument() }.map { it.argument }
+                    if (args.size > 1) {
+                        val com = args.first()
+
+                        result.add(
+                            when (com) {
+                                "x" -> RobotRect(args.drop(1))
+
+                                "c" -> RobotCircle(args.getOrElse(1) { "" }, args.getOrElse(2) { "" })
+
+                                "h",
+                                "hole" -> RobotHole(args.getOrElse(1) { "" }, args.getOrElse(2) { "" })
+
+                                "line",
+                                "l",
+                                "connect" -> RobotHand(args.drop(1))
+
+                                "u",
+                                "union" -> RobotUnion(args.drop(1))
+
+                                "a" -> RobotAngle(args.getOrElse(1) { "" })
+                                "m" -> RobotMove(args.getOrElse(1) { "" }, args.getOrElse(2) { "" })
+                                else ->
+                                    RobotEmpty()
+                            }
+                        )
+
+                    }
+                }
+        }
+
+        return RobotLine(result.toList())
+    }
 }

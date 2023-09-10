@@ -5,12 +5,14 @@ class TurtoiseParserStackItem(
     val argument: String = "",
 ) {
 
-    private val inner = mutableListOf<TurtoiseParserStackItem>()
+    val inner = mutableListOf<TurtoiseParserStackItem>()
     val blocks = mutableListOf<TurtoiseParserStackItem>()
 
     companion object {
         const val ARGUMENT_NAME = '~'
     }
+
+    fun isArgument() : Boolean = skobka == ARGUMENT_NAME
 
     fun add(argument: String)
     {
@@ -40,7 +42,7 @@ class TurtoiseParserStackItem(
         if (index < 0 || index >= inner.size) return null
         var c = 0
         for (i in 0 until inner.size) {
-            if (inner[i].skobka == ARGUMENT_NAME) {
+            if (inner[i].isArgument()) {
                 if (c == index) return inner[i].argument
                 c++
             }

@@ -72,8 +72,8 @@ class Tortoise {
                                 FigureCircle(
                                     center = state.xy,
                                     radius = r,
-                                    segmentStart = com.take(d + 0, 0.0, memory),
-                                    segmentEnd = com.take(d + 1, 0.0, memory),
+                                    segmentStart = com.take(d + 0, 0.0, memory)-state.a,
+                                    segmentEnd = com.take(d + 1, 0.0, memory)-state.a,
                                 )
                             )
                         }
@@ -256,6 +256,7 @@ class Tortoise {
                         res.add(FigureBezier(points.toList()))
                     }
                 }
+
                 TortoiseCommand.TURTOISE_SPLINE -> {
                     saveLine()
                     state.move(com[0, memory])
@@ -273,6 +274,25 @@ class Tortoise {
                     }
                     if (points.size > 1) {
                         res.add(FigureSpline(points.toList()))
+                    }
+                }
+
+                TortoiseCommand.TURTOISE_POLYLINE -> {
+                    saveLine()
+                    val c2 = state.xy
+                    val angle = state.angle
+
+                    val points = mutableListOf<Vec2>()
+                    for (d in 0.. com.size - 2 step 2) {
+                        points.add(
+                            Vec2(
+                                com[d + 0, memory],
+                                com[d + 1, memory]
+                            ).rotate(angle) + c2
+                        )
+                    }
+                    if (points.size > 1) {
+                        res.add(FigurePolyline(points.toList()))
                     }
                 }
 

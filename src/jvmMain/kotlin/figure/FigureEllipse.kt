@@ -101,7 +101,10 @@ open class FigureEllipse(
     }
 
     override fun draw(g: IFigureGraphics) {
+        g.save()
+        g.rotate(rotation*180/ PI, center)
         g.drawArc(center, radius, radiusMinor, segmentStart, segmentEnd)
+        g.restore()
     }
 
     protected fun calculateSegments(s1: Double, e1: Double): IFigure {
