@@ -28,7 +28,7 @@ class RobotLine(
             sb.append(TortoiseParser.helpName("m", "x y", "переместить позицию"))
             sb.append(TortoiseParser.helpName("a", "a", "повернуть направление движение на угол a "))
 
-            sb.append(TortoiseParser.helpName("x", "w h zh", ""))
+            sb.append(TortoiseParser.helpName("x", "w h zw zh", ""))
             sb.append(TortoiseParser.helpName("c", "r hw hh", "нарисовать окружность радиусу r"))
             sb.append(TortoiseParser.helpName("h", "hw hh", "прямоугольник отверстия шириной hw  высотой hh"))
             sb.append(TortoiseParser.helpName("l", "w h zw zh c1w c1h c1d (lcom*) c2w c2h c2d (rcom*)", ""))

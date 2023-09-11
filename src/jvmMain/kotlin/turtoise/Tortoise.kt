@@ -41,7 +41,7 @@ class Tortoise {
 
         /** стак вызовов циклов */
         var stack: TortoiseStack? = null
-        var stateStack = Stack<TortoiseState>()
+        val stateStack = Stack<TortoiseState>()
         var cancel = false
 
         fun saveLine() {

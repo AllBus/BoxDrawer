@@ -24,15 +24,6 @@ enum class Orientation {
     Vertical,
 }
 
-
-enum class PazForm {
-    None,
-    Paz,
-    Hole,
-    BackPaz,
-    Flat
-}
-
 class DrawingParam {
     var orientation: Orientation = Orientation.Horizontal
     var reverse: Boolean = false

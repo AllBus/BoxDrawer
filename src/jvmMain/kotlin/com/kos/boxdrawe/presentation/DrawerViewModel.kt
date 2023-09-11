@@ -35,13 +35,11 @@ class TortoiseData(val tools: ITools) {
     val fig = mutableStateOf<IFigure>(Figure.Empty)
     val helpText = mutableStateOf(AnnotatedString(""))
 
-    private val t = Tortoise()
-
-    private val memory = SimpleTortoiseMemory()
+    private val t = TortoiseRunner( SimpleTortoiseMemory())
 
     fun saveTortoise(fileName: String, lines: String) {
         val program = tortoiseProgram(lines)
-        val fig = t.draw(program, Vec2.Zero, tools.ds(), memory)
+        val fig = t.draw(program, Vec2.Zero, tools.ds())
         tools.saveFigures(fileName, fig)
     }
 
@@ -53,8 +51,9 @@ class TortoiseData(val tools: ITools) {
 
     fun createTortoise(lines: String) {
         val program = tortoiseProgram(lines)
-        fig.value = t.draw(program, Vec2.Zero, tools.ds(), memory)
-        figures.value = t.draw(program, Vec2.Zero, tools.ds(), memory)
+        val dr = t.draw(program, Vec2.Zero, tools.ds())
+        fig.value = dr
+        figures.value = dr
     }
 
     fun drop(dropValueX: Float, dropValueY: Float) {
@@ -120,7 +119,7 @@ class BoxData(val tools: ITools) {
     val figures = mutableStateOf<IFigure>(Figure.Empty)
 
 
-    private val box = BoxCad()
+    private val box = BoxCad
 
     fun boxFigures(line: String): IFigure {
 
@@ -128,13 +127,13 @@ class BoxData(val tools: ITools) {
             topOffset = tools.ds().holeOffset,
             bottomOffset = tools.ds().holeOffset,
             holeOffset = tools.ds().holeOffset,
-            holeDrop = tools.ds().holeDrop,
             holeWeight = tools.ds().holeWeight,
             topForm = PazForm.Paz,
             bottomForm = PazForm.Hole,
         )
 
         return box.box(
+            startPoint = Vec2.Zero,
             boxInfo = BoxInfo(width.decimal, height.decimal, weight.decimal),
             zigW = ZigzagInfo(
                 width = 15.0,
@@ -149,7 +148,7 @@ class BoxData(val tools: ITools) {
                 delta = 35.0
             ),
             drawerSettings = tools.ds(),
-            wald = wald
+            waldParams = wald
         )
     }
 

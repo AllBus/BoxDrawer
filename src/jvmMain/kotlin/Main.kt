@@ -61,7 +61,7 @@ fun App() {
                         DisplayTortoise(displayScale, figures)
                         Text(
                             text = helpText,
-                            modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.TopStart).padding(8.dp),
+                            modifier = Modifier.width(350.dp).wrapContentHeight().align(Alignment.TopStart).padding(8.dp),
                             fontSize = 10.sp
                         )
                     }
@@ -104,7 +104,6 @@ fun App() {
         }
     }
 }
-
 
 fun main() = application {
     try {

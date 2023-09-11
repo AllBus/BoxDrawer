@@ -3,16 +3,39 @@ package com.kos.boxdrawer.detal.box
 import figure.FigureList
 import figure.FigurePolyline
 import figure.IFigure
-import turtoise.DrawerSettings
-import turtoise.DrawingParam
-import turtoise.Orientation
+import turtoise.*
 import turtoise.Tortoise.Companion.holes
 import turtoise.Tortoise.Companion.zigzag
-import turtoise.ZigzagInfo
 import vectors.Vec2
 
 
-class BoxCad {
+class BoxAlgorithm(
+    val boxInfo: BoxInfo,
+    val zigW: ZigzagInfo,
+    val zigH: ZigzagInfo,
+    val zigWe: ZigzagInfo,
+    val wald: WaldParam,
+) : TortoiseAlgorithm {
+    override fun commands(name: String, ds: DrawerSettings): List<TortoiseBlock> {
+        return emptyList()
+    }
+
+    override val names: List<String> = listOf("box")
+
+    override fun draw(name: String, ds: DrawerSettings, runner: TortoiseRunner): IFigure {
+        return BoxCad.box(
+            runner.state.xy,
+            boxInfo,
+            zigW,
+            zigH,
+            zigWe,
+            ds,
+            wald
+        )
+    }
+}
+
+object BoxCad {
 
     fun faceWald(
         origin: Vec2, width: Double, height: Double,
@@ -49,7 +72,7 @@ class BoxCad {
 
             when (wald.topForm) {
                 PazForm.Paz ->
-                    zigzag(points, sp, le, ZigzagInfo( hole.width - wald.holeDrop, hole.delta), 0.0, ph, boardWeight);
+                    zigzag(points, sp, le, hole, 0.0, ph, boardWeight);
                 PazForm.Hole ->
                     result.addAll(
                         holes(
@@ -90,7 +113,7 @@ class BoxCad {
 
             when (wald.bottomForm) {
                 PazForm.Paz ->
-                    zigzag(points, sp, le, ZigzagInfo( hole.width - wald.holeDrop, hole.delta), 0.0, ph, boardWeight);
+                    zigzag(points, sp, le, hole, 0.0, ph, boardWeight);
 
                 PazForm.Hole ->
                     result.addAll(
@@ -100,9 +123,10 @@ class BoxCad {
                             hole,
                             0.0,
                             ph,
-                            boardWeight
+                            wald.holeWeight
                         )
                     )
+
                 else -> {}
             }
         }
@@ -116,8 +140,8 @@ class BoxCad {
         width: Double,
         height: Double,
         origin: Vec2,
-        zigzag: ZigzagInfo,
-        hole: ZigzagInfo,
+        zigzagW: ZigzagInfo,
+        zigzagH: ZigzagInfo,
         boardWeight: Double
     ): IFigure {
         val points = mutableListOf<Vec2>()
@@ -127,7 +151,7 @@ class BoxCad {
             points,
             points.last(),
             height,
-            hole,
+            zigzagH,
             0.0,
             DrawingParam().apply {
                 orientation = Orientation.Vertical
@@ -140,7 +164,7 @@ class BoxCad {
             points,
             points.last(),
             width,
-            zigzag,
+            zigzagW,
             0.0,
             DrawingParam().apply {
                 orientation = Orientation.Horizontal
@@ -153,7 +177,7 @@ class BoxCad {
             points,
             points.last(),
             height,
-            hole,
+            zigzagH,
             0.0,
             DrawingParam().apply {
                 orientation = Orientation.Vertical
@@ -166,7 +190,7 @@ class BoxCad {
             points,
             points.last(),
             width,
-            zigzag,
+            zigzagW,
             0.0,
             DrawingParam().apply {
                 orientation = Orientation.Horizontal
@@ -180,12 +204,13 @@ class BoxCad {
     }
 
     fun box(
+        startPoint: Vec2,
         boxInfo: BoxInfo,
         zigW: ZigzagInfo,
         zigH: ZigzagInfo,
         zigWe: ZigzagInfo,
         drawerSettings: DrawerSettings,
-        wald : WaldParam,
+        waldParams: WaldParam,
     ): IFigure {
 
         val ap = drawerSettings.boardWeight * 2
@@ -195,19 +220,24 @@ class BoxCad {
             back = false
         }
 
+        val wald = waldParams.copy(
+            holeWeight = if (waldParams.holeWeight == 0.0) drawerSettings.holeWeight else waldParams.holeWeight,
+            holeOffset = if (waldParams.holeOffset == 0.0) drawerSettings.holeOffset else waldParams.holeOffset,
+        )
+
         val weight = boxInfo.weight;
         val height = boxInfo.height;
         val width = boxInfo.width;
 
-        val pFL = Vec2(0.0, weight + 1)
-        val pFR = Vec2(0.0, weight + height * 1 + 2)
-        val pFT = Vec2(0.0, weight + height * 2 + 3)
-        val pFB = Vec2(0.0, weight + height * 3 + 4)
-        val pHole = Vec2(0.0, drawerSettings.holeOffset)
-        val pTopHole = Vec2(0.0, height - drawerSettings.holeOffset)
-        val pPol = Vec2(0.0, 0.0)
-        val pTop = Vec2(0.0, -weight - 1.0)
-        var pPolka = Vec2(0.0, 0.0)
+        val pFL = startPoint + Vec2(0.0, weight + 1)
+        val pFR = startPoint + Vec2(0.0, weight + height * 1 + 2)
+        val pFT = startPoint + Vec2(0.0, weight + height * 2 + 3)
+        val pFB = startPoint + Vec2(0.0, weight + height * 3 + 4)
+        val pHole = startPoint + Vec2(0.0, drawerSettings.holeOffset)
+        val pTopHole = startPoint + Vec2(0.0, height - drawerSettings.holeOffset)
+        val pPol = startPoint + Vec2(0.0, 0.0)
+        val pTop = startPoint + Vec2(0.0, -weight - 1.0)
+        var pPolka = startPoint + Vec2(0.0, 0.0)
 
         val bw = drawerSettings.boardWeight
 
@@ -237,27 +267,41 @@ class BoxCad {
         list.addAll(faceWald(pFB, weight, height, holeH, holeWe, p, bw, wald));
 
         if (wald.bottomForm != PazForm.None) {
-            list.add(pol(width - ap, weight - ap, pPol, zigW, zigWe, bw));
+            list.add(pol(
+                width = width - ap,
+                height = weight - ap,
+                origin = pPol,
+                zigzagW = zigW,
+                zigzagH = zigWe,
+                boardWeight = bw
+            ));
         }
         if (wald.topForm != PazForm.None) {
-            list.add(pol(width - ap, weight - ap, pTop, zigW, zigWe, bw));
+            list.add(pol(
+                width = width - ap,
+                height = weight - ap,
+                origin = pTop,
+                zigzagW = zigW,
+                zigzagH = zigWe,
+                boardWeight = bw
+            ));
             pPolka += pTop;
         }
 
         return FigureList(list.toList())
     }
 
-    companion object {
-        private val sep = charArrayOf(' ', '\t', ';', '\n')
-        public fun readBox(line: String, defaultWidth: Double, defaultHeight: Double, defaultWeight: Double): BoxInfo {
 
-            val a = line.split(*sep).filter { it.isNotEmpty() }
+    private val sep = charArrayOf(' ', '\t', ';', '\n')
+    public fun readBox(line: String, defaultWidth: Double, defaultHeight: Double, defaultWeight: Double): BoxInfo {
 
-            return BoxInfo(
-                width = a.getOrNull(1)?.toDoubleOrNull() ?: defaultWidth,
-                height = a.getOrNull(2)?.toDoubleOrNull() ?: defaultHeight,
-                weight = a.getOrNull(3)?.toDoubleOrNull() ?: defaultWeight,
-            )
-        }
+        val a = line.split(*sep).filter { it.isNotEmpty() }
+
+        return BoxInfo(
+            width = a.getOrNull(1)?.toDoubleOrNull() ?: defaultWidth,
+            height = a.getOrNull(2)?.toDoubleOrNull() ?: defaultHeight,
+            weight = a.getOrNull(3)?.toDoubleOrNull() ?: defaultWeight,
+        )
     }
+
 }

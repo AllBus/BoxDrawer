@@ -23,12 +23,11 @@ class PolkaInfo(
 
 }
 
-class WaldParam(
+data class WaldParam(
     val topOffset: Double,
     val bottomOffset: Double,
 
     val holeOffset: Double,
-    val holeDrop: Double,
     val holeWeight: Double,
 
     val topForm: PazForm,
