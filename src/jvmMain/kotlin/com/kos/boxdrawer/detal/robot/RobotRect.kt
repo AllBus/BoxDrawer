@@ -1,8 +1,7 @@
 package com.kos.boxdrawer.detal.robot
 
-import turtoise.DrawerSettings
-import turtoise.TortoiseBlock
-import turtoise.TortoiseCommand
+import androidx.compose.ui.text.AnnotatedString
+import turtoise.*
 
 class RobotRect(
     params: List<String>
@@ -41,5 +40,18 @@ class RobotRect(
                 )
             )
         )
+    }
+
+    object Factory: IRobotCommandFactory{
+        override fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand {
+            return RobotRect(args)
+        }
+
+        override val names: List<String>
+            get() = listOf("x", "r", "rect")
+
+        override fun help(): AnnotatedString {
+            return TortoiseParser.helpName("x", "w h zw zh", "")
+        }
     }
 }

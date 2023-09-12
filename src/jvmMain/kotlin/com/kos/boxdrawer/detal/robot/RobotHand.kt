@@ -1,8 +1,7 @@
 package com.kos.boxdrawer.detal.robot
 
-import turtoise.DrawerSettings
-import turtoise.TortoiseBlock
-import turtoise.TortoiseCommand
+import androidx.compose.ui.text.AnnotatedString
+import turtoise.*
 
 class RobotHand(
     params: List<String>,
@@ -72,4 +71,23 @@ class RobotHand(
         )
     }
 
+    object Factory: IRobotCommandFactory{
+        override fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand {
+            return  RobotHand(
+                args,
+                item.blocks.firstOrNull()?.let { b -> RobotLine.parseRobot(b, true) } ?: emptyList(),
+                item.blocks.getOrNull(1)?.let { b -> RobotLine.parseRobot(b, true) } ?: emptyList(),
+            )
+        }
+
+        override val names: List<String>
+            get() = listOf("line", "l", "connect")
+
+        override fun help(): AnnotatedString {
+            return TortoiseParser.helpName("l", "w h zw zh c1w c1h c1d (lcom*) c2w c2h c2d (rcom*)", "")
+        }
+
+        override val isSimple: Boolean
+            get() = false
+    }
 }

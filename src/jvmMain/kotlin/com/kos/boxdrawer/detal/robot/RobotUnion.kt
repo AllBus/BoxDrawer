@@ -1,8 +1,7 @@
 package com.kos.boxdrawer.detal.robot
 
-import turtoise.DrawerSettings
-import turtoise.TortoiseBlock
-import turtoise.TortoiseCommand
+import androidx.compose.ui.text.AnnotatedString
+import turtoise.*
 
 class RobotUnion(
     params: List<String>
@@ -40,5 +39,21 @@ class RobotUnion(
                 )
             )
         )
+    }
+
+    object Factory: IRobotCommandFactory{
+        override fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand {
+            return RobotUnion(args)
+        }
+
+        override val names: List<String>
+            get() = listOf("u", "union")
+
+        override fun help(): AnnotatedString {
+            return TortoiseParser.helpName("u", "w h zw zh zs", "")
+        }
+
+        override val isSimple: Boolean
+            get() = false
     }
 }

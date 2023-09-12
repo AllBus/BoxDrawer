@@ -21,4 +21,5 @@ fun DrawScope.drawFigures(figureLine: IFigure) {
     drawer.penColor = Color.Green
     drawer.style = Stroke()
     drawer.drawRect(bound.min, bound.max-bound.min)
+
 }

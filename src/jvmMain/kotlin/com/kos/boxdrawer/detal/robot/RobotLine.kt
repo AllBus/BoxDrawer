@@ -5,7 +5,7 @@ import turtoise.*
 
 class RobotLine(
     val line: List<IRobotCommand>
-): TortoiseAlgorithm {
+) : TortoiseAlgorithm {
     override fun commands(name: String, ds: DrawerSettings): List<TortoiseBlock> {
         return when (name) {
             "robot" -> rotor(ds)
@@ -21,18 +21,25 @@ class RobotLine(
     }
 
     companion object {
+
+        private val factories = listOf(
+            RobotRect.Factory,
+            RobotCircle.Factory,
+            RobotHole.Factory,
+            RobotAngle.Factory,
+            RobotMove.Factory,
+            RobotHand.Factory,
+            RobotUnion.Factory
+        )
+
+        private val simpleFactories = factories.asSequence().filter { it.isSimple }.flatMap { f -> f.names.map { n -> n to f } }.toMap()
+        private val mediumFactories = factories.asSequence().filter { !it.isSimple }.flatMap { f -> f.names.map { n -> n to f } }.toMap()
+
         fun help(): AnnotatedString {
             val sb = AnnotatedString.Builder()
             sb.append(TortoiseParser.helpTitle("Команды рисования робота. Каждая команда окружается скобками ()"))
             sb.appendLine()
-            sb.append(TortoiseParser.helpName("m", "x y", "переместить позицию"))
-            sb.append(TortoiseParser.helpName("a", "a", "повернуть направление движение на угол a "))
-
-            sb.append(TortoiseParser.helpName("x", "w h zw zh", ""))
-            sb.append(TortoiseParser.helpName("c", "r hw hh", "нарисовать окружность радиусу r"))
-            sb.append(TortoiseParser.helpName("h", "hw hh", "прямоугольник отверстия шириной hw  высотой hh"))
-            sb.append(TortoiseParser.helpName("l", "w h zw zh c1w c1h c1d (lcom*) c2w c2h c2d (rcom*)", ""))
-            sb.append(TortoiseParser.helpName("u", "w h zw zh zs", ""))
+            factories.forEach { sb.append(it.help()) }
             sb.appendLine()
             return sb.toAnnotatedString()
         }
@@ -44,7 +51,7 @@ class RobotLine(
             return RobotLine(result.toList())
         }
 
-        fun parseRobot(v: TurtoiseParserStackItem, onlySimple: Boolean): List<IRobotCommand>{
+        fun parseRobot(v: TurtoiseParserStackItem, onlySimple: Boolean): List<IRobotCommand> {
             val result = mutableListOf<IRobotCommand>()
             var addBlocks = true
             if (v.isArgument()) {
@@ -55,39 +62,15 @@ class RobotLine(
                     if (args.size > 1) {
                         val com = args.first()
 
-                        result.add(
-                            when (com) {
-                                "x" -> RobotRect(args.drop(1))
+                        val factory = simpleFactories[com] ?: (
+                            if (!onlySimple) {
+                                addBlocks = false
+                                mediumFactories[com] ?: RobotEmpty.Factory
+                            } else
+                                RobotEmpty.Factory
+                            )
 
-                                "c" -> RobotCircle(args.getOrElse(1) { "" }, args.getOrElse(2) { "" }, args.getOrElse(3) { "" })
-
-                                "h",
-                                "hole" -> RobotHole(args.getOrElse(1) { "" }, args.getOrElse(2) { "" })
-
-                                "a" -> RobotAngle(args.getOrElse(1) { "" })
-                                "m" -> RobotMove(args.getOrElse(1) { "" }, args.getOrElse(2) { "" })
-                                else ->
-                                    if (!onlySimple) {
-                                        when (com) {
-                                            "line",
-                                            "l",
-                                            "connect" -> {
-                                                addBlocks = false
-                                                RobotHand(
-                                                    args.drop(1),
-                                                    v.blocks.firstOrNull()?.let { b -> parseRobot(b, true) } ?: emptyList(),
-                                                    v.blocks.getOrNull(1)?.let { b -> parseRobot(b, true) } ?: emptyList(),
-                                                )
-                                            }
-
-                                            "u",
-                                            "union" -> RobotUnion(args.drop(1))
-                                            else ->  RobotEmpty()
-                                        }
-                                    } else
-                                        RobotEmpty()
-                            }
-                        )
+                        result.add(factory.create(args.drop(1), v))
                     }
                 }
 
@@ -102,3 +85,4 @@ class RobotLine(
         }
     }
 }
+

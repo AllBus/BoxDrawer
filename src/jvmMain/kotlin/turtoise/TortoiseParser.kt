@@ -236,6 +236,7 @@ object TortoiseParser {
         sb.append(helpName(TortoiseCommand.TURTOISE_MOVE, "x y", "переместить позицию"))
         sb.append(helpName(TortoiseCommand.TURTOISE_ANGLE, "a", "повернуть направление движение на угол a"))
         sb.append(helpName(TortoiseCommand.TURTOISE_ANGLE_ADD, "a", "повернуть направление движение на угол a относительно текущего угла"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_CLEAR, "", "Сбросить позицию на начало координат и поворот на 0"))
         sb.append(helpName(TortoiseCommand.TURTOISE_LINE, "d+", "нарисовать длиной d. Последующие значения ресуют перпендикулярно"))
         sb.append(helpName(TortoiseCommand.TURTOISE_CLOSE, "", "закрыть многоугольник"))
         sb.append(helpName(TortoiseCommand.TURTOISE_CIRCLE, "r (sa ea)*", "круг радиуса r."))

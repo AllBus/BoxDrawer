@@ -1,11 +1,20 @@
 package com.kos.boxdrawer.detal.robot
 
-import turtoise.DrawerSettings
-import turtoise.TortoiseBlock
-import turtoise.TortoiseCommand
+import androidx.compose.ui.text.AnnotatedString
+import turtoise.*
 
 interface IRobotCommand {
     fun draw(ds: DrawerSettings):TortoiseBlock
+
+}
+
+interface IRobotCommandFactory{
+    fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand
+
+    val names : List<String>
+
+    val isSimple: Boolean get() = true
+    fun help() : AnnotatedString
 }
 
 abstract class RobotCommandWithParams(val params: List<String>): IRobotCommand{
@@ -18,48 +27,3 @@ abstract class RobotCommandWithParams(val params: List<String>): IRobotCommand{
     }
 }
 
-class RobotCircle(
-    val radius: String,
-    val holeWidth: String,
-    val holeHeight: String,
-): IRobotCommand {
-    override fun draw(ds: DrawerSettings): TortoiseBlock {
-        return TortoiseBlock(
-            listOfNotNull(
-            TortoiseCommand.Circle(radius),
-            TortoiseCommand.Rectangle(holeWidth, holeHeight.ifEmpty { ds.holeWeight.toString() }).takeIf { holeWidth.isNotEmpty() }
-        )
-        )
-
-    }
-}
-
-class RobotMove(
-    val x: String,
-    val y: String,
-): IRobotCommand {
-    override fun draw(ds: DrawerSettings): TortoiseBlock {
-        return TortoiseBlock(listOf(
-            TortoiseCommand.Move(x, y)
-        ))
-    }
-
-}
-
-class RobotAngle(
-    val angle: String,
-): IRobotCommand {
-    override fun draw(ds: DrawerSettings): TortoiseBlock {
-        return TortoiseBlock(listOf(
-            TortoiseCommand.Angle(angle)
-        ))
-    }
-
-}
-
-class RobotEmpty():IRobotCommand{
-    override fun draw(ds: DrawerSettings): TortoiseBlock {
-        return TortoiseBlock(emptyList())
-    }
-
-}
