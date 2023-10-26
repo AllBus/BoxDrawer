@@ -6,6 +6,10 @@ import vectors.Vec2
 
 class FigureBezierList(val points : List<List<Vec2>>): Figure() {
 
+    constructor(
+        a: Vec2, b : Vec2, c: Vec2, d:Vec2
+    ): this(listOf(listOf(a,b,c,d)))
+
     override fun crop(k: Double, cropSide: CropSide): IFigure {
         val figures = mutableListOf<List<Vec2>>()
 

@@ -26,6 +26,10 @@ kotlin {
                 implementation(compose.desktop.currentOs)
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3")
                 implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+                implementation ("com.google.code.gson:gson:2.9.1")
+                implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+                implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+                implementation ("com.squareup.retrofit2:converter-scalars:2.9.0")
                // implementation("com.groupdocs:groupdocs-comparison:22.3")
             }
         }

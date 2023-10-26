@@ -4,6 +4,7 @@ import com.jsevy.jdxf.DXFDocument
 import com.jsevy.jdxf.DXFGraphics
 import org.jetbrains.skia.defaultLanguageTag
 import vectors.Vec2
+import java.awt.Color
 import java.awt.geom.AffineTransform
 import java.util.*
 import kotlin.math.PI
@@ -115,5 +116,13 @@ class DxfFigureDrawer(
                 g.drawBezier(doubleArrayOf(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y))
             }
         }
+    }
+
+    override fun setColor(color: Int) {
+        g.color = Color(color, true)
+    }
+
+    override fun getColor(): Int {
+        return g.color.rgb
     }
 }

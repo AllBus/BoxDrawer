@@ -23,4 +23,8 @@ interface IFigureGraphics {
     fun scale(scaleX: Double, scaleY: Double)
     fun rotate(degrees: Double, pivot: Vec2)
     fun restore()
+
+    fun setColor(color:Int)
+
+    fun getColor():Int
 }

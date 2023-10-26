@@ -12,6 +12,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.AwtWindow
 import com.kos.boxdrawe.presentation.*
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
@@ -22,6 +23,8 @@ import com.kos.boxdrawe.widget.tabbar.ToolbarForBox
 import com.kos.boxdrawe.widget.tabbar.ToolbarForGrid
 import com.kos.boxdrawe.widget.tabbar.ToolbarForSoft
 import com.kos.boxdrawe.widget.tabbar.ToolbarForTortoise
+import java.awt.FileDialog
+import java.awt.Frame
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
 
@@ -98,7 +101,27 @@ fun ToolbarForTools(vm: ToolsData) {
     }
 }
 
-fun showFileChooser(action: (String)-> Unit) {
+
+//@Composable
+//fun showFileChooser(
+//   // parent: Frame? = null,
+//    onCloseRequest: (result: String) -> Unit
+//) = AwtWindow(
+//    create = {
+//        val parent: Frame? = null
+//        object : FileDialog(parent, "Choose a file", SAVE) {
+//            override fun setVisible(value: Boolean) {
+//                super.setVisible(value)
+//                if (value) {
+//                    onCloseRequest(file.orEmpty())
+//                }
+//            }
+//        }
+//    },
+//    dispose = FileDialog::dispose
+//)
+
+suspend fun showFileChooser(action: (String)-> Unit) {
 
     JFileChooser().apply {
         this.fileFilter = FileNameExtensionFilter("Autocad (*.dxf)", "dxf")

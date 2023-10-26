@@ -91,6 +91,15 @@ class ComposeFigureDrawer(
         scope.drawContext.canvas.restore()
     }
 
+
+    override fun setColor(color: Int) {
+        penColor = Color(color)
+    }
+
+    override fun getColor():Int {
+        return penColor.value.toInt()
+    }
+
     inline val Vec2.vec get(): Offset = Offset(this.x.toFloat(), this.y.toFloat())
 
     private fun line(p: Path, start: Vec2, end: Vec2) {

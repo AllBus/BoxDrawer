@@ -1,6 +1,7 @@
 package com.kos.boxdrawer.detal.robot
 
 import androidx.compose.ui.text.AnnotatedString
+import com.kos.boxdrawer.detal.box.CompositeBox
 import turtoise.*
 
 class RobotLine(
@@ -29,7 +30,9 @@ class RobotLine(
             RobotAngle.Factory,
             RobotMove.Factory,
             RobotHand.Factory,
-            RobotUnion.Factory
+            RobotHardRect.Factory,
+            RobotUnion.Factory,
+            CompositeBox.Factory,
         )
 
         private val simpleFactories = factories.asSequence().filter { it.isSimple }.flatMap { f -> f.names.map { n -> n to f } }.toMap()

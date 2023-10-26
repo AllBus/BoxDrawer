@@ -7,18 +7,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.scale
-import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import com.kos.boxdrawe.drawer.ComposeFigureDrawer
-import com.kos.boxdrawe.drawer.drawFigures
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.widget.*
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
@@ -26,12 +18,58 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.tabs
-import figure.IFigure
-import java.nio.file.Path
 import javax.swing.UIManager
 import androidx.compose.material.Text
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import com.kos.boxdrawe.widget.display.DisplayGrid
+import com.kos.boxdrawe.widget.display.DisplayTortoise
+import okhttp3.MediaType
+import okhttp3.ResponseBody
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
+
+fun mainTest(args:Array<String>){
+
+    val x = """{ "ia" : 492, "ib" : null, "d":{ "ba" : false, "bb" : null}}"""
+
+    val gson = GsonBuilder().disableHtmlEscaping().setLenient().create()
+
+    val retrofit = Retrofit.Builder()
+        .baseUrl("https://RETROFIT_BASE_URL/")
+        .addConverterFactory(ScalarsConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .build()
+
+//    val v = Gson()
+//        .fromJson<Retro>(x, Retro::class.java)
+
+ //   println(v)
+
+    val rb = ResponseBody.create( MediaType.parse("text/json"), x    )
+    val d = retrofit.responseBodyConverter<Retro>(Retro::class.java, emptyArray()).convert(rb)
+
+   // val d = retrofit.stringConverter<Retro>(Retro::class.java, emptyArray()).convert(v)
+    println(d)
+
+}
+
+data class Retro(
+    val ia:Int?,
+    val ic:Int?,
+    val ib:Int,
+    val d: RetroData?,
+    val e: RetroData?,
+)
+
+data class RetroData(
+    val ba:Boolean,
+    val bb:Boolean?,
+    val bc:Boolean?,
+)
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -72,7 +110,7 @@ fun App() {
                         DisplayTortoise(displayScale, boxFigures)
                     }
                     TAB_GRID -> {
-                        DisplayGrid()
+                        DisplayGrid(vm.grid.cad)
                     }
                     else -> {
 
@@ -105,7 +143,7 @@ fun App() {
     }
 }
 
-fun main() = application {
+fun main(args:Array<String>) = application {
     try {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
     } finally {

@@ -3,14 +3,12 @@ package com.kos.boxdrawe.widget.tabbar
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.kos.boxdrawe.presentation.SoftRezData
 import com.kos.boxdrawe.widget.*
 import figure.IFigure
+import kotlinx.coroutines.launch
 
 @Composable
 fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
@@ -22,6 +20,7 @@ fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
     val cellHeightCount = remember { vm.cellHeightCount }
     val cellWidthDistance = remember { vm.cellWidthDistance }
     val cellHeightDistance = remember { vm.cellHeightDistance }
+    val coroutineScope = rememberCoroutineScope()
 
     Row(
         modifier = TabContentModifier
@@ -69,7 +68,10 @@ fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            RunButton("Нарисовать деталь", { showFileChooser { f -> vm.saveRez(f, figures()) } })
+            RunButton("Нарисовать деталь", { coroutineScope.launch {
+                showFileChooser { f -> vm.saveRez(f, figures()) }
+            }
+            })
         }
     }
 }
