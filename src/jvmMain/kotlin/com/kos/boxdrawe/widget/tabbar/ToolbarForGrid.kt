@@ -8,10 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.kos.boxdrawe.presentation.GridData
-import com.kos.boxdrawe.widget.NumericUpDown
-import com.kos.boxdrawe.widget.RunButton
-import com.kos.boxdrawe.widget.RunCheckBox
-import com.kos.boxdrawe.widget.TabContentModifier
+import com.kos.boxdrawe.widget.*
 
 @Composable
 fun ToolbarForGrid(vm: GridData) {
@@ -25,6 +22,7 @@ fun ToolbarForGrid(vm: GridData) {
     val cellHeightCount = remember { vm.cellHeightCount }
     val innerWidth = remember { vm.innerWidth }
     val innerRadius = remember { vm.innerRadius }
+    val gridText = remember { vm.gridText }
 
     Row(
         modifier = TabContentModifier
@@ -59,11 +57,22 @@ fun ToolbarForGrid(vm: GridData) {
             NumericUpDown("Радиус", "мм", innerRadius)
         }
         Column(
+            modifier = Modifier.weight(weight = 2f, fill = true)
+        ){
+            EditText("", "", gridText, true, Modifier){
+
+            }
+        }
+        Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
             RunButton("Нарисовать деталь", {})
-            RunButton("Посторить по тексту", {})
-            RunButton("Получить текст", {})
+            RunButton("Посторить по тексту", {
+                vm.createFromText()
+            })
+            RunButton("Получить текст", {
+                vm.saveToText()
+            })
         }
     }
 }

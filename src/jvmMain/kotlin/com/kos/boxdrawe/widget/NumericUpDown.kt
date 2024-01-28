@@ -2,8 +2,10 @@ package com.kos.boxdrawe.widget
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -11,32 +13,56 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.themes.ThemeColors
 
 @Composable
-fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState, enabled : Boolean = true) {
+fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
+                  fieldMaxWidth: Dp = 160.dp,
+                  enabled : Boolean = true) {
     //var text by remember { mutableStateOf(title) }
     Row(
-        modifier = Modifier.width(160.dp)
+        modifier = Modifier.padding(2.dp),
+        verticalAlignment = Alignment.Bottom
     ) {
-        OutlinedTextField(
-            value = value.text.toString(),
-            onValueChange = {
-                value.update(it)
+
+        Text(
+            text = title,
+            fontSize = LocalTextStyle.current.fontSize,
+            modifier = Modifier.align(Alignment.CenterVertically).weight(1f),
+            softWrap = false,
+            textAlign = TextAlign.End,
+        )
+        Spacer(Modifier.width(4.dp))
+        BasicTextField(
+            value = value.text,
+            onValueChange = { v :String ->
+                value.update(v)
             },
-            label = { Text(title) },
+            modifier = Modifier
+                .height(30.dp)
+                .width(fieldMaxWidth)
+                .weight(1f)
+                .background(ThemeColors.inputBackground
+                ).border(1.dp, ThemeColors.inputBorder).padding(4.dp),
+            enabled = enabled,
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            modifier = Modifier,
-            enabled = enabled,
-            )
-        Spacer(Modifier.width(8.dp))
+            textStyle = TextStyle.Default
+
+        )
+        Spacer(Modifier.width(4.dp))
         Text(
             text = postfix,
             fontSize = LocalTextStyle.current.fontSize,

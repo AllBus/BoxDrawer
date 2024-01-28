@@ -13,6 +13,10 @@ data class DrawerSettings(
     ///  Уменьшение длины отверстия
      */
     val holeDrop : Double = 0.5,
+    /**
+    ///  Уменьшение высоты отверстия
+     */
+    val holeDropHeight : Double = 0.0,
     val holeOffset : Double = 2.0,
 
 ) {

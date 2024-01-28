@@ -8,23 +8,16 @@ import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.AwtWindow
 import com.kos.boxdrawe.presentation.*
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TOOLS
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
-import com.kos.boxdrawe.widget.tabbar.ToolbarForBox
-import com.kos.boxdrawe.widget.tabbar.ToolbarForGrid
-import com.kos.boxdrawe.widget.tabbar.ToolbarForSoft
-import com.kos.boxdrawe.widget.tabbar.ToolbarForTortoise
-import java.awt.FileDialog
-import java.awt.Frame
+import com.kos.boxdrawe.widget.tabbar.*
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
 
@@ -63,41 +56,6 @@ fun TabBar(tabs: List<TabInfo>, vm: DrawerViewModel) {
         Box(
             Modifier.fillMaxWidth().height(1.dp).background(Color.DarkGray)
         )
-    }
-}
-
-@Composable
-fun ToolbarForTools(vm: ToolsData) {
-    val boardWeight = remember { vm.boardWeight}
-    val holeWeight = remember { vm.holeWeight}
-    val holeDrop  = remember { vm.holeDrop}
-    val holeOffset = remember { vm.holeOffset}
-
-    Row(
-        modifier = TabContentModifier
-    ) {
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            Text(
-                text = "Доска",
-                modifier = Modifier,
-                softWrap = false,
-            )
-            NumericUpDown("Толщина", "мм", boardWeight)
-        }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            Text(
-                text = "Отверстие",
-                modifier = Modifier,
-                softWrap = false,
-            )
-            NumericUpDown("Ширина", "мм", holeWeight)
-            NumericUpDown("Уменьшение длины", "мм", holeDrop)
-            NumericUpDown("Отступ от края", "мм", holeOffset)
-        }
     }
 }
 

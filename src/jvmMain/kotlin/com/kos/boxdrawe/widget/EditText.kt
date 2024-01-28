@@ -1,5 +1,7 @@
 package com.kos.boxdrawe.widget
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,7 +18,13 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EditText(title:String, postfix:String, value: MutableState<String>, enabled : Boolean = true, onChange: (String) -> Unit) {
+fun EditText(title:String,
+             postfix:String,
+             value: MutableState<String>,
+             enabled : Boolean = true,
+             modifier: Modifier = Modifier,
+             onChange: (String) -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -29,7 +37,7 @@ fun EditText(title:String, postfix:String, value: MutableState<String>, enabled 
             label = { Text(title) },
             singleLine = false,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             enabled = enabled,
 
         )

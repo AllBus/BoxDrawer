@@ -3,7 +3,6 @@ package com.kos.boxdrawe.presentation
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.grid.CadGrid
-import com.kos.boxdrawer.detal.grid.GridCell
 
 class GridData(val tools: ITools) {
 
@@ -17,6 +16,7 @@ class GridData(val tools: ITools) {
     val cellHeightCount = NumericTextFieldState(30.0, 0, 1000.0) { recreateGrid() }
     val innerWidth = NumericTextFieldState(1.0, 2)
     val innerRadius = NumericTextFieldState(0.5, 2)
+    val gridText = mutableStateOf("")
 
 
     val cad = CadGrid()
@@ -29,6 +29,28 @@ class GridData(val tools: ITools) {
 
             cad.recreate(x, y)
         }
+    }
+
+    fun createFromText() {
+        val v = gridText.value
+        val d = v.lines()
+        d.forEachIndexed { y, s ->
+            s.forEachIndexed { x, c ->
+                cad.setColor(x, y, (c - '0'))
+            }
+        }
+    }
+
+    fun saveToText() {
+
+        val sb = StringBuilder()
+        for (y in 0 until cad.height) {
+            for (x in 0 until cad.width) {
+                sb.append((cad.colorAt(x, y) + '0'.code).toChar())
+            }
+            sb.appendLine()
+        }
+        gridText.value = sb.toString()
     }
 
 

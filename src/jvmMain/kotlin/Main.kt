@@ -117,7 +117,6 @@ fun App() {
                     }
                 }
 
-
                 Slider(
                     modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.TopEnd),
                     onValueChange = { dropValueX = it; vm.tortoise.drop(dropValueX,dropValueY) },
