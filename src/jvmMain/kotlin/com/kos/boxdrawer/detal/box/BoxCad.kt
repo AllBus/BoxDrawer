@@ -463,7 +463,7 @@ object BoxCad {
         val ap = drawerSettings.boardWeight * 2
         val p = DrawingParam(
             orientation = Orientation.Horizontal,
-            reverse = false,
+            reverse = true,
             back = false
         )
 
@@ -519,7 +519,7 @@ object BoxCad {
             wald = wald
         ));
 
-        val p2 = p.copy(reverse = true)
+        val p2 = p.copy(reverse = false)
 
         resultMap.getOrPut(F_FACE) { mutableListOf() }.addAll(faceWald(
             origin = Vec2.Zero,

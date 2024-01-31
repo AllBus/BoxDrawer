@@ -1,6 +1,10 @@
 package turtoise
 
+import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
+
+@Serializable
 data class DrawerSettings(
     val boardWeight : Double = 4.0,
 
@@ -23,6 +27,7 @@ data class DrawerSettings(
     val holeDropHeight : Double = 0.0,
     val holeOffset : Double = 2.0,
 
+    val name:String = ""
 ) {
 
 }
@@ -39,3 +44,18 @@ data class DrawingParam(
 ) {
 
 }
+
+
+@Serializable()
+data class DrawerSettingsList(
+    val group: List<DrawerSettings>
+
+){
+
+}
+
+@Serializable
+data class FullSettings(
+    @SerializedName("name")
+    val properties:DrawerSettingsList
+)

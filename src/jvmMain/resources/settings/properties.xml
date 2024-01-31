@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<FullSettings>
+    <DrawerSettingsList>
+        <DrawerSettings
+                boardWeight="4.4"
+                holeWeight="4.44"
+                zigDrop="0.4"
+                holeDrop="0.4"
+                holeDropHeight="0.0"
+                holeOffset="2.0"
+                name="4mm 4/2"
+        />
+      <DrawerSettings
+              boardWeight="4.0"
+              holeWeight="4.04"
+              zigDrop="0.3"
+              holeDrop="0.3"
+              holeDropHeight="0.0"
+              holeOffset="2.0"
+              name="4mm 2/2"
+      />
+      <DrawerSettings
+              boardWeight="3.0"
+              holeWeight="3.04"
+              zigDrop="0.3"
+              holeDrop="0.3"
+              holeDropHeight="0.0"
+              holeOffset="2.0"
+              name="3mm 2/2"
+      />
+    </DrawerSettingsList>
+</FullSettings>

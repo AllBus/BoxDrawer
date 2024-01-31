@@ -12,7 +12,7 @@ import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import vectors.Vec2
 
-class TortoiseData(val tools: ITools) {
+class                       TortoiseData(val tools: ITools) {
     val figures = mutableStateOf<IFigure>(Figure.Empty)
     val fig = mutableStateOf<IFigure>(Figure.Empty)
     val helpText = mutableStateOf(AnnotatedString(""))

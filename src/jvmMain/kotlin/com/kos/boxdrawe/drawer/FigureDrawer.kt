@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.unit.dp
 import figure.*
 import vectors.Vec2
 
@@ -20,6 +21,6 @@ fun DrawScope.drawFigures(figureLine: IFigure) {
     val bound = figureLine.rect()
     drawer.penColor = Color.Green
     drawer.style = Stroke()
-    drawer.drawRect(bound.min, bound.max-bound.min)
+    drawer.drawRect(bound.min-Vec2(10.0, 10.0), bound.max-bound.min+Vec2(20.0, 20.0))
 
 }
