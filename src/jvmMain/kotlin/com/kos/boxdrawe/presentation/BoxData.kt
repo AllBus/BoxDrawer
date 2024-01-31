@@ -24,17 +24,8 @@ class BoxData(val tools: ITools) {
     fun boxFigures(line: String): IFigure {
 
         val ds =  tools.ds()
-        val boxInfo = BoxInfo(width.decimal, height.decimal, weight.decimal)
-        val polki = CalculatePolka.createPolki(line)
+        val inside = insideChecked.value
 
-        val bwi = boxInfo.width - ds.boardWeight * 2
-        val bwe = boxInfo.weight - ds.boardWeight * 2
-        val upWidth = if (polkiInChecked.value) ds.boardWeight else 0.0
-
-        val calc = CalculatePolka.calculatePolki(polki, bwi,bwe, upWidth)
-
-        calc.pazDelta = 15.0
-        calc.pazWidth = 35.0
 
         val wald = WaldParam(
             topOffset = tools.ds().holeOffset,
@@ -45,21 +36,32 @@ class BoxData(val tools: ITools) {
             bottomForm = PazExt.intToPaz(selectZigBottomId.value),
         )
 
+        val boxInfo = BoxInfo(
+            width = width.decimal + if (inside) ds.boardWeight * 2 else 0.0,
+            height = height.decimal + if (inside) {
+                wald.fullTopOffset(ds.boardWeight) +
+                wald.fullBottomOffset(ds.boardWeight)
+            } else 0.0,
+            weight = weight.decimal + if (inside) ds.boardWeight * 2 else 0.0
+        )
+
+        val polki = CalculatePolka.createPolki(line)
+
+        val bwi = boxInfo.width - ds.boardWeight * 2
+        val bwe = boxInfo.weight - ds.boardWeight * 2
+        val upWidth = if (polkiInChecked.value) ds.boardWeight else 0.0
+
+        val calc = CalculatePolka.calculatePolki(polki, bwi,bwe, upWidth)
+
+        calc.zigPolkaH = polkaZigState.zigInfo
+        calc.zigPolkaPol = polkaPolZigState.zigInfo
+
         return BoxCad.box(
             startPoint = Vec2.Zero,
             boxInfo = boxInfo,
-            zigW = ZigzagInfo(
-                width = 15.0,
-                delta = 35.0
-            ),
-            zigH = ZigzagInfo(
-                width = 15.0,
-                delta = 35.0
-            ),
-            zigWe = ZigzagInfo(
-                width = 15.0,
-                delta = 35.0
-            ),
+            zigW = widthZigState.zigInfo,
+            zigH = heightZigState.zigInfo,
+            zigWe = weightZigState.zigInfo,
             drawerSettings = tools.ds(),
             waldParams = wald,
             polki = calc,
@@ -90,4 +92,26 @@ class BoxData(val tools: ITools) {
     val text = mutableStateOf("")
 
 
+    val widthZigState = ZigZagState({redrawBox()})
+    val heightZigState = ZigZagState({redrawBox()})
+    val weightZigState = ZigZagState({redrawBox()})
+    val polkaZigState = ZigZagState({redrawBox()})
+    val polkaPolZigState = ZigZagState({redrawBox()})
+}
+
+class ZigZagState(val redrawBox: () -> Unit){
+
+    val width = NumericTextFieldState(15.0) { redrawBox() }
+    val delta = NumericTextFieldState(35.0) { redrawBox() }
+    val height = NumericTextFieldState(0.0) { redrawBox() }
+    val enable = mutableStateOf(true)
+
+    val zigInfo : ZigzagInfo get() {
+        return ZigzagInfo(
+            width = width.decimal,
+            delta = delta.decimal,
+            height = height.decimal,
+            enable =enable.value
+        )
+    }
 }

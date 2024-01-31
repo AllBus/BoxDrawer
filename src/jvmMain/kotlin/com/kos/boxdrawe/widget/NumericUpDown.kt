@@ -37,14 +37,16 @@ fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
         verticalAlignment = Alignment.Bottom
     ) {
 
-        Text(
-            text = title,
-            fontSize = LocalTextStyle.current.fontSize,
-            modifier = Modifier.align(Alignment.CenterVertically).weight(1f),
-            softWrap = false,
-            textAlign = TextAlign.End,
-        )
-        Spacer(Modifier.width(4.dp))
+        if (title.isNotEmpty()) {
+            Text(
+                text = title,
+                fontSize = LocalTextStyle.current.fontSize,
+                modifier = Modifier.align(Alignment.CenterVertically).weight(1f),
+                softWrap = false,
+                textAlign = TextAlign.End,
+            )
+            Spacer(Modifier.width(4.dp))
+        }
         BasicTextField(
             value = value.text,
             onValueChange = { v :String ->
@@ -62,13 +64,15 @@ fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
             textStyle = TextStyle.Default
 
         )
-        Spacer(Modifier.width(4.dp))
-        Text(
-            text = postfix,
-            fontSize = LocalTextStyle.current.fontSize,
-            modifier = Modifier.align(Alignment.CenterVertically),
-            softWrap = false,
-        )
+        if (postfix.isNotEmpty()) {
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = postfix,
+                fontSize = LocalTextStyle.current.fontSize,
+                modifier = Modifier.align(Alignment.CenterVertically),
+                softWrap = false,
+            )
+        }
     }
 }
 

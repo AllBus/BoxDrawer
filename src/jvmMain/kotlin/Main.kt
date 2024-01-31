@@ -20,6 +20,7 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.tabs
 import javax.swing.UIManager
 import androidx.compose.material.Text
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -117,19 +118,19 @@ fun App() {
                     }
                 }
 
-                Slider(
-                    modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.TopEnd),
-                    onValueChange = { dropValueX = it; vm.tortoise.drop(dropValueX,dropValueY) },
-                    value = dropValueX,
-                    valueRange = -100f..100f
-                )
-
-                Slider(
-                    modifier = Modifier.padding(top = 50.dp).width(300.dp).wrapContentHeight().align(Alignment.TopEnd),
-                    onValueChange = { dropValueY = it; vm.tortoise.drop(dropValueX,dropValueY) },
-                    value = dropValueY,
-                    valueRange = -100f..100f
-                )
+//                Slider(
+//                    modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.TopEnd),
+//                    onValueChange = { dropValueX = it; vm.tortoise.drop(dropValueX,dropValueY) },
+//                    value = dropValueX,
+//                    valueRange = -100f..100f
+//                )
+//
+//                Slider(
+//                    modifier = Modifier.padding(top = 50.dp).width(300.dp).wrapContentHeight().align(Alignment.TopEnd),
+//                    onValueChange = { dropValueY = it; vm.tortoise.drop(dropValueX,dropValueY) },
+//                    value = dropValueY,
+//                    valueRange = -100f..100f
+//                )
 
                 Slider(
                     modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.BottomEnd),
@@ -151,9 +152,9 @@ fun main(args:Array<String>) = application {
 
     Window(
         onCloseRequest = ::exitApplication,
+        icon = painterResource("drawable/ic_launcher.png"),
         title = "Рисовалка коробок",
     ) {
-
         App()
     }
 }

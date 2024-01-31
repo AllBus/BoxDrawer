@@ -15,7 +15,7 @@ object CalculatePolka {
 
     fun createPolki(line: String): List<Polka> {
 
-        return line.lines().map {
+        return line.lines().filter { it.trim().isNotEmpty() }.map {
             polka(it.split(*sep).filter { it.isNotEmpty() })
         }
     }

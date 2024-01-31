@@ -1,7 +1,10 @@
 package vectors
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import kotlin.math.*
 
+@Immutable
 data class Vec2(@JvmField val x: Double,@JvmField val y: Double) {
 
     operator fun plus(other: Vec2): Vec2 {
@@ -35,7 +38,7 @@ data class Vec2(@JvmField val x: Double,@JvmField val y: Double) {
 
     companion object {
 
-        val Zero get() = Vec2(0.0, 0.0)
+        val Zero = Vec2(0.0, 0.0)
 
         fun lerp(a: Vec2, b: Vec2, t: Double): Vec2 {
             return Vec2(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t)

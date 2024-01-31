@@ -1,6 +1,7 @@
 package com.kos.boxdrawer.detal.box
 
 import turtoise.Orientation
+import turtoise.ZigzagInfo
 import kotlin.math.max
 import kotlin.math.min
 
@@ -14,7 +15,7 @@ class Polka {
     var cellCount = 0
     var visible: Boolean = true
 
-    var calc = PolkaInfo(0.0, 0.0, 0.0, 0.0, 0)
+    var calc = PolkaInfo(0.0, 0.0, 0.0, 0.0, 0, 0)
 
 
     val endCell : Int get() { return startCell + cellCount }
@@ -72,7 +73,8 @@ class PolkaInfo(
     var sY: Double,
     var eX: Double,
     var eY: Double,
-    var index : Int
+    var index : Int,
+    var id:Int
 ){
     fun Setup(sX: Double, sY: Double, eX:Double, eY:Double)
     {
@@ -94,6 +96,20 @@ data class WaldParam(
     val bottomForm: PazForm,
 ){
     val verticalOffset: Double get() = topOffset + bottomOffset
+
+    fun fullBottomOffset(boardWeight:Double) :Double = offsetValue(bottomForm, bottomOffset, boardWeight)
+    fun fullTopOffset(boardWeight:Double) :Double = offsetValue(topForm, topOffset, boardWeight)
+
+
+    fun offsetValue(form:PazForm, offset:Double, boardWeight:Double): Double{
+        return when(form){
+            PazForm.None -> 0.0
+            PazForm.Paz -> boardWeight
+            PazForm.Hole -> holeWeight+offset
+            PazForm.BackPaz -> boardWeight
+            PazForm.Flat -> boardWeight
+        }
+    }
 }
 
 class PolkaSort
@@ -102,8 +118,12 @@ class PolkaSort
     var vList = listOf<Polka>();
     var calcList = listOf<Polka>();
 
-    var pazDelta = 0.0;
-    var pazWidth = 0.0
+   // var pazDelta = 0.0;
+   // var pazWidth = 0.0
+
+    var zigPolkaH: ZigzagInfo =ZigzagInfo(15.0, 35.0)
+    var zigPolkaPol: ZigzagInfo =ZigzagInfo(15.0, 35.0)
+
 
 
 

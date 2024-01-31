@@ -28,8 +28,10 @@ enum class Orientation {
     Vertical,
 }
 
-class DrawingParam {
-    var orientation: Orientation = Orientation.Horizontal
-    var reverse: Boolean = false
-    var back: Boolean = false
+data class DrawingParam(
+    val orientation: Orientation = Orientation.Horizontal,
+    val reverse: Boolean = false,
+    val back: Boolean = false,
+) {
+
 }

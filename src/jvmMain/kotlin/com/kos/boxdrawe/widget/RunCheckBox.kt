@@ -2,16 +2,20 @@ package com.kos.boxdrawe.widget
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.onClick
+import androidx.compose.foundation.selection.triStateToggleable
+import androidx.compose.material.*
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.material.Button
-import androidx.compose.material.Checkbox
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
@@ -23,7 +27,7 @@ fun RunCheckBox(
     onCheckedChange: (Boolean) -> Unit,
 
 ) = Row(){
-    Checkbox(
+    CheckboxK(
         checked = checked,
         onCheckedChange = onCheckedChange,
         modifier = Modifier.align(Alignment.CenterVertically),
@@ -39,10 +43,52 @@ fun RunCheckBox(
     )
 }
 
+@Composable
+fun CheckboxK(checked: Boolean,
+              onCheckedChange: ((Boolean) -> Unit)?,
+              modifier: Modifier = Modifier,
+              enabled: Boolean = true,
+              interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+              colors: CheckboxColors = CheckboxDefaults.colors()
+){
+    val onClick = if (onCheckedChange != null) { { onCheckedChange(!checked) } } else null
+    val state = ToggleableState(checked)
+
+    val toggleableModifier =
+        if (onClick != null) {
+            Modifier.triStateToggleable(
+                state = state,
+                onClick = onClick,
+                enabled = enabled,
+                role = Role.Checkbox,
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = false,
+                    radius = 16.dp
+                )
+            )
+        } else {
+            Modifier
+        }
+
+    Box(
+//        enabled = enabled,
+     //   value = state,
+        modifier = modifier
+            .then(toggleableModifier)
+            .padding(2.dp).size(20.dp).background(
+                color = colors.checkmarkColor(ToggleableState.On).value
+            ).border(1.dp, color = colors.borderColor(enabled, state).value)
+            .padding(4.dp).background(
+                color = colors.boxColor(enabled,state).value
+            ),
+   //     colors = colors
+    )
+}
 
 @Composable
 @Preview
-fun RunCheckBox(){
+private fun RunCheckBoxPreview(){
     MaterialTheme {
         RunCheckBox(true,"Нарисовать деталь",{})
     }

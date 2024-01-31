@@ -379,6 +379,14 @@ class Tortoise {
             param: DrawingParam,
             boardWeight: Double
         ) {
+            val bot = if (param.back) -1 else 1
+            val z = 0.0
+            val angleV = if (param.orientation == Orientation.Vertical) (angle + Math.PI / 2) else angle
+
+            if (!zig.enable){
+                points.add(Vec2(width * bot, z).rotate(angleV) + origin)
+                return
+            }
             var zigzagWidthV = zig.width
             var deltaV = zig.delta
 
@@ -387,23 +395,32 @@ class Tortoise {
             }
             if (zigzagWidthV > deltaV) {
                 zigzagWidthV = deltaV - boardWeight * 2
-                if (zigzagWidthV < boardWeight) return
+                if (zigzagWidthV < boardWeight) {
+                    points.add(Vec2(width * bot, z).rotate(angleV) + origin)
+                    return
+                }
             }
-            val bot = if (param.back) -1 else 1
+
+
+
             val distance = deltaV - zigzagWidthV
             val count = truncate(width / deltaV).toInt()
 
             var offset: Double = (width - deltaV * count + distance) / 2 * bot
 
-            val weight = if (param.reverse) -boardWeight else boardWeight
-            val angleV = if (param.orientation == Orientation.Vertical) (angle + Math.PI / 2) else angle
+            val zv = if (zig.height == 0.0) boardWeight else zig.height
+            val weight = if (param.reverse) -zv else zv
+
 
             deltaV *= bot.toDouble()
             val zw = zigzagWidthV * bot
-            if (count > 10000) return
+            if (count > 10000) {
+                points.add(Vec2(width * bot, z).rotate(angleV) + origin)
+                return
+            }
 
             offset += 0.0
-            val z = 0.0
+
             for (i in 0 until count) {
                 points.add(Vec2(offset, z).rotate(angleV) + origin)
                 points.add(Vec2(offset, z + weight).rotate(angleV) + origin)

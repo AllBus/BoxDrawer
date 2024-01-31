@@ -10,11 +10,11 @@ class TortoiseState {
     var zigDelta = 30.0
     var zigWidth = 15.0
 
-    var zigParam = DrawingParam().apply{
-        orientation = Orientation.Horizontal
-        reverse = false
-        back = false
-    }
+    var zigParam = DrawingParam(
+        orientation = Orientation.Horizontal,
+        reverse = false,
+        back = false,
+    )
 
     fun from(other: TortoiseState): TortoiseState {
         x = other.x
@@ -22,9 +22,11 @@ class TortoiseState {
         a = other.a
         zigDelta = other.zigDelta
         zigWidth = other.zigWidth
-        zigParam.reverse = other.zigParam.reverse
-        zigParam.back = other.zigParam.back
-        zigParam.orientation = other.zigParam.orientation
+        zigParam = DrawingParam(
+            orientation = other.zigParam.orientation,
+            reverse = other.zigParam.reverse,
+            back = other.zigParam.back,
+        )
         return this
     }
 
@@ -63,10 +65,10 @@ class TortoiseState {
         zigDelta = 30.0
         zigWidth = 15.0
 
-        zigParam = DrawingParam().apply{
-            orientation = Orientation.Horizontal
-            reverse = false
-            back = false
-        }
+        zigParam = DrawingParam(
+            orientation = Orientation.Horizontal,
+            reverse = false,
+            back = false,
+        )
     }
 }
