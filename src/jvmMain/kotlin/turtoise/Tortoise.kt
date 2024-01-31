@@ -439,6 +439,10 @@ class Tortoise {
             param: DrawingParam,
             boardWeight: Double
         ): List<IFigure> {
+            if (!zig.enable){
+                return emptyList()
+            }
+
             var zigzagWidthV = zig.width
             var deltaV = zig.delta
 

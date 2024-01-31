@@ -6,27 +6,34 @@ import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.presentation.ZigZagState
 
 @Composable
 fun ZigZagInput(
     modifier: Modifier = Modifier,
     title:String,
     drawNames:Boolean = true,
-    checked: MutableState<Boolean>,
-    widthInput: NumericTextFieldState,
-    deltaInput: NumericTextFieldState,
-    heightInput: NumericTextFieldState
+    zigState: ZigZagState,
 ) {
+    val Wchecked = remember { zigState.enable }
+    val WwidthInput = remember { zigState.width }
+    val WdeltaInput = remember { zigState.delta }
+    val WheightInput = remember { zigState.height }
+
     Column(modifier = modifier) {
         Label(title, singleLine = true)
-        NumericUpDown(if (drawNames) "Длина паза" else "", "", widthInput)
-        NumericUpDown(if (drawNames) "Дельта" else "", "", deltaInput)
-        NumericUpDown(if (drawNames) "Толщина паза" else "", "", heightInput)
-        RunCheckBox(checked.value, if (drawNames) "Есть" else "", { c -> checked.value = c })
+        NumericUpDown(if (drawNames) "Длина паза" else "", "", WwidthInput)
+        NumericUpDown(if (drawNames) "Дельта" else "", "", WdeltaInput)
+        NumericUpDown(if (drawNames) "Толщина паза" else "", "", WheightInput)
+        RunCheckBox(Wchecked.value, if (drawNames) "Есть" else "", { c ->
+            Wchecked.value = c
+            zigState.redrawBox()
+        })
     }
 }
 
@@ -54,7 +61,7 @@ fun ZigZagLabel(
         )
         Text(
             modifier = Modifier.padding(vertical = 6.dp),
-            text = "Толщина",
+            text = "Ширина",
             fontSize = LocalTextStyle.current.fontSize,
             softWrap = false,
             textAlign = TextAlign.End,

@@ -199,6 +199,7 @@ object BoxCad {
         wald: WaldParam,
     ):PolkaResult{
 
+        // Половина толщины доски для определения центра
         val dwe2 = drawerSettings.holeWeight / 2
         val or = polka.orientation
 
@@ -458,6 +459,7 @@ object BoxCad {
         polki: PolkaSort,
     ): IFigure {
 
+        // две толщины доски
         val ap = drawerSettings.boardWeight * 2
         val p = DrawingParam(
             orientation = Orientation.Horizontal,
@@ -477,17 +479,16 @@ object BoxCad {
 
         val polkaVerticalOffset = wald.fullBottomOffset(bw)+wald.fullTopOffset(bw)
 
-        val holeW = ZigzagInfo(
+        val holeW = zigW.copy(
             width = zigW.width - drawerSettings.holeDrop,
-            delta = zigW.delta
         )
 
-        val holeH = ZigzagInfo(
+        val holeH = zigH.copy(
             width = zigH.width - drawerSettings.holeDrop,
             delta = zigH.delta
         )
 
-        val holeWe = ZigzagInfo(
+        val holeWe = zigWe.copy(
             width = zigWe.width - drawerSettings.holeDrop,
             delta = zigWe.delta
         )

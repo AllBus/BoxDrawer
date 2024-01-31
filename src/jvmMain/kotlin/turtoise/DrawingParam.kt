@@ -10,6 +10,10 @@ data class DrawerSettings(
     val holeWeight : Double = 4.05,
 
     /**
+    ///  Уменьшение длины зигзага
+     */
+    val zigDrop : Double = 0.5,
+    /**
     ///  Уменьшение длины отверстия
      */
     val holeDrop : Double = 0.5,
