@@ -8,9 +8,14 @@ import vectors.Vec2.Companion.coordForX
 import vectors.Vec2.Companion.coordForY
 
 class FigurePolyline(points: List<Vec2>) : FigurePolygon(points) {
+
+    constructor(points: List<Vec2> ,close:Boolean): this( points +
+            if (close) listOfNotNull(points.firstOrNull()) else emptyList() )
     override fun create(points: List<Vec2>): FigurePolygon {
         return FigurePolyline(points)
     }
+
+
 
     override fun crop(k: Double, cropSide: CropSide): IFigure {
         if (points.size < 2) {

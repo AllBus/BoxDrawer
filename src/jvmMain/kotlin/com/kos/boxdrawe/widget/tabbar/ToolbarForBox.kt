@@ -10,26 +10,28 @@ import androidx.compose.ui.res.painterResource
 import com.kos.boxdrawe.presentation.BoxData
 import com.kos.boxdrawe.widget.*
 import com.kos.boxdrawe.widget.model.ButtonData
+import com.kos.boxdrawer.detal.box.PazExt
 import kotlinx.coroutines.launch
 
 @Composable
 fun ToolbarForBox(vm: BoxData) {
 
     var insideChecked by remember { vm.insideChecked }
+    var polkiInChecked by remember { vm.polkiInChecked }
 
     val width = remember { vm.width }
     val height = remember { vm.height }
     val weight = remember { vm.weight }
     val text = rememberSaveable(key = "ToolbarForBox.Text") { vm.text }
     val coroutineScope = rememberCoroutineScope()
-    val selectZigTopId = remember{ mutableStateOf(1) }
-    val selectZigBottomId = remember{ mutableStateOf(0) }
+    val selectZigTopId = remember { vm.selectZigTopId }
+    val selectZigBottomId = remember { vm.selectZigBottomId }
 
     val zigVariants = listOf(
-        ButtonData(0, painterResource("drawable/act_hole.png")),
-        ButtonData(1, painterResource("drawable/act_line.png")),
-        ButtonData(2, painterResource("drawable/act_paz.png")),
-        ButtonData(3, painterResource("drawable/act_paz_in.png")),
+        ButtonData(PazExt.PAZ_NONE, painterResource("drawable/act_line.png")),
+        ButtonData(PazExt.PAZ_HOLE, painterResource("drawable/act_hole.png")),
+        ButtonData(PazExt.PAZ_PAZ, painterResource("drawable/act_paz.png")),
+        //   ButtonData(PazExt.PAZ_BACK, painterResource("drawable/act_paz_in.png")),
     )
 
     Row(
@@ -42,9 +44,23 @@ fun ToolbarForBox(vm: BoxData) {
             NumericUpDown("Ширина", "мм", height)
             NumericUpDown("Высота", "мм", weight)
             Label("Форма соединения крышки", Modifier.align(Alignment.End))
-            SegmentButton(selectZigTopId, zigVariants, Modifier.align(Alignment.End)) { id -> selectZigTopId.value = id }
+            SegmentButton(
+                selectZigTopId,
+                zigVariants,
+                Modifier.align(Alignment.End)
+            ) { id ->
+                selectZigTopId.value = id
+                vm.redrawBox()
+            }
             Label("Форма соединения дна", Modifier.align(Alignment.End))
-            SegmentButton(selectZigBottomId, zigVariants, Modifier.align(Alignment.End)) { id -> selectZigBottomId.value = id }
+            SegmentButton(
+                selectZigBottomId,
+                zigVariants,
+                Modifier.align(Alignment.End)
+            ) { id ->
+                selectZigBottomId.value = id
+                vm.redrawBox()
+            }
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
@@ -52,7 +68,18 @@ fun ToolbarForBox(vm: BoxData) {
             RunCheckBox(
                 checked = insideChecked,
                 title = "Размеры по внутреннему объёму",
-                onCheckedChange = { c -> insideChecked = c },
+                onCheckedChange = { c ->
+                    insideChecked = c
+                    vm.redrawBox()
+                },
+            )
+            RunCheckBox(
+                checked = polkiInChecked,
+                title = "Учитывать толщину полки",
+                onCheckedChange = { c ->
+                    polkiInChecked = c
+                    vm.redrawBox()
+                },
             )
             EditText("Фигуры", "", text, true) { vm.createBox(it) }
         }

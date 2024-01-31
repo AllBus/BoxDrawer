@@ -432,6 +432,9 @@ class Tortoise {
                 zigzagWidthV = deltaV - boardWeight * 2
                 if (zigzagWidthV < boardWeight) return emptyList()
             }
+
+            val angle = if (param.orientation == Orientation.Vertical) (angle + Math.PI / 2) else angle
+
             val bot = if (param.back) -1 else 1
             val distance = deltaV - zigzagWidthV
             val count = truncate(width / deltaV).toInt()

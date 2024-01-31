@@ -24,7 +24,8 @@ class BoxAlgorithm(
             zigH,
             zigWe,
             ds,
-            wald
+            wald,
+            PolkaSort()
         )
     }
 
