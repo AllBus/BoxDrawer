@@ -96,8 +96,8 @@ object CalculatePolka {
             ps.calcList+=p;
         } // end for
 
-        ps.vList.sortedBy{a -> a.calc.sX};
-        ps.hList.sortedBy{a -> a.calc.sY};
+        ps.vList = ps.vList.sortedBy{a -> a.calc.sX}
+        ps.hList = ps.hList.sortedBy{a -> a.calc.sY}
 
         val dv = mutableListOf<Polka>();
         var pred = Double.MIN_VALUE;

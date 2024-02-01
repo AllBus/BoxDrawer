@@ -38,8 +38,13 @@ class Tools() : ITools {
            // InputStreamReader(input).use { r -> r.readLines().forEach(::println) }
             val settings = XML.decodeFromReader<FullSettings>(StAXReader(input, "UTF-8"))
             settingsList.value = settings.properties
-            drawingSettings.value = settingsList.value.group.firstOrNull()?: DrawerSettings()
+            selectSettings(settingsList.value.group.firstOrNull()?: DrawerSettings())
+
         }
+    }
+
+    fun selectSettings(newDs: DrawerSettings){
+        drawingSettings.value = newDs.copy()
     }
 
     init {

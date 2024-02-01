@@ -119,7 +119,7 @@ class DxfFigureDrawer(
     }
 
     override fun setColor(color: Int) {
-        g.color = Color(color, true)
+        g.color = Color(color, false)
     }
 
     override fun getColor(): Int {

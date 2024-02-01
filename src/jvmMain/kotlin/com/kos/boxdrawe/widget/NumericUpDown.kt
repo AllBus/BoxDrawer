@@ -30,10 +30,11 @@ import com.kos.boxdrawe.themes.ThemeColors
 @Composable
 fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
                   fieldMaxWidth: Dp = 160.dp,
+                  modifier: Modifier = Modifier,
                   enabled : Boolean = true) {
     //var text by remember { mutableStateOf(title) }
     Row(
-        modifier = Modifier.padding(2.dp),
+        modifier = modifier.padding(2.dp),
         verticalAlignment = Alignment.Bottom
     ) {
 
@@ -175,8 +176,6 @@ class NumericTextFieldState(
 
             updateAction(decimal)
         }
-
-
     }
 
     val text get() = String.format("%1$,.${digits}f", decimal);

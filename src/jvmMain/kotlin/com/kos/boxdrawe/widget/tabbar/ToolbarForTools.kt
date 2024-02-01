@@ -3,12 +3,14 @@ package com.kos.boxdrawe.widget.tabbar
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.ToolsData
 import com.kos.boxdrawe.widget.NumericUpDown
@@ -58,6 +60,7 @@ fun ToolbarForTools(vm: ToolsData) {
                 settingsList.value.group.forEach { item ->
                     DropdownMenuItem(
                         onClick = {
+                            vm.selectSettings(item)
                             selectedMovie.value = item
                             expanded.value = false
                         },
@@ -74,8 +77,9 @@ fun ToolbarForTools(vm: ToolsData) {
         ) {
             Text(
                 text = "Доска",
-                modifier = Modifier,
+                modifier = Modifier.fillMaxWidth(),
                 softWrap = false,
+                textAlign = TextAlign.Center
             )
             NumericUpDown("Толщина", "мм", boardWeight)
         }
@@ -84,12 +88,13 @@ fun ToolbarForTools(vm: ToolsData) {
         ) {
             Text(
                 text = "Отверстие",
-                modifier = Modifier,
+                modifier = Modifier.fillMaxWidth(),
                 softWrap = false,
+                textAlign = TextAlign.Center
             )
             NumericUpDown("Ширина", "мм", holeWeight)
-            NumericUpDown("Уменьшение длины отверстия", "мм", holeDrop)
-            NumericUpDown("Уменьшение высоты отверстия", "мм", holeDropHeight)
+            NumericUpDown("Уменьшение длины", "мм", holeDrop)
+            NumericUpDown("Уменьшение высоты", "мм", holeDropHeight)
             NumericUpDown("Отступ от края", "мм", holeOffset)
         }
     }

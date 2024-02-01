@@ -3,12 +3,8 @@ package com.kos.boxdrawe.drawer
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Matrix
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PointMode
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
-import androidx.compose.ui.graphics.rotate
 import vectors.Vec2
 import java.awt.geom.AffineTransform
 
@@ -93,11 +89,11 @@ class ComposeFigureDrawer(
 
 
     override fun setColor(color: Int) {
-        penColor = Color(color)
+        penColor = Color(color).copy(alpha = 1.0f)
     }
 
     override fun getColor():Int {
-        return penColor.value.toInt()
+        return penColor.toArgb()
     }
 
     inline val Vec2.vec get(): Offset = Offset(this.x.toFloat(), this.y.toFloat())

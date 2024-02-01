@@ -158,12 +158,11 @@ class PolkaSort
 
         val l = calcList.filter { c ->
             c.orientation == or
-        }.filter { c ->
-            c.intersect(p)
-        }.filter{ c -> c.startCell != p.calc.index && c.endCell != p.calc.index}.sortedWith( Comparator { a, b
-            ->
-            if(or == Orientation.Vertical) a.calc.sX.compareTo(b.calc.sX) else a.calc.sY.compareTo(b.calc.sY)
-        })
+        }.filter { c -> c.intersect(p)
+        }.filter{ c -> c.startCell != p.calc.index && c.endCell != p.calc.index
+        }.sortedWith { a, b->
+            if (or == Orientation.Vertical) a.calc.sX.compareTo(b.calc.sX) else a.calc.sY.compareTo(b.calc.sY)
+        }
 
         val start = findStart(p);
         val end = findEnd(p);

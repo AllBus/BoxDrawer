@@ -28,8 +28,8 @@ class BoxData(val tools: ITools) {
 
 
         val wald = WaldParam(
-            topOffset = tools.ds().holeOffset,
-            bottomOffset = tools.ds().holeOffset,
+            topOffset =  topOffset.decimal, //  tools.ds().holeOffset,
+            bottomOffset = bottomOffset.decimal,//tools.ds().holeOffset,
             holeOffset = tools.ds().holeOffset,
             holeWeight = tools.ds().holeWeight,
             topForm = PazExt.intToPaz(selectZigTopId.value),
@@ -65,6 +65,7 @@ class BoxData(val tools: ITools) {
             drawerSettings = tools.ds(),
             waldParams = wald,
             polki = calc,
+            alternative = alternative.value
         )
     }
 
@@ -87,8 +88,11 @@ class BoxData(val tools: ITools) {
     val width = NumericTextFieldState(100.0) { redrawBox() }
     val height = NumericTextFieldState(50.0) { redrawBox() }
     val weight = NumericTextFieldState(60.0) { redrawBox() }
+    val topOffset = NumericTextFieldState(2.0) { redrawBox() }
+    val bottomOffset = NumericTextFieldState(2.0) { redrawBox() }
     var insideChecked = mutableStateOf(false)
     var polkiInChecked = mutableStateOf(false)
+    var alternative = mutableStateOf(true)
     val text = mutableStateOf("")
 
 
