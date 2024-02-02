@@ -693,8 +693,8 @@ object BoxCad {
 
                             Orientation.Horizontal -> {
                                 val r = f.rect()
-                                sList += FigureTranslate(f,  pBottom+Vec2( po.calc.sX, 0.0))
-                                pBottom +=  Vec2(0.0, r.height+bw)
+                                sList += FigureTranslate(f ,  pBottom+Vec2( po.calc.sX, 0.0))
+                                pBottom += Vec2(0.0, r.height+bw)
                             }
 
                             else -> {

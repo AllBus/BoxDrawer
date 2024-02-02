@@ -21,6 +21,7 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar.tabs
 import javax.swing.UIManager
 import androidx.compose.material.Text
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -101,7 +102,8 @@ fun App() {
                         Text(
                             text = helpText,
                             modifier = Modifier.width(350.dp).wrapContentHeight().align(Alignment.TopStart).padding(8.dp),
-                            fontSize = 10.sp
+                            fontSize = 10.sp,
+                            lineHeight = 12.sp,
                         )
                     }
                     TAB_SOFT -> {

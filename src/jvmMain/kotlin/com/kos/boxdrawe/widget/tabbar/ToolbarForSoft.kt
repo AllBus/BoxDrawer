@@ -61,17 +61,17 @@ fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
                 modifier = Modifier,
                 softWrap = false,
             )
-
             NumericUpDown("X", "мм", cellWidthDistance)
             NumericUpDown("Y", "мм", cellHeightDistance)
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            RunButton("Нарисовать деталь", { coroutineScope.launch {
-                showFileChooser { f -> vm.saveRez(f, figures()) }
+            RunButton("Нарисовать деталь") {
+                coroutineScope.launch {
+                    showFileChooser { f -> vm.saveRez(f, figures()) }
+                }
             }
-            })
         }
     }
 }

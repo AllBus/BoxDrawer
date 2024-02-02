@@ -19,7 +19,7 @@ object TortoiseParser {
 
     private val sep = charArrayOf(' ', '\t', ';', '\n')
 
-    private fun closeBrace(brace: Char): Char {
+    fun closeBrace(brace: Char): Char {
         return when (brace) {
             ')' -> '('
             ']' -> '['
@@ -88,9 +88,9 @@ object TortoiseParser {
 
     }
 
-    fun parseSkobki(a: String): TurtoiseParserStackItem {
-        val stack = Stack<TurtoiseParserStackItem>();
-        val top = TurtoiseParserStackItem();
+    fun parseSkobki(a: String): TurtoiseParserStackBlock {
+        val stack = Stack<TurtoiseParserStackBlock>();
+        val top = TurtoiseParserStackBlock();
         var item = top;
 
         var predIndex = 0;
@@ -104,7 +104,7 @@ object TortoiseParser {
                     val d = if (predIndex >= i) "" else a.substring(predIndex, i)
                     predIndex = i + 1;
 
-                    val next = TurtoiseParserStackItem(
+                    val next = TurtoiseParserStackBlock(
                         skobka = c
                     )
 
@@ -124,7 +124,7 @@ object TortoiseParser {
                     item.add(d.split(' ').filter { v -> v.isNotEmpty() })
 
                     val clo = closeBrace(c);
-                    var pi: TurtoiseParserStackItem?
+                    var pi: TurtoiseParserStackBlock?
                     do {
                         if (stack.isEmpty()) {
                             pi = null;
@@ -146,7 +146,13 @@ object TortoiseParser {
         return top;
     }
 
+    fun asDouble(text:String?): Double{
+        return text?.toDoubleOrNull()?:0.0
+    }
 
+    fun asDouble(text:String?, defaultValue: Double): Double{
+        return text?.toDoubleOrNull()?:defaultValue
+    }
 
 
 
