@@ -6,6 +6,8 @@ import figure.matrix.FigureMatrixScale
 import figure.matrix.FigureMatrixTranslate
 import vectors.Vec2
 import java.util.*
+import kotlin.math.PI
+import kotlin.math.atan2
 import kotlin.math.min
 import kotlin.math.truncate
 
@@ -55,10 +57,6 @@ class Tortoise {
             val com = commands[i]
 
             when (com.command) {
-                TortoiseCommand.TURTOISE_SPLIT -> {
-                    saveLine()
-                }
-
                 TortoiseCommand.TURTOISE_CLEAR -> state.clear()
                 TortoiseCommand.TURTOISE_CIRCLE -> {
                     val r = com.take(0, 0.0, memory)
@@ -137,11 +135,19 @@ class Tortoise {
                 }
 
                 TortoiseCommand.TURTOISE_ANGLE -> {
-                    state.a = com.value(memory)
+                    if (com.size == 2){
+                        state.a = calculateAngle(com[0,memory], com[1,memory])
+                    }else {
+                        state.a = com.value(memory)
+                    }
                 }
 
                 TortoiseCommand.TURTOISE_ANGLE_ADD -> {
-                    state.a += com.value(memory)
+                    if (com.size == 2) {
+                        state.a += calculateAngle(com[0, memory], com[1, memory])
+                    }else {
+                        state.a += com.value(memory)
+                    }
                 }
 
                 TortoiseCommand.TURTOISE_LINE -> {
@@ -177,10 +183,14 @@ class Tortoise {
                 }
 
                 TortoiseCommand.TURTOISE_CLOSE -> {
-                    if (result.size > 1) {
+                    if (result.size > 2) {
                         result.add(result.first())
                         saveLine()
                     }
+                }
+
+                TortoiseCommand.TURTOISE_SPLIT -> {
+                    saveLine()
                 }
 
                 TortoiseCommand.TURTOISE_RECTANGLE -> {
@@ -367,6 +377,10 @@ class Tortoise {
         saveLine()
         return res
 
+    }
+
+    private fun calculateAngle(y: Double, x: Double): Double {
+        return atan2(y, x)*180.0/ PI
     }
 
     companion object {

@@ -1,5 +1,7 @@
 package turtoise
 
+import turtoise.TortoiseCommand.Companion.commandToName
+
 interface TortoiseCommand {
     val command: Char
     val size: Int
@@ -13,6 +15,8 @@ interface TortoiseCommand {
 
     fun value(memory: TortoiseMemory) = take(0, 0.0, memory)
 
+     fun print():String
+
     companion object {
         fun create(currentCommand: Char, currentValues: MutableList<String>): TortoiseCommand {
             if (currentValues.size == 0) {
@@ -24,6 +28,42 @@ interface TortoiseCommand {
                 } ?: SmallTortoiseCommand(currentCommand, currentValues[0])
             }
             return UniTortoiseCommand(currentCommand, currentValues)
+        }
+
+        fun commandToName(c:Char):String
+        {
+            return when (c) {
+                TURTOISE_ZIGZAG -> "TURTOISE_ZIGZAG"
+                TURTOISE_VERTICAL -> "TURTOISE_VERTICAL"
+                TURTOISE_SPLINE -> "TURTOISE_SPLINE"
+                TURTOISE_RECTANGLE -> "TURTOISE_RECTANGLE"
+                TURTOISE_POLYLINE -> "TURTOISE_POLYLINE"
+                TURTOISE_MOVE -> "TURTOISE_MOVE"
+                TURTOISE_LINE -> "TURTOISE_LINE"
+                TURTOISE_LINE_WITH_ANGLE -> "TURTOISE_LINE_WITH_ANGLE"
+                TURTOISE_LINE_PERPENDICULAR -> "TURTOISE_LINE_PERPENDICULAR"
+                TURTOISE_HORIZONTAL -> "TURTOISE_HORIZONTAL"
+                TURTOISE_ELLIPSE -> "TURTOISE_ELLIPSE"
+                TURTOISE_CIRCLE -> "TURTOISE_CIRCLE"
+                TURTOISE_BEZIER -> "TURTOISE_BEZIER"
+                TURTOISE_ANGLE -> "TURTOISE_ANGLE"
+                TURTOISE_ANGLE_ADD -> "TURTOISE_ANGLE_ADD"
+                TURTOISE_SPLIT -> "TURTOISE_SPLIT"
+                TURTOISE_CLEAR -> "TURTOISE_CLEAR"
+                TURTOISE_CLOSE -> "TURTOISE_CLOSE"
+                TURTOISE_SAVE -> "TURTOISE_SAVE"
+                TURTOISE_LOAD-> "TURTOISE_LOAD"
+                TURTOISE_PEEK -> "TURTOISE_PEEK"
+                TURTOISE_METHOD_NAME -> "TURTOISE_METHOD_NAME"
+                TURTOISE_METHOD_RUN -> "TURTOISE_METHOD_RUN"
+                TURTOISE_LOOP -> "TURTOISE_LOOP"
+                TURTOISE_END_LOOP -> "TURTOISE_END_LOOP"
+                TURTOISE_MATRIX_ROTATE -> "TURTOISE_MATRIX_ROTATE"
+                TURTOISE_MATRIX_TRANSLATE -> "TURTOISE_MATRIX_TRANSLATE"
+                TURTOISE_MATRIX_SCALE -> "TURTOISE_MATRIX_SCALE"
+                TURTOISE_MEMORY_ASSIGN -> "TURTOISE_MEMORY_ASSIGN"
+                else -> c.toString()
+            }
         }
 
         const val TURTOISE_ZIGZAG = 'z';
@@ -45,7 +85,7 @@ interface TortoiseCommand {
         const val TURTOISE_CLEAR = '!';
         const val TURTOISE_CLOSE = '`';
         const val TURTOISE_SAVE = 'Q';
-        const val TURTOISE_LOAD = 'W';
+        var TURTOISE_LOAD = 'W';
         const val TURTOISE_PEEK = 'E';
         const val TURTOISE_METHOD_NAME = '@';
         const val TURTOISE_METHOD_RUN = '=';
@@ -57,10 +97,18 @@ interface TortoiseCommand {
         const val TURTOISE_MEMORY_ASSIGN = '='
 
         fun Move(x: Double) = DoubleTortoiseCommand(TURTOISE_MOVE, x)
+        fun Move(x: String) = SmallTortoiseCommand(TURTOISE_MOVE, x)
         fun Move(x: Double, y: Double) = TwoDoubleTortoiseCommand(TURTOISE_MOVE, x, y)
         fun Move(x: String, y: String) = UniTortoiseCommand(TURTOISE_MOVE, listOf(x, y))
+
+
         fun Line(x: Double) = DoubleTortoiseCommand(TURTOISE_LINE, x)
+        fun Line(x: String) = SmallTortoiseCommand(TURTOISE_LINE, x)
         fun Line(x: Double, y: Double) = TwoDoubleTortoiseCommand(TURTOISE_LINE, x, y)
+        fun Line(x: String, y: String) = UniTortoiseCommand(TURTOISE_LINE, listOf(x, y))
+
+        /** Завершить рисование текущей линии */
+        fun Split() = ZeroTortoiseCommand(TURTOISE_SPLIT)
 
         fun Rectangle(width: Double, height: Double) = TwoDoubleTortoiseCommand(TURTOISE_RECTANGLE, width, height)
         fun Rectangle(width: String, height: String) = UniTortoiseCommand(TURTOISE_RECTANGLE, listOf(width, height))
@@ -70,12 +118,18 @@ interface TortoiseCommand {
         fun Arc(r: Double, startAngle: Double, endAngle: Double) =
             ThreeDoubleTortoiseCommand(TURTOISE_CIRCLE, r, startAngle, endAngle)
 
+        fun Ellipse(r1: Double, r2 :Double) = TwoDoubleTortoiseCommand(TURTOISE_ELLIPSE, r1, r2)
+
         fun Angle(angle: Double) = DoubleTortoiseCommand(TURTOISE_ANGLE, angle)
         fun Angle(angle: String) = SmallTortoiseCommand(TURTOISE_ANGLE, angle)
+
+        fun AngleAdd(angle: Double) = DoubleTortoiseCommand(TURTOISE_ANGLE_ADD, angle)
+        fun AngleAdd(angle: String) = SmallTortoiseCommand(TURTOISE_ANGLE_ADD, angle)
 
         fun Polyline(points: List<String>) = UniTortoiseCommand(TURTOISE_POLYLINE, points)
         fun PolylineDouble(points: List<Double>) = ListDoubleTortoiseCommand(TURTOISE_POLYLINE, points)
 
+        /** Нарисовать зигзаги*/
         fun Zig(startPosition: Double, height: Double, length: Double) = ListDoubleTortoiseCommand(
             TURTOISE_LINE, listOf(
                 startPosition,
@@ -85,6 +139,7 @@ interface TortoiseCommand {
             )
         )
 
+        /** Нарисовать зигзаги с наклоном*/
         fun SuperZig(startPosition: Double, height: Double, length: Double, angle: Double): TortoiseCommand {
 
             val si = Math.abs(Math.cos(angle * Math.PI / 180))
@@ -105,13 +160,26 @@ interface TortoiseCommand {
             }
         }
 
+        /** Построить линию от текущей точки к началу линии. Получаем многоугольник*/
         fun ClosePolygon() = ZeroTortoiseCommand(TURTOISE_CLOSE)
+
+        /** Сохранить текущее состояние черепашки в стек */
         fun Save() = ZeroTortoiseCommand(TURTOISE_SAVE)
+
+        /** Достать из стека предыдущее стостояние черепеашки и воссановть её*/
         fun Load() = ZeroTortoiseCommand(TURTOISE_LOAD)
 
+        /** Восстановить состояние черапшки*/
         fun Peek() = ZeroTortoiseCommand(TURTOISE_PEEK)
+
+        /** Сбросить состояние черапшки к первоначальныму*/
         fun Clear() = ZeroTortoiseCommand(TURTOISE_CLEAR)
 
+        /** Начало цикла черепашки*/
+        fun StartLoop(count: Int) = DoubleTortoiseCommand(TURTOISE_LOOP, count.toDouble())
+
+        /** Конец цикла черепашки */
+        fun EndLoop() = ZeroTortoiseCommand(TURTOISE_END_LOOP)
     }
 }
 
@@ -131,6 +199,10 @@ class SmallTortoiseCommand(
     override fun assign(memory: TortoiseMemory) {
         memory.clear(value)
     }
+
+    override fun print(): String {
+        return "SmallTortoiseCommand(${commandToName(command)}, \"$value\")"
+    }
 }
 
 class DoubleTortoiseCommand(
@@ -144,6 +216,10 @@ class DoubleTortoiseCommand(
         if (index == 0)
             return value
         return defaultValue
+    }
+
+    override fun print(): String {
+        return "DoubleTortoiseCommand(${commandToName(command)}, $value)"
     }
 }
 
@@ -161,6 +237,10 @@ class TwoDoubleTortoiseCommand(
         if (index == 1)
             return value1
         return defaultValue
+    }
+
+    override fun print(): String {
+        return "TwoDoubleTortoiseCommand(${commandToName(command)}, $value0, $value1)"
     }
 }
 
@@ -182,6 +262,10 @@ class ThreeDoubleTortoiseCommand(
             return value2
         return defaultValue
     }
+
+    override fun print(): String {
+        return "ThreeDoubleTortoiseCommand(${commandToName(command)}, $value0, $value1, $value2)"
+    }
 }
 
 class ListDoubleTortoiseCommand(
@@ -196,40 +280,10 @@ class ListDoubleTortoiseCommand(
             return values[index]
         return defaultValue
     }
-}
 
-class ZeroTortoiseCommand(
-    override val command: Char,
-) : TortoiseCommand {
-    override val size: Int
-        get() = 0
-
-    override fun take(index: Int, defaultValue: Double, memory: TortoiseMemory): Double {
-        return defaultValue
-    }
-}
-
-class UniTortoiseCommand(
-    override val command: Char,
-    private val values: List<String>,
-) : TortoiseCommand {
-    override val size: Int
-        get() = values.size
-
-    override fun take(index: Int, defaultValue: Double, memory: TortoiseMemory): Double {
-        if (index >= 0 && index < values.size)
-            return memory.value(values[index], defaultValue)
-        return defaultValue
-    }
-
-    override fun assign(memory: TortoiseMemory) {
-        if (values.isNotEmpty()) {
-            if (values.size == 1) {
-                memory.clear(values.first())
-            } else {
-                memory.assign(values.first(), values.drop(1).sumOf { memory.value(it, 0.0) })
-            }
-        }
+    override fun print(): String {
+        val args = values.joinToString(", ")
+        return "ListDoubleTortoiseCommand(${commandToName(command)}, $args)"
     }
 }
 

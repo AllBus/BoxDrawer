@@ -12,7 +12,7 @@ import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import vectors.Vec2
 
-class                       TortoiseData(val tools: ITools) {
+class TortoiseData(val tools: ITools) {
     val figures = mutableStateOf<IFigure>(Figure.Empty)
     val fig = mutableStateOf<IFigure>(Figure.Empty)
     val helpText = mutableStateOf(AnnotatedString(""))
@@ -23,6 +23,16 @@ class                       TortoiseData(val tools: ITools) {
         val program = tortoiseProgram(lines)
         val fig = t.draw(program, Vec2.Zero, tools.ds())
         tools.saveFigures(fileName, fig)
+    }
+
+    suspend fun printCommand(lines: String):String{
+        val program = tortoiseProgram(lines)
+        return program.commands.flatMap { a ->
+                a.names.flatMap { name -> a.commands(name,tools.ds()).flatMap {
+                    it.commands
+                }
+            }
+        }.map { c -> c.print()}.joinToString("\n")
     }
 
     private fun tortoiseProgram(lines: String): TortoiseProgram {

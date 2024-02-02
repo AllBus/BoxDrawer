@@ -33,6 +33,9 @@ import okhttp3.ResponseBody
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.lang.Math.log
+import java.lang.Math.pow
+import kotlin.math.exp
 
 fun mainTest(args:Array<String>){
 
@@ -83,7 +86,7 @@ fun App() {
 
     val boxFigures by remember { vm.box.figures }
 
-    var displayScale by remember { mutableStateOf(2.0f) }
+    var displayScale = remember { mutableFloatStateOf(2.0f) }
 
     var dropValueX by remember { mutableStateOf(0f) }
     var dropValueY by remember { mutableStateOf(0f) }
@@ -136,13 +139,25 @@ fun App() {
 
                 Slider(
                     modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.BottomEnd),
-                    onValueChange = { displayScale = it },
-                    value = displayScale,
+                    onValueChange = { displayScale.value = pow(1.2, (it-20).toDouble()).toFloat() },
+                    value =  calcZoom(displayScale.value)+20 , ///log(displayScale.value.toDouble()).toFloat(),
                     valueRange = 1f..100f
                 )
             }
         }
     }
+}
+
+fun calcZoom(value: Float): Float {
+
+    return kotlin.math.log(value.toDouble(), 1.2).toFloat()
+//    var i = 1
+//    var m = 1.2
+//    while (value>m){
+//        m*=1.2
+//        i++
+//    }
+//    return i.toFloat()
 }
 
 fun main(args:Array<String>) = application {
