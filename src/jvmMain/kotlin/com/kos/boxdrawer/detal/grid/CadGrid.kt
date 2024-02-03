@@ -1,12 +1,13 @@
 package com.kos.boxdrawer.detal.grid
 
-import androidx.compose.ui.graphics.BlendMode.Companion.Color
-import com.kos.boxdrawer.detal.polka.PolkaLine
+import androidx.compose.ui.graphics.toArgb
 import figure.*
 import figure.composition.FigureColor
 import turtoise.DrawerSettings
 import vectors.Vec2
 import java.util.*
+import kotlin.math.abs
+import kotlin.math.min
 
 class CadGrid {
     var width = 40
@@ -174,7 +175,7 @@ class CadGrid {
             }
             r.add(gp.last())
         }
-        return r.toList()
+        return r.dropLast(1).toList()
     }
 
     fun setColor(sX: Int, sY: Int, color: Int) {
@@ -209,6 +210,17 @@ class CadGrid {
             Vec2(v.x - p1.first * smoothSize, v.y + p1.second * smoothSize),
             Vec2(v2.x + p2.first * smoothSize, v2.y - p2.second * smoothSize),
             Vec2(v2.x + p2.first * smoothSize, v2.y - p2.second * smoothSize)
+        )
+    }
+
+    fun bezierLine(v: Vec2, v2: Vec2, smoothSizeStart: Double, smoothSizeEnd:Double, g1: Int, g2: Int): FigureBezierList {
+        val p1 = next[g1 % 4]
+        val p2 = next[g2 % 4]
+        return FigureBezierList(
+            Vec2(v.x - p1.first * smoothSizeStart, v.y + p1.second * smoothSizeStart),
+            Vec2(v.x - p1.first * smoothSizeStart, v.y + p1.second * smoothSizeStart),
+            Vec2(v2.x + p2.first * smoothSizeEnd, v2.y - p2.second * smoothSizeEnd),
+            Vec2(v2.x + p2.first * smoothSizeEnd, v2.y - p2.second * smoothSizeEnd)
         )
     }
 
@@ -248,21 +260,31 @@ class CadGrid {
                     Vec2(right, top),
                     Vec2(right, bottom),
                     Vec2(left, bottom),
-                )
+                ),
+                true
             )
             return FigureColor(color, bz)
         }
     }
 
-    fun createEntities( gridSize: GridOption,  innerInfo: GridOption, frameSize: Double, drawerSettings: DrawerSettings) : IFigure
+    fun distance(a: GridPoint, b:GridPoint):Int {
+        return abs(a.x-b.x) + abs(a.y-b.y)
+    }
+
+    fun calculateMaxRadius(a:Int, b:Int): Double{
+        return min(a, b)/2.0
+    }
+
+    fun createEntities(gridSize: GridOption, innerInfo: GridOption, frameSize: Double, drawerSettings: DrawerSettings) : IFigure
     {
         val smooth = gridSize.enable;
         val smoothSize = gridSize.smooth;
         val size = gridSize.size;
+        val unionSize = gridSize.roundCell;
 
-        val figureColor = androidx.compose.ui.graphics.Color.Companion.Blue.value.toInt();
-        val innerColor = androidx.compose.ui.graphics.Color.Companion.Red.value.toInt();
-        val frameColor = androidx.compose.ui.graphics.Color.Companion.DarkGray.value.toInt();
+        val figureColor = androidx.compose.ui.graphics.Color.Companion.Blue.toArgb();
+        val innerColor = androidx.compose.ui.graphics.Color.Companion.Red.toArgb();
+        val frameColor = androidx.compose.ui.graphics.Color.Companion.DarkGray.toArgb();
 
         val result = mutableListOf<IFigure>()
 
@@ -316,17 +338,55 @@ class CadGrid {
                         {
                             val bz = mutableListOf<FigureBezierList>()
 
-
-
                             for (w in gp.indices)
                             {
                                 val c = gp[w];
                                 val n = gp[(w + 1) % gp.size];
+                                val n2 = gp[(w + 2) % gp.size];
+                             ///   val n3 = gp[(w + 3) % gp.size];
+                                val nb = gp[(w -1 + gp.size) % gp.size];
+                             //   val na = gp[(w -2 + gp.size) % gp.size];
 
                                 if (n.g != c.g)
                                 {
-                                    bz.add(bezierQuartir(Vec2(c.x * size, -c.y * size), smoothSize, c.g, n.g));
-                                    bz.add(bezierLine(Vec2(c.x * size, -c.y * size), Vec2(n.x * size, -n.y * size), smoothSize, n.g+2, n.g+2));
+                                    /* Нарисовать скругление угла и линию после него */
+
+                                    var radius = smoothSize
+                                    var radius2 = smoothSize
+
+
+                                    if(unionSize>1){
+
+                                        val db = distance(nb, c)
+                                        val dc = distance(n, c)
+                                        val dn = distance(n2, n)
+
+                                        val rc = min(unionSize.toDouble(),calculateMaxRadius(dc, db))
+                                        val rn = min(unionSize.toDouble(),calculateMaxRadius(dc, dn))
+
+                                        radius = rc*smoothSize
+                                        radius2 = rn*smoothSize
+
+                                    }else {
+                                        radius = smoothSize
+                                    }
+
+                                    bz.add(bezierQuartir(
+                                        v = Vec2(c.x * size, -c.y * size),
+                                        smoothSize = radius,
+                                        g1 = c.g,
+                                        g2 = n.g
+                                    ));
+                                    bz.add(
+                                        bezierLine(
+                                            v = Vec2(c.x * size, -c.y * size),
+                                            v2 = Vec2(n.x * size, -n.y * size),
+                                            smoothSizeStart = radius,
+                                            smoothSizeEnd = radius2,
+                                            g1 = n.g + 2,
+                                            g2 = n.g + 2
+                                        )
+                                    );
                                 }
                             }
 
@@ -346,7 +406,7 @@ class CadGrid {
                                 points.add(Vec2(c.x * size, -c.y * size));
                             }
 
-                            group.add(FigureColor(figureColor, FigurePolyline(points.toList()) ));
+                            group.add(FigureColor(figureColor, FigurePolyline(points.toList(), true) ));
                         }
                     }
                     if (group.size > 0)
@@ -365,6 +425,7 @@ class GridOption(
     val size: Double,
     val smooth: Double,
     val enable: Boolean,
+    val roundCell: Int = 1
 )
 
 

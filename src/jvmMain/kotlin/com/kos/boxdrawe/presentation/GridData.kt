@@ -3,6 +3,7 @@ package com.kos.boxdrawe.presentation
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.grid.CadGrid
+import com.kos.boxdrawer.detal.grid.GridOption
 
 class GridData(val tools: ITools) {
 
@@ -14,6 +15,7 @@ class GridData(val tools: ITools) {
     val radius = NumericTextFieldState(3.0)
     val cellWidthCount = NumericTextFieldState(40.0, 0, 1000.0) { recreateGrid() }
     val cellHeightCount = NumericTextFieldState(30.0, 0, 1000.0) { recreateGrid() }
+    val cellRadius = NumericTextFieldState(1.0, 0, 100.0) { recreateGrid() }
     val innerWidth = NumericTextFieldState(1.0, 2)
     val innerRadius = NumericTextFieldState(0.5, 2)
     val gridText = mutableStateOf("")
@@ -51,6 +53,28 @@ class GridData(val tools: ITools) {
             sb.appendLine()
         }
         gridText.value = sb.toString()
+    }
+
+    fun save(fileName: String) {
+        val fig =cad.createEntities(
+           // cellWidthCount = cellWidthCount .decimal,
+           // cellHeightCount = cellHeightCount .decimal,
+            frameSize = widthFrame.decimal,
+            gridSize = GridOption(
+                size = widthCell.decimal,
+                smooth = radius .decimal,
+                enable = roundChecked.value,
+                roundCell = cellRadius.decimal.toInt()
+            ),
+            innerInfo = GridOption(
+                size = innerWidth .decimal,
+                smooth = innerRadius.decimal,
+                enable = innerChecked .value
+            ),
+            drawerSettings = tools.ds()
+        )
+
+        tools.saveFigures(fileName, fig)
     }
 
 

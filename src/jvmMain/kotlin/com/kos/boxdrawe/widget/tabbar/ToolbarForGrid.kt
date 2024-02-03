@@ -2,22 +2,22 @@ package com.kos.boxdrawe.widget.tabbar
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.kos.boxdrawe.presentation.GridData
 import com.kos.boxdrawe.widget.*
+import kotlinx.coroutines.launch
 
 @Composable
 fun ToolbarForGrid(vm: GridData) {
+    val coroutineScope = rememberCoroutineScope()
     var roundChecked by remember { vm.roundChecked }
     var innerChecked by remember { vm.innerChecked }
 
     val widthCell = remember { vm.widthCell }
     val widthFrame = remember { vm.widthFrame }
     val radius = remember { vm.radius }
+    val cellRadius = remember { vm.cellRadius }
     val cellWidthCount = remember { vm.cellWidthCount }
     val cellHeightCount = remember { vm.cellHeightCount }
     val innerWidth = remember { vm.innerWidth }
@@ -38,6 +38,7 @@ fun ToolbarForGrid(vm: GridData) {
                 onCheckedChange = { c -> roundChecked = c },
             )
             NumericUpDown("Радиус скругления", "мм", radius, enabled = roundChecked)
+            NumericUpDown("Максимальное количество", "ячеек", cellRadius)
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
@@ -66,13 +67,18 @@ fun ToolbarForGrid(vm: GridData) {
         Column(
             modifier = Modifier.weight(weight = 0.5f, fill = true)
         ) {
-            RunButton("Нарисовать деталь", {})
-            RunButton("Посторить по тексту", {
+            RunButton("Нарисовать деталь") {
+                coroutineScope.launch {
+                    showFileChooser { f -> vm.save(f) }
+                }
+
+            }
+            RunButton("Посторить по тексту") {
                 vm.createFromText()
-            })
-            RunButton("Получить текст", {
+            }
+            RunButton("Получить текст") {
                 vm.saveToText()
-            })
+            }
         }
     }
 }
