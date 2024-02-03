@@ -669,24 +669,25 @@ object BoxCad {
             val mf = Matrix()
             when (index) {
                 F_FACE -> {
+                    mf.translate( y = -boardWeight.toFloat(), z = -boardWeight.toFloat(), )
                     mf.rotateY(90f)
                     mf.rotateZ(90f)
 
                 }
 
                 F_BACK -> {
-                    mf.translate(z = boxInfo.width.toFloat()-boardWeight.toFloat())
+                    mf.translate(y = -boardWeight.toFloat(), z = boxInfo.width.toFloat()-boardWeight.toFloat())
                     mf.rotateY(90f)
                     mf.rotateZ(90f)
                 }
 
                 F_LEFT -> {
-
+                    mf.translate(z = +boardWeight.toFloat())
                     mf.rotateX(90f)
                 }
 
                 F_RIGHT -> {
-                    mf.translate(0f, z = -boxInfo.weight.toFloat()+boardWeight.toFloat())
+                    mf.translate( z = -boxInfo.weight.toFloat()+boardWeight.toFloat())
                     mf.rotateX(90f)
                 }
 
