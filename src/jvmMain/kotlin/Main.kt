@@ -74,23 +74,22 @@ data class RetroData(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 @Preview
-fun App() {
-    val vm = DrawerViewModel()
+fun App(vm: MutableState<DrawerViewModel>) {
 
-    val figures by remember { vm.tortoise.figures }
+    val figures by remember { vm.value.tortoise.figures }
 
-    val boxFigures by remember { vm.box.figures }
+    val boxFigures by remember { vm.value.box.figures }
 
-    var displayScale = remember { mutableFloatStateOf(2.0f) }
+    val displayScale = remember { mutableFloatStateOf(2.0f) }
 
     var dropValueX by remember { mutableStateOf(0f) }
     var dropValueY by remember { mutableStateOf(0f) }
     var dropValueZ by remember { mutableStateOf(0f) }
 
-    val tabIndex by remember { vm.tabIndex }
-    val helpText by remember { vm.tortoise.helpText }
-    val matrix = remember { vm.tortoise.matrix }
-    val alternative = remember { vm.box.alternative }
+    val tabIndex by remember { vm.value.tabIndex }
+    val helpText by remember { vm.value.tortoise.helpText }
+    val matrix = remember { vm.value.tortoise.matrix }
+    val alternative = remember { vm.value.box.alternative }
 
     MaterialTheme {
         Column {
@@ -108,13 +107,13 @@ fun App() {
                         )
                     }
                     TAB_SOFT -> {
-                        DisplayTortoise(displayScale, matrix, false, vm.softRez.drawRez(figures))
+                        DisplayTortoise(displayScale, matrix, false, vm.value.softRez.drawRez(figures))
                     }
                     TAB_BOX -> {
                         DisplayTortoise(displayScale, matrix, !alternative.value, boxFigures)
                     }
                     TAB_GRID -> {
-                        DisplayGrid(vm.grid.cad)
+                        DisplayGrid(vm.value.grid.cad)
                     }
                     else -> {
 
@@ -127,27 +126,25 @@ fun App() {
                     ) {
                         Slider(
                             modifier = Modifier.wrapContentHeight(),
-                            onValueChange = { dropValueX = it; vm.tortoise.rotate(dropValueX, dropValueY, dropValueZ) },
+                            onValueChange = { dropValueX = it; vm.value.tortoise.rotate(dropValueX, dropValueY, dropValueZ) },
                             value = dropValueX,
                             valueRange = -360f..360f
                         )
 
                         Slider(
                             modifier = Modifier.wrapContentHeight(),
-                            onValueChange = { dropValueY = it; vm.tortoise.rotate(dropValueX, dropValueY, dropValueZ) },
+                            onValueChange = { dropValueY = it; vm.value.tortoise.rotate(dropValueX, dropValueY, dropValueZ) },
                             value = dropValueY,
                             valueRange = -360f..360f
                         )
                         Slider(
                             modifier = Modifier.wrapContentHeight(),
-                            onValueChange = { dropValueZ = it; vm.tortoise.rotate(dropValueX, dropValueY, dropValueZ) },
+                            onValueChange = { dropValueZ = it; vm.value.tortoise.rotate(dropValueX, dropValueY, dropValueZ) },
                             value = dropValueZ,
                             valueRange = -360f..360f
                         )
                     }
                 }
-
-
 
                 Slider(
                     modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.BottomEnd),
@@ -178,12 +175,14 @@ fun main(args:Array<String>) = application {
     } finally {
 
     }
+    val vm = mutableStateOf(DrawerViewModel())
 
     Window(
         onCloseRequest = ::exitApplication,
         icon = painterResource("drawable/ic_launcher.png"),
         title = "Рисовалка коробок",
     ) {
-        App()
+        val model = remember { vm }
+        App(model)
     }
 }

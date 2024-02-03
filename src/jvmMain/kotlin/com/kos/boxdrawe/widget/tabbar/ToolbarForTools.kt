@@ -30,7 +30,7 @@ fun ToolbarForTools(vm: ToolsData) {
     ) {
         val expanded = remember { mutableStateOf(false) }
         val settingsList = remember {vm.tools.settingsList }
-        val selectedMovie = remember { vm.tools.drawingSettings }
+        val selectedMovie = remember { vm.tools.settings }
 
         ExposedDropdownMenuBox(
             expanded = expanded.value,
@@ -61,7 +61,6 @@ fun ToolbarForTools(vm: ToolsData) {
                     DropdownMenuItem(
                         onClick = {
                             vm.selectSettings(item)
-                            selectedMovie.value = item
                             expanded.value = false
                         },
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp),

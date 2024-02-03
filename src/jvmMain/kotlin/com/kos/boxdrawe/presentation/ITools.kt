@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.res.useResource
 import com.jsevy.jdxf.DXFDocument
@@ -24,16 +25,20 @@ interface ITools {
 
 class Tools() : ITools {
 
-    var drawingSettings = mutableStateOf(DrawerSettings())
+    private val drawingSettings = mutableStateOf(DrawerSettings())
+
+    val settings : State<DrawerSettings> = drawingSettings
 
     val settingsList = mutableStateOf<DrawerSettingsList>(DrawerSettingsList(emptyList()))
 
     override fun ds(): DrawerSettings {
+
         return drawingSettings.value
     }
 
 
     fun loadSettings(){
+        println("loadSettings")
         val settingsFile = useResource("settings/properties.xml"){ input ->
            // InputStreamReader(input).use { r -> r.readLines().forEach(::println) }
             val settings = XML.decodeFromReader<FullSettings>(StAXReader(input, "UTF-8"))
@@ -44,7 +49,8 @@ class Tools() : ITools {
     }
 
     fun selectSettings(newDs: DrawerSettings){
-        drawingSettings.value = newDs.copy()
+        drawingSettings.value = newDs
+        println(drawingSettings.value)
     }
 
 

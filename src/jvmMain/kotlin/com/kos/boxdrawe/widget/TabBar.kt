@@ -24,8 +24,8 @@ import javax.swing.filechooser.FileNameExtensionFilter
 val TabContentModifier =  Modifier.fillMaxWidth().fillMaxHeight().padding(vertical = 4.dp, horizontal = 16.dp)
 
 @Composable
-fun TabBar(tabs: List<TabInfo>, vm: DrawerViewModel) {
-    var tabIndex by remember { vm.tabIndex }
+fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
+    var tabIndex by remember { vm.value.tabIndex }
 
     Column(
         Modifier.fillMaxWidth().wrapContentHeight().background(Color.White)
@@ -46,11 +46,11 @@ fun TabBar(tabs: List<TabInfo>, vm: DrawerViewModel) {
         Box(
             Modifier.fillMaxWidth().height(240.dp).background(Color.LightGray)) {
             when(tabIndex) {
-                TAB_BOX -> ToolbarForBox(vm.box)
-                TAB_TORTOISE -> ToolbarForTortoise(vm.tortoise)
-                TAB_GRID -> ToolbarForGrid(vm.grid)
-                TAB_SOFT -> ToolbarForSoft(vm.softRez, { vm.tortoise.figures.value })
-                TAB_TOOLS -> ToolbarForTools(vm.options)
+                TAB_BOX -> ToolbarForBox(vm.value.box)
+                TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
+                TAB_GRID -> ToolbarForGrid(vm.value.grid)
+                TAB_SOFT -> ToolbarForSoft(vm.value.softRez, { vm.value.tortoise.figures.value })
+                TAB_TOOLS -> ToolbarForTools(vm.value.options)
             }
         }
         Box(
@@ -95,9 +95,10 @@ suspend fun showFileChooser(action: (String)-> Unit) {
 
 @Composable
 @Preview
-fun TabBarPreview(vm: DrawerViewModel){
+fun TabBarPreview(){
+    val vm =  DrawerViewModel()
     MaterialTheme {
-        TabBar(BoxDrawerToolBar.tabs, DrawerViewModel())
+        TabBar(BoxDrawerToolBar.tabs, mutableStateOf(DrawerViewModel()))
     }
 }
 

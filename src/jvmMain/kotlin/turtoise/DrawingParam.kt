@@ -1,10 +1,12 @@
 package turtoise
 
+import androidx.compose.runtime.Immutable
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
 
 @Serializable
+@Immutable
 data class DrawerSettings(
     val boardWeight : Double = 4.0,
 

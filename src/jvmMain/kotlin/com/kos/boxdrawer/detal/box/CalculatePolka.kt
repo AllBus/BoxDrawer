@@ -170,7 +170,6 @@ object CalculatePolka {
     }
 
     fun polka(a: List<String>): Polka {
-
         var cs = 0;
         var ce = 0;
         var hasE = false;
