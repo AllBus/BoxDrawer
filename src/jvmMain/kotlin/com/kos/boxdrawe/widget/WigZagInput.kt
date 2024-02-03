@@ -41,11 +41,11 @@ fun ZigZagInput(
 fun ZigZagLabel(
     modifier: Modifier = Modifier,
 ){
-    Column(modifier = modifier,
+    Column(modifier = modifier.padding(end = 2.dp),
         horizontalAlignment = Alignment.End) {
-        Label("", singleLine = true)
+        Label("Пазы", singleLine = true)
         Text(
-            modifier = Modifier.padding(vertical = 6.dp),
+            modifier = Modifier.padding(vertical = 4.dp),
             text = "Длина",
             fontSize = LocalTextStyle.current.fontSize,
 
@@ -53,21 +53,21 @@ fun ZigZagLabel(
             textAlign = TextAlign.End,
         )
         Text(
-            modifier = Modifier.padding(vertical = 6.dp),
+            modifier = Modifier.padding(vertical = 4.dp),
             text = "Дельта",
             fontSize = LocalTextStyle.current.fontSize,
             softWrap = false,
             textAlign = TextAlign.End,
         )
         Text(
-            modifier = Modifier.padding(vertical = 6.dp),
+            modifier = Modifier.padding(vertical = 4.dp),
             text = "Ширина",
             fontSize = LocalTextStyle.current.fontSize,
             softWrap = false,
             textAlign = TextAlign.End,
         )
         Text(
-            modifier = Modifier.padding(vertical = 4.dp),
+            modifier = Modifier.padding(vertical = 2.dp),
             text =  "Есть",
             fontSize = LocalTextStyle.current.fontSize,
             softWrap = false,

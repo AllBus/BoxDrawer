@@ -33,7 +33,7 @@ class BoxAlgorithm(
             drawerSettings = ds,
             waldParams = wald,
             polki = polkiSort,
-            alternative = alternative
+            outVariant = BoxCad.EOutVariant.ALTERNATIVE
         )
     }
 
@@ -116,19 +116,21 @@ class BoxAlgorithm(
                 return WaldParam(
                     topOffset = 0.0,
                     bottomOffset = 0.0,
-                    holeOffset = 0.0,
+                    holeBottomOffset = 2.0,
+                    holeTopOffset = 2.0,
                     holeWeight = 0.0,
                     topForm = PazForm.None,
                     bottomForm = PazForm.Paz
                 )
             else
                 return WaldParam(
-                    topForm = parsePazForm(block.get(0),PazForm.None),
-                    bottomForm = parsePazForm(block.get(1), PazForm.Paz),
-                    topOffset = asDouble(block.get(2)),
-                    bottomOffset = asDouble(block.get(3)),
-                    holeOffset = asDouble(block.get(4)),
-                    holeWeight = asDouble(block.get(5)),
+                    bottomForm = parsePazForm(block.get(0), PazForm.Paz),
+                    topForm = parsePazForm(block.get(1),PazForm.None),
+                    bottomOffset = asDouble(block.get(2)),
+                    topOffset = asDouble(block.get(3)),
+                    holeBottomOffset = asDouble(block.get(4)),
+                    holeTopOffset = asDouble(block.get(5)),
+                    holeWeight = asDouble(block.get(6)),
                 )
         }
     }

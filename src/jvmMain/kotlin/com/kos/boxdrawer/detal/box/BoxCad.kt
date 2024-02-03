@@ -1,10 +1,11 @@
 package com.kos.boxdrawer.detal.box
 
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Matrix
 import figure.*
 import figure.composition.FigureColor
 import figure.composition.FigureRotate
 import figure.composition.FigureTranslate
+import figure.matrix.Figure3dTransform
 import turtoise.*
 import turtoise.Tortoise.Companion.holes
 import turtoise.Tortoise.Companion.zigzag
@@ -14,6 +15,11 @@ import kotlin.math.min
 
 object BoxCad {
 
+    enum class EOutVariant{
+        COLUMN,
+        ALTERNATIVE,
+        VOLUME
+    }
     fun faceWald(
         origin: Vec2, width: Double, height: Double,
         zigzag: ZigzagInfo, hole: ZigzagInfo,
@@ -53,7 +59,7 @@ object BoxCad {
                 PazForm.Hole ->
                     result.addAll(
                         holes(
-                            sp - Vec2(0.0, wald.holeOffset),
+                            sp - Vec2(0.0, wald.holeTopOffset),
                             le,
                             hole,
                             0.0,
@@ -95,7 +101,7 @@ object BoxCad {
                 PazForm.Hole ->
                     result.addAll(
                         holes(
-                            sp + Vec2(0.0, wald.holeOffset),
+                            sp + Vec2(0.0, wald.holeBottomOffset),
                             le,
                             hole,
                             0.0,
@@ -460,7 +466,7 @@ object BoxCad {
         drawerSettings: DrawerSettings,
         waldParams: WaldParam,
         polki: PolkaSort,
-        alternative : Boolean
+        outVariant : EOutVariant
     ): IFigure {
 
         // две толщины доски
@@ -473,7 +479,7 @@ object BoxCad {
 
         val wald = waldParams.copy(
             holeWeight = if (waldParams.holeWeight == 0.0) drawerSettings.holeWeight else waldParams.holeWeight,
-            holeOffset = if (waldParams.holeOffset == 0.0) drawerSettings.holeOffset else waldParams.holeOffset,
+          //  holeOffset = if (waldParams.holeOffset == 0.0) drawerSettings.holeOffset else waldParams.holeOffset,
         )
 
         val weight = boxInfo.weight;
@@ -638,63 +644,76 @@ object BoxCad {
 
         }
 
+        val rm = resultMap.mapValues { (index, value) ->
+            FigureList(value)
+        }
 
+        return when (outVariant){
+            EOutVariant.COLUMN -> mainPosition(rm, startPoint, bw)
+            EOutVariant.ALTERNATIVE -> alternativePosition(rm, bw, polki)
+            EOutVariant.VOLUME ->  figure3dTransform(rm, boxInfo, wald, polki, bw)
+        }
 
-        var position = startPoint
+    }
+
+    private fun figure3dTransform(
+        rm: Map<Int, FigureList>,
+        boxInfo: BoxInfo,
+        wald: WaldParam,
+        polki: PolkaSort,
+        boardWeight:Double,
+    ): Figure3dTransform {
         val sList = mutableListOf<IFigure>()
+        rm.forEach { (index, f) ->
+            val r = f.rect()
+            val mf = Matrix()
+            when (index) {
+                F_FACE -> {
+                    mf.rotateY(90f)
+                    mf.rotateZ(90f)
 
-        if (alternative){
-            var pLeft = Vec2.Zero
-            var pRight = Vec2.Zero
-            var pTop = Vec2.Zero
-            var pBottom = Vec2.Zero
+                }
 
-            val rm = resultMap.mapValues { (index, value) ->
-                FigureList(value)
-            }
+                F_BACK -> {
+                    mf.translate(z = boxInfo.width.toFloat()-boardWeight.toFloat())
+                    mf.rotateY(90f)
+                    mf.rotateZ(90f)
+                }
 
-            rm[F_BOTTOM]?.let{f ->
-                val r = f.rect()
-                sList += f
-                pBottom += Vec2(0.0, r.max.y+2*bw)
-                pRight += Vec2(r.max.x+bw, 0.0)
-                pLeft -= Vec2(-r.min.x+bw, 0.0)
-                pTop -= Vec2( 0.0, -r.min.y+bw)
-            }
-            rm.forEach { (index, f) ->
-                when (index){
-                    F_FACE, F_BACK-> {
-                        val r = f.rect()
+                F_LEFT -> {
 
-                        sList += FigureTranslate(
-                            FigureRotate(f, 90.0, Vec2.Zero)
-                            ,  pLeft
-                        )
-                        pLeft -=  Vec2(r.height+bw, 0.0)
+                    mf.rotateX(90f)
+                }
 
-                    }
-                    F_LEFT, F_RIGHT, F_TOP -> {
-                        val r = f.rect()
-                        pTop -=  Vec2(0.0, r.height+bw)
-                        sList += FigureTranslate(f,  pTop)
-                    }
-                    F_BOTTOM -> {}
-                    else -> {
-                        val po = polki.calcList.find { p -> p.calc.id == index }
-                        when (po?.orientation) {
+                F_RIGHT -> {
+                    mf.translate(0f, z = -boxInfo.weight.toFloat()+boardWeight.toFloat())
+                    mf.rotateX(90f)
+                }
+
+                F_TOP -> {
+                    mf.translate(z = boxInfo.height.toFloat() - wald.fullTopOffset(boardWeight).toFloat())
+                 //   mf.rotateY(-90f)
+                }
+
+                F_BOTTOM -> {
+                    mf.translate(z = wald.fullBottomOffset(boardWeight).toFloat())
+              //      mf.rotateY(-90f)
+                }
+
+                else -> {
+                    polki.calcList.find { p -> p.calc.id == index }?.let { po ->
+
+                        when (po.orientation) {
                             Orientation.Vertical -> {
-                                val r = f.rect()
-                                pRight +=  Vec2(r.height+bw, 0.0)
-                                sList += FigureTranslate(
-                                    FigureRotate(f, 90.0, Vec2.Zero)
-                                    ,  pRight+Vec2( 0.0, po.calc.sY)
-                                )
+                                mf.translate(x = -wald.fullBottomOffset(boardWeight).toFloat(), y = po.calc.sY.toFloat(), z = po.calc.sX.toFloat())
+                                mf.rotateY(90f)
+                                mf.rotateZ(90f)
                             }
 
                             Orientation.Horizontal -> {
-                                val r = f.rect()
-                                sList += FigureTranslate(f ,  pBottom+Vec2( po.calc.sX, 0.0))
-                                pBottom += Vec2(0.0, r.height+bw)
+                                mf.translate(y = wald.fullBottomOffset(boardWeight).toFloat(), x = po.calc.sX.toFloat(), z = -po.calc.sY.toFloat())
+                            //    mf.rotateY(180f)
+                                mf.rotateX(90f)
                             }
 
                             else -> {
@@ -704,22 +723,103 @@ object BoxCad {
                     }
                 }
             }
+
+            sList += Figure3dTransform(mf, f)
         }
-        else {
-            val list = resultMap.map { (index, value) ->
-                FigureList(value)
-            }
-            for (f in list) {
-                val r = f.rect()
-                position += Vec2(0.0, -r.min.y)
+        val mf = Matrix()
+        mf.translate((-boxInfo.width/2f).toFloat(), (-boxInfo.weight/2f).toFloat(), (-boxInfo.height/2f).toFloat())
+        mf.rotateX(59f)
+        mf.rotateY( -45f)
+        mf.rotateZ(5f)//-22.5f-22f)
 
-                sList += FigureTranslate(f, position)
 
-                position += Vec2(0.0, r.height + bw)
+
+        return Figure3dTransform(mf, FigureList(sList.toList()))
+    }
+
+    private fun mainPosition(
+        list: Map<Int, IFigure>,
+        startPoint: Vec2,
+        bw: Double
+    ): IFigure {
+        val outList = mutableListOf<IFigure>()
+        var position = startPoint
+
+        for (f in list.values) {
+            val r = f.rect()
+            position += Vec2(0.0, -r.min.y)
+
+            outList += FigureTranslate(f, position)
+
+            position += Vec2(0.0, r.height + bw)
+        }
+        return FigureList(outList.toList())
+    }
+
+    private fun alternativePosition(
+        rm: Map<Int, IFigure>,
+        bw: Double,
+        polki: PolkaSort
+    ):IFigure {
+
+        val outList = mutableListOf<IFigure>()
+        var pLeft = Vec2.Zero
+        var pRight = Vec2.Zero
+        var pTop = Vec2.Zero
+        var pBottom = Vec2.Zero
+
+        rm[F_BOTTOM]?.let { f ->
+            val r = f.rect()
+            outList += f
+            pBottom += Vec2(0.0, r.max.y + 2 * bw)
+            pRight += Vec2(r.max.x + bw, 0.0)
+            pLeft -= Vec2(-r.min.x + bw, 0.0)
+            pTop -= Vec2(0.0, -r.min.y + bw)
+        }
+        rm.forEach { (index, f) ->
+            when (index) {
+                F_FACE, F_BACK -> {
+                    val r = f.rect()
+
+                    outList += FigureTranslate(
+                        FigureRotate(f, 90.0, Vec2.Zero), pLeft
+                    )
+                    pLeft -= Vec2(r.height + bw, 0.0)
+
+                }
+
+                F_LEFT, F_RIGHT, F_TOP -> {
+                    val r = f.rect()
+                    pTop -= Vec2(0.0, r.height + bw)
+                    outList += FigureTranslate(f, pTop)
+                }
+
+                F_BOTTOM -> {}
+                else -> {
+                    val po = polki.calcList.find { p -> p.calc.id == index }
+                    when (po?.orientation) {
+                        Orientation.Vertical -> {
+                            val r = f.rect()
+                            pRight += Vec2(r.height + bw, 0.0)
+                            outList += FigureTranslate(
+                                FigureRotate(f, 90.0, Vec2.Zero), pRight + Vec2(0.0, po.calc.sY)
+                            )
+                        }
+
+                        Orientation.Horizontal -> {
+                            val r = f.rect()
+                            outList += FigureTranslate(f, pBottom + Vec2(po.calc.sX, 0.0))
+                            pBottom += Vec2(0.0, r.height + bw)
+                        }
+
+                        else -> {
+
+                        }
+                    }
+                }
             }
         }
-
-        return FigureList(sList.toList())
+        return FigureList(outList.toList())
     }
 
     fun calculateDrawPosition(

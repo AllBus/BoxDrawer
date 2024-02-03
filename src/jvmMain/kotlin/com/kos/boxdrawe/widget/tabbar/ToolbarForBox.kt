@@ -31,6 +31,8 @@ fun ToolbarForBox(vm: BoxData) {
     val selectZigBottomId = remember { vm.selectZigBottomId }
     val topOffset = remember { vm.topOffset }
     val bottomOffset = remember { vm.bottomOffset }
+    val topHoleOffset = remember { vm.topHoleOffset }
+    val bottomHoleOffset = remember { vm.bottomHoleOffset }
 
     val zigVariants = listOf(
         ButtonData(PazExt.PAZ_NONE, painterResource("drawable/act_line.png")),
@@ -53,6 +55,7 @@ fun ToolbarForBox(vm: BoxData) {
                 Modifier.align(Alignment.End)
             ) {
                 NumericUpDown("", "", topOffset, modifier = Modifier.width(50.dp))
+                NumericUpDown("", "", topHoleOffset, modifier = Modifier.width(50.dp))
                 SegmentButton(
                     selectZigTopId,
                     zigVariants,
@@ -68,6 +71,7 @@ fun ToolbarForBox(vm: BoxData) {
             )
             {
                 NumericUpDown("", "", bottomOffset, modifier = Modifier.width(50.dp))
+                NumericUpDown("", "", bottomHoleOffset, modifier = Modifier.width(50.dp))
                 SegmentButton(
                     selectZigBottomId,
                     zigVariants,
@@ -82,7 +86,6 @@ fun ToolbarForBox(vm: BoxData) {
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
 
-            Label("Свойства пазов, по направлениям")
             Row() {
                 ZigZagLabel()
                 ZigZagInput(
@@ -150,7 +153,7 @@ fun ToolbarForBox(vm: BoxData) {
             EditText("Полки", "", text, true) { vm.createBox(it) }
         }
         Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
+            modifier = Modifier.weight(weight = 0.5f, fill = true)
         ) {
             RunButton("Нарисовать коробку") {
                 coroutineScope.launch {

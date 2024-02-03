@@ -2,11 +2,14 @@ package com.kos.boxdrawe.presentation
 
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.box.*
 import figure.Figure
 import figure.FigureEmpty
 import figure.IFigure
+import figure.composition.FigureColor
 import turtoise.Orientation
 import turtoise.ZigzagInfo
 import vectors.Vec2
@@ -21,7 +24,7 @@ class BoxData(val tools: ITools) {
 
     private val box = BoxCad
 
-    fun boxFigures(line: String): IFigure {
+    fun boxFigures(line: String, outVariant: BoxCad.EOutVariant): IFigure {
 
         val ds =  tools.ds()
         val inside = insideChecked.value
@@ -30,7 +33,8 @@ class BoxData(val tools: ITools) {
         val wald = WaldParam(
             topOffset =  topOffset.decimal, //  tools.ds().holeOffset,
             bottomOffset = bottomOffset.decimal,//tools.ds().holeOffset,
-            holeOffset = tools.ds().holeOffset,
+            holeBottomOffset = bottomHoleOffset.decimal,
+            holeTopOffset = topHoleOffset.decimal,
             holeWeight = tools.ds().holeWeight,
             topForm = PazExt.intToPaz(selectZigTopId.value),
             bottomForm = PazExt.intToPaz(selectZigBottomId.value),
@@ -65,18 +69,22 @@ class BoxData(val tools: ITools) {
             drawerSettings = tools.ds(),
             waldParams = wald,
             polki = calc,
-            alternative = alternative.value
+            outVariant = outVariant
         )
     }
 
     fun createBox(line: String) {
-        val fig = boxFigures(line)
+        val fig = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.VOLUME)
         figures.value = fig
     }
 
     fun saveBox(fileName: String, line: String) {
-        val fig = boxFigures(line)
-        figures.value = fig
+        val fig = FigureColor(
+            Color.DarkGray.toArgb(),
+            boxFigures(line,
+            if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.COLUMN)
+        )
+
 
         tools.saveFigures(fileName, fig)
     }
@@ -90,6 +98,8 @@ class BoxData(val tools: ITools) {
     val weight = NumericTextFieldState(60.0) { redrawBox() }
     val topOffset = NumericTextFieldState(2.0) { redrawBox() }
     val bottomOffset = NumericTextFieldState(2.0) { redrawBox() }
+    val topHoleOffset = NumericTextFieldState(2.0) { redrawBox() }
+    val bottomHoleOffset = NumericTextFieldState(2.0) { redrawBox() }
     var insideChecked = mutableStateOf(false)
     var polkiInChecked = mutableStateOf(false)
     var alternative = mutableStateOf(true)

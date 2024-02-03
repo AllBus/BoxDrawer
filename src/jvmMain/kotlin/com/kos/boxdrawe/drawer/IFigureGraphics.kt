@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.drawer
 
+import androidx.compose.ui.graphics.Matrix
 import vectors.Vec2
 
 interface IFigureGraphics {
@@ -22,6 +23,8 @@ interface IFigureGraphics {
     fun translate(x: Double, y: Double)
     fun scale(scaleX: Double, scaleY: Double)
     fun rotate(degrees: Double, pivot: Vec2)
+
+    fun transform(m:Matrix, actions: () -> Unit)
     fun restore()
 
     fun setColor(color:Int)

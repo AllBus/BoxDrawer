@@ -1,9 +1,11 @@
 package figure.matrix
 
+import androidx.compose.ui.graphics.Matrix
 import com.kos.boxdrawe.drawer.IFigureGraphics
 import figure.CropSide
 import figure.Figure
 import figure.IFigure
+import org.jetbrains.skia.Matrix44
 import vectors.BoundingRectangle
 import vectors.Vec2
 
@@ -61,5 +63,18 @@ class FigureMatrixRestore() : FigureMatrix() {
 
     override fun draw(g: IFigureGraphics) {
         g.restore()
+    }
+}
+
+class Figure3dTransform(val m : Matrix, val figure: IFigure): FigureMatrix(){
+
+    override fun draw(g: IFigureGraphics) {
+        g.save()
+        g.transform(m){
+            figure.draw(g)
+        }
+
+        g.restore()
+
     }
 }

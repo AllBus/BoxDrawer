@@ -33,7 +33,7 @@ fun ToolbarForTortoise(vm: TortoiseData) {
                 vm.createTortoise(it.text) }
         }
         Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
+            modifier = Modifier.weight(weight = 0.5f, fill = true)
         ) {
             RunButton("Нарисовать деталь") {
                 coroutineScope.launch {

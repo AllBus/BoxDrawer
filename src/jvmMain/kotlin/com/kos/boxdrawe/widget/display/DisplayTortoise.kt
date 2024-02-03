@@ -26,12 +26,13 @@ import kotlin.math.sign
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun DisplayTortoise(displayScale: MutableFloatState, figures: IFigure) {
+fun DisplayTortoise(displayScale: MutableFloatState, matrix: State<Matrix>, enableMatrix: Boolean, figures: IFigure) {
 //    val posX = rememberSaveable("DisplayTortoiseX") { mutableStateOf(0f) }
 //    val posY = rememberSaveable("DisplayTortoiseY") { mutableStateOf(0f) }
 
     var rotation by rememberSaveable("DisplayTortoiseRotation") { mutableStateOf(0f) }
     var pos by rememberSaveable("DisplayTortoiseOffset") { mutableStateOf(Offset.Zero) }
+
 
 //    val state = rememberTransformableState {
 //            zoomChange, offsetChange, rotationChange ->
@@ -39,8 +40,8 @@ fun DisplayTortoise(displayScale: MutableFloatState, figures: IFigure) {
 //            rotation += rotationChange
 //            pos += offsetChange
 //    }
-    val m =  Matrix()
-        m.rotateY(45f)
+    val m = Matrix()
+    m.rotateY(45f)
     m.rotateX(30f)
     //var currentSize =
 
@@ -51,7 +52,7 @@ fun DisplayTortoise(displayScale: MutableFloatState, figures: IFigure) {
         val p = change.position
         val predScale = displayScale.value
 
-      //  pos+= (Offset(size.width/2f, -size.height/2f) - Offset(p.x, -p.y)) * scale / predScale
+        //  pos+= (Offset(size.width/2f, -size.height/2f) - Offset(p.x, -p.y)) * scale / predScale
         displayScale.value = scale(displayScale.value, delta)
     }.onDrag(
         onDrag = { offset ->
@@ -65,16 +66,22 @@ fun DisplayTortoise(displayScale: MutableFloatState, figures: IFigure) {
 //                    {transform(m)
 //                    }
 //                ) {
-                translate(pos.x, pos.y) {
-                    this.scale(scale = displayScale.value) {
-                        this.translate(c.width, c.height) {
+            translate(pos.x, pos.y) {
+                this.scale(scale = displayScale.value) {
+                    this.translate(c.width, c.height) {
+                        if (enableMatrix) {
+                            this.withTransform({ transform(matrix.value) }) {
+                                this.drawFigures(figures)
+                            }
+                        } else {
                             this.drawFigures(figures)
                         }
                     }
                 }
+            }
         })
 }
 
-fun scale(value: Float, delta: Int):Float {
-    return (value * exp(delta * 0.2f)).coerceIn(0.02f,50f)
+fun scale(value: Float, delta: Int): Float {
+    return (value * exp(delta * 0.2f)).coerceIn(0.02f, 50f)
 }

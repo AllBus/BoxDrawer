@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.drawer
 
+import androidx.compose.ui.graphics.Matrix
 import com.jsevy.jdxf.DXFDocument
 import com.jsevy.jdxf.DXFGraphics
 import org.jetbrains.skia.defaultLanguageTag
@@ -124,5 +125,9 @@ class DxfFigureDrawer(
 
     override fun getColor(): Int {
         return g.color.rgb
+    }
+
+    override fun transform(m: Matrix,actions: () -> Unit) {
+
     }
 }

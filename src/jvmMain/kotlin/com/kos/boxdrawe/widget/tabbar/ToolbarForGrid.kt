@@ -64,7 +64,7 @@ fun ToolbarForGrid(vm: GridData) {
             }
         }
         Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
+            modifier = Modifier.weight(weight = 0.5f, fill = true)
         ) {
             RunButton("Нарисовать деталь", {})
             RunButton("Посторить по тексту", {

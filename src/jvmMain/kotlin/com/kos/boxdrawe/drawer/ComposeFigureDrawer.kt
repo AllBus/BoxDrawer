@@ -87,6 +87,11 @@ class ComposeFigureDrawer(
         scope.drawContext.canvas.restore()
     }
 
+    override fun transform(m: Matrix, actions: () -> Unit) {
+        scope.withTransform({transform(m)}){
+            actions()
+        }
+    }
 
     override fun setColor(color: Int) {
         penColor = Color(color).copy(alpha = 1.0f)

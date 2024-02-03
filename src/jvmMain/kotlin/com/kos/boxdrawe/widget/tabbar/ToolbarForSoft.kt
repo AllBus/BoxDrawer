@@ -65,7 +65,7 @@ fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
             NumericUpDown("Y", "мм", cellHeightDistance)
         }
         Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
+            modifier = Modifier.weight(weight = 0.5f, fill = true)
         ) {
             RunButton("Нарисовать деталь") {
                 coroutineScope.launch {

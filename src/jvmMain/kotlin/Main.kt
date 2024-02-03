@@ -21,11 +21,8 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar.tabs
 import javax.swing.UIManager
 import androidx.compose.material.Text
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import com.kos.boxdrawe.widget.display.DisplayGrid
 import com.kos.boxdrawe.widget.display.DisplayTortoise
 import okhttp3.MediaType
@@ -33,9 +30,7 @@ import okhttp3.ResponseBody
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.lang.Math.log
 import java.lang.Math.pow
-import kotlin.math.exp
 
 fun mainTest(args:Array<String>){
 
@@ -90,9 +85,12 @@ fun App() {
 
     var dropValueX by remember { mutableStateOf(0f) }
     var dropValueY by remember { mutableStateOf(0f) }
+    var dropValueZ by remember { mutableStateOf(0f) }
 
     val tabIndex by remember { vm.tabIndex }
     val helpText by remember { vm.tortoise.helpText }
+    val matrix = remember { vm.tortoise.matrix }
+    val alternative = remember { vm.box.alternative }
 
     MaterialTheme {
         Column {
@@ -101,7 +99,7 @@ fun App() {
             Box(modifier = Modifier.fillMaxSize().background(Color(0xFF02007C))) {
                 when (tabIndex) {
                     TAB_TORTOISE -> {
-                        DisplayTortoise(displayScale, figures)
+                        DisplayTortoise(displayScale,matrix, false,  figures)
                         Text(
                             text = helpText,
                             modifier = Modifier.width(350.dp).wrapContentHeight().align(Alignment.TopStart).padding(8.dp),
@@ -110,10 +108,10 @@ fun App() {
                         )
                     }
                     TAB_SOFT -> {
-                        DisplayTortoise(displayScale, vm.softRez.drawRez(figures))
+                        DisplayTortoise(displayScale, matrix, false, vm.softRez.drawRez(figures))
                     }
                     TAB_BOX -> {
-                        DisplayTortoise(displayScale, boxFigures)
+                        DisplayTortoise(displayScale, matrix, !alternative.value, boxFigures)
                     }
                     TAB_GRID -> {
                         DisplayGrid(vm.grid.cad)
@@ -123,19 +121,33 @@ fun App() {
                     }
                 }
 
-//                Slider(
-//                    modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.TopEnd),
-//                    onValueChange = { dropValueX = it; vm.tortoise.drop(dropValueX,dropValueY) },
-//                    value = dropValueX,
-//                    valueRange = -100f..100f
-//                )
-//
-//                Slider(
-//                    modifier = Modifier.padding(top = 50.dp).width(300.dp).wrapContentHeight().align(Alignment.TopEnd),
-//                    onValueChange = { dropValueY = it; vm.tortoise.drop(dropValueX,dropValueY) },
-//                    value = dropValueY,
-//                    valueRange = -100f..100f
-//                )
+                if (tabIndex == TAB_BOX &&  !alternative.value ) {
+                    Column(
+                        modifier = Modifier.align(Alignment.TopEnd).width(180.dp)
+                    ) {
+                        Slider(
+                            modifier = Modifier.wrapContentHeight(),
+                            onValueChange = { dropValueX = it; vm.tortoise.rotate(dropValueX, dropValueY, dropValueZ) },
+                            value = dropValueX,
+                            valueRange = -360f..360f
+                        )
+
+                        Slider(
+                            modifier = Modifier.wrapContentHeight(),
+                            onValueChange = { dropValueY = it; vm.tortoise.rotate(dropValueX, dropValueY, dropValueZ) },
+                            value = dropValueY,
+                            valueRange = -360f..360f
+                        )
+                        Slider(
+                            modifier = Modifier.wrapContentHeight(),
+                            onValueChange = { dropValueZ = it; vm.tortoise.rotate(dropValueX, dropValueY, dropValueZ) },
+                            value = dropValueZ,
+                            valueRange = -360f..360f
+                        )
+                    }
+                }
+
+
 
                 Slider(
                     modifier = Modifier.width(300.dp).wrapContentHeight().align(Alignment.BottomEnd),

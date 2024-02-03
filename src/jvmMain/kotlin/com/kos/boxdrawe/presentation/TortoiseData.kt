@@ -1,6 +1,7 @@
 package com.kos.boxdrawe.presentation
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import figure.CropSide
@@ -16,6 +17,8 @@ class TortoiseData(val tools: ITools) {
     val figures = mutableStateOf<IFigure>(Figure.Empty)
     val fig = mutableStateOf<IFigure>(Figure.Empty)
     val helpText = mutableStateOf(AnnotatedString(""))
+
+    val matrix = mutableStateOf(Matrix())
 
     private val t = TortoiseRunner(SimpleTortoiseMemory())
 
@@ -69,6 +72,15 @@ class TortoiseData(val tools: ITools) {
         val help = TortoiseParser.helpFor(subStr)
         helpText.value = help
 
+    }
+
+    fun rotate(x: Float, y: Float, z: Float) {
+        val m = Matrix()
+        m.reset()
+        m.rotateX(x)
+        m.rotateY(y)
+        m.rotateZ(z)
+        matrix.value = m
     }
 
     val text = mutableStateOf("")

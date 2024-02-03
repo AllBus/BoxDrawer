@@ -85,33 +85,6 @@ class PolkaInfo(
     }
 }
 
-data class WaldParam(
-    val topOffset: Double,
-    val bottomOffset: Double,
-
-    val holeOffset: Double,
-    val holeWeight: Double,
-
-    val topForm: PazForm,
-    val bottomForm: PazForm,
-){
-    val verticalOffset: Double get() = topOffset + bottomOffset
-
-    fun fullBottomOffset(boardWeight:Double) :Double = offsetValue(bottomForm, bottomOffset, boardWeight)
-    fun fullTopOffset(boardWeight:Double) :Double = offsetValue(topForm, topOffset, boardWeight)
-
-
-    fun offsetValue(form:PazForm, offset:Double, boardWeight:Double): Double{
-        return when(form){
-            PazForm.None -> 0.0
-            PazForm.Paz -> boardWeight
-            PazForm.Hole -> holeWeight+offset
-            PazForm.BackPaz -> boardWeight
-            PazForm.Flat -> boardWeight
-        }
-    }
-}
-
 class PolkaSort
 {
     var hList : List<Polka>  = listOf<Polka>();
@@ -123,9 +96,6 @@ class PolkaSort
 
     var zigPolkaH: ZigzagInfo =ZigzagInfo(15.0, 35.0)
     var zigPolkaPol: ZigzagInfo =ZigzagInfo(15.0, 35.0)
-
-
-
 
     /**  получить список перпендикулярных полок к полке p*/
     private fun ortoList(p: Polka) = if (p.orientation == Orientation.Vertical) hList else vList
