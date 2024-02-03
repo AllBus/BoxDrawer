@@ -1,13 +1,13 @@
 package com.kos.boxdrawe.widget.tabbar
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.BoxData
 import com.kos.boxdrawe.widget.*
@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ToolbarForBox(vm: BoxData) {
 
+    val clipboardManager = LocalClipboardManager.current
     var insideChecked by remember { vm.insideChecked }
     var polkiInChecked by remember { vm.polkiInChecked }
     var alternative by remember { vm.alternative }
@@ -158,6 +159,12 @@ fun ToolbarForBox(vm: BoxData) {
             RunButton("Нарисовать коробку") {
                 coroutineScope.launch {
                     showFileChooser { f -> vm.saveBox(f, text.value) }
+                }
+            }
+            Spacer(Modifier.height(4.dp))
+            RunButton("Скопировать код") {
+                coroutineScope.launch {
+                    clipboardManager.setText(AnnotatedString(vm.printBox(text.value)))
                 }
             }
         }

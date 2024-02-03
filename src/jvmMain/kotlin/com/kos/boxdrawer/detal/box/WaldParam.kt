@@ -1,5 +1,8 @@
 package com.kos.boxdrawer.detal.box
 
+import com.kos.boxdrawer.detal.box.BoxAlgorithm.Companion.pazName
+import turtoise.TortoiseParser
+
 data class WaldParam(
     val topOffset: Double,
     val bottomOffset: Double,
@@ -25,5 +28,11 @@ data class WaldParam(
             PazForm.BackPaz -> boardWeight
             PazForm.Flat -> boardWeight+offset
         }
+    }
+
+
+    fun commandLine():String{
+        return "${pazName(bottomForm)} ${ pazName(topForm)} "+
+                "$bottomOffset $topOffset $holeBottomOffset $holeTopOffset $holeWeight"
     }
 }

@@ -47,10 +47,6 @@ class Tools() : ITools {
         drawingSettings.value = newDs.copy()
     }
 
-    init {
-        loadSettings()
-    }
-
 
     override fun saveFigures(fileName: String, figures: IFigure) {
         val dxfDocument = DXFDocument("Figure")

@@ -6,4 +6,7 @@ data class BoxInfo(
     var weight: Double ,
 ) {
 
+    fun commandLine():String{
+        return "$width $weight $height"
+    }
 }

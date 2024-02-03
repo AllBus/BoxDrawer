@@ -273,7 +273,7 @@ object BoxCad {
                     reverse = false,
                     back = false,
                 ),
-                boardWeight
+                wald.holeWeight
 
             )
         );
@@ -345,7 +345,7 @@ object BoxCad {
                     reverse = true,
                     back = true,
                 ),
-                boardWeight
+                wald.holeWeight
             )
         );
 
@@ -403,7 +403,7 @@ object BoxCad {
                                 orientation = or,
                                 reverse = true,
                                 back = true
-                            ), boardWeight
+                            ), wald.holeWeight
                         )
                     );
                 }
@@ -434,7 +434,7 @@ object BoxCad {
                         reverse = true,
                         back = true
                     ),
-                    boardWeight
+                    wald.holeWeight
                 )
             );
         }

@@ -5,4 +5,8 @@ data class ZigzagInfo(
     val delta: Double,
     val height: Double = 0.0,
     val enable: Boolean = true,
-)
+){
+    fun commandLine():String{
+        return "$width $delta $height ${if (!enable) "false" else ""}"
+    }
+}

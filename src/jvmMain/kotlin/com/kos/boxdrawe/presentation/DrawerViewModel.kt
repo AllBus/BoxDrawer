@@ -16,6 +16,7 @@ class DrawerViewModel {
     val tabIndex = mutableStateOf(BoxDrawerToolBar.TAB_TORTOISE)
 
 
+
 }
 
 class ToolsData(val tools: Tools) {
@@ -32,6 +33,11 @@ class ToolsData(val tools: Tools) {
         holeDrop.decimal = tools.drawingSettings.value.holeDrop
         holeDropHeight.decimal = tools.drawingSettings.value.holeDropHeight
         holeOffset.decimal = tools.drawingSettings.value.holeOffset
+    }
+
+    init{
+        tools.loadSettings()
+        selectSettings(tools.ds())
     }
 }
 

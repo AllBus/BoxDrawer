@@ -24,14 +24,14 @@ class BoxData(val tools: ITools) {
 
     private val box = BoxCad
 
-    fun boxFigures(line: String, outVariant: BoxCad.EOutVariant): IFigure {
+    fun boxFigures(line: String, outVariant: BoxCad.EOutVariant): BoxAlgorithm {
 
-        val ds =  tools.ds()
+        val ds = tools.ds()
         val inside = insideChecked.value
 
 
         val wald = WaldParam(
-            topOffset =  topOffset.decimal, //  tools.ds().holeOffset,
+            topOffset = topOffset.decimal, //  tools.ds().holeOffset,
             bottomOffset = bottomOffset.decimal,//tools.ds().holeOffset,
             holeBottomOffset = bottomHoleOffset.decimal,
             holeTopOffset = topHoleOffset.decimal,
@@ -44,49 +44,76 @@ class BoxData(val tools: ITools) {
             width = width.decimal + if (inside) ds.boardWeight * 2 else 0.0,
             height = height.decimal + if (inside) {
                 wald.fullTopOffset(ds.boardWeight) +
-                wald.fullBottomOffset(ds.boardWeight)
+                        wald.fullBottomOffset(ds.boardWeight)
             } else 0.0,
             weight = weight.decimal + if (inside) ds.boardWeight * 2 else 0.0
         )
 
         val polki = CalculatePolka.createPolki(line)
 
-        val bwi = boxInfo.width - ds.boardWeight * 2
-        val bwe = boxInfo.weight - ds.boardWeight * 2
-        val upWidth = if (polkiInChecked.value) ds.boardWeight else 0.0
+        return BoxAlgorithm(
+            boxInfo = boxInfo,
+            zigs = ZigInfoList(
+                zigW = widthZigState.zigInfo,
+                zigH = heightZigState.zigInfo,
+                zigWe = weightZigState.zigInfo,
+                zigPolka = weightZigState.zigInfo,
+                zigPolkaPol = polkaPolZigState.zigInfo
+            ),
+            wald = wald,
+            polki = polki,
+            outVariant = outVariant,
+            polkiIn = polkiInChecked.value
+        )
 
-        val calc = CalculatePolka.calculatePolki(polki, bwi,bwe, upWidth)
+    }
 
-        calc.zigPolkaH = polkaZigState.zigInfo
-        calc.zigPolkaPol = polkaPolZigState.zigInfo
+    fun boxFigures(alg: BoxAlgorithm): IFigure{
+        val ds = tools.ds()
+
+        val bwi = alg.boxInfo.width - ds.boardWeight * 2
+        val bwe = alg.boxInfo.weight - ds.boardWeight * 2
+        val upWidth = if (alg.polkiIn) ds.boardWeight else 0.0
+
+        val calc = CalculatePolka.calculatePolki(alg.polki, bwi,bwe, upWidth)
+
+        calc.zigPolkaH = alg.zigs.zigPolka
+        calc.zigPolkaPol = alg.zigs.zigPolkaPol
 
         return BoxCad.box(
             startPoint = Vec2.Zero,
-            boxInfo = boxInfo,
-            zigW = widthZigState.zigInfo,
-            zigH = heightZigState.zigInfo,
-            zigWe = weightZigState.zigInfo,
+            boxInfo = alg.boxInfo,
+            zigW = alg.zigs.zigW,
+            zigH = alg.zigs.zigH,
+            zigWe = alg.zigs.zigWe,
             drawerSettings = tools.ds(),
-            waldParams = wald,
+            waldParams = alg.wald,
             polki = calc,
-            outVariant = outVariant
+            outVariant = alg.outVariant
         )
     }
 
     fun createBox(line: String) {
-        val fig = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.VOLUME)
-        figures.value = fig
+        val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.VOLUME)
+        val fig = boxFigures(alg)
+        figures.value =fig
     }
 
     fun saveBox(fileName: String, line: String) {
+        val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.COLUMN)
         val fig = FigureColor(
             Color.DarkGray.toArgb(),
-            boxFigures(line,
-            if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.COLUMN)
+            boxFigures(alg)
         )
 
 
         tools.saveFigures(fileName, fig)
+    }
+
+    suspend fun printBox(line: String):String{
+        val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.COLUMN)
+
+        return alg.commandLine()
     }
 
     fun redrawBox(){
