@@ -219,15 +219,16 @@ object BoxCad {
         val endBottomOffset = if (endPolka == null) waldBottomOffset else 0.0
         val startBottomOffset = if (startPolka == null) waldBottomOffset else 0.0
         val startCXY = if (startPolka == null) Vec2.Zero else Vec2(startPolka.calc.sX, startPolka.calc.sY)
+        val endCXY = if (endPolka == null) Vec2.Zero else Vec2(endPolka.calc.sX, endPolka.calc.sY)
 
         if (or == Orientation.Horizontal) {
             originForPol += Vec2(polka.calc.sX, polka.calc.sY + dwe2)
-            startOrigin += Vec2(polka.calc.sY + dwe2 - startCXY.y, startBottomOffset)
-            endOrigin += Vec2(polka.calc.sY + dwe2- startCXY.y, endBottomOffset)
+            startOrigin += Vec2(polka.calc.sY + dwe2- startCXY.y , startBottomOffset)
+            endOrigin += Vec2(polka.calc.sY + dwe2 - endCXY.y, endBottomOffset)
         } else {
             originForPol += Vec2(polka.calc.sX - dwe2, polka.calc.sY)
             startOrigin += Vec2(polka.calc.sX + dwe2- startCXY.x, startBottomOffset)
-            endOrigin += Vec2(polka.calc.sX + dwe2- startCXY.x, endBottomOffset)
+            endOrigin += Vec2(polka.calc.sX + dwe2 - endCXY.x, endBottomOffset)
         }
 
         val result = PolkaResult()
@@ -255,7 +256,7 @@ object BoxCad {
 
         //Левый край
         points.add(origin + Vec2(ssx, 0.0));
-        var currentPoint = startOrigin;
+
 
         zigzag(
             points, points.last(), he0, zigzag, 0.0, DrawingParam(
@@ -267,7 +268,7 @@ object BoxCad {
         );
         result.startHole.addAll(
             holes(
-                currentPoint, he0, zigzag, 0.0,
+                startOrigin, he0, zigzag, 0.0,
                 DrawingParam(
                     orientation = Orientation.Vertical,
                     reverse = false,
@@ -277,6 +278,26 @@ object BoxCad {
 
             )
         );
+
+
+        val endheE = polka.heightForLine(intersectPolki.size + 1, height)
+        val heE = min(
+            endheE,
+            endPolka?.heightForLine(polka.calc.index - endPolka.startCell, height) ?: height
+        )
+
+        result.endHole.addAll(
+            holes(
+                endOrigin, heE, zigzag, 0.0,
+                DrawingParam(
+                    orientation = Orientation.Vertical,
+                    reverse = false,
+                    back = false,
+                ),
+                wald.holeWeight
+            )
+        );
+
         //Левый верхний угол
         points.add(origin + Vec2(ssx, 0.0) + Vec2(0.0, heStart));
 
@@ -328,7 +349,7 @@ object BoxCad {
         // Правый край
         points.add(origin + Vec2(cx, he0));
 
-        currentPoint = Vec2(0.0, points.last().y - origin.y) + endOrigin
+      //  currentPoint = Vec2(0.0, points.last().y - origin.y) + endOrigin
         zigzag(
             points, points.last(), he0, zigzag, 0.0,
             DrawingParam(
@@ -337,16 +358,6 @@ object BoxCad {
                 back = true,
             ),
             boardWeight,
-        );
-        result.endHole.addAll(
-            holes(
-                currentPoint, he0, zigzag, 0.0, DrawingParam(
-                    orientation = Orientation.Vertical,
-                    reverse = true,
-                    back = true,
-                ),
-                wald.holeWeight
-            )
         );
 
         //Правый нижний угол
@@ -389,7 +400,7 @@ object BoxCad {
             if (needZig) {
                 if (hasPolPaz) {
                     val d = pred - (cx + dwe2);
-                    currentPoint = getCoord(polka, points.last() - origin) + originForPol;
+                    val currentPoint = getCoord(polka, points.last() - origin) + originForPol;
                     zigzag(
                         points, points.last(), d, zigzagPol, 0.0, DrawingParam(
                             orientation = Orientation.Horizontal,
@@ -418,7 +429,7 @@ object BoxCad {
 
         if (hasPolPaz) {
             val d = pred - ssx;
-            currentPoint = getCoord(polka, points.last() - origin) + originForPol;
+            val currentPoint = getCoord(polka, points.last() - origin) + originForPol;
             zigzag(
                 points, points.last(), d, zigzagPol, 0.0, DrawingParam(
                     orientation = Orientation.Horizontal,
@@ -482,9 +493,9 @@ object BoxCad {
           //  holeOffset = if (waldParams.holeOffset == 0.0) drawerSettings.holeOffset else waldParams.holeOffset,
         )
 
-        val weight = boxInfo.weight;
-        val height = boxInfo.height;
-        val width = boxInfo.width;
+        val weight = boxInfo.weight
+        val height = boxInfo.height
+        val width = boxInfo.width
         val bw = drawerSettings.boardWeight
 
         val polkaVerticalOffset = wald.fullBottomOffset(bw) + wald.fullTopOffset(bw)
@@ -495,12 +506,11 @@ object BoxCad {
 
         val holeH = zigH.copy(
             width = zigH.width - drawerSettings.holeDrop,
-            delta = zigH.delta
+            height = if (zigH.height == 0.0) bw else zigH.height
         )
 
         val holeWe = zigWe.copy(
             width = zigWe.width - drawerSettings.holeDrop,
-            delta = zigWe.delta
         )
 
         val resultMap = mutableMapOf<Int, MutableList<IFigure>>()
@@ -518,7 +528,7 @@ object BoxCad {
                 boardWeight = bw,
                 wald = wald
             )
-        );
+        )
 
         resultMap.getOrPut(F_RIGHT) { mutableListOf() }.addAll(
             faceWald(
@@ -531,13 +541,13 @@ object BoxCad {
                 boardWeight = bw,
                 wald = wald
             )
-        );
+        )
 
         val p2 = p.copy(reverse = false)
 
         resultMap.getOrPut(F_FACE) { mutableListOf() }.addAll(
             faceWald(
-                origin = Vec2.Zero,
+                origin = Vec2( - holeH.height, 0.0),
                 width = weight,
                 height = height,
                 zigzag = holeH,
@@ -546,10 +556,11 @@ object BoxCad {
                 boardWeight = bw,
                 wald = wald
             )
-        );
+        )
+
         resultMap.getOrPut(F_BACK) { mutableListOf() }.addAll(
             faceWald(
-                origin = Vec2.Zero,
+                origin = Vec2( - holeH.height, 0.0),
                 width = weight,
                 height = height,
                 zigzag = holeH,
@@ -558,7 +569,7 @@ object BoxCad {
                 boardWeight = bw,
                 wald = wald
             )
-        );
+        )
 
         if (wald.bottomForm != PazForm.None) {
             resultMap.getOrPut(F_BOTTOM) { mutableListOf() }.add(
@@ -572,6 +583,7 @@ object BoxCad {
                 )
             );
         }
+
         if (wald.topForm != PazForm.None) {
             resultMap.getOrPut(F_TOP) { mutableListOf() }.add(
                 pol(
@@ -585,18 +597,14 @@ object BoxCad {
             );
         }
 
-
         polki.calcList.forEachIndexed { index, polka ->
             polka.calc.id = index + 1
         }
-        resultMap.getOrPut(F_BOTTOM) { mutableListOf() }.add(
 
+        resultMap.getOrPut(F_BOTTOM) { mutableListOf() }.add(
             FigureColor(0xFF0000,
                 FigureList(
                     polki.calcList.map { po ->
-                        val start = polki.findStart(po)
-                        val end = polki.findEnd(po)
-                        val inter: List<Polka> = polki.intersectList(po)
                         FigureLine(
                             Vec2(po.calc.sX, po.calc.sY),
                             Vec2(po.calc.eX, po.calc.eY)
@@ -605,7 +613,6 @@ object BoxCad {
                 )
             )
         )
-
 
         for (po in polki.calcList) {
             if (po.visible) {
@@ -669,14 +676,14 @@ object BoxCad {
             val mf = Matrix()
             when (index) {
                 F_FACE -> {
-                    mf.translate( y = -boardWeight.toFloat(), z = -boardWeight.toFloat(), )
+                    mf.translate( y = 0f, z = -boardWeight.toFloat(), )
                     mf.rotateY(90f)
                     mf.rotateZ(90f)
 
                 }
 
                 F_BACK -> {
-                    mf.translate(y = -boardWeight.toFloat(), z = boxInfo.width.toFloat()-boardWeight.toFloat())
+                    mf.translate(y = 0f, z = boxInfo.width.toFloat()-boardWeight.toFloat())
                     mf.rotateY(90f)
                     mf.rotateZ(90f)
                 }

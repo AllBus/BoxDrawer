@@ -10,6 +10,7 @@ import figure.Figure
 import figure.FigureEmpty
 import figure.IFigure
 import figure.composition.FigureColor
+import turtoise.DrawerSettings
 import turtoise.Orientation
 import turtoise.ZigzagInfo
 import vectors.Vec2
@@ -21,14 +22,10 @@ class BoxData(val tools: ITools) {
     val selectZigTopId = mutableIntStateOf(PazExt.PAZ_NONE)
     val selectZigBottomId = mutableIntStateOf(PazExt.PAZ_HOLE)
 
-
-    private val box = BoxCad
-
     fun boxFigures(line: String, outVariant: BoxCad.EOutVariant): BoxAlgorithm {
 
         val ds = tools.ds()
         val inside = insideChecked.value
-
 
         val wald = WaldParam(
             topOffset = topOffset.decimal, //  tools.ds().holeOffset,
@@ -57,7 +54,7 @@ class BoxData(val tools: ITools) {
                 zigW = widthZigState.zigInfo,
                 zigH = heightZigState.zigInfo,
                 zigWe = weightZigState.zigInfo,
-                zigPolka = weightZigState.zigInfo,
+                zigPolka = polkaZigState.zigInfo,
                 zigPolkaPol = polkaPolZigState.zigInfo
             ),
             wald = wald,
@@ -65,47 +62,22 @@ class BoxData(val tools: ITools) {
             outVariant = outVariant,
             polkiIn = polkiInChecked.value
         )
-
-    }
-
-    fun boxFigures(alg: BoxAlgorithm): IFigure{
-        val ds = tools.ds()
-
-        val bwi = alg.boxInfo.width - ds.boardWeight * 2
-        val bwe = alg.boxInfo.weight - ds.boardWeight * 2
-        val upWidth = if (alg.polkiIn) ds.boardWeight else 0.0
-
-        val calc = CalculatePolka.calculatePolki(alg.polki, bwi,bwe, upWidth)
-
-        calc.zigPolkaH = alg.zigs.zigPolka
-        calc.zigPolkaPol = alg.zigs.zigPolkaPol
-
-        return BoxCad.box(
-            startPoint = Vec2.Zero,
-            boxInfo = alg.boxInfo,
-            zigW = alg.zigs.zigW,
-            zigH = alg.zigs.zigH,
-            zigWe = alg.zigs.zigWe,
-            drawerSettings = tools.ds(),
-            waldParams = alg.wald,
-            polki = calc,
-            outVariant = alg.outVariant
-        )
     }
 
     fun createBox(line: String) {
         val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.VOLUME)
-        val fig = boxFigures(alg)
+        val ds = tools.ds()
+        val fig = boxFigures(alg, ds)
         figures.value =fig
     }
 
     fun saveBox(fileName: String, line: String) {
         val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.COLUMN)
+        val ds = tools.ds()
         val fig = FigureColor(
             Color.DarkGray.toArgb(),
-            boxFigures(alg)
+            boxFigures(alg, ds)
         )
-
 
         tools.saveFigures(fileName, fig)
     }
@@ -138,6 +110,31 @@ class BoxData(val tools: ITools) {
     val weightZigState = ZigZagState({redrawBox()})
     val polkaZigState = ZigZagState({redrawBox()})
     val polkaPolZigState = ZigZagState({redrawBox()})
+
+    companion object {
+        fun boxFigures(alg: BoxAlgorithm, ds: DrawerSettings): IFigure{
+            val bwi = alg.boxInfo.width - ds.boardWeight * 2
+            val bwe = alg.boxInfo.weight - ds.boardWeight * 2
+            val upWidth = if (alg.polkiIn) ds.boardWeight else 0.0
+
+            val calc = CalculatePolka.calculatePolki(alg.polki, bwi,bwe, upWidth)
+
+            calc.zigPolkaH = alg.zigs.zigPolka
+            calc.zigPolkaPol = alg.zigs.zigPolkaPol
+
+            return BoxCad.box(
+                startPoint = Vec2.Zero,
+                boxInfo = alg.boxInfo,
+                zigW = alg.zigs.zigW,
+                zigH = alg.zigs.zigH,
+                zigWe = alg.zigs.zigWe,
+                drawerSettings = ds,
+                waldParams = alg.wald,
+                polki = calc,
+                outVariant = alg.outVariant
+            )
+        }
+    }
 }
 
 class ZigZagState(val redrawBox: () -> Unit){

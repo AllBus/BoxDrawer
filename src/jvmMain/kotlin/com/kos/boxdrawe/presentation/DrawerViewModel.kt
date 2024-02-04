@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.boxdrawe.widget.NumericTextFieldState
@@ -20,6 +21,9 @@ class DrawerViewModel {
         println("DrawerViewModel")
     }
 
+    fun loadSettings(){
+        tools.loadSettings()
+    }
 
 }
 
@@ -39,9 +43,5 @@ class ToolsData(val tools: Tools) {
         holeOffset.decimal = tools.settings.value.holeOffset
     }
 
-    init{
-        tools.loadSettings()
-        selectSettings(tools.ds())
-    }
 }
 
