@@ -1,5 +1,7 @@
 package turtoise
 
+import turtoise.memory.TortoiseMemory
+
 class ZeroTortoiseCommand(
     override val command: Char,
 ) : TortoiseCommand {

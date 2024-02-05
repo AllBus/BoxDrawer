@@ -4,6 +4,7 @@ import figure.*
 import figure.matrix.FigureMatrixRotate
 import figure.matrix.FigureMatrixScale
 import figure.matrix.FigureMatrixTranslate
+import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 import java.util.*
 import kotlin.math.PI
@@ -211,6 +212,27 @@ class Tortoise {
                     )
 
                     res.add(FigurePolyline(points))
+                }
+
+                TortoiseCommand.TURTOISE_ROUND_RECTANGLE -> {
+                    val width = com.value(memory)
+                    val height = com[1, width, memory]
+
+                    val width2 = width / 2
+                    val height2 = height / 2
+
+                    val smoothSize = com[2, min(width2, height2), memory]
+
+                    val c2 = state.xy
+                    val angle = state.angle
+
+                    res.add(
+                        rectangle(
+                        -width2+c2.x, height2+c2.y, width2+c2.x, -height2+c2.y,
+                        enableSmooth = smoothSize!=0.0,
+                        smoothSize = smoothSize,
+                    ).rotate(angle)
+                    )
                 }
 
                 TortoiseCommand.TURTOISE_ZIGZAG -> {
@@ -497,6 +519,90 @@ class Tortoise {
                 )
                 offset += deltaV
                 v
+            }
+        }
+
+
+        val next: List<Pair<Int, Int>> = listOf(
+            (-1 to 0),
+            (0 to -1),
+            (1 to 0),
+            (0 to 1),
+        )
+
+        private val tan = 0.552284749831
+        fun bezierQuartir(v: Vec2, smoothSize: Double, g1: Int, g2: Int): FigureBezierList {
+            val p1 = next[g1 % 4]
+            val p2 = next[g2 % 4]
+            return FigureBezierList(
+                Vec2(v.x - p1.first * smoothSize, v.y + p1.second * smoothSize),
+                Vec2(v.x - p1.first * smoothSize * (1 - tan), v.y + p1.second * smoothSize * (1 - tan)),
+                Vec2(v.x + p2.first * smoothSize * (1 - tan), v.y - p2.second * smoothSize * (1 - tan)),
+                Vec2(v.x + p2.first * smoothSize, v.y - p2.second * smoothSize)
+            )
+        }
+
+        fun bezierLine(v: Vec2, v2: Vec2, smoothSize: Double, g1: Int, g2: Int): FigureBezierList {
+            val p1 = next[g1 % 4]
+            val p2 = next[g2 % 4]
+            return FigureBezierList(
+                Vec2(v.x - p1.first * smoothSize, v.y + p1.second * smoothSize),
+                Vec2(v.x - p1.first * smoothSize, v.y + p1.second * smoothSize),
+                Vec2(v2.x + p2.first * smoothSize, v2.y - p2.second * smoothSize),
+                Vec2(v2.x + p2.first * smoothSize, v2.y - p2.second * smoothSize)
+            )
+        }
+
+        fun bezierLine(v: Vec2, v2: Vec2, smoothSizeStart: Double, smoothSizeEnd:Double, g1: Int, g2: Int): FigureBezierList {
+            val p1 = next[g1 % 4]
+            val p2 = next[g2 % 4]
+            return FigureBezierList(
+                Vec2(v.x - p1.first * smoothSizeStart, v.y + p1.second * smoothSizeStart),
+                Vec2(v.x - p1.first * smoothSizeStart, v.y + p1.second * smoothSizeStart),
+                Vec2(v2.x + p2.first * smoothSizeEnd, v2.y - p2.second * smoothSizeEnd),
+                Vec2(v2.x + p2.first * smoothSizeEnd, v2.y - p2.second * smoothSizeEnd)
+            )
+        }
+
+        fun rectangle(
+            left: Double,
+            top: Double,
+            right: Double,
+            bottom: Double,
+            enableSmooth: Boolean,
+            smoothSize: Double,
+        ): IFigure {
+            if (enableSmooth) {
+                val lt = Vec2(left, top);
+                val rt = Vec2(right, top);
+                val lb = Vec2(left, bottom);
+                val rb = Vec2(right, bottom);
+
+                val bz = FigureBezierList.simple(
+                    listOf(
+                        bezierQuartir(lt, smoothSize, 1, 2),
+                        bezierLine(lt, rt, smoothSize, 0, 0),
+                        bezierQuartir(rt, smoothSize, 2, 3),
+                        bezierLine(rt, rb, smoothSize, 1, 1),
+                        bezierQuartir(rb, smoothSize, 3, 0),
+                        bezierLine(rb, lb, smoothSize, 2, 2),
+                        bezierQuartir(lb, smoothSize, 0, 1),
+                        bezierLine(lb, lt, smoothSize, 3, 3),
+                    )
+                )
+
+                return bz
+            } else {
+                val bz = FigurePolyline(
+                    listOf(
+                        Vec2(left, top),
+                        Vec2(right, top),
+                        Vec2(right, bottom),
+                        Vec2(left, bottom),
+                    ),
+                    true
+                )
+                return bz
             }
         }
     }

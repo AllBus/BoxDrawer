@@ -1,6 +1,7 @@
 package turtoise
 
 import turtoise.TortoiseCommand.Companion.commandToName
+import turtoise.memory.TortoiseMemory
 
 interface TortoiseCommand {
     val command: Char
@@ -70,6 +71,7 @@ interface TortoiseCommand {
         const val TURTOISE_VERTICAL = 'v';
         const val TURTOISE_SPLINE = 's';
         const val TURTOISE_RECTANGLE = 'x';
+        const val TURTOISE_ROUND_RECTANGLE = 'r';
         const val TURTOISE_POLYLINE = 'L';
         const val TURTOISE_MOVE = 'm';
         const val TURTOISE_LINE = 'l';
@@ -287,10 +289,3 @@ class ListDoubleTortoiseCommand(
     }
 }
 
-interface TortoiseMemory {
-    fun value(variable: String, defaultValue: Double): Double
-    fun assign(variable: String, value: Double)
-    fun clear(variable: String)
-
-    fun reset()
-}

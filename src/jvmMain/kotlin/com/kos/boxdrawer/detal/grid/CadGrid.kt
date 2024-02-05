@@ -4,6 +4,10 @@ import androidx.compose.ui.graphics.toArgb
 import figure.*
 import figure.composition.FigureColor
 import turtoise.DrawerSettings
+import turtoise.Tortoise
+import turtoise.Tortoise.Companion.bezierLine
+import turtoise.Tortoise.Companion.bezierQuartir
+import turtoise.Tortoise.Companion.next
 import vectors.Vec2
 import java.util.*
 import kotlin.math.abs
@@ -47,14 +51,7 @@ class CadGrid {
         (-1 to 0),
     )
 
-    private val next: List<Pair<Int, Int>> = listOf(
-        (-1 to 0),
-        (0 to -1),
-        (1 to 0),
-        (0 to 1),
-    )
 
-    private val tan = 0.552284749831
 
     fun actual(sX: Int, sY: Int): Boolean {
         return !(sX < 0 || sY < 0 || sX >= width || sY >= height)
@@ -191,38 +188,16 @@ class CadGrid {
         }
     }
 
-    fun bezierQuartir(v: Vec2, smoothSize: Double, g1: Int, g2: Int): FigureBezierList {
-        val p1 = next[g1 % 4]
-        val p2 = next[g2 % 4]
-        return FigureBezierList(
-            Vec2(v.x - p1.first * smoothSize, v.y + p1.second * smoothSize),
-            Vec2(v.x - p1.first * smoothSize * (1 - tan), v.y + p1.second * smoothSize * (1 - tan)),
-            Vec2(v.x + p2.first * smoothSize * (1 - tan), v.y - p2.second * smoothSize * (1 - tan)),
-            Vec2(v.x + p2.first * smoothSize, v.y - p2.second * smoothSize)
-        )
+
+
+    fun distance(a: GridPoint, b:GridPoint):Int {
+        return abs(a.x-b.x) + abs(a.y-b.y)
     }
 
-    fun bezierLine(v: Vec2, v2: Vec2, smoothSize: Double, g1: Int, g2: Int): FigureBezierList {
-        val p1 = next[g1 % 4]
-        val p2 = next[g2 % 4]
-        return FigureBezierList(
-            Vec2(v.x - p1.first * smoothSize, v.y + p1.second * smoothSize),
-            Vec2(v.x - p1.first * smoothSize, v.y + p1.second * smoothSize),
-            Vec2(v2.x + p2.first * smoothSize, v2.y - p2.second * smoothSize),
-            Vec2(v2.x + p2.first * smoothSize, v2.y - p2.second * smoothSize)
-        )
+    fun calculateMaxRadius(a:Int, b:Int): Double{
+        return min(a, b)/2.0
     }
 
-    fun bezierLine(v: Vec2, v2: Vec2, smoothSizeStart: Double, smoothSizeEnd:Double, g1: Int, g2: Int): FigureBezierList {
-        val p1 = next[g1 % 4]
-        val p2 = next[g2 % 4]
-        return FigureBezierList(
-            Vec2(v.x - p1.first * smoothSizeStart, v.y + p1.second * smoothSizeStart),
-            Vec2(v.x - p1.first * smoothSizeStart, v.y + p1.second * smoothSizeStart),
-            Vec2(v2.x + p2.first * smoothSizeEnd, v2.y - p2.second * smoothSizeEnd),
-            Vec2(v2.x + p2.first * smoothSizeEnd, v2.y - p2.second * smoothSizeEnd)
-        )
-    }
 
     fun rectangle(
         left: Double,
@@ -233,46 +208,7 @@ class CadGrid {
         smoothSize: Double,
         color: Int
     ): IFigure {
-        if (enableSmooth) {
-            val lt = Vec2(left, top);
-            val rt = Vec2(right, top);
-            val lb = Vec2(left, bottom);
-            val rb = Vec2(right, bottom);
-
-            val bz = FigureBezierList.simple(
-                listOf(
-                    bezierQuartir(lt, smoothSize, 1, 2),
-                    bezierLine(lt, rt, smoothSize, 0, 0),
-                    bezierQuartir(rt, smoothSize, 2, 3),
-                    bezierLine(rt, rb, smoothSize, 1, 1),
-                    bezierQuartir(rb, smoothSize, 3, 0),
-                    bezierLine(rb, lb, smoothSize, 2, 2),
-                    bezierQuartir(lb, smoothSize, 0, 1),
-                    bezierLine(lb, lt, smoothSize, 3, 3),
-                )
-            )
-
-            return FigureColor(color, bz)
-        } else {
-            val bz = FigurePolyline(
-                listOf(
-                    Vec2(left, top),
-                    Vec2(right, top),
-                    Vec2(right, bottom),
-                    Vec2(left, bottom),
-                ),
-                true
-            )
-            return FigureColor(color, bz)
-        }
-    }
-
-    fun distance(a: GridPoint, b:GridPoint):Int {
-        return abs(a.x-b.x) + abs(a.y-b.y)
-    }
-
-    fun calculateMaxRadius(a:Int, b:Int): Double{
-        return min(a, b)/2.0
+        return FigureColor(color, Tortoise.rectangle(0.0, 0.0, right, bottom, enableSmooth, smoothSize))
     }
 
     fun createEntities(gridSize: GridOption, innerInfo: GridOption, frameSize: Double, drawerSettings: DrawerSettings) : IFigure

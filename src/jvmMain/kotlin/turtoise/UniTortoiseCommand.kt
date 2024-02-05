@@ -1,5 +1,7 @@
 package turtoise
 
+import turtoise.memory.TortoiseMemory
+
 class UniTortoiseCommand(
     override val command: Char,
     private val values: List<String>,

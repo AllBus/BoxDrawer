@@ -1,5 +1,7 @@
 package turtoise
 
+import turtoise.memory.TortoiseMemory
+
 class SimpleTortoiseMemory: TortoiseMemory {
 
     val m = mutableMapOf<String, Double>()

@@ -2,6 +2,7 @@ package turtoise
 
 import figure.FigureList
 import figure.IFigure
+import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 
 class TortoiseRunner(val memory: TortoiseMemory) {

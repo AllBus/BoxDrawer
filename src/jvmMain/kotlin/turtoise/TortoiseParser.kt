@@ -185,6 +185,7 @@ object TortoiseParser {
         sb.append(helpName(TortoiseCommand.TURTOISE_ELLIPSE, "rx ry (sa ea)*", "эллипс с радиусами rx и ry.\n" +
                 "     sa se необязательны задают начальный и конечный угол дуги"))
         sb.append(helpName(TortoiseCommand.TURTOISE_RECTANGLE, "w h?", "прямоугольник шириной w и высотой h. Если h не задан, то квадрат"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_ROUND_RECTANGLE, "w h r", "прямоугольник шириной w и высотой h cо скруглённми углами радиуса r"))
         sb.append(helpName(TortoiseCommand.TURTOISE_ZIGZAG, "w delta zigWidth board", "Рисовать зигзаги:\n" +
                 "     w - общая длина,\n" +
                 "     delta - расстояние между началами двух зигзагов,\n" +
