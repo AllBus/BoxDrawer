@@ -10,6 +10,7 @@ import figure.Figure
 import figure.FigureEmpty
 import figure.IFigure
 import figure.composition.FigureColor
+import kotlinx.coroutines.flow.StateFlow
 import turtoise.DrawerSettings
 import turtoise.Orientation
 import turtoise.ZigzagInfo
@@ -43,7 +44,8 @@ class BoxData(val tools: ITools) {
                 wald.fullTopOffset(ds.boardWeight) +
                         wald.fullBottomOffset(ds.boardWeight)
             } else 0.0,
-            weight = weight.decimal + if (inside) ds.boardWeight * 2 else 0.0
+            weight = weight.decimal + if (inside) ds.boardWeight * 2 else 0.0,
+            heights = listOf(edgeFL.decimal, edgeBL.decimal, edgeBR.decimal, edgeFR.decimal)
         )
 
         val polki = CalculatePolka.createPolki(line)
@@ -103,6 +105,11 @@ class BoxData(val tools: ITools) {
     var polkiInChecked = mutableStateOf(false)
     var alternative = mutableStateOf(true)
     val text = mutableStateOf("")
+
+    val edgeFL = NumericTextFieldState(0.0) { redrawBox() }
+    val edgeBL = NumericTextFieldState(0.0) { redrawBox() }
+    val edgeBR = NumericTextFieldState(0.0) { redrawBox() }
+    val edgeFR = NumericTextFieldState(0.0) { redrawBox() }
 
 
     val widthZigState = ZigZagState({redrawBox()})

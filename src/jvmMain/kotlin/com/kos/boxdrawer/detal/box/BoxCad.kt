@@ -1,6 +1,13 @@
 package com.kos.boxdrawer.detal.box
 
 import androidx.compose.ui.graphics.Matrix
+import com.kos.boxdrawer.detal.box.PolkaProgram.Companion.SIDE_BACK
+import com.kos.boxdrawer.detal.box.PolkaProgram.Companion.SIDE_BOTTOM
+import com.kos.boxdrawer.detal.box.PolkaProgram.Companion.SIDE_FACE
+import com.kos.boxdrawer.detal.box.PolkaProgram.Companion.SIDE_LEFT
+import com.kos.boxdrawer.detal.box.PolkaProgram.Companion.SIDE_NONE
+import com.kos.boxdrawer.detal.box.PolkaProgram.Companion.SIDE_RIGHT
+import com.kos.boxdrawer.detal.box.PolkaProgram.Companion.SIDE_TOP
 import figure.*
 import figure.composition.FigureColor
 import figure.composition.FigureRotate
@@ -15,17 +22,21 @@ import kotlin.math.min
 
 object BoxCad {
 
-    enum class EOutVariant{
+    enum class EOutVariant {
         COLUMN,
         ALTERNATIVE,
         VOLUME
     }
+
     fun faceWald(
-        origin: Vec2, width: Double, height: Double,
+        origin: Vec2, width: Double,
+        height: Double,
+
         zigzag: ZigzagInfo, hole: ZigzagInfo,
         param: DrawingParam,
         boardWeight: Double,
         wald: WaldParam,
+        heightEnd: Double = height
     ): List<IFigure> {
         val result = mutableListOf<IFigure>()
 
@@ -37,6 +48,8 @@ object BoxCad {
             back = false
         )
 
+
+        //Левая сторона
         points.add(origin)
         points.add(origin + Vec2(0.0, wald.bottomOffset))
         zigzag(points, points.last(), height - wald.verticalOffset, zigzag, 0.0, p, boardWeight)
@@ -77,10 +90,12 @@ object BoxCad {
             back = true,
         )
 
-        points.add(origin + Vec2(width, height))
+        // Верхняя сторона
+        points.add(origin + Vec2(width, heightEnd))
 
-        points.add(origin + Vec2(width, height - wald.topOffset))
-        zigzag(points, points.last(), height - wald.verticalOffset, zigzag, 0.0, p, boardWeight)
+        // Правая сторона
+        points.add(origin + Vec2(width, heightEnd - wald.topOffset))
+        zigzag(points, points.last(), heightEnd - wald.verticalOffset, zigzag, 0.0, p, boardWeight)
         points.add(origin + Vec2(width, 0.0))
 
         if (wald.bottomForm != PazForm.None) {
@@ -223,11 +238,11 @@ object BoxCad {
 
         if (or == Orientation.Horizontal) {
             originForPol += Vec2(polka.calc.sX, polka.calc.sY + dwe2)
-            startOrigin += Vec2(polka.calc.sY + dwe2- startCXY.y , startBottomOffset)
+            startOrigin += Vec2(polka.calc.sY + dwe2 - startCXY.y, startBottomOffset)
             endOrigin += Vec2(polka.calc.sY + dwe2 - endCXY.y, endBottomOffset)
         } else {
             originForPol += Vec2(polka.calc.sX - dwe2, polka.calc.sY)
-            startOrigin += Vec2(polka.calc.sX + dwe2- startCXY.x, startBottomOffset)
+            startOrigin += Vec2(polka.calc.sX + dwe2 - startCXY.x, startBottomOffset)
             endOrigin += Vec2(polka.calc.sX + dwe2 - endCXY.x, endBottomOffset)
         }
 
@@ -349,7 +364,7 @@ object BoxCad {
         // Правый край
         points.add(origin + Vec2(cx, he0));
 
-      //  currentPoint = Vec2(0.0, points.last().y - origin.y) + endOrigin
+        //  currentPoint = Vec2(0.0, points.last().y - origin.y) + endOrigin
         zigzag(
             points, points.last(), he0, zigzag, 0.0,
             DrawingParam(
@@ -477,7 +492,7 @@ object BoxCad {
         drawerSettings: DrawerSettings,
         waldParams: WaldParam,
         polki: PolkaSort,
-        outVariant : EOutVariant
+        outVariant: EOutVariant
     ): IFigure {
 
         // две толщины доски
@@ -490,8 +505,10 @@ object BoxCad {
 
         val wald = waldParams.copy(
             holeWeight = if (waldParams.holeWeight == 0.0) drawerSettings.holeWeight else waldParams.holeWeight,
-          //  holeOffset = if (waldParams.holeOffset == 0.0) drawerSettings.holeOffset else waldParams.holeOffset,
+            //  holeOffset = if (waldParams.holeOffset == 0.0) drawerSettings.holeOffset else waldParams.holeOffset,
         )
+
+        val heights = boxInfo.heights.map { if (it<0.001) boxInfo.height else it }
 
         val weight = boxInfo.weight
         val height = boxInfo.height
@@ -521,12 +538,13 @@ object BoxCad {
             faceWald(
                 origin = Vec2.Zero,
                 width = width - ap,
-                height = height,
+                height = heights.getOrElse(0) { height },
                 zigzag = zigH,
                 hole = holeW,
                 param = p,
                 boardWeight = bw,
-                wald = wald
+                wald = wald,
+                heightEnd = heights.getOrElse(2) { height }
             )
         )
 
@@ -534,12 +552,13 @@ object BoxCad {
             faceWald(
                 origin = Vec2.Zero,
                 width = width - ap,
-                height = height,
+                height = heights.getOrElse(1) { height },
+                heightEnd = heights.getOrElse(3) { height },
                 zigzag = zigH,
                 hole = holeW,
                 param = p,
                 boardWeight = bw,
-                wald = wald
+                wald = wald,
             )
         )
 
@@ -547,22 +566,24 @@ object BoxCad {
 
         resultMap.getOrPut(F_FACE) { mutableListOf() }.addAll(
             faceWald(
-                origin = Vec2( - holeH.height, 0.0),
+                origin = Vec2(-holeH.height, 0.0),
                 width = weight,
-                height = height,
+                height = heights.getOrElse(0) { height },
                 zigzag = holeH,
                 hole = holeWe,
                 param = p2,
                 boardWeight = bw,
-                wald = wald
+                wald = wald,
+                heightEnd = heights.getOrElse(1) { height }
             )
         )
 
         resultMap.getOrPut(F_BACK) { mutableListOf() }.addAll(
             faceWald(
-                origin = Vec2( - holeH.height, 0.0),
+                origin = Vec2(-holeH.height, 0.0),
                 width = weight,
-                height = height,
+                height = heights.getOrElse(2) { height },
+                heightEnd = heights.getOrElse(3) { height },
                 zigzag = holeH,
                 hole = holeWe,
                 param = p2,
@@ -647,6 +668,8 @@ object BoxCad {
                 resultMap.getOrPut(polId) { mutableListOf() }.addAll(result.polHole)
                 resultMap.getOrPut(startId) { mutableListOf() }.addAll(result.startHole)
                 resultMap.getOrPut(endId) { mutableListOf() }.addAll(result.endHole)
+
+                appendProgram(po, drawerSettings, inter, resultMap)
             }
 
         }
@@ -655,12 +678,58 @@ object BoxCad {
             FigureList(value)
         }
 
-        return when (outVariant){
+        return when (outVariant) {
             EOutVariant.COLUMN -> mainPosition(rm, startPoint, bw)
             EOutVariant.ALTERNATIVE -> alternativePosition(rm, bw, polki)
-            EOutVariant.VOLUME ->  figure3dTransform(rm, boxInfo, wald, polki, bw)
+            EOutVariant.VOLUME -> figure3dTransform(rm, boxInfo, wald, polki, bw)
         }
 
+    }
+
+    private fun appendProgram(
+        polka: Polka,
+        drawerSettings: DrawerSettings,
+        inter: List<Polka>,
+        resultMap: MutableMap<Int, MutableList<IFigure>>
+    ) {
+        val runner = TortoiseRunner(SimpleTortoiseMemory())
+        polka.programs?.forEach { program ->
+            val alg = TortoiseParser.extractTortoiseCommands(program.algorithm)
+            alg.names.firstOrNull()?.let { n ->
+                alg.draw(n, drawerSettings, runner)
+            }?.let { figure ->
+                if (program.startCell > 0) {
+                    inter.getOrNull(program.startCell - 1)?.let { p2 ->
+                        if (polka.orientation === Orientation.Vertical)
+                            p2.calc.sX
+                        else
+                            p2.calc.sY
+                    }?.let { FigureTranslate(figure, Vec2(it, 0.0)) } ?: figure
+                } else figure
+            }?.let { figure ->
+                program.sideIndex.forEach { side ->
+                    val pi = sideToPolkaIndex(side, polka.calc.id)
+                    if (pi != 0) {
+                        resultMap.getOrPut(pi) { mutableListOf() }.add(figure)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun sideToPolkaIndex(side: Int, polkaId: Int): Int {
+        return when (side) {
+            SIDE_BOTTOM -> F_BOTTOM
+            SIDE_TOP -> F_TOP
+            SIDE_NONE -> 0
+            SIDE_LEFT -> F_LEFT
+            SIDE_RIGHT -> F_RIGHT
+            SIDE_FACE -> F_FACE
+            SIDE_BACK -> F_BACK
+            0 -> polkaId
+            else ->
+                if (side > 0) (-(side + 9)) else 0
+        }
     }
 
     private fun figure3dTransform(
@@ -668,7 +737,7 @@ object BoxCad {
         boxInfo: BoxInfo,
         wald: WaldParam,
         polki: PolkaSort,
-        boardWeight:Double,
+        boardWeight: Double,
     ): Figure3dTransform {
         val sList = mutableListOf<IFigure>()
         rm.forEach { (index, f) ->
@@ -676,14 +745,14 @@ object BoxCad {
             val mf = Matrix()
             when (index) {
                 F_FACE -> {
-                    mf.translate( y = 0f, z = -boardWeight.toFloat(), )
+                    mf.translate(y = 0f, z = -boardWeight.toFloat())
                     mf.rotateY(90f)
                     mf.rotateZ(90f)
 
                 }
 
                 F_BACK -> {
-                    mf.translate(y = 0f, z = boxInfo.width.toFloat()-boardWeight.toFloat())
+                    mf.translate(y = 0f, z = boxInfo.width.toFloat() - boardWeight.toFloat())
                     mf.rotateY(90f)
                     mf.rotateZ(90f)
                 }
@@ -694,18 +763,18 @@ object BoxCad {
                 }
 
                 F_RIGHT -> {
-                    mf.translate( z = -boxInfo.weight.toFloat()+boardWeight.toFloat())
+                    mf.translate(z = -boxInfo.weight.toFloat() + boardWeight.toFloat())
                     mf.rotateX(90f)
                 }
 
                 F_TOP -> {
                     mf.translate(z = boxInfo.height.toFloat() - wald.fullTopOffset(boardWeight).toFloat())
-                 //   mf.rotateY(-90f)
+                    //   mf.rotateY(-90f)
                 }
 
                 F_BOTTOM -> {
                     mf.translate(z = wald.fullBottomOffset(boardWeight).toFloat())
-              //      mf.rotateY(-90f)
+                    //      mf.rotateY(-90f)
                 }
 
                 else -> {
@@ -713,14 +782,22 @@ object BoxCad {
 
                         when (po.orientation) {
                             Orientation.Vertical -> {
-                                mf.translate(x = -wald.fullBottomOffset(boardWeight).toFloat(), y = po.calc.sY.toFloat(), z = po.calc.sX.toFloat())
+                                mf.translate(
+                                    x = -wald.fullBottomOffset(boardWeight).toFloat(),
+                                    y = po.calc.sY.toFloat(),
+                                    z = po.calc.sX.toFloat()
+                                )
                                 mf.rotateY(90f)
                                 mf.rotateZ(90f)
                             }
 
                             Orientation.Horizontal -> {
-                                mf.translate(y = wald.fullBottomOffset(boardWeight).toFloat(), x = po.calc.sX.toFloat(), z = -po.calc.sY.toFloat())
-                            //    mf.rotateY(180f)
+                                mf.translate(
+                                    y = wald.fullBottomOffset(boardWeight).toFloat(),
+                                    x = po.calc.sX.toFloat(),
+                                    z = -po.calc.sY.toFloat()
+                                )
+                                //    mf.rotateY(180f)
                                 mf.rotateX(90f)
                             }
 
@@ -735,11 +812,14 @@ object BoxCad {
             sList += Figure3dTransform(mf, f)
         }
         val mf = Matrix()
-        mf.translate((-boxInfo.width/2f).toFloat(), (-boxInfo.weight/2f).toFloat(), (-boxInfo.height/2f).toFloat())
+        mf.translate(
+            (-boxInfo.width / 2f).toFloat(),
+            (-boxInfo.weight / 2f).toFloat(),
+            (-boxInfo.height / 2f).toFloat()
+        )
         mf.rotateX(59f)
-        mf.rotateY( -45f)
+        mf.rotateY(-45f)
         mf.rotateZ(5f)//-22.5f-22f)
-
 
 
         return Figure3dTransform(mf, FigureList(sList.toList()))
@@ -768,7 +848,7 @@ object BoxCad {
         rm: Map<Int, IFigure>,
         bw: Double,
         polki: PolkaSort
-    ):IFigure {
+    ): IFigure {
 
         val outList = mutableListOf<IFigure>()
         var pLeft = Vec2.Zero

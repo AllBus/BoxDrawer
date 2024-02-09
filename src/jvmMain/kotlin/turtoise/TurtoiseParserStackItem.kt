@@ -97,7 +97,7 @@ class TurtoiseParserStackBlock(
         arguments.forEach { add(it) }
     }
 
-    fun add(argument: TurtoiseParserStackItem) {
+    fun add(argument: TurtoiseParserStackBlock) {
         inner.add(argument)
         blocks.add(argument)
     }

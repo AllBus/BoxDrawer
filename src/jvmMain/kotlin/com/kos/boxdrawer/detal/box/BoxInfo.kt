@@ -1,9 +1,10 @@
 package com.kos.boxdrawer.detal.box
 
 data class BoxInfo(
-    var width : Double,
-    var height: Double ,
-    var weight: Double ,
+    val width : Double,
+    val height: Double ,
+    val weight: Double ,
+    val heights: List<Double> = emptyList()
 ) {
 
     fun commandLine():String{

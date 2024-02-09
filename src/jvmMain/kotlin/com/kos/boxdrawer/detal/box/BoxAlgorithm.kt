@@ -44,27 +44,15 @@ class BoxAlgorithm(
     }
 
     fun commandLine():String{
-        val p = polki.map { po ->
-            "(${po.width} ${if (po.orientation == Orientation.Horizontal) "h" else "v"}"+
-                    " ${orderToText(po.order)} ${if (!po.visible) "n" else ""}"+
-                    " ${po.startCell} ${po.cellCount} ${po.height.joinToString(" ", "( ", " )")})"
-        }.joinToString(" ", "(p ", ")")
+        val p = polki.joinToString(" ", "(p ", ")") { po ->
+            po.commandLine()
+        }
 
         return "box ${boxInfo.commandLine()} ${if (polkiIn) 1 else 0} ${outVariantName(outVariant)} ${zigs.commandLine()}"+
                 " (w ${wald.commandLine()}) " + (if (polki.isNotEmpty()) p else "")
-
-
     }
 
-    fun orderToText(order:Int):String{
-        return when (order){
-            1 -> ""
-            2 -> "c"
-            -1 -> "e"
-            -2 -> "c e"
-            else -> ""
-        }
-    }
+
 
     companion object {
 
@@ -75,7 +63,7 @@ class BoxAlgorithm(
             sb.append(
                 TortoiseParser.helpName(
                     "",
-                    "w h we (polka (( d o s e (h*) )*) (zig (w d h e)*5) ",
+                    "w h we (polka (( d o s e (h*) (as ac (a*))*)*) (zig (w d h e)*5)",
                     ""
                 )
             )
@@ -91,9 +79,7 @@ class BoxAlgorithm(
             val waldBlock = other2.find { it.name.startsWith("w") }
 
             val polkiList =  polki.flatMap {
-                it.blocks.map { it.line }
-            }.flatMap { line ->
-                 CalculatePolka.createPolki(line)
+                it.blocks.map { line -> CalculatePolka.polka(line)  }
             }
 
             val zigs = ZigInfoList(

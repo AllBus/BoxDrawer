@@ -34,6 +34,11 @@ fun ToolbarForBox(vm: BoxData) {
     val bottomOffset = remember { vm.bottomOffset }
     val topHoleOffset = remember { vm.topHoleOffset }
     val bottomHoleOffset = remember { vm.bottomHoleOffset }
+    val edgeFL = remember { vm.edgeFL }
+    val edgeBL = remember { vm.edgeBL }
+    val edgeBR = remember { vm.edgeBR }
+    val edgeFR = remember { vm.edgeFR }
+
 
     val zigVariants = listOf(
         ButtonData(PazExt.PAZ_NONE, painterResource("drawable/act_line.png")),
@@ -123,6 +128,16 @@ fun ToolbarForBox(vm: BoxData) {
                     zigState= vm.polkaPolZigState
                 )
             }
+            Label("Высоты углов коробки",  modifier = Modifier.align(Alignment.CenterHorizontally))
+            Row(
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ){
+                NumericUpDown("", "", edgeFL, modifier = Modifier.width(50.dp))
+                NumericUpDown("", "", edgeBL, modifier = Modifier.width(50.dp))
+                NumericUpDown("", "", edgeBR, modifier = Modifier.width(50.dp))
+                NumericUpDown("", "мм", edgeFR, modifier = Modifier.width(80.dp))
+            }
+
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)

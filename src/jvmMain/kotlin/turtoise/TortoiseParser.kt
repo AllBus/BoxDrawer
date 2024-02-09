@@ -55,7 +55,7 @@ object TortoiseParser {
         }
     }
 
-    private fun parseSimpleLine(a: List<String>): TortoiseAlgorithm {
+    fun parseSimpleLine(a: List<String>): TortoiseAlgorithm {
         val result = mutableListOf<TortoiseCommand>()
 
         var currentCommand = TortoiseCommand.TURTOISE_MOVE

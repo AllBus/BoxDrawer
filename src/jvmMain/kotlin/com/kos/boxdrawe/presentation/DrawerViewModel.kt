@@ -23,6 +23,7 @@ class DrawerViewModel {
 
     fun loadSettings(){
         tools.loadSettings()
+        options.selectSettings(tools.ds())
     }
 
 }

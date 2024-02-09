@@ -207,7 +207,6 @@ class PolkaLine(
                 polkaTopOffset = items.doubleValue(2, 20.0),
                 parts = items.blocks.map { b ->
                     PolkaPart(
-
                         width = b.doubleValue(0, 0.0),
                         angle = b.doubleValue(1, 0.0),
                         angleY = b.doubleValue(2, 0.0),

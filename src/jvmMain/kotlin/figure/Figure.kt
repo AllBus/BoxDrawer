@@ -28,6 +28,7 @@ enum class CropSide {
     BOTTOM,
 }
 
+@Immutable
 abstract class Figure : IFigure {
     override val count: Int
         get() = 1
@@ -41,6 +42,7 @@ abstract class Figure : IFigure {
     }
 }
 
+@Immutable
 object FigureEmpty: IFigure{
     override val count: Int
         get() = 0

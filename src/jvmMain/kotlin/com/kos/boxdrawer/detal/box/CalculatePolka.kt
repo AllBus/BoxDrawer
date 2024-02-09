@@ -1,11 +1,9 @@
 package com.kos.boxdrawer.detal.box
 
-import turtoise.DrawerSettings
-import turtoise.Orientation
+import turtoise.*
 
 object CalculatePolka {
 
-    private val sep = charArrayOf(' ', '\t', ';')
     private val horizontNames: Array<String> = arrayOf("h", "horizont", "horizontal", "hor")
     private val verticalNames: Array<String> = arrayOf("v", "vertical", "vert")
     private val endNames: Array<String> = arrayOf("e", "end", "finish", "f")
@@ -15,16 +13,13 @@ object CalculatePolka {
 
     fun createPolki(line: String): List<Polka> {
 
-        return line.lines()
-            .map { it.trim() }
+        return line.lines().map{
+                it.trim() }
             .filter { it.isNotEmpty() }
             .map {
-                if (it.startsWith("(") && it.endsWith(")"))
-                    it.drop(1).dropLast(1)
-                else
-                    it
+                TortoiseParser.parseSkobki(it)
             }.map {
-                polka(it.split(*sep).filter { it.isNotEmpty() })
+                polka(it)
             }
     }
 
@@ -169,6 +164,82 @@ object CalculatePolka {
         }
     }
 
+    private fun parseSide(sideText: String): Int {
+        val t = sideText.lowercase()
+        return when{
+            t == "l" -> PolkaProgram.SIDE_LEFT
+            t == "r" -> PolkaProgram.SIDE_RIGHT
+            t == "u" || t =="t" -> PolkaProgram.SIDE_TOP
+            t == "d" -> PolkaProgram.SIDE_BOTTOM
+            t == "f" -> PolkaProgram.SIDE_FACE
+            t == "b" -> PolkaProgram.SIDE_BACK
+            t.startsWith("s") -> sideText.drop(1).toIntOrNull()?: PolkaProgram.SIDE_NONE
+            else -> 0
+        }
+    }
+
+    fun polka(item: TurtoiseParserStackItem): Polka {
+
+        var cs = 0;
+        var ce = 0;
+        var hasE = false;
+        var hasC = false;
+        var visible = true;
+        var orientation = Orientation.Vertical;
+
+        val args =  item.arguments()
+
+        val w = args.firstOrNull()?.toDoubleOrNull() ?: 0.0
+
+        var i = 1
+        var index = 0;
+        while (i < args.size) {
+            val c = args[i]
+            i++
+            when {
+                isInt(c) -> {
+                    when (index) {
+                        0 -> cs = c.toIntOrNull() ?: 0
+                        1 -> ce = c.toIntOrNull() ?: 0
+                    }
+                    index++
+                }
+
+                endNames.contains(c) -> {
+                    hasE = true
+                }
+
+                centerNames.contains(c) -> hasC = true
+                horizontNames.contains(c) -> orientation = Orientation.Horizontal
+                verticalNames.contains(c) -> orientation = Orientation.Vertical
+                noDraw.contains(c) -> visible = false
+            }
+        }
+
+        val heights = item.blocks.firstOrNull()?.arguments().orEmpty().mapNotNull { it.toDoubleOrNull() }.toDoubleArray()
+        val programs = item.blocks.filter { it.blocks.isNotEmpty() }.map {
+            val bargs = it.arguments()
+            val side  = (bargs.take(1)+bargs.drop(2)).map(::parseSide)
+            val cell = bargs.getOrNull(1)?.toIntOrNull()?:0
+            PolkaProgram(
+                algorithm = it.blocks.firstOrNull()?.line.orEmpty().drop(1).dropLast(1),
+                startCell = cell,
+                sideIndex = side
+            )
+        }
+
+        return Polka(
+            orientation = orientation,
+            width = w,
+            height = heights,
+            order = (if (hasE) -1 else 1) * (if (hasC) 2 else 1),
+            startCell = cs,
+            cellCount = ce,
+            visible = visible,
+            programs = programs,
+        )
+    }
+
     fun polka(a: List<String>): Polka {
         var cs = 0;
         var ce = 0;
@@ -229,15 +300,15 @@ object CalculatePolka {
         }
 
 
-        return Polka().apply {
-            this.orientation = orientation
-            this.width = w
-            this.height = heights
-            this.order = (if (hasE) -1 else 1) * (if (hasC) 2 else 1)
-            this.startCell = cs
-            this.cellCount = ce
-            this.visible = visible
-        }
+        return Polka(
+            orientation = orientation,
+            width = w,
+            height = heights,
+            order = (if (hasE) -1 else 1) * (if (hasC) 2 else 1),
+            startCell = cs,
+            cellCount = ce,
+            visible = visible,
+        )
     }
 
     fun isInt(text: String): Boolean {
