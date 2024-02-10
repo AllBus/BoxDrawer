@@ -1,9 +1,13 @@
-package figure
+package com.kos.figure
 
-import com.kos.boxdrawe.drawer.IFigureGraphics
+import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
 import vectors.Vec2
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.acos
+import kotlin.math.asin
+import kotlin.math.max
+import kotlin.math.min
 
 open class FigureEllipse(
     val center: Vec2,

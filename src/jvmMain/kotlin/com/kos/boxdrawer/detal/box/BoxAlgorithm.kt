@@ -1,7 +1,7 @@
 package com.kos.boxdrawer.detal.box
 
 import androidx.compose.ui.text.AnnotatedString
-import figure.IFigure
+import com.kos.figure.IFigure
 import turtoise.*
 import turtoise.TortoiseParser.asDouble
 

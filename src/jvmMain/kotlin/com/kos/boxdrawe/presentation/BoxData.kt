@@ -6,9 +6,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.box.*
-import figure.Figure
-import figure.IFigure
-import figure.composition.FigureColor
+import com.kos.figure.Figure
+import com.kos.figure.IFigure
+import com.kos.figure.composition.FigureColor
 import turtoise.DrawerSettings
 import turtoise.ZigzagInfo
 import vectors.Vec2
@@ -116,7 +116,7 @@ class BoxData(val tools: ITools) {
     val polkaPolZigState = ZigZagState({redrawBox()})
 
     companion object {
-        fun boxFigures(alg: BoxAlgorithm, ds: DrawerSettings): IFigure{
+        fun boxFigures(alg: BoxAlgorithm, ds: DrawerSettings): IFigure {
             val bwi = alg.boxInfo.width - ds.boardWeight * 2
             val bwe = alg.boxInfo.weight - ds.boardWeight * 2
             val upWidth = if (alg.polkiIn) ds.boardWeight else 0.0

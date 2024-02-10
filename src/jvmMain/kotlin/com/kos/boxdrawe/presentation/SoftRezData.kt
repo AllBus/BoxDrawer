@@ -3,8 +3,8 @@ package com.kos.boxdrawe.presentation
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.soft.SoftRez
-import figure.FigureLine
-import figure.IFigure
+import com.kos.figure.FigureLine
+import com.kos.figure.IFigure
 import vectors.Vec2
 
 class SoftRezData(val tools: ITools) {

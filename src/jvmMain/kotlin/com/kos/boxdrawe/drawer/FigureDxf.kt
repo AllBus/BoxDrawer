@@ -1,7 +1,8 @@
 package com.kos.boxdrawe.drawer
 
 import com.jsevy.jdxf.DXFDocument
-import figure.*
+import com.kos.drawer.DxfFigureDrawer
+import com.kos.figure.IFigure
 
 object FigureDxf {
 

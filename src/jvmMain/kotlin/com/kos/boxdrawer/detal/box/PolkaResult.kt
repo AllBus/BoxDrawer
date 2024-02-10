@@ -1,6 +1,6 @@
 package com.kos.boxdrawer.detal.box
 
-import figure.IFigure
+import com.kos.figure.IFigure
 
 class PolkaResult {
 

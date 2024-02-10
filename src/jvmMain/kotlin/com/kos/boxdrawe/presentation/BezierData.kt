@@ -2,9 +2,9 @@ package com.kos.boxdrawe.presentation
 
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
-import figure.Figure
-import figure.FigureBezier
-import figure.IFigure
+import com.kos.figure.Figure
+import com.kos.figure.FigureBezier
+import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map

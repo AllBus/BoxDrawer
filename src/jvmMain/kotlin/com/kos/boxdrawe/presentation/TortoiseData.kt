@@ -4,9 +4,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
-import figure.CropSide
-import figure.Figure
-import figure.IFigure
+import com.kos.figure.CropSide
+import com.kos.figure.Figure
+import com.kos.figure.IFigure
 import turtoise.SimpleTortoiseMemory
 import turtoise.TortoiseParser
 import turtoise.TortoiseProgram

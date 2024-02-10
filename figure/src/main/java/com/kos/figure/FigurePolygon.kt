@@ -1,4 +1,4 @@
-package figure
+package com.kos.figure
 
 import vectors.BoundingRectangle
 import vectors.Vec2

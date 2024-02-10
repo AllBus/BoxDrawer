@@ -1,8 +1,6 @@
 package com.kos.boxdrawer.detal.polka
 
 import androidx.compose.ui.text.AnnotatedString
-import figure.FigureList
-import figure.IFigure
 import turtoise.*
 
 class PolkaLine(

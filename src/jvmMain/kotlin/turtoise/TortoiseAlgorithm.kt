@@ -1,7 +1,7 @@
 package turtoise
 
-import figure.FigureList
-import figure.IFigure
+import com.kos.figure.FigureList
+import com.kos.figure.IFigure
 
 
 data class TortoiseBlock(val commands: List<TortoiseCommand>){

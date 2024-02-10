@@ -1,6 +1,6 @@
-package figure
+package com.kos.figure
 
-import com.kos.boxdrawe.drawer.IFigureGraphics
+import com.kos.drawer.IFigureGraphics
 import vectors.Vec2
 
 class FigureSpline(points: List<Vec2>): FigurePolygon(points) {

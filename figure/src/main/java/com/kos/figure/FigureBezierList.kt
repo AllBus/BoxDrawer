@@ -1,6 +1,6 @@
-package figure
+package com.kos.figure
 
-import com.kos.boxdrawe.drawer.IFigureGraphics
+import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
 import vectors.Vec2
 
@@ -64,7 +64,7 @@ class FigureBezierList(val points : List<List<Vec2>>): Figure() {
     }
 
     companion object {
-        fun simple(beziers: List<FigureBezierList>): FigureBezierList{
+        fun simple(beziers: List<FigureBezierList>): FigureBezierList {
             return FigureBezierList(beziers.flatMap { it.points })
         }
     }

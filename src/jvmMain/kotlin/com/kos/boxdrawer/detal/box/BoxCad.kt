@@ -8,11 +8,14 @@ import com.kos.boxdrawer.detal.box.PolkaProgram.Companion.SIDE_LEFT
 import com.kos.boxdrawer.detal.box.PolkaProgram.Companion.SIDE_NONE
 import com.kos.boxdrawer.detal.box.PolkaProgram.Companion.SIDE_RIGHT
 import com.kos.boxdrawer.detal.box.PolkaProgram.Companion.SIDE_TOP
-import figure.*
-import figure.composition.FigureColor
-import figure.composition.FigureRotate
-import figure.composition.FigureTranslate
-import figure.matrix.Figure3dTransform
+import com.kos.figure.FigureLine
+import com.kos.figure.FigureList
+import com.kos.figure.FigurePolyline
+import com.kos.figure.IFigure
+import com.kos.figure.composition.FigureColor
+import com.kos.figure.composition.FigureRotate
+import com.kos.figure.composition.FigureTranslate
+import com.kos.figure.matrix.Figure3dTransform
 import turtoise.*
 import turtoise.Tortoise.Companion.holes
 import turtoise.Tortoise.Companion.zigzag
@@ -809,7 +812,7 @@ object BoxCad {
                 }
             }
 
-            sList += Figure3dTransform(mf, f)
+            sList += Figure3dTransform(vectors.Matrix(mf.values), f)
         }
         val mf = Matrix()
         mf.translate(
@@ -822,7 +825,7 @@ object BoxCad {
         mf.rotateZ(5f)//-22.5f-22f)
 
 
-        return Figure3dTransform(mf, FigureList(sList.toList()))
+        return Figure3dTransform(vectors.Matrix(mf.values), FigureList(sList.toList()))
     }
 
     private fun mainPosition(

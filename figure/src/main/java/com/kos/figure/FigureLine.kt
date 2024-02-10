@@ -1,6 +1,6 @@
-package figure
+package com.kos.figure
 
-import com.kos.boxdrawe.drawer.IFigureGraphics
+import com.kos.drawer.IFigureGraphics
 import vectors.Vec2
 import vectors.Vec2.Companion.calcXPosition
 import vectors.Vec2.Companion.calcYPosition

@@ -3,7 +3,6 @@ package com.kos.boxdrawe.widget.display
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.onDrag
-import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -15,12 +14,10 @@ import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.drawscope.withTransform
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import androidx.compose.ui.input.pointer.pointerMoveFilter
 import com.kos.boxdrawe.drawer.drawFigures
-import figure.IFigure
+import com.kos.figure.IFigure
 import kotlin.math.exp
 import kotlin.math.sign
 

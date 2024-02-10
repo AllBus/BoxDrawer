@@ -120,5 +120,4 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
             }
         }
     }
-
 }

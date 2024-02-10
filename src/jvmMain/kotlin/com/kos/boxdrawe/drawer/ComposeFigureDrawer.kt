@@ -5,6 +5,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
+import com.kos.drawer.IFigureGraphics
 import vectors.Vec2
 
 class ComposeFigureDrawer(
@@ -86,8 +87,8 @@ class ComposeFigureDrawer(
         scope.drawContext.canvas.restore()
     }
 
-    override fun transform(m: Matrix, actions: () -> Unit) {
-        scope.withTransform({transform(m)}){
+    override fun transform(m: vectors.Matrix, actions: () -> Unit) {
+        scope.withTransform({transform(Matrix(m.values))}){
             actions()
         }
     }

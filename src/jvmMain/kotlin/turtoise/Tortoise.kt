@@ -1,12 +1,19 @@
 package turtoise
 
-import figure.*
-import figure.matrix.FigureMatrixRotate
-import figure.matrix.FigureMatrixScale
-import figure.matrix.FigureMatrixTranslate
+import com.kos.figure.FigureBezier
+import com.kos.figure.FigureBezierList
+import com.kos.figure.FigureCircle
+import com.kos.figure.FigureEllipse
+import com.kos.figure.FigureList
+import com.kos.figure.FigurePolyline
+import com.kos.figure.FigureSpline
+import com.kos.figure.IFigure
+import com.kos.figure.matrix.FigureMatrixRotate
+import com.kos.figure.matrix.FigureMatrixScale
+import com.kos.figure.matrix.FigureMatrixTranslate
 import turtoise.memory.TortoiseMemory
 import vectors.Vec2
-import java.util.*
+import java.util.Stack
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.min
@@ -530,21 +537,27 @@ class Tortoise {
         )
 
         private val tan = 0.552284749831
-        fun bezierQuartir(v: Vec2, smoothSize: Double, g1: Int, g2: Int): FigureBezierList {
+        fun bezierQuartir(v: Vec2, smoothSize: Double, g1: Int, g2: Int): com.kos.figure.FigureBezierList {
             val p1 = next[g1 % 4]
             val p2 = next[g2 % 4]
-            return FigureBezierList(
+            return com.kos.figure.FigureBezierList(
                 Vec2(v.x - p1.first * smoothSize, v.y + p1.second * smoothSize),
-                Vec2(v.x - p1.first * smoothSize * (1 - tan), v.y + p1.second * smoothSize * (1 - tan)),
-                Vec2(v.x + p2.first * smoothSize * (1 - tan), v.y - p2.second * smoothSize * (1 - tan)),
+                Vec2(
+                    v.x - p1.first * smoothSize * (1 - tan),
+                    v.y + p1.second * smoothSize * (1 - tan)
+                ),
+                Vec2(
+                    v.x + p2.first * smoothSize * (1 - tan),
+                    v.y - p2.second * smoothSize * (1 - tan)
+                ),
                 Vec2(v.x + p2.first * smoothSize, v.y - p2.second * smoothSize)
             )
         }
 
-        fun bezierLine(v: Vec2, v2: Vec2, smoothSize: Double, g1: Int, g2: Int): FigureBezierList {
+        fun bezierLine(v: Vec2, v2: Vec2, smoothSize: Double, g1: Int, g2: Int): com.kos.figure.FigureBezierList {
             val p1 = next[g1 % 4]
             val p2 = next[g2 % 4]
-            return FigureBezierList(
+            return com.kos.figure.FigureBezierList(
                 Vec2(v.x - p1.first * smoothSize, v.y + p1.second * smoothSize),
                 Vec2(v.x - p1.first * smoothSize, v.y + p1.second * smoothSize),
                 Vec2(v2.x + p2.first * smoothSize, v2.y - p2.second * smoothSize),
@@ -552,10 +565,10 @@ class Tortoise {
             )
         }
 
-        fun bezierLine(v: Vec2, v2: Vec2, smoothSizeStart: Double, smoothSizeEnd:Double, g1: Int, g2: Int): FigureBezierList {
+        fun bezierLine(v: Vec2, v2: Vec2, smoothSizeStart: Double, smoothSizeEnd:Double, g1: Int, g2: Int): com.kos.figure.FigureBezierList {
             val p1 = next[g1 % 4]
             val p2 = next[g2 % 4]
-            return FigureBezierList(
+            return com.kos.figure.FigureBezierList(
                 Vec2(v.x - p1.first * smoothSizeStart, v.y + p1.second * smoothSizeStart),
                 Vec2(v.x - p1.first * smoothSizeStart, v.y + p1.second * smoothSizeStart),
                 Vec2(v2.x + p2.first * smoothSizeEnd, v2.y - p2.second * smoothSizeEnd),

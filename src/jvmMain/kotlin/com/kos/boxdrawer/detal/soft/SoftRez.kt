@@ -1,7 +1,11 @@
 package com.kos.boxdrawer.detal.soft
 
-import figure.*
-import figure.composition.FigureArray
+import com.kos.figure.CropSide
+import com.kos.figure.Figure
+import com.kos.figure.FigureList
+import com.kos.figure.FigurePolyline
+import com.kos.figure.IFigure
+import com.kos.figure.composition.FigureArray
 import vectors.Vec2
 
 
@@ -100,7 +104,8 @@ class SoftRez {
                 fy
 
             if (sx>0){
-                res.add(FigureArray(
+                res.add(
+                    FigureArray(
                     fy, Vec2(x1, y),
                     distance = Vec2(sww, 0.0),
                     size = sx,
@@ -109,7 +114,8 @@ class SoftRez {
                     scaleY = scaleY,
                     figureStart = ff1,
                     figureEnd = ffe
-                ))
+                )
+                )
             }
 
             y += dy

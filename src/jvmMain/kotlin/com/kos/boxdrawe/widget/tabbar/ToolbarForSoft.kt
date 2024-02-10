@@ -7,7 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.kos.boxdrawe.presentation.SoftRezData
 import com.kos.boxdrawe.widget.*
-import figure.IFigure
+import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
 
 @Composable

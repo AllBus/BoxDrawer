@@ -1,11 +1,9 @@
-package figure
+package com.kos.figure
 
-import androidx.compose.runtime.Immutable
-import com.kos.boxdrawe.drawer.IFigureGraphics
+import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
 import vectors.Vec2
 
-@Immutable
 class FigureList(
     private val figures: List<IFigure>
 ) : IFigure {

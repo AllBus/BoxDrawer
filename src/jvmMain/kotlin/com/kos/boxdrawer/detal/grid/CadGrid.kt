@@ -1,15 +1,18 @@
 package com.kos.boxdrawer.detal.grid
 
 import androidx.compose.ui.graphics.toArgb
-import figure.*
-import figure.composition.FigureColor
+import com.kos.figure.FigureBezierList
+import com.kos.figure.FigureList
+import com.kos.figure.FigurePolyline
+import com.kos.figure.IFigure
+import com.kos.figure.composition.FigureColor
 import turtoise.DrawerSettings
 import turtoise.Tortoise
 import turtoise.Tortoise.Companion.bezierLine
 import turtoise.Tortoise.Companion.bezierQuartir
 import turtoise.Tortoise.Companion.next
 import vectors.Vec2
-import java.util.*
+import java.util.Stack
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -272,7 +275,7 @@ class CadGrid {
 
                         if (smooth)
                         {
-                            val bz = mutableListOf<FigureBezierList>()
+                            val bz = mutableListOf<com.kos.figure.FigureBezierList>()
 
                             for (w in gp.indices)
                             {
@@ -326,10 +329,12 @@ class CadGrid {
                                 }
                             }
 
-                            group.add(FigureColor(
+                            group.add(
+                                FigureColor(
                                 figureColor,
                                 FigureBezierList.simple( bz.toList())
-                            ))
+                            )
+                            )
                         }
                         else
                         {

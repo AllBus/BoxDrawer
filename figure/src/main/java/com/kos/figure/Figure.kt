@@ -1,12 +1,10 @@
-package figure
+package com.kos.figure
 
-import androidx.compose.runtime.Immutable
-import com.kos.boxdrawe.drawer.IFigureGraphics
+import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
 import vectors.Vec2
 
 
-@Immutable
 interface IFigure {
 
     val count: Int
@@ -28,7 +26,6 @@ enum class CropSide {
     BOTTOM,
 }
 
-@Immutable
 abstract class Figure : IFigure {
     override val count: Int
         get() = 1
@@ -42,8 +39,8 @@ abstract class Figure : IFigure {
     }
 }
 
-@Immutable
-object FigureEmpty: IFigure{
+
+object FigureEmpty: IFigure {
     override val count: Int
         get() = 0
 

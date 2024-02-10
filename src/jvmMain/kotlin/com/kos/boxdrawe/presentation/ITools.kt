@@ -4,10 +4,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.res.useResource
 import com.jsevy.jdxf.DXFDocument
-import com.kos.boxdrawe.drawer.DxfFigureDrawer
-import figure.IFigure
+import com.kos.drawer.DxfFigureDrawer
+import com.kos.figure.IFigure
 import nl.adaptivity.xmlutil.StAXReader
-import nl.adaptivity.xmlutil.XmlReader
 import nl.adaptivity.xmlutil.serialization.XML
 import turtoise.DrawerSettings
 import turtoise.DrawerSettingsList
@@ -15,7 +14,6 @@ import turtoise.FullSettings
 import java.awt.BasicStroke
 import java.awt.Color
 import java.io.FileWriter
-import java.io.InputStreamReader
 
 interface ITools {
     fun ds(): DrawerSettings

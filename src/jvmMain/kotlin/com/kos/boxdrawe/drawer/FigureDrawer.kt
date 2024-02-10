@@ -3,7 +3,7 @@ package com.kos.boxdrawe.drawer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import figure.*
+import com.kos.figure.IFigure
 import vectors.Vec2
 
 fun DrawScope.drawFigures(figureLine: IFigure) {
