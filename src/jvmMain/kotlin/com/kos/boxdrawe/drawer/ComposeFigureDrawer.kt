@@ -6,7 +6,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import vectors.Vec2
-import java.awt.geom.AffineTransform
 
 class ComposeFigureDrawer(
     private val scope: DrawScope,

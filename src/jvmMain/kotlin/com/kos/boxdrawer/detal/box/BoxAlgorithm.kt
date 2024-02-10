@@ -140,6 +140,7 @@ class BoxAlgorithm(
                 "zig", "zag", "zigzag", "paz", "z" -> PazForm.Paz
                 "back", "b" -> PazForm.BackPaz
                 "flat", "f" -> PazForm.Flat
+                "p", "paper" -> PazForm.Paper
                 "", null -> defaultValue
                 else -> PazForm.None
             }
@@ -152,6 +153,7 @@ class BoxAlgorithm(
                 PazForm.Hole -> "h"
                 PazForm.BackPaz -> "b"
                 PazForm.Flat -> "f"
+                PazForm.Paper -> "p"
             }
         }
 

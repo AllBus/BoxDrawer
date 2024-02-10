@@ -4,7 +4,6 @@ import com.kos.boxdrawe.drawer.IFigureGraphics
 import figure.CropSide
 import figure.Figure
 import figure.IFigure
-import figure.matrix.FigureMatrix
 import vectors.BoundingRectangle
 import vectors.Vec2
 

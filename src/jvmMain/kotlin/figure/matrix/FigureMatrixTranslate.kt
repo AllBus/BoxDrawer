@@ -5,7 +5,6 @@ import com.kos.boxdrawe.drawer.IFigureGraphics
 import figure.CropSide
 import figure.Figure
 import figure.IFigure
-import org.jetbrains.skia.Matrix44
 import vectors.BoundingRectangle
 import vectors.Vec2
 

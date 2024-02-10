@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -16,6 +17,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.widget.model.ButtonData
+import com.kos.boxdrawe.widget.model.ButtonDoubleData
 
 @Composable
 fun SegmentButton(
@@ -30,6 +32,7 @@ fun SegmentButton(
     ) {
         buttons.forEach{  btn ->
             Button(
+                modifier = Modifier.weight(1f),
                 onClick ={ onClick(btn.id) },
                 shape = RectangleShape,
                 border = if (btn.id == selectId.value) {
@@ -39,6 +42,33 @@ fun SegmentButton(
                 Icon(painter = btn.icon,
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SegmentDoubleButton(
+    selectId: State<Int>,
+    buttons: List<ButtonDoubleData>,
+    modifier : Modifier = Modifier,
+    onClick: (Int)-> Unit
+) {
+    Row(
+        modifier = modifier
+    ) {
+        buttons.forEach{  btn ->
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick ={ onClick(btn.id) },
+                shape = RectangleShape,
+                border = if (btn.id == selectId.value) {
+                    BorderStroke(4.dp, MaterialTheme.colors.onPrimary)
+                } else null,
+            ){
+                Text(
+                    btn.text
                 )
             }
         }

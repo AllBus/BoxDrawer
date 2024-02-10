@@ -7,12 +7,9 @@ import androidx.compose.ui.graphics.toArgb
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.box.*
 import figure.Figure
-import figure.FigureEmpty
 import figure.IFigure
 import figure.composition.FigureColor
-import kotlinx.coroutines.flow.StateFlow
 import turtoise.DrawerSettings
-import turtoise.Orientation
 import turtoise.ZigzagInfo
 import vectors.Vec2
 

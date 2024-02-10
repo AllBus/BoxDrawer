@@ -65,7 +65,7 @@ public class DXFXrecord extends DXFDatabaseObject
      */
     public String getAttribute(int groupCode)
     {
-        return this.attributeMap.get(new Integer(groupCode));
+        return this.attributeMap.get(groupCode);
     }
     
     
@@ -80,7 +80,7 @@ public class DXFXrecord extends DXFDatabaseObject
      */
     public void setAttribute(int groupCode, String attributeValue)
     {
-        this.attributeMap.put(new Integer(groupCode), attributeValue);
+        this.attributeMap.put(groupCode, attributeValue);
     }
     
     

@@ -1,11 +1,8 @@
 package vectors
 
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
 import kotlin.math.*
 
-@Immutable
-data class Vec2(@JvmField val x: Double,@JvmField val y: Double) {
+data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
 
     operator fun plus(other: Vec2): Vec2 {
         return Vec2(x + other.x, y + other.y)
@@ -23,6 +20,10 @@ data class Vec2(@JvmField val x: Double,@JvmField val y: Double) {
         return Vec2(x / k, y / k)
     }
 
+    operator fun rem(k: Double):Vec2 {
+        return Vec2(x % k, y % k)
+    }
+
     operator fun unaryMinus(): Vec2 {
         return Vec2(-x, -y)
     }
@@ -32,6 +33,10 @@ data class Vec2(@JvmField val x: Double,@JvmField val y: Double) {
         cos(angle) * y + sin(angle) * x
     )
 
+    fun t(): Vec2 {
+        return Vec2(y, x)
+    }
+
     override fun toString(): String {
         return "($x $y)"
     }
@@ -39,6 +44,23 @@ data class Vec2(@JvmField val x: Double,@JvmField val y: Double) {
     companion object {
 
         val Zero = Vec2(0.0, 0.0)
+
+        fun distance(a: Vec2, b: Vec2): Double {
+            return hypot((a.x - b.x), (a.y - b.y))
+        }
+
+        fun normal(a: Vec2, b: Vec2): Vec2 {
+            val d = distance(a, b)
+            return if (d == 0.0) {
+                Vec2.Zero
+            } else {
+                (b - a) / d
+            }
+        }
+
+        fun freqency(a:Vec2, f:Double): Vec2{
+            return Vec2(a.x - a.x%f , a.y - a.y%f )
+        }
 
         fun lerp(a: Vec2, b: Vec2, t: Double): Vec2 {
             return Vec2(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t)

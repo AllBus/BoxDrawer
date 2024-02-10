@@ -64,11 +64,11 @@ class FigureCircle(
     }
 
     override fun create(center: Vec2,
-                    radius: Double,
-                    radiusMinor: Double,
-                    rotation: Double,
-                    segmentStart: Double,
-                    segmentEnd: Double): FigureEllipse {
+                        radius: Double,
+                        radiusMinor: Double,
+                        rotation: Double,
+                        segmentStart: Double,
+                        segmentEnd: Double): FigureEllipse {
         return FigureCircle(center, radius, segmentStart, segmentEnd)
     }
 

@@ -1,3 +1,6 @@
+rootProject.name = "boxdrawer"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 pluginManagement {
     repositories {
         google()
@@ -7,11 +10,22 @@ pluginManagement {
         maven( "https://s01.oss.sonatype.org/content/repositories/releases/")
     }
 
-    plugins {
-        kotlin("multiplatform").version(extra["kotlin.version"] as String)
-        id("org.jetbrains.compose").version(extra["compose.version"] as String)
+//    plugins {
+//        alias(libs.plugins.jetbrainsCompose) apply false
+//        alias(libs.plugins.kotlinMultiplatform) apply false
+//
+////        kotlin("multiplatform").version(extra["kotlin.version"] as String)
+////        id("org.jetbrains.compose").version(extra["compose.version"] as String)
+//    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 
-rootProject.name = "boxdrawer"
-
+include(":dxfprinter")
+include(":figure")

@@ -1,11 +1,7 @@
 package com.kos.boxdrawer.detal.soft
 
-import com.kos.boxdrawe.drawer.IFigureGraphics
 import figure.*
 import figure.composition.FigureArray
-import figure.matrix.FigureMatrixSave
-import figure.matrix.FigureMatrixScale
-import figure.matrix.FigureMatrixTranslate
 import vectors.Vec2
 
 

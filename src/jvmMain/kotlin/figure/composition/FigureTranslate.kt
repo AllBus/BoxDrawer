@@ -4,8 +4,8 @@ import com.kos.boxdrawe.drawer.IFigureGraphics
 import figure.CropSide
 import figure.Figure
 import figure.IFigure
-import vectors.BoundingRectangle
 import vectors.Vec2
+import vectors.BoundingRectangle as BoundingRectangle1
 
 class FigureTranslate(
     val figure: IFigure,
@@ -22,14 +22,14 @@ class FigureTranslate(
         return figure.list()
     }
 
-    override fun rect(): BoundingRectangle {
+    override fun rect(): BoundingRectangle1 {
         return figure.rect().translate(offset)
     }
 
     override fun translate(translateX: Double, translateY: Double): IFigure {
         return FigureTranslate(
             figure,
-            offset+Vec2(translateX, translateY)
+            offset+ Vec2(translateX, translateY)
         )
     }
 

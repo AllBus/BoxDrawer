@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.*
+import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BEZIER
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
@@ -50,6 +51,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                 TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
                 TAB_GRID -> ToolbarForGrid(vm.value.grid)
                 TAB_SOFT -> ToolbarForSoft(vm.value.softRez, { vm.value.tortoise.figures.value })
+                TAB_BEZIER ->  ToolbarForBezier(vm.value.bezier)
                 TAB_TOOLS -> ToolbarForTools(vm.value.options)
             }
         }
@@ -112,13 +114,15 @@ object BoxDrawerToolBar{
     const val TAB_TORTOISE = 1
     const val TAB_GRID = 2
     const val TAB_SOFT = 3
-    const val TAB_TOOLS = 4
+    const val TAB_BEZIER = 4
+    const val TAB_TOOLS = 5
 
     val tabs = listOf(
         TabInfo(TAB_BOX, "Коробка"),
         TabInfo(TAB_TORTOISE, "Фигуры"),
         TabInfo(TAB_GRID, "Сетка"),
         TabInfo(TAB_SOFT, "Мягкий рез"),
+        TabInfo(TAB_BEZIER, "Безье"),
         TabInfo(TAB_TOOLS, "Инструменты"),
     )
 

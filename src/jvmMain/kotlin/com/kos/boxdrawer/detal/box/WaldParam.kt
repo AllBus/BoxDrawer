@@ -27,6 +27,7 @@ data class WaldParam(
             PazForm.Hole -> holeWeight+offset
             PazForm.BackPaz -> boardWeight
             PazForm.Flat -> boardWeight+offset
+            PazForm.Paper -> 0.0
         }
     }
 

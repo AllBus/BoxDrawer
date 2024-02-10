@@ -259,12 +259,12 @@ class Tortoise {
 
                 TortoiseCommand.TURTOISE_BEZIER -> {
                     saveLine()
-                    state.move(com[0, memory])
+
                     val angle = state.angle
 
                     val points = mutableListOf<Vec2>()
                     points.add(state.xy)
-                    for (d in 1..com.size - 6 step 6) {
+                    for (d in 0..com.size - 6 step 6) {
                         points.add(
                             Vec2(
                                 com[d + 0, memory],
@@ -277,8 +277,6 @@ class Tortoise {
                             com[d + 5, memory]
                         ).rotate(angle) + state.xy
 
-                        state.moveTo(xy)
-
                         points.add(
                             Vec2(
                                 com[d + 3, memory],
@@ -286,6 +284,7 @@ class Tortoise {
                             ).rotate(angle) + state.xy
                         )
                         points.add(xy)
+                        state.moveTo(xy)
                     }
 
                     if (points.size > 1) {
@@ -295,7 +294,7 @@ class Tortoise {
 
                 TortoiseCommand.TURTOISE_SPLINE -> {
                     saveLine()
-                    state.move(com[0, memory])
+
                     val angle = state.angle
 
                     val points = mutableListOf<Vec2>()

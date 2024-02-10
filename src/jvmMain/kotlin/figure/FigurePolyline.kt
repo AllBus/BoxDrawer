@@ -2,8 +2,6 @@ package figure
 
 import com.kos.boxdrawe.drawer.IFigureGraphics
 import vectors.Vec2
-import vectors.Vec2.Companion.calcXPosition
-import vectors.Vec2.Companion.calcYPosition
 import vectors.Vec2.Companion.coordForX
 import vectors.Vec2.Companion.coordForY
 
@@ -41,7 +39,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points) {
             result = mutableListOf<Vec2>()
         }
 
-        fun crops(predicate: (Vec2, Double) -> Boolean,  coord: (Vec2, Vec2, Double) -> Vec2){
+        fun crops(predicate: (Vec2, Double) -> Boolean, coord: (Vec2, Vec2, Double) -> Vec2){
             var a = points.first();
             var predV =predicate(a,k)
 

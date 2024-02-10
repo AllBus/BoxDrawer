@@ -1,6 +1,5 @@
 package com.kos.boxdrawe.presentation
 
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.boxdrawe.widget.NumericTextFieldState
@@ -14,6 +13,7 @@ class DrawerViewModel {
     val box = BoxData(tools)
     val grid = GridData(tools)
     val options = ToolsData(tools)
+    val bezier = BezierData(tools)
     val tabIndex = mutableStateOf(BoxDrawerToolBar.TAB_TORTOISE)
 
 

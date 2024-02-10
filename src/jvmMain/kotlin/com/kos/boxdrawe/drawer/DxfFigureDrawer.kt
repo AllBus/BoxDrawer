@@ -3,7 +3,6 @@ package com.kos.boxdrawe.drawer
 import androidx.compose.ui.graphics.Matrix
 import com.jsevy.jdxf.DXFDocument
 import com.jsevy.jdxf.DXFGraphics
-import org.jetbrains.skia.defaultLanguageTag
 import vectors.Vec2
 import java.awt.Color
 import java.awt.geom.AffineTransform

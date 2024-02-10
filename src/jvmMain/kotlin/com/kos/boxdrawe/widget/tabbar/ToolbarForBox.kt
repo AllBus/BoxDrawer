@@ -44,6 +44,7 @@ fun ToolbarForBox(vm: BoxData) {
         ButtonData(PazExt.PAZ_NONE, painterResource("drawable/act_line.png")),
         ButtonData(PazExt.PAZ_HOLE, painterResource("drawable/act_hole.png")),
         ButtonData(PazExt.PAZ_PAZ, painterResource("drawable/act_paz.png")),
+     //   ButtonData(PazExt.PAZ_PAPER, painterResource( "drawable/act_paper.png")),
         //   ButtonData(PazExt.PAZ_BACK, painterResource("drawable/act_paz_in.png")),
     )
 

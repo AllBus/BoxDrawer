@@ -87,7 +87,7 @@ interface TortoiseCommand {
         const val TURTOISE_CLEAR = '!';
         const val TURTOISE_CLOSE = '`';
         const val TURTOISE_SAVE = 'Q';
-        var TURTOISE_LOAD = 'W';
+        const val TURTOISE_LOAD = 'W';
         const val TURTOISE_PEEK = 'E';
         const val TURTOISE_METHOD_NAME = '@';
         const val TURTOISE_METHOD_RUN = '=';

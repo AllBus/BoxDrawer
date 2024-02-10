@@ -23,6 +23,8 @@ import androidx.compose.material.Text
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
 import com.google.gson.GsonBuilder
+import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BEZIER
+import com.kos.boxdrawe.widget.display.DisplayBezier
 import com.kos.boxdrawe.widget.display.DisplayGrid
 import com.kos.boxdrawe.widget.display.DisplayTortoise
 import okhttp3.MediaType
@@ -74,7 +76,7 @@ data class RetroData(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 @Preview
-fun App(vm: MutableState<DrawerViewModel>) {
+fun App(vm: State<DrawerViewModel>) {
 
     val figures by remember { vm.value.tortoise.figures }
 
@@ -115,6 +117,7 @@ fun App(vm: MutableState<DrawerViewModel>) {
                     TAB_GRID -> {
                         DisplayGrid(vm.value.grid.cad)
                     }
+                    TAB_BEZIER -> DisplayBezier(displayScale, vm.value.bezier)
                     else -> {
 
                     }
@@ -169,20 +172,30 @@ fun calcZoom(value: Float): Float {
 //    return i.toFloat()
 }
 
-fun main(args:Array<String>) = application {
-    try {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
-    } finally {
+fun main(args:Array<String>) {
 
-    }
-    val vm = mutableStateOf(DrawerViewModel())
+    val viewModel = DrawerViewModel()
+    application {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
+        } finally {
 
-    Window(
-        onCloseRequest = ::exitApplication,
-        icon = painterResource("drawable/ic_launcher.png"),
-        title = "Рисовалка коробок",
-    ) {
-        val model = remember { vm }
-        App(model)
+        }
+        val model = remember {mutableStateOf(viewModel)}
+
+        Window(
+            onCloseRequest = ::exitApplication,
+            icon = painterResource("drawable/ic_launcher.png"),
+            title = "Рисовалка коробок",
+        ) {
+
+
+            LaunchedEffect(model.value){
+                model.value.loadSettings()
+            }
+
+            App(model)
+        }
     }
+
 }

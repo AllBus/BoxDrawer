@@ -1,13 +1,8 @@
 package com.kos.boxdrawe.drawer
 
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.unit.dp
 import figure.*
 import vectors.Vec2
 
@@ -21,6 +16,6 @@ fun DrawScope.drawFigures(figureLine: IFigure) {
     val bound = figureLine.rect()
     drawer.penColor = Color.Green
     drawer.style = Stroke()
-    drawer.drawRect(bound.min-Vec2(10.0, 10.0), bound.max-bound.min+Vec2(20.0, 20.0))
+    drawer.drawRect(bound.min- Vec2(10.0, 10.0), bound.max-bound.min+Vec2(20.0, 20.0))
 
 }
