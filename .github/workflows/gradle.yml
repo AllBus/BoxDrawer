@@ -36,6 +36,16 @@ jobs:
     - name: Build with Gradle Wrapper
       run: ./gradlew createDistributable
 
+    - name: Zip Output
+      run: zip -r box_drawer.zip boxdrawer/build/compose/binaries/main/app
+
+    - name: Download a single artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: boxdrawer-artifact
+
+
+
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
     #
