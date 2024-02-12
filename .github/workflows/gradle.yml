@@ -37,7 +37,7 @@ jobs:
       run: ./gradlew createDistributable
 
     - name: Zip Output
-      run: zip -r box_drawer.zip boxdrawer/build/compose/binaries/main/app
+      run: zip -r box_drawer.zip ./build/compose/binaries/main/app
 
     - name: Download a single artifact
       uses: actions/download-artifact@v4
