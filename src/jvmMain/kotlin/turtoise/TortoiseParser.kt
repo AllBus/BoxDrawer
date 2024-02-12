@@ -157,8 +157,6 @@ object TortoiseParser {
         return text?.toDoubleOrNull()?:defaultValue
     }
 
-
-
     fun helpFor(subStr: String): AnnotatedString {
         return when (subStr){
             "" -> helpFigures()
@@ -168,7 +166,6 @@ object TortoiseParser {
             "hide"-> AnnotatedString("")
             else -> helpCommands()
         }
-
     }
 
     private fun helpCommands(): AnnotatedString {
@@ -198,8 +195,6 @@ object TortoiseParser {
         sb.appendLine()
         return sb.toAnnotatedString()
     }
-
-
 
     private fun helpFigures():AnnotatedString {
         val sb = AnnotatedString.Builder()

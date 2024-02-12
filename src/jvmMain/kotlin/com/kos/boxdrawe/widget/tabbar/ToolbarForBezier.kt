@@ -57,6 +57,14 @@ fun ToolbarForBezier(vm: BezierData) {
                     vm.currentDistance.value = buttons[selectedId.value].value
                 }
             })
+            Spacer(
+                Modifier.height(40.dp)
+            )
+            RunButton("Заново") {
+                coroutineScope.launch {
+                    vm.newBezier()
+                }
+            }
         }
 
         Column(

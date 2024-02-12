@@ -2,6 +2,7 @@ package com.kos.boxdrawe.widget.display
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import com.kos.boxdrawe.drawer.drawFigures
@@ -52,6 +54,7 @@ fun DisplayTortoise(displayScale: MutableFloatState, matrix: State<Matrix>, enab
         //  pos+= (Offset(size.width/2f, -size.height/2f) - Offset(p.x, -p.y)) * scale / predScale
         displayScale.value = scale(displayScale.value, delta)
     }.onDrag(
+        matcher = PointerMatcher.Primary + PointerMatcher.mouse(PointerButton.Secondary) + PointerMatcher.mouse(PointerButton.Tertiary),
         onDrag = { offset ->
             pos += offset //  (offset*2.0f)/scale
         }

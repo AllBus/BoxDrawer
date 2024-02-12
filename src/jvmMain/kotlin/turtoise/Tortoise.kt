@@ -133,11 +133,17 @@ class Tortoise {
                 }
 
                 TortoiseCommand.TURTOISE_HORIZONTAL -> {
+                    if (result.isEmpty()){
+                        result.add(state.xy)
+                    }
                     state.x += com.value(memory)
                     result.add(state.xy)
                 }
 
                 TortoiseCommand.TURTOISE_VERTICAL -> {
+                    if (result.isEmpty()){
+                        result.add(state.xy)
+                    }
                     state.y += com.value(memory)
                     result.add(state.xy)
                 }
@@ -159,7 +165,11 @@ class Tortoise {
                 }
 
                 TortoiseCommand.TURTOISE_LINE -> {
-                    state.move(com.value(memory))
+                    val v = com.value(memory)
+                    if (result.isEmpty() && v!= 0.0){
+                        result.add(state.xy)
+                    }
+                    state.move(v)
                     result.add(state.xy)
                     for (d in 1 until com.size) {
                         if (d % 2 == 0) {
@@ -172,7 +182,11 @@ class Tortoise {
                 }
 
                 TortoiseCommand.TURTOISE_LINE_WITH_ANGLE -> {
-                    state.move(com.value(memory))
+                    val v = com.value(memory)
+                    if (result.isEmpty() && v != 0.0){
+                        result.add(state.xy)
+                    }
+                    state.move(v)
                     result.add(state.xy)
                     val currentAngle = state.a;
                     for (d in 1 until com.size step 2) {
@@ -286,8 +300,8 @@ class Tortoise {
 
                         points.add(
                             Vec2(
-                                com[d + 3, memory],
-                                com[d + 4, memory]
+                                com[d + 2, memory],
+                                com[d + 3, memory]
                             ).rotate(angle) + state.xy
                         )
                         points.add(xy)

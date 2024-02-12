@@ -36,17 +36,19 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
     val currentDistance = remember { vm.currentDistance }
 
     val selectIndex = remember { mutableIntStateOf(-1) }
+    val selectedType = remember { mutableIntStateOf(0) }
 
-    var rotation by rememberSaveable("DisplayTortoiseRotation") { mutableStateOf(0f) }
-    var pos by rememberSaveable("DisplayTortoiseOffset") { mutableStateOf(Offset.Zero) }
+    var rotation by rememberSaveable("DisplayBezierRotation") { mutableStateOf(0f) }
+    var pos by rememberSaveable("DisplayBezierOffset") { mutableStateOf(Offset.Zero) }
 
     val scale = displayScale.value
 
     Canvas(modifier = Modifier.fillMaxSize().clipToBounds().onPointerEvent(PointerEventType.Press) {
         val sp = (it.changes.first().position.toVec2()- size.toVec2() / 2.0)/scale.toDouble()-pos.toVec2()/scale.toDouble()
-        if (it.button == PointerButton.Primary) {
+       // if (it.button == PointerButton.Primary) {
             selectIndex.value = c1.value.indexOfFirst { Vec2.distance(it, sp) < 20.0 }
-        }
+       /// }
+
         if (selectIndex.value < 0){
             if (Vec2.distance(cst.value, sp) < 20.0){
                 if (it.button == PointerButton.Secondary)
@@ -61,24 +63,35 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
                     vm.addEndBezier()
             }
         }
+        when(it.button){
+            PointerButton.Primary -> selectedType.value = 0
+            PointerButton.Secondary -> selectedType.value = 1
+            PointerButton.Tertiary -> selectedType.value = 2
+        }
+
     }.onPointerEvent(PointerEventType.Release) {
         selectIndex.value = -1
-    }.onPointerEvent(PointerEventType.Exit) {
-        selectIndex.value = -1
+        selectIndex.value = 0
     }.onPointerEvent(PointerEventType.Move) {
 
         if (it.changes.first().pressed) {
             val sp = Vec2.freqency((it.changes.first().position.toVec2() - size.toVec2() / 2.0)/scale.toDouble()-pos.toVec2()/scale.toDouble(),currentDistance.value)
             val v = selectIndex.value
             if (v >= 0) {
-                vm.movePoint(v, sp)
+                when (selectedType.value){
+                    0 -> vm.movePoint(v, sp)
+                    1 -> vm.movePointFlat(v, sp)
+                    2 -> vm.movePointEdge(v, sp)
+                }
+
             }
         }
 
     }.onDrag(
         matcher = PointerMatcher.mouse(PointerButton.Secondary) + PointerMatcher.mouse(PointerButton.Tertiary),
         onDrag = { offset ->
-            pos += offset //  (offset*2.0f)/scale
+            if (selectIndex.value < 0)
+                pos += offset
         }
     )
     ) {
@@ -88,12 +101,13 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
         translate(pos.x, pos.y) {
             this.scale(scale = displayScale.value) {
                 this.translate(c.width, c.height) {
+                    val gm = 20f* (if (scale>100) 0.01f else if (scale>10) 0.1f else if (scale<0.5) 10f else 1f)
                     for (j in -razm.width.toInt()..razm.width.toInt()) {
                         for (k in -razm.height.toInt()..razm.height.toInt()) {
                             this.drawCircle(
                                 color = Color.Yellow,
                                 radius = 0.5f / scale,
-                                center = Offset(j * 20f, k * 20f)
+                                center = Offset(j * gm, k * gm)
                             )
                         }
                     }
