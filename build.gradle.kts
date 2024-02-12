@@ -48,16 +48,16 @@ kotlin {
         withJava()
     }
 
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        moduleName = "composeApp"
-        browser {
-            commonWebpackConfig {
-                outputFileName = "BoxDrawer.js"
-            }
-        }
-        binaries.executable()
-    }
+//    @OptIn(ExperimentalWasmDsl::class)
+//    wasmJs {
+//        moduleName = "composeApp"
+//        browser {
+//            commonWebpackConfig {
+//                outputFileName = "BoxDrawer.js"
+//            }
+//        }
+//        binaries.executable()
+//    }
 
     //jvm("desktop")
 
@@ -106,6 +106,6 @@ compose.desktop {
     }
 }
 
-compose.experimental {
-    web.application {}
-}
+//compose.experimental {
+//    web.application {}
+//}
