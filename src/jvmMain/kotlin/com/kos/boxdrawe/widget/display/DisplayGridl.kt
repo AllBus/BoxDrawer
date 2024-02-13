@@ -4,18 +4,17 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.isTypedEvent
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
@@ -23,18 +22,20 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawStyle
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.key.*
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.TextLayoutInput
-import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.input.KeyboardType
-import com.kos.boxdrawe.widget.EditTextField
-import com.kos.boxdrawer.detal.grid.CadGrid
+import com.kos.boxdrawe.drawer.drawFigures
+import com.kos.boxdrawe.presentation.GridData
+import com.kos.boxdrawe.widget.toVec2
+import com.kos.figure.FigureEmpty
+import vectors.Vec2
+import kotlin.math.sign
 
 
 private val colorList = listOf(
@@ -50,14 +51,22 @@ private val colorList = listOf(
     Color(0xFFFFFF00),
 )
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
-fun DisplayGrid(grid: CadGrid) {
-    val posX = rememberSaveable("DisplayGridX") { mutableStateOf(0f) }
-    val posY = rememberSaveable("DisplayGridY") { mutableStateOf(0f) }
+fun DisplayGrid(gridData: GridData) {
     val requester = remember { FocusRequester() }
 
-    val redrawEvent = remember { mutableStateOf(1) }
+    val grid = gridData.cad
+
+    val redrawEvent = gridData.redrawEvent.collectAsState()
+
+    val scale = remember{1.0}
+    var pos by rememberSaveable("DisplayyGridOffset") { mutableStateOf(Offset.Zero) }
+    val figure = gridData.figure.collectAsState(FigureEmpty)
+
+    val widthCell = remember { gridData.widthCell }
+    val figurePreview = remember { gridData.figurePreview }
+
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -65,6 +74,46 @@ fun DisplayGrid(grid: CadGrid) {
                 detectTapGestures(onPress = {
                     requester.requestFocus()
                 })
+            }
+            .onPointerEvent(PointerEventType.Scroll) {
+                val change = it.changes.first()
+                val delta = change.scrollDelta.y.toInt().sign
+                grid.currentColor = (grid.currentColor + delta+10 )%10
+                gridData.redraw()
+
+            }
+            .onPointerEvent(PointerEventType.Press) {
+                val c = size
+                val d = Math.min(c.width * 1.0f / (grid.width + 2), c.height * 1.0f / (grid.height + 2)).toDouble()
+
+                val sp = (it.changes.first().position.toVec2())/scale.toDouble()-(pos.toVec2()+ Vec2(d, d))/scale.toDouble()
+
+                val xy = sp/d
+                grid.currentX = xy.x.toInt()
+                grid.currentY =xy.y.toInt()
+                grid.setColor( grid.currentX, grid.currentY, grid.currentColor)
+                gridData.redraw()
+            }
+            .onPointerEvent(PointerEventType.Move) {
+                if (it.changes.first().pressed) {
+                    val c = size
+                    val d = Math.min(
+                        c.width * 1.0f / (grid.width + 2),
+                        c.height * 1.0f / (grid.height + 2)
+                    ).toDouble()
+
+                    val sp =
+                        (it.changes.first().position.toVec2()) / scale.toDouble() - (pos.toVec2() + Vec2(
+                            d,
+                            d
+                        )) / scale.toDouble()
+
+                    val xy = sp / d
+                    grid.currentX = xy.x.toInt()
+                    grid.currentY = xy.y.toInt()
+                    grid.setColor(grid.currentX, grid.currentY, grid.currentColor)
+                    gridData.redraw()
+                }
             }
             .focusRequester(requester)
             .focusable(true)
@@ -120,7 +169,7 @@ fun DisplayGrid(grid: CadGrid) {
                         grid.setColor(grid.currentX, grid.currentY, grid.currentColor)
                     }
 
-                    redrawEvent.value = redrawEvent.value + 1
+                    gridData.redraw()
                 }
                 true
             }
@@ -135,7 +184,7 @@ fun DisplayGrid(grid: CadGrid) {
             val style = Fill
             val selectStyle = Stroke(3f)
             val rectSize = Size(d, d)
-            this.translate(posX.value + d, posY.value + d) {
+            this.translate(pos.x + d, pos.y + d) {
                 val k = redrawEvent.value
                 for (x in 0 until grid.width) {
                     for (y in 0 until grid.height) {
@@ -149,7 +198,22 @@ fun DisplayGrid(grid: CadGrid) {
 
                 val penColor = colorList[grid.currentColor % colorList.size]
                 drawRect(penColor, Offset(grid.currentX * d, grid.currentY * d), rectSize, style = selectStyle)
+
+                if (figurePreview.value) {
+                    val sc = (d * 1f / widthCell.decimal).toFloat()
+
+
+                        this.scale(
+                            sc,
+                            sc,
+                            Offset(0.0f, 0.0f)
+                        ) {
+                            drawFigures(figure.value)
+                        }
+
+                }
             }
+
         }
     )
 

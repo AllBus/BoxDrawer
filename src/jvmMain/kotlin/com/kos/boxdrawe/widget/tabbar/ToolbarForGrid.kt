@@ -23,6 +23,7 @@ fun ToolbarForGrid(vm: GridData) {
     val innerWidth = remember { vm.innerWidth }
     val innerRadius = remember { vm.innerRadius }
     val gridText = remember { vm.gridText }
+    val figurePreview = vm.figurePreview.collectAsState()
 
     Row(
         modifier = TabContentModifier
@@ -30,21 +31,21 @@ fun ToolbarForGrid(vm: GridData) {
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            NumericUpDown("Ширина ячейки", "мм", widthCell)
-            NumericUpDown("Ширина рамки", "мм", widthFrame)
+            NumericUpDown("ячейки", "мм", widthCell)
+            NumericUpDown("рамки", "мм", widthFrame)
             RunCheckBox(
                 checked = roundChecked,
                 title = "Скруглять углы",
                 onCheckedChange = { c -> roundChecked = c },
             )
-            NumericUpDown("Радиус скругления", "мм", radius, enabled = roundChecked)
-            NumericUpDown("Максимальное количество", "ячеек", cellRadius)
+            NumericUpDown("Радиус", "мм", radius, enabled = roundChecked)
+            NumericUpDown("Количество", "ячеек", cellRadius)
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            NumericUpDown("По горизонтали", "ячеек", cellWidthCount)
-            NumericUpDown("По вертикали", "ячеек", cellHeightCount)
+            NumericUpDown("горизонталь", "ячеек", cellWidthCount)
+            NumericUpDown("вертикаль", "ячеек", cellHeightCount)
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
@@ -56,6 +57,11 @@ fun ToolbarForGrid(vm: GridData) {
             )
             NumericUpDown("Сторона", "мм", innerWidth)
             NumericUpDown("Радиус", "мм", innerRadius)
+            RunCheckBox(
+                checked = figurePreview.value,
+                title = "Предпросмотр",
+                onCheckedChange = { c -> vm.figurePreview.value = c },
+            )
         }
         Column(
             modifier = Modifier.weight(weight = 2f, fill = true)

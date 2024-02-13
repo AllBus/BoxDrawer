@@ -22,7 +22,6 @@ class CadGrid {
 
     private var cells: Array<Array<GridCell>> = Array(40) { Array(30) { GridCell() } }
 
-
     private val outBoardColor = Int.MIN_VALUE;
     public val MAX_SIZE = 1000;
 
@@ -211,7 +210,7 @@ class CadGrid {
         smoothSize: Double,
         color: Int
     ): IFigure {
-        return FigureColor(color, Tortoise.rectangle(0.0, 0.0, right, bottom, enableSmooth, smoothSize))
+        return FigureColor(color, Tortoise.rectangle(left, top, right, bottom, enableSmooth, smoothSize))
     }
 
     fun createEntities(gridSize: GridOption, innerInfo: GridOption, frameSize: Double, drawerSettings: DrawerSettings) : IFigure
@@ -229,9 +228,9 @@ class CadGrid {
 
         val frameGroup = FigureList(
             listOf(
-                rectangle(-frameSize, frameSize, frameSize + width * size, -(frameSize + height * size),
+                rectangle(-frameSize, -frameSize, frameSize + width * size, (frameSize + height * size),
                     false, 0.0, frameColor),
-                rectangle(0.0, 0.0, width * size, -(height * size), gridSize.enable, gridSize.smooth, frameColor)
+                rectangle(0.0, 0.0, width * size, (height * size), gridSize.enable, gridSize.smooth, frameColor)
             )
         )
         result.add(frameGroup);
@@ -259,11 +258,11 @@ class CadGrid {
                     {
                         for (pi in p) {
                             val px = pi.first * size + 0.5 * size;
-                            val py = -(pi.second * size + 0.5 * size);
+                            val py = (pi.second * size + 0.5 * size);
                             val si = innerInfo.size * 0.5;
 
                             group.add(
-                                rectangle(px - si, py+si, px+si, py-si, innerSmooth, innerInfo.smooth, innerColor)
+                                rectangle(px - si, py-si, px+si, py+si, innerSmooth, innerInfo.smooth, innerColor)
                             );
                         }
                     }
@@ -275,7 +274,7 @@ class CadGrid {
 
                         if (smooth)
                         {
-                            val bz = mutableListOf<com.kos.figure.FigureBezierList>()
+                            val bz = mutableListOf<FigureBezierList>()
 
                             for (w in gp.indices)
                             {
@@ -311,15 +310,15 @@ class CadGrid {
                                     }
 
                                     bz.add(bezierQuartir(
-                                        v = Vec2(c.x * size, -c.y * size),
+                                        v = Vec2(c.x * size, c.y * size),
                                         smoothSize = radius,
                                         g1 = c.g,
                                         g2 = n.g
                                     ));
                                     bz.add(
                                         bezierLine(
-                                            v = Vec2(c.x * size, -c.y * size),
-                                            v2 = Vec2(n.x * size, -n.y * size),
+                                            v = Vec2(c.x * size, c.y * size),
+                                            v2 = Vec2(n.x * size, n.y * size),
                                             smoothSizeStart = radius,
                                             smoothSizeEnd = radius2,
                                             g1 = n.g + 2,
@@ -344,7 +343,7 @@ class CadGrid {
                             for (w in gp.indices)
                             {
                                 val c = gp[w];
-                                points.add(Vec2(c.x * size, -c.y * size));
+                                points.add(Vec2(c.x * size, c.y * size));
                             }
 
                             group.add(FigureColor(figureColor, FigurePolyline(points.toList(), true) ));

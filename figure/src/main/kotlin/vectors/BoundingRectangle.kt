@@ -7,6 +7,9 @@ data class BoundingRectangle(val min: Vec2, val max: Vec2) {
     val width: Double get() = max.x - min.x
     val height: Double get() = max.y - min.y
 
+    val centerX = (min.x + max.x )/2
+    val centerY = (min.y + max.y )/2
+
     fun union(rect: BoundingRectangle): BoundingRectangle {
 
         return BoundingRectangle(

@@ -138,7 +138,7 @@ fun App(vm: State<DrawerViewModel>) {
                     }
 
                     TAB_GRID -> {
-                        DisplayGrid(vm.value.grid.cad)
+                        DisplayGrid(vm.value.grid)
                     }
 
                     TAB_BEZIER -> DisplayBezier(displayScale, vm.value.bezier)

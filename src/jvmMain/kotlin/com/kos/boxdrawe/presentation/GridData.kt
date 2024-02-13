@@ -4,6 +4,15 @@ import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.grid.CadGrid
 import com.kos.boxdrawer.detal.grid.GridOption
+import com.kos.figure.FigureEmpty
+import com.kos.figure.IFigure
+import com.kos.figure.composition.FigureRotate
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
+import vectors.Vec2
 
 class GridData(val tools: ITools) {
 
@@ -19,7 +28,18 @@ class GridData(val tools: ITools) {
     val innerWidth = NumericTextFieldState(1.0, 2)
     val innerRadius = NumericTextFieldState(0.5, 2)
     val gridText = mutableStateOf("")
+    val figurePreview = MutableStateFlow(false)
 
+
+    val redrawEvent = MutableStateFlow(0)
+
+    @OptIn(FlowPreview::class)
+    val figure = redrawEvent.debounce(500L).combine(figurePreview){ r, p ->
+        if (p) {
+            createFigure()
+        }else
+            FigureEmpty
+    }
 
     val cad = CadGrid()
 
@@ -31,6 +51,7 @@ class GridData(val tools: ITools) {
 
             cad.recreate(x, y)
         }
+        redraw()
     }
 
     fun createFromText() {
@@ -77,5 +98,27 @@ class GridData(val tools: ITools) {
         tools.saveFigures(fileName, fig)
     }
 
+    fun redraw() {
+        redrawEvent.value+=1
+
+    }
+
+    private fun createFigure(): IFigure {
+        return cad.createEntities(
+            frameSize = widthFrame.decimal,
+            gridSize = GridOption(
+                size = widthCell.decimal,
+                smooth = radius .decimal,
+                enable = roundChecked.value,
+                roundCell = cellRadius.decimal.toInt()
+            ),
+            innerInfo = GridOption(
+                size = innerWidth .decimal,
+                smooth = innerRadius.decimal,
+                enable = false
+            ),
+            drawerSettings = tools.ds()
+        )
+    }
 
 }

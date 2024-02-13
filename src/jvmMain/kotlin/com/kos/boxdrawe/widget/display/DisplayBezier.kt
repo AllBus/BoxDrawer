@@ -17,6 +17,9 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isAltPressed
+import androidx.compose.ui.input.pointer.isCtrlPressed
+import androidx.compose.ui.input.pointer.isShiftPressed
 import androidx.compose.ui.input.pointer.onPointerEvent
 import com.kos.boxdrawe.drawer.drawFigures
 import com.kos.boxdrawe.presentation.BezierData
@@ -63,10 +66,16 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
                     vm.addEndBezier()
             }
         }
-        when(it.button){
-            PointerButton.Primary -> selectedType.value = 0
-            PointerButton.Secondary -> selectedType.value = 1
-            PointerButton.Tertiary -> selectedType.value = 2
+        if ( it.keyboardModifiers.isAltPressed){
+            selectedType.value = 3
+            vm.movePointLine(selectIndex.value)
+        } else {
+
+            when (it.button) {
+                PointerButton.Primary -> selectedType.value = 0
+                PointerButton.Secondary -> selectedType.value = 1
+                PointerButton.Tertiary -> selectedType.value = 2
+            }
         }
 
     }.onPointerEvent(PointerEventType.Release) {
@@ -88,7 +97,7 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
         }
 
     }.onDrag(
-        matcher = PointerMatcher.mouse(PointerButton.Secondary) + PointerMatcher.mouse(PointerButton.Tertiary),
+        matcher = PointerMatcher.mouse(PointerButton.Secondary) + PointerMatcher.mouse(PointerButton.Tertiary)+PointerMatcher.stylus,
         onDrag = { offset ->
             if (selectIndex.value < 0)
                 pos += offset

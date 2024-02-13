@@ -163,6 +163,33 @@ class BezierData(val tools: Tools) {
         }
     }
 
+    /** сделать линию прямой */
+    fun movePointLine(index: Int) {
+        val r = c1.value
+        if (index >= 0 && index < r.size) {
+            val p = when (index % 3){
+                0  -> 0
+                1 -> 1
+                2 -> -1
+                else -> 0
+            }
+
+            if (p!= 0){
+                val st = index-p
+                val ep = index+2*p
+                val c1 = Vec2.lerp(r[st], r[ep],0.25)
+                val c2 = Vec2.lerp(r[st], r[ep],0.75)
+                val pp = index + p
+                cList.value = r.mapIndexed { i, vec ->
+                    if (i == index) c1 else
+                        if (i == pp) c2 else
+                            vec
+                }
+                 redraw()
+            }
+        }
+    }
+
     fun addStartBezier() {
         val list = c1.value
 
@@ -193,4 +220,6 @@ class BezierData(val tools: Tools) {
             redraw()
         }
     }
+
+
 }
