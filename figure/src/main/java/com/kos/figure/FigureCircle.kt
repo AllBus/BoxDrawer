@@ -21,7 +21,6 @@ class FigureCircle(
     segmentEnd = segmentEnd
 ){
     override fun crop(k: Double, cropSide: CropSide): IFigure {
-        //Todo: Правильно отрезать
         return if (radius <= 0) Empty else when (cropSide) {
             CropSide.LEFT -> {
                 if (center.x + radius <= k) return Empty
@@ -44,7 +43,7 @@ class FigureCircle(
             CropSide.TOP -> {
                 if (center.y + radius <= k) return Empty
                 if (center.y - radius >= k) return this
-                val s = (k - center.y) / radius
+                val s = (center.y - k) / radius
                 val s1 = asin(s) * 180 / PI
                 val s2 = 180.0 - s1
                 calculateSegments(s1, s2)
@@ -53,7 +52,7 @@ class FigureCircle(
             CropSide.BOTTOM -> {
                 if (center.y + radius <= k) return this
                 if (center.y - radius >= k) return Empty
-                val s = (k - center.y) / radius
+                val s = (center.y - k) / radius
                 val s1 = asin(s) * 180 / PI
                 val s2 = 180.0 - s1
                 calculateSegments(s2, s1)

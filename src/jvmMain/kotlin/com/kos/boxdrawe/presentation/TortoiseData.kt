@@ -6,11 +6,16 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import com.kos.figure.CropSide
 import com.kos.figure.Figure
+import com.kos.figure.FigureCircle
+import com.kos.figure.FigureList
+import com.kos.figure.FigurePolygon
+import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import turtoise.SimpleTortoiseMemory
 import turtoise.TortoiseParser
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
+import turtoise.example.FigureExample
 import vectors.Vec2
 
 class TortoiseData(val tools: ITools) {
@@ -47,6 +52,7 @@ class TortoiseData(val tools: ITools) {
     fun createTortoise(lines: String) {
         val program = tortoiseProgram(lines)
         val dr = t.draw(program, Vec2.Zero, tools.ds())
+
         fig.value = dr
         figures.value = dr
     }
