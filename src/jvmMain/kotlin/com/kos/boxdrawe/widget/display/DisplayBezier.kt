@@ -80,7 +80,7 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
 
     }.onPointerEvent(PointerEventType.Release) {
         selectIndex.value = -1
-        selectIndex.value = 0
+        selectedType.value = 0
     }.onPointerEvent(PointerEventType.Move) {
 
         if (it.changes.first().pressed) {

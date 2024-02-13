@@ -194,16 +194,33 @@ class BezierData(val tools: Tools) {
         val list = c1.value
 
         val f = list.firstOrNull() ?: Vec2.Zero
+
+        val p = if (list.size > 2) {
+            val v0 = list.first()
+            val v1 = list[1]
+            Vec2.normal(v0, v1) * -30.0
+        } else {
+            Vec2(-100.0, 0.0)
+        }
+
         cList.value =
-            listOf(Vec2(-100.0, 0.0), Vec2(-100.0, 100.0), Vec2(0.0, 100.0)).map { it + f } + list
+            listOf(p*3.0, p*2.0, p ).map { it + f } + list
         redraw()
     }
 
     fun addEndBezier() {
         val list = c1.value
         val f = list.lastOrNull() ?: Vec2.Zero
-        cList.value =
-            list + listOf(Vec2(0.0, 100.0), Vec2(100.0, 100.0), Vec2(100.0, 0.0)).map { it + f }
+
+        val p = if (list.size > 2) {
+            val v0 = list.last()
+            val v1 = list[list.size - 2]
+            Vec2.normal(v0, v1) * -30.0
+        } else {
+            Vec2(100.0, 0.0)
+        }
+
+        cList.value =  list + listOf(p, p*2.0, p*3.0).map { it + f }
         redraw()
     }
 
