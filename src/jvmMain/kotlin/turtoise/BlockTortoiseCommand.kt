@@ -19,6 +19,16 @@ class BlockTortoiseCommand(
         return block.blocks.getOrNull(index)
     }
 
+    override fun assign(memory: TortoiseMemory) {
+        val values = block.arguments()
+        if (values.isNotEmpty()) {
+            if (values.size == 1) {
+                memory.clear(values.first())
+            } else {
+                memory.assign(values.first(), values.drop(1).sumOf { memory.value(it, 0.0) })
+            }
+        }
+    }
 
     override fun print(): String {
         return "BlockTortoiseCommand(${TortoiseCommand.commandToName(command)}, ${block.line})"

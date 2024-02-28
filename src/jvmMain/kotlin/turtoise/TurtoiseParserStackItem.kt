@@ -10,29 +10,30 @@ abstract class TurtoiseParserStackItem(
         const val ARGUMENT_NAME = '~'
     }
 
-    abstract fun isArgument() : Boolean
-    open val argument:String = ""
-    abstract val name :String
-    abstract val line:String
+    abstract fun isArgument(): Boolean
+    open val argument: String = ""
+    abstract val name: String
+    abstract val line: String
 
-    abstract val inner :List<TurtoiseParserStackItem>
-    abstract val blocks :List<TurtoiseParserStackItem>
+    abstract val inner: List<TurtoiseParserStackItem>
+    abstract val blocks: List<TurtoiseParserStackItem>
 
     abstract fun get(index: Int): String?
 
-    open fun doubleValue(index : Int, defaultValue: Double) : Double
-    {
+    abstract fun get(index: String): String?
+
+    open fun doubleValue(index: Int, defaultValue: Double): Double {
         val sv = stringValue(index)
-        return sv?.toDoubleOrNull()?:defaultValue
+        return sv?.toDoubleOrNull() ?: defaultValue
     }
 
     abstract fun stringValue(index: Int): String?
-    fun asDouble(text:String?): Double{
-        return text?.toDoubleOrNull()?:0.0
+    fun asDouble(text: String?): Double {
+        return text?.toDoubleOrNull() ?: 0.0
     }
 
-    fun asDouble(text:String?, defaultValue: Double): Double{
-        return text?.toDoubleOrNull()?:defaultValue
+    fun asDouble(text: String?, defaultValue: Double): Double {
+        return text?.toDoubleOrNull() ?: defaultValue
     }
 
     abstract fun arguments(): List<String>
@@ -43,7 +44,7 @@ abstract class TurtoiseParserStackItem(
 class TurtoiseParserStackArgument(
     override val argument: String,
 ) : TurtoiseParserStackItem() {
-    override fun isArgument() : Boolean = true
+    override fun isArgument(): Boolean = true
 
 
     override val name: String = argument
@@ -56,6 +57,11 @@ class TurtoiseParserStackArgument(
 
     override fun get(index: Int): String? {
         return if (index == 0) argument else null
+    }
+
+    override fun get(index: String): String? {
+        return if (index.isEmpty() || index == "0" || index == ".")
+            argument else null
     }
 
     override fun stringValue(index: Int): String? {
@@ -75,21 +81,25 @@ class TurtoiseParserStackArgument(
 class TurtoiseParserStackBlock(
     /** Тип скобок '(','[','{'*/
     val skobka: Char = ' ',
-) : TurtoiseParserStackItem(){
-    override fun isArgument() : Boolean = false
+) : TurtoiseParserStackItem() {
+    override fun isArgument(): Boolean = false
 
     override val inner = mutableListOf<TurtoiseParserStackItem>()
     override val blocks = mutableListOf<TurtoiseParserStackBlock>()
 
-    override val name get() = inner.firstOrNull()?.argument?:"%%" //?.takeIf { it.isArgument() }?.argument?:""
-    override val line: String
-        get() = inner.joinToString(" ", "$skobka", "${closeBrace()}"){it.line}
+    override val argument: String
+        get() = arguments().getOrNull(1)?:""
 
-    fun closeBrace(): Char{
+    override val name
+        get() = inner.firstOrNull()?.argument ?: "%%" //?.takeIf { it.isArgument() }?.argument?:""
+    override val line: String
+        get() = inner.joinToString(" ", "$skobka", "${closeBrace()}") { it.line }
+
+    fun closeBrace(): Char {
         return TortoiseParser.closeBrace(skobka)
     }
-    fun add(argument: String)
-    {
+
+    fun add(argument: String) {
         inner.add(
             TurtoiseParserStackArgument(
                 argument = argument
@@ -97,8 +107,7 @@ class TurtoiseParserStackBlock(
         )
     }
 
-    fun add(arguments: List<String>)
-    {
+    fun add(arguments: List<String>) {
         arguments.forEach { add(it) }
     }
 
@@ -107,7 +116,7 @@ class TurtoiseParserStackBlock(
         blocks.add(argument)
     }
 
-    fun addItems(values: List<TurtoiseParserStackItem>){
+    fun addItems(values: List<TurtoiseParserStackItem>) {
         inner.addAll(values)
         blocks.addAll(values.filterIsInstance<TurtoiseParserStackBlock>())
     }
@@ -123,6 +132,26 @@ class TurtoiseParserStackBlock(
         return if (index < 0 || index >= inner.size) null else inner[index].argument
     }
 
+    override fun get(index: String): String? {
+        return if (index.startsWith(".")){
+            val i = index.indexOf('.', 1)
+            if (i>0){
+                val n = index.take(i).drop(1)
+                val next = index.drop(i)
+                when (val a = getInnerAtName(n)){
+                    is TurtoiseParserStackBlock ->
+                        a.get(next)
+                    else ->
+                        null
+                }
+            } else {
+                val n = index.drop(1)
+
+                getInnerAtName(n)?.argument
+            }
+        } else null
+    }
+
     override fun stringValue(index: Int): String? {
         if (index < 0 || index >= inner.size) return null
         var c = 0
@@ -135,4 +164,17 @@ class TurtoiseParserStackBlock(
         return null
     }
 
+    fun getBlockAtName(name:String): TurtoiseParserStackBlock?{
+        return blocks.find {
+            it.name == name
+        }
+    }
+
+    fun getInnerAtName(name:String): TurtoiseParserStackItem?{
+        val i = name.toIntOrNull()
+        return if (i != null)
+            inner.getOrNull(i)
+        else
+            getBlockAtName(name)
+    }
 }

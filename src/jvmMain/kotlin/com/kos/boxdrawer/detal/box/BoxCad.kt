@@ -20,6 +20,7 @@ import turtoise.*
 import turtoise.Tortoise.Companion.holes
 import turtoise.Tortoise.Companion.rectangle
 import turtoise.Tortoise.Companion.zigzag
+import turtoise.memory.SimpleTortoiseMemory
 import vectors.Vec2
 import kotlin.math.min
 
@@ -811,12 +812,12 @@ object BoxCad {
         inter: List<Polka>,
         resultMap: MutableMap<Int, MutableList<IFigure>>
     ) {
-        val runner = TortoiseRunner(SimpleTortoiseMemory(), TortoiseProgram(emptyList(), emptyMap()))
+        val runner = TortoiseRunner(TortoiseProgram(emptyList(), emptyMap()))
         val state = TortoiseState()
         polka.programs?.forEach { program ->
             val alg = TortoiseParser.extractTortoiseCommands(program.algorithm).second
             alg.names.firstOrNull()?.let { n ->
-                alg.draw(n, drawerSettings,state, runner)
+                alg.draw(n, drawerSettings,state,SimpleTortoiseMemory(),  runner, 10)
             }?.let { figure ->
                 if (program.startCell > 0) {
                     inter.getOrNull(program.startCell - 1)?.let { p2 ->

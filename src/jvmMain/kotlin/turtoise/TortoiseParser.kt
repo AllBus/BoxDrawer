@@ -71,7 +71,11 @@ object TortoiseParser {
                         val c = d.first()
                         if (c.isDigit() || c =='-'){
                             currentValues.add(item)
-                        } else {
+                        } else
+                        if (c=='@'){
+                            currentValues.add(TurtoiseParserStackArgument(d.drop(1)))
+                        }
+                        else {
                             result.add(TortoiseCommand.createFromItem(currentCommand, currentValues))
                             currentValues = mutableListOf<TurtoiseParserStackItem>()
                             val b = d.drop(1)

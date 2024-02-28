@@ -4,6 +4,7 @@ import androidx.compose.ui.text.AnnotatedString
 import com.kos.figure.IFigure
 import turtoise.*
 import turtoise.TortoiseParser.asDouble
+import turtoise.memory.TortoiseMemory
 
 class BoxAlgorithm(
     val boxInfo: BoxInfo,
@@ -23,7 +24,9 @@ class BoxAlgorithm(
         name: String,
         ds: DrawerSettings,
         state: TortoiseState,
-        runner: TortoiseRunner
+        memory: TortoiseMemory,
+        runner: TortoiseRunner,
+        maxStackSize: Int
     ): IFigure {
 
         val bwi = boxInfo.width - ds.boardWeight * 2

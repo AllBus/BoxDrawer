@@ -87,6 +87,12 @@ kotlin {
             // implementation("com.groupdocs:groupdocs-comparison:22.3")
         }
 
+        jvmTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation("org.junit.jupiter:junit-jupiter:5.10.2")
+        //    implementation(project(":src:jvmMain"))
+        }
+
 //        desktopMain.dependencies {
 //            implementation(compose.desktop.currentOs)
 //        }

@@ -72,7 +72,7 @@ interface TortoiseCommand {
                 TURTOISE_LOAD-> "TURTOISE_LOAD"
                 TURTOISE_PEEK -> "TURTOISE_PEEK"
                 TURTOISE_METHOD_NAME -> "TURTOISE_METHOD_NAME"
-                TURTOISE_METHOD_RUN -> "TURTOISE_METHOD_RUN"
+              //  TURTOISE_METHOD_RUN -> "TURTOISE_METHOD_RUN"
                 TURTOISE_LOOP -> "TURTOISE_LOOP"
                 TURTOISE_END_LOOP -> "TURTOISE_END_LOOP"
                 TURTOISE_MATRIX_ROTATE -> "TURTOISE_MATRIX_ROTATE"
@@ -108,7 +108,7 @@ interface TortoiseCommand {
         const val TURTOISE_LOAD = 'W';
         const val TURTOISE_PEEK = 'E';
         const val TURTOISE_METHOD_NAME = '@';
-        const val TURTOISE_METHOD_RUN = '=';
+      //  const val TURTOISE_METHOD_RUN = '=';
         const val TURTOISE_LOOP = '>';
         const val TURTOISE_END_LOOP = '<';
         const val TURTOISE_MATRIX_ROTATE = 'R';

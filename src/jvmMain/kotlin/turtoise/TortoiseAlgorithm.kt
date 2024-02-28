@@ -2,6 +2,7 @@ package turtoise
 
 import com.kos.figure.FigureList
 import com.kos.figure.IFigure
+import turtoise.memory.TortoiseMemory
 
 
 data class TortoiseBlock(val commands: List<TortoiseCommand>){
@@ -19,7 +20,9 @@ interface TortoiseAlgorithm {
         name: String,
         ds: DrawerSettings,
         state: TortoiseState,
-        runner: TortoiseRunner
+        memory: TortoiseMemory,
+        runner: TortoiseRunner,
+        maxStackSize:Int,
     ): IFigure {
         return FigureList(
             commands(name, ds).flatMap { block ->
@@ -27,8 +30,8 @@ interface TortoiseAlgorithm {
                     commands = block,
                     state = state,
                     ds = ds,
-                    maxStackSize = runner.lineIndex,
-                    memory = runner.memory,
+                    maxStackSize = maxStackSize-1,
+                    memory = memory,
                     runner = runner
                 )
             }

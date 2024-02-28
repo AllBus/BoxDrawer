@@ -69,8 +69,12 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
         if ( it.keyboardModifiers.isAltPressed){
             selectedType.value = 3
             vm.movePointLine(selectIndex.value)
-        } else {
-
+        } else
+        if ( it.keyboardModifiers.isCtrlPressed){
+            selectedType.value = 1
+            vm.movePointLine(selectIndex.value)
+        }
+        else {
             when (it.button) {
                 PointerButton.Primary -> selectedType.value = 0
                 PointerButton.Secondary -> selectedType.value = 1

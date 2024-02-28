@@ -3,31 +3,30 @@ package turtoise
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureList
 import com.kos.figure.IFigure
+import turtoise.memory.BlockTortoiseMemory
+import turtoise.memory.SimpleTortoiseMemory
 import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 
 class TortoiseRunner(
-    val memory: TortoiseMemory,
     var program : TortoiseProgram,
 ) {
 
     val tortoise = Tortoise()
     val lineIndex = 10
 
-    fun resetMemory() {
-        memory.reset()
-    }
+
 
     fun clear() {
 
-        resetMemory()
+      //  resetMemory()
     }
 
     fun draw(state: TortoiseState, ds: DrawerSettings): IFigure {
         clear()
 
         val figures = program.commands.flatMap { a ->
-            a.names.map { n -> a.draw(n, ds, state, this) }
+            a.names.map { n -> a.draw(n, ds, state, SimpleTortoiseMemory(), this, lineIndex) }
         }
 
         return FigureList(figures)
@@ -46,7 +45,14 @@ class TortoiseRunner(
     ): IFigure {
         return findAlgorithm(algName)?.let { alg ->
             alg.names.firstOrNull()?.let { n ->
-                alg.draw(n, ds, state, this)
+                alg.draw(
+                    name = n,
+                    ds = ds,
+                    state = state,
+                    memory = arguments?.let { BlockTortoiseMemory(it)}?:SimpleTortoiseMemory(),
+                    runner = this,
+                    maxStackSize = maxStackSize,
+                )
             }
         }?: FigureEmpty
     }
