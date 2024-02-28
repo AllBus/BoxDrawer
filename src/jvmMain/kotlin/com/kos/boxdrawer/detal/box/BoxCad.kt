@@ -766,9 +766,9 @@ object BoxCad {
         }
 
         return when (outVariant) {
-            EOutVariant.COLUMN -> mainPosition(rm, startPoint, bw)
-            EOutVariant.ALTERNATIVE -> alternativePosition(rm, bw, polki)
-            EOutVariant.VOLUME -> figure3dTransform(rm, boxInfo, wald, polki, bw)
+            EOutVariant.COLUMN -> mainPosition(startPoint, rm, bw)
+            EOutVariant.ALTERNATIVE -> alternativePosition(startPoint, rm, bw, polki)
+            EOutVariant.VOLUME -> figure3dTransform(startPoint, rm, boxInfo, wald, polki, bw)
         }
 
     }
@@ -811,11 +811,12 @@ object BoxCad {
         inter: List<Polka>,
         resultMap: MutableMap<Int, MutableList<IFigure>>
     ) {
-        val runner = TortoiseRunner(SimpleTortoiseMemory())
+        val runner = TortoiseRunner(SimpleTortoiseMemory(), TortoiseProgram(emptyList(), emptyMap()))
+        val state = TortoiseState()
         polka.programs?.forEach { program ->
-            val alg = TortoiseParser.extractTortoiseCommands(program.algorithm)
+            val alg = TortoiseParser.extractTortoiseCommands(program.algorithm).second
             alg.names.firstOrNull()?.let { n ->
-                alg.draw(n, drawerSettings, runner)
+                alg.draw(n, drawerSettings,state, runner)
             }?.let { figure ->
                 if (program.startCell > 0) {
                     inter.getOrNull(program.startCell - 1)?.let { p2 ->
@@ -852,6 +853,7 @@ object BoxCad {
     }
 
     private fun figure3dTransform(
+        startPoint:Vec2,
         rm: Map<Int, FigureList>,
         boxInfo: BoxInfo,
         wald: WaldParam,
@@ -932,8 +934,8 @@ object BoxCad {
         }
         val mf = Matrix()
         mf.translate(
-            (-boxInfo.width / 2f).toFloat(),
-            (-boxInfo.weight / 2f).toFloat(),
+            (-boxInfo.width / 2f).toFloat()+startPoint.x.toFloat(),
+            (-boxInfo.weight / 2f).toFloat()+startPoint.y.toFloat(),
             (-boxInfo.height / 2f).toFloat()
         )
         mf.rotateX(59f)
@@ -945,8 +947,8 @@ object BoxCad {
     }
 
     private fun mainPosition(
-        list: Map<Int, IFigure>,
         startPoint: Vec2,
+        list: Map<Int, IFigure>,
         bw: Double
     ): IFigure {
         val outList = mutableListOf<IFigure>()
@@ -964,6 +966,7 @@ object BoxCad {
     }
 
     private fun alternativePosition(
+        startPoint: Vec2,
         rm: Map<Int, IFigure>,
         bw: Double,
         polki: PolkaSort
@@ -1026,7 +1029,10 @@ object BoxCad {
                 }
             }
         }
-        return FigureList(outList.toList())
+        return FigureTranslate(
+            FigureList(outList.toList()),
+            startPoint
+        )
     }
 
     fun calculateDrawPosition(

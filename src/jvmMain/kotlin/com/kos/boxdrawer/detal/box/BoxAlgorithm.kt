@@ -19,7 +19,12 @@ class BoxAlgorithm(
 
     override val names: List<String> = listOf("box")
 
-    override fun draw(name: String, ds: DrawerSettings, runner: TortoiseRunner): IFigure {
+    override fun draw(
+        name: String,
+        ds: DrawerSettings,
+        state: TortoiseState,
+        runner: TortoiseRunner
+    ): IFigure {
 
         val bwi = boxInfo.width - ds.boardWeight * 2
         val bwe = boxInfo.weight - ds.boardWeight * 2
@@ -31,7 +36,7 @@ class BoxAlgorithm(
         polkiSort.zigPolkaPol = zigs.zigPolkaPol
 
         return BoxCad.box(
-            startPoint = runner.state.xy,
+            startPoint = state.xy,
             boxInfo = boxInfo,
             zigW = zigs.zigW,
             zigH = zigs.zigH,
@@ -48,11 +53,9 @@ class BoxAlgorithm(
             po.commandLine()
         }
 
-        return "box ${boxInfo.commandLine()} ${if (polkiIn) 1 else 0} ${outVariantName(outVariant)} ${zigs.commandLine()}"+
+        return "box@ ${boxInfo.commandLine()} ${if (polkiIn) 1 else 0} ${outVariantName(outVariant)} ${zigs.commandLine()}"+
                 " (w ${wald.commandLine()}) " + (if (polki.isNotEmpty()) p else "")
     }
-
-
 
     companion object {
 
@@ -71,8 +74,7 @@ class BoxAlgorithm(
 
             return sb.toAnnotatedString()
         }
-        fun parseBox(a: String, useAlgorithms: Array<String>?): TortoiseAlgorithm {
-            val items: TurtoiseParserStackBlock = TortoiseParser.parseSkobki(a)
+        fun parseBox(items: TurtoiseParserStackItem, useAlgorithms: Array<String>?): TortoiseAlgorithm {
 
             val (polki, other) = items.blocks.partition { it.name.startsWith("p") }
             val (zig, other2) = other.partition { it.name.startsWith("z") }
@@ -90,17 +92,20 @@ class BoxAlgorithm(
                 zigPolkaPol = zigInfo(zig.getOrNull(4)),
             )
 
+            val ind = if (items.name.contains("@"))
+                1 else 0
+
             return BoxAlgorithm(
                 boxInfo =    BoxInfo(
-                    width = asDouble(items.get(0)),
-                    weight = asDouble(items.get(1)),
-                    height = asDouble(items.get(2)),
+                    width = asDouble(items.get(0+ind)),
+                    weight = asDouble(items.get(1+ind)),
+                    height = asDouble(items.get(2+ind)),
                 ),
                 zigs = zigs,
                 wald = waldInfo(waldBlock),
                 polki = polkiList,
-                outVariant = parseOutVariant(items.get(4)),
-                polkiIn = asDouble(items.get(3))>0.1,
+                outVariant = parseOutVariant(items.get(4+ind)),
+                polkiIn = asDouble(items.get(3+ind))>0.1,
             )
         }
 

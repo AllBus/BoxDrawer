@@ -153,6 +153,7 @@ class ComposeFigureDrawer(
                 val b = points[r]
                 val c = points[r + 1]
                 val d = points[r + 2]
+
                 p.cubicTo(b.x.toFloat(), b.y.toFloat(), c.x.toFloat(), c.y.toFloat(), d.x.toFloat(), d.y.toFloat())
             }
         }

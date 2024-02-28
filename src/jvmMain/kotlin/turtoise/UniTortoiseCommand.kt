@@ -47,9 +47,5 @@ class UniTortoiseCommand(
             }
             else -> "UniTortoiseCommand(${TortoiseCommand.commandToName(command)}, $args)"
         }
-
-
-
-
     }
 }

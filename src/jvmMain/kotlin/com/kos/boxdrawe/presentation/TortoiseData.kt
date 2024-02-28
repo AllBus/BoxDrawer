@@ -11,10 +11,8 @@ import com.kos.figure.FigureList
 import com.kos.figure.FigurePolygon
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
-import turtoise.SimpleTortoiseMemory
-import turtoise.TortoiseParser
-import turtoise.TortoiseProgram
-import turtoise.TortoiseRunner
+import turtoise.*
+import turtoise.example.FigureExample
 import turtoise.example.FigureExample
 import vectors.Vec2
 
@@ -25,11 +23,11 @@ class TortoiseData(val tools: ITools) {
 
     val matrix = mutableStateOf(Matrix())
 
-    private val t = TortoiseRunner(SimpleTortoiseMemory())
-
     fun saveTortoise(fileName: String, lines: String) {
         val program = tortoiseProgram(lines)
-        val fig = t.draw(program, Vec2.Zero, tools.ds())
+        val t = TortoiseRunner(SimpleTortoiseMemory(), program)
+        val state = TortoiseState()
+        val fig = t.draw(state, tools.ds())
         tools.saveFigures(fileName, fig)
     }
 
@@ -44,14 +42,23 @@ class TortoiseData(val tools: ITools) {
     }
 
     private fun tortoiseProgram(lines: String): TortoiseProgram {
-        return TortoiseProgram(commands = lines.split("\n").map { line ->
+        val f = lines.split("\n").map { line ->
             TortoiseParser.extractTortoiseCommands(line)
-        })
+        }
+
+        val (c, a) = f.partition { it.first == "" }
+        return TortoiseProgram(
+            commands = c.map { it.second },
+            algorithms = a.toMap()
+        )
     }
 
     fun createTortoise(lines: String) {
         val program = tortoiseProgram(lines)
-        val dr = t.draw(program, Vec2.Zero, tools.ds())
+        val t = TortoiseRunner(SimpleTortoiseMemory(), program)
+        val state = TortoiseState()
+        val dr = t.draw(state, tools.ds())
+
 
         fig.value = dr
         figures.value = dr

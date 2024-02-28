@@ -1,13 +1,6 @@
 package turtoise
 
-import com.kos.figure.FigureBezier
-import com.kos.figure.FigureBezierList
-import com.kos.figure.FigureCircle
-import com.kos.figure.FigureEllipse
-import com.kos.figure.FigureList
-import com.kos.figure.FigurePolyline
-import com.kos.figure.FigureSpline
-import com.kos.figure.IFigure
+import com.kos.figure.*
 import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
@@ -19,31 +12,46 @@ import kotlin.math.atan2
 import kotlin.math.min
 import kotlin.math.truncate
 
-class Tortoise {
+class Tortoise() {
 
-    fun draw(program: TortoiseProgram, startPoint: Vec2, ds: DrawerSettings, memory: TortoiseMemory): FigureList {
-        memory.reset()
-        val commands = program.commands.flatMap { a -> a.names.flatMap { n -> a.commands(n, ds) } }
-        val state = TortoiseState()
-        state.moveTo(startPoint)
-        return FigureList(
-            commands.flatMap { c -> draw(c, state, ds, 10, memory) }
-        )
-    }
+//    fun draw(
+//        program: TortoiseProgram,
+//        startPoint: Vec2,
+//        ds: DrawerSettings,
+//        memory: TortoiseMemory
+//    ): FigureList {
+//        memory.reset()
+//        this.program = program
+//        val commands = program.commands.flatMap { a -> a.names.flatMap { n -> a.commands(n, ds) } }
+//        val state = TortoiseState()
+//        state.moveTo(startPoint)
+//        return FigureList(
+//            commands.flatMap { c -> draw(c, state, ds, 10, memory) }
+//        )
+//    }
 
-    fun draw(commands: TortoiseBlock, startPoint: Vec2, ds: DrawerSettings, memory: TortoiseMemory): FigureList {
-        val state = TortoiseState()
-        state.moveTo(startPoint);
-        return FigureList(draw(commands, state, ds, 10, memory))
-    }
+//    fun draw(
+//        commands: TortoiseBlock,
+//        startPoint: Vec2,
+//        ds: DrawerSettings,
+//        memory: TortoiseMemory
+//    ): FigureList {
+//        val state = TortoiseState()
+//        state.moveTo(startPoint);
+//        return FigureList(draw(commands, state, ds, 10, memory))
+//    }
 
     fun draw(
         commands: TortoiseBlock,
         state: TortoiseState,
         ds: DrawerSettings,
-        lineIndex: Int,
-        memory: TortoiseMemory
+        maxStackSize: Int,
+        memory: TortoiseMemory,
+        runner: TortoiseRunner,
     ): List<IFigure> {
+        if (maxStackSize<=0)
+            return emptyList()
+
         val res = mutableListOf<IFigure>()
         var result = mutableListOf<Vec2>()
         val le = commands.size
@@ -133,7 +141,7 @@ class Tortoise {
                 }
 
                 TortoiseCommand.TURTOISE_HORIZONTAL -> {
-                    if (result.isEmpty()){
+                    if (result.isEmpty()) {
                         result.add(state.xy)
                     }
                     state.x += com.value(memory)
@@ -141,7 +149,7 @@ class Tortoise {
                 }
 
                 TortoiseCommand.TURTOISE_VERTICAL -> {
-                    if (result.isEmpty()){
+                    if (result.isEmpty()) {
                         result.add(state.xy)
                     }
                     state.y += com.value(memory)
@@ -149,9 +157,9 @@ class Tortoise {
                 }
 
                 TortoiseCommand.TURTOISE_ANGLE -> {
-                    if (com.size == 2){
-                        state.a = calculateAngle(com[0,memory], com[1,memory])
-                    }else {
+                    if (com.size == 2) {
+                        state.a = calculateAngle(com[0, memory], com[1, memory])
+                    } else {
                         state.a = com.value(memory)
                     }
                 }
@@ -159,14 +167,14 @@ class Tortoise {
                 TortoiseCommand.TURTOISE_ANGLE_ADD -> {
                     if (com.size == 2) {
                         state.a += calculateAngle(com[0, memory], com[1, memory])
-                    }else {
+                    } else {
                         state.a += com.value(memory)
                     }
                 }
 
                 TortoiseCommand.TURTOISE_LINE -> {
                     val v = com.value(memory)
-                    if (result.isEmpty() && v!= 0.0){
+                    if (result.isEmpty() && v != 0.0) {
                         result.add(state.xy)
                     }
                     state.move(v)
@@ -183,7 +191,7 @@ class Tortoise {
 
                 TortoiseCommand.TURTOISE_LINE_WITH_ANGLE -> {
                     val v = com.value(memory)
-                    if (result.isEmpty() && v != 0.0){
+                    if (result.isEmpty() && v != 0.0) {
                         result.add(state.xy)
                     }
                     state.move(v)
@@ -254,6 +262,57 @@ class Tortoise {
                         smoothSize = smoothSize,
                     ).rotate(angle)
                     )
+                }
+
+                TortoiseCommand.TURTOISE_FIGURE -> {
+                    val block = com.takeBlock(0)
+                    val f = figureList(block, ds, state, maxStackSize, memory, runner)
+
+                    f?.let { g ->
+                        res.add(
+                            g
+                        )
+                    }
+                }
+                TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {
+                    saveLine()
+
+                    val zigWidth = com.take(2, state.zigWidth, memory)
+                    val board = com.take(3, ds.boardWeight, memory)
+
+
+
+
+                    val block = com.takeBlock(0)
+                    val f = figureList(block, ds, TortoiseState(), maxStackSize, memory, runner)
+                    val zf = f?: zigFigure(
+                         hz = com.take(4, 0.0, memory),
+                     bz1x = com.take(5, board / 2, memory),
+                     bz2x = com.take(6, board / 2, memory),
+                     bz1y = com.take(7, 0.0, memory),
+                     bz2y = com.take(8, 0.0, memory),
+                        board = board,
+                        zigWidth = zigWidth
+                    )
+
+
+
+
+                    val width = com.value(memory)
+                    res += ZigConstructor.zigZag(
+                        origin = state.xy,
+                        width = width,
+                        zig = ZigzagInfo(
+                            zigWidth,
+                            com.take(1, state.zigDelta, memory),
+                        ),
+                        angle = state.angle,
+                        param = state.zigParam,
+                        zigzagFigure = zf
+
+                    )
+                    state.move(width)
+
                 }
 
                 TortoiseCommand.TURTOISE_ZIGZAG -> {
@@ -421,8 +480,48 @@ class Tortoise {
 
     }
 
+    private fun figureList(
+        block: TurtoiseParserStackItem?,
+        ds: DrawerSettings,
+        state: TortoiseState,
+        maxStackSize: Int,
+        memory: TortoiseMemory,
+        runner: TortoiseRunner,
+    ): IFigure? {
+        val f = block?.let { b ->
+            val l = TortoiseParser.parseSimpleLine(block)
+            val st = TortoiseState().from(state)
+
+            val n = block.name
+            if (n.startsWith("@")){
+                runner.figure(
+                    algName = n.drop(1),
+                    ds = ds,
+                    state = st,
+                    maxStackSize = maxStackSize,
+                    arguments = block
+                )
+
+            }else {
+                FigureList(
+                    l.commands(l.names.first(), ds).flatMap { c ->
+                        draw(
+                            commands = c,
+                            state = st,
+                            ds = ds,
+                            maxStackSize = maxStackSize - 1,
+                            memory = memory,
+                            runner = runner,
+                        )
+                    }
+                )
+            }
+        }
+        return f
+    }
+
     private fun calculateAngle(y: Double, x: Double): Double {
-        return atan2(y, x)*180.0/ PI
+        return atan2(y, x) * 180.0 / PI
     }
 
     companion object {
@@ -437,9 +536,10 @@ class Tortoise {
         ) {
             val bot = if (param.back) -1 else 1
             val z = 0.0
-            val angleV = if (param.orientation == Orientation.Vertical) (angle + Math.PI / 2) else angle
+            val angleV =
+                if (param.orientation == Orientation.Vertical) (angle + Math.PI / 2) else angle
 
-            if (!zig.enable){
+            if (!zig.enable) {
                 points.add(Vec2(width * bot, z).rotate(angleV) + origin)
                 return
             }
@@ -456,7 +556,6 @@ class Tortoise {
                     return
                 }
             }
-
 
 
             val distance = deltaV - zigzagWidthV
@@ -495,7 +594,7 @@ class Tortoise {
             param: DrawingParam,
             boardWeight: Double
         ): List<IFigure> {
-            if (!zig.enable){
+            if (!zig.enable) {
                 return emptyList()
             }
 
@@ -510,7 +609,8 @@ class Tortoise {
                 if (zigzagWidthV < boardWeight) return emptyList()
             }
 
-            val angle = if (param.orientation == Orientation.Vertical) (angle + Math.PI / 2) else angle
+            val angle =
+                if (param.orientation == Orientation.Vertical) (angle + Math.PI / 2) else angle
 
             val bot = if (param.back) -1 else 1
             val distance = deltaV - zigzagWidthV
@@ -630,6 +730,50 @@ class Tortoise {
                 )
                 return bz
             }
+        }
+
+        fun zigFigure(
+             hz : Double,
+             bz1x : Double,
+             bz2x : Double,
+             bz1y : Double,
+             bz2y : Double,
+             board: Double,
+             zigWidth: Double,
+        ):IFigure{
+            return FigureList(
+                listOf(
+                    FigureLine(
+                        Vec2(0.0, 0.0),
+                        Vec2(0.0, hz)
+                    ),
+                    FigureBezier(
+                        listOf(
+                            Vec2(0.0, hz),
+                            Vec2(-bz1x, hz+bz1y),
+                            Vec2(-bz2x, board+bz2y),
+                            Vec2(0.0, board),
+                        )
+                    ),
+                    FigureLine(
+                        Vec2(0.0, board),
+                        Vec2(zigWidth, board),
+
+                        ),
+                    FigureBezier(
+                        listOf(
+                            Vec2(zigWidth, hz),
+                            Vec2(zigWidth + bz1x, hz+bz1y),
+                            Vec2(zigWidth + bz2x, board+bz2y),
+                            Vec2(zigWidth, board),
+                        )
+                    ),
+                    FigureLine(
+                        Vec2(zigWidth, hz),
+                        Vec2(zigWidth, 0.0)
+                    )
+                )
+            )
         }
     }
 }

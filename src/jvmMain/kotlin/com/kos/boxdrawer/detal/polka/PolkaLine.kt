@@ -195,8 +195,8 @@ class PolkaLine(
             return sb.toAnnotatedString()
         }
 
-        fun parsePolka(a: String, useAlgorithms: Array<String>?): TortoiseAlgorithm {
-            val items: TurtoiseParserStackItem = TortoiseParser.parseSkobki(a)
+        fun parsePolka(items: TurtoiseParserStackItem, useAlgorithms: Array<String>?): TortoiseAlgorithm {
+
 
             val polka = PolkaLine(
                 useAlgorithms = useAlgorithms,

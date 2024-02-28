@@ -45,7 +45,7 @@ class DxfFigureDrawer(
     }
 
     override fun drawSpline(points: List<Vec2>) {
-        val m = IntArray(points.size) { 1 }
+        val m = IntArray(points.size) { i -> i/points.size }
         val controls = DoubleArray(points.size * 2)
 
         for (i in points.indices) {

@@ -47,8 +47,7 @@ class RobotLine(
             return sb.toAnnotatedString()
         }
 
-        fun parseRobot(a: String, useAlgorithms: Array<String>?): TortoiseAlgorithm {
-            val items: TurtoiseParserStackItem = TortoiseParser.parseSkobki(a)
+        fun parseRobot(items: TurtoiseParserStackItem, useAlgorithms: Array<String>?): TortoiseAlgorithm {
 
             val result = parseRobot(items, false)
             return RobotLine(result.toList())

@@ -39,53 +39,57 @@ object TortoiseParser {
         return c >= '0' && c <= '9' || c == '-' || c == '+'
     }
 
-    public fun extractTortoiseCommands(line: String): TortoiseAlgorithm {
-        val a = line.split(*sep).filter { it.isNotEmpty() }
-        return if (a.isEmpty()) {
-            TortoiseSimpleAlgorithm("_", listOf<TortoiseCommand>())
-        } else {
-            val f = a.first().split('@')
-            when (f[0]) {
-                "polka" -> PolkaLine.parsePolka(a.drop(1).joinToString(" "), f.drop(1).toTypedArray())
-                "robot" -> RobotLine.parseRobot(a.drop(1).joinToString(" "), f.drop(1).toTypedArray())
-                "box" -> BoxAlgorithm.parseBox(a.drop(1).joinToString(" "), f.drop(1).toTypedArray())
-                else ->
-                    parseSimpleLine(a)
+    public fun extractTortoiseCommands(line: String): Pair<String, TortoiseAlgorithm> {
+        val items: TurtoiseParserStackItem = TortoiseParser.parseSkobki(line)
+
+        val n = items.name
+        return if (n.contains("@")){
+            val f = items.name.split('@')
+            (f.drop(1).lastOrNull()?:"") to when (f[0]){
+                "polka" -> PolkaLine.parsePolka(items, f.drop(1).dropLast(1).toTypedArray())
+                "robot" -> RobotLine.parseRobot(items, f.drop(1).dropLast(1).toTypedArray())
+                "box" -> BoxAlgorithm.parseBox(items, f.drop(1).dropLast(1).toTypedArray())
+                "" -> TortoiseFigureAlgorithm(f.getOrElse(1){"figure"}, items)
+                else -> parseSimpleLine(items)
             }
+        } else {
+            "" to parseSimpleLine(items)
         }
     }
 
-    fun parseSimpleLine(a: List<String>): TortoiseAlgorithm {
+    fun parseSimpleLine(items: TurtoiseParserStackItem): TortoiseAlgorithm {
         val result = mutableListOf<TortoiseCommand>()
 
         var currentCommand = TortoiseCommand.TURTOISE_MOVE
-        var currentValues = mutableListOf<String>()
+        var currentValues = mutableListOf<TurtoiseParserStackItem>()
 
-        for (d in a) {
-            var c = d.first()
-            val sv: Int
-
-            if (isDigit(c)) {
-                c = ' ';
-                sv = 0;
-            } else {
-                sv = 1;
-            }
-
-            val v = d.substring(sv)
-            if (c != ' ' && c != '@') {
-                result.add(TortoiseCommand.create(currentCommand, currentValues))
-
-                currentCommand = c
-                currentValues = mutableListOf<String>()
-            }
-
-            if (v.isNotEmpty()) {
-                currentValues.add(v)
+        items.inner.forEach { item ->
+            when(item){
+                is TurtoiseParserStackArgument -> {
+                    val d = item.argument
+                    if (d.isNotEmpty()){
+                        val c = d.first()
+                        if (c.isDigit() || c =='-'){
+                            currentValues.add(item)
+                        } else {
+                            result.add(TortoiseCommand.createFromItem(currentCommand, currentValues))
+                            currentValues = mutableListOf<TurtoiseParserStackItem>()
+                            val b = d.drop(1)
+                            if (b.isNotEmpty()) {
+                                currentValues.add(TurtoiseParserStackArgument( b))
+                            }
+                            currentCommand = c
+                        }
+                    }
+                }
+                is TurtoiseParserStackBlock -> {
+                    currentValues.add(item)
+                }
+                else -> {}
             }
         }
 
-        result.add(TortoiseCommand.create(currentCommand, currentValues))
+        result.add(TortoiseCommand.createFromItem(currentCommand, currentValues))
 
         return TortoiseSimpleAlgorithm("_", result.toList());
 

@@ -62,23 +62,18 @@ fun DisplayTortoise(displayScale: MutableFloatState, matrix: State<Matrix>, enab
         onDraw = {
             val c = size / 2f
 
-//                this.withTransform(
-//                    {transform(m)
-//                    }
-//                ) {
-            translate(pos.x, pos.y) {
-                this.scale(scale = displayScale.value) {
-                    this.translate(c.width, c.height) {
-                        if (enableMatrix) {
-                            this.withTransform({ transform(matrix.value) }) {
-                                this.drawFigures(figures)
-                            }
-                        } else {
-                            this.drawFigures(figures)
-                        }
+                this.withTransform(
+                   {
+                       translate(pos.x, pos.y)
+                       scale(scale = displayScale.value)
+                       translate(c.width, c.height)
+                       if (enableMatrix) {
+                           transform(matrix.value)
+                       }
                     }
+                ) {
+                    this.drawFigures(figures)
                 }
-            }
         })
 }
 

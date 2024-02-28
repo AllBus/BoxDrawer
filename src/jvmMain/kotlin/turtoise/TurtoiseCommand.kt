@@ -7,6 +7,7 @@ interface TortoiseCommand {
     val command: Char
     val size: Int
     fun take(index: Int, defaultValue: Double, memory: TortoiseMemory): Double
+    fun takeBlock(index:Int): TurtoiseParserStackItem? = null
 
     fun assign(memory: TortoiseMemory) {}
 
@@ -19,7 +20,22 @@ interface TortoiseCommand {
      fun print():String
 
     companion object {
-        fun create(currentCommand: Char, currentValues: MutableList<String>): TortoiseCommand {
+        fun createFromItem(currentCommand: Char, currentValues: List<TurtoiseParserStackItem>): TortoiseCommand {
+            if (currentValues.size == 0) {
+                return ZeroTortoiseCommand(currentCommand)
+            }
+            if (currentValues.size == 1) {
+                val v = currentValues[0]
+                if (v is TurtoiseParserStackArgument) {
+                    return SmallTortoiseCommand(currentCommand, v.argument)
+                }
+            }
+            val b = TurtoiseParserStackBlock(' ')
+            b.addItems(currentValues)
+            return BlockTortoiseCommand(currentCommand,  b)
+        }
+
+        fun create(currentCommand: Char, currentValues: List<String>): TortoiseCommand {
             if (currentValues.size == 0) {
                 return ZeroTortoiseCommand(currentCommand)
             }
@@ -67,7 +83,9 @@ interface TortoiseCommand {
             }
         }
 
-        const val TURTOISE_ZIGZAG = 'z';
+        const val TURTOISE_ZIGZAG = 'z'
+        const val TURTOISE_ZIGZAG_FIGURE = 'Z'
+        const val TURTOISE_FIGURE = 'f';
         const val TURTOISE_VERTICAL = 'v';
         const val TURTOISE_SPLINE = 's';
         const val TURTOISE_RECTANGLE = 'x';

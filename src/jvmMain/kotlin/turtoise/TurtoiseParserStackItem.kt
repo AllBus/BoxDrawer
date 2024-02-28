@@ -15,6 +15,7 @@ abstract class TurtoiseParserStackItem(
     abstract val name :String
     abstract val line:String
 
+    abstract val inner :List<TurtoiseParserStackItem>
     abstract val blocks :List<TurtoiseParserStackItem>
 
     abstract fun get(index: Int): String?
@@ -44,7 +45,11 @@ class TurtoiseParserStackArgument(
 ) : TurtoiseParserStackItem() {
     override fun isArgument() : Boolean = true
 
+
     override val name: String = argument
+
+    override val inner: List<TurtoiseParserStackItem>
+        get() = emptyList()
 
     override val blocks: List<TurtoiseParserStackItem>
         get() = emptyList()
@@ -73,8 +78,8 @@ class TurtoiseParserStackBlock(
 ) : TurtoiseParserStackItem(){
     override fun isArgument() : Boolean = false
 
-    val inner = mutableListOf<TurtoiseParserStackItem>()
-    override val blocks = mutableListOf<TurtoiseParserStackItem>()
+    override val inner = mutableListOf<TurtoiseParserStackItem>()
+    override val blocks = mutableListOf<TurtoiseParserStackBlock>()
 
     override val name get() = inner.firstOrNull()?.argument?:"%%" //?.takeIf { it.isArgument() }?.argument?:""
     override val line: String
@@ -100,6 +105,11 @@ class TurtoiseParserStackBlock(
     fun add(argument: TurtoiseParserStackBlock) {
         inner.add(argument)
         blocks.add(argument)
+    }
+
+    fun addItems(values: List<TurtoiseParserStackItem>){
+        inner.addAll(values)
+        blocks.addAll(values.filterIsInstance<TurtoiseParserStackBlock>())
     }
 
     override fun arguments(): List<String> {
