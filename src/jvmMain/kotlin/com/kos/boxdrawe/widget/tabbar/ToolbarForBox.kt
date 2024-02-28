@@ -38,12 +38,15 @@ fun ToolbarForBox(vm: BoxData) {
     val edgeBL = remember { vm.edgeBL }
     val edgeBR = remember { vm.edgeBR }
     val edgeFR = remember { vm.edgeFR }
+    val bottomRadius = remember { vm.bottomRadius }
+    val edgeRadius = remember { vm.edgeRadius }
 
 
     val zigVariants = listOf(
         ButtonData(PazExt.PAZ_NONE, painterResource("drawable/act_line.png")),
         ButtonData(PazExt.PAZ_HOLE, painterResource("drawable/act_hole.png")),
         ButtonData(PazExt.PAZ_PAZ, painterResource("drawable/act_paz.png")),
+        ButtonData(PazExt.PAZ_OUT, painterResource("drawable/act_outside.png")),
      //   ButtonData(PazExt.PAZ_PAPER, painterResource( "drawable/act_paper.png")),
         //   ButtonData(PazExt.PAZ_BACK, painterResource("drawable/act_paz_in.png")),
     )
@@ -139,6 +142,12 @@ fun ToolbarForBox(vm: BoxData) {
                 NumericUpDown("", "мм", edgeFR, modifier = Modifier.width(80.dp))
             }
 
+            Row(
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ){
+                NumericUpDown("пол", "", bottomRadius, modifier = Modifier.weight(1f))
+                NumericUpDown("стенка", "", edgeRadius, modifier = Modifier.weight(1f))
+            }
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)

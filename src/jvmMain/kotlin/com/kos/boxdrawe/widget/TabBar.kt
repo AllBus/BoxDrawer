@@ -14,11 +14,13 @@ import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.*
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BEZIER
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
+import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BUBLIK
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TOOLS
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
 import com.kos.boxdrawe.widget.tabbar.*
+import kotlinx.coroutines.launch
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
 
@@ -52,12 +54,98 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                 TAB_GRID -> ToolbarForGrid(vm.value.grid)
                 TAB_SOFT -> ToolbarForSoft(vm.value.softRez, { vm.value.tortoise.figures.value })
                 TAB_BEZIER ->  ToolbarForBezier(vm.value.bezier)
+                TAB_BUBLIK ->  ToolbarForBublik(vm.value.bublik)
                 TAB_TOOLS -> ToolbarForTools(vm.value.options)
             }
         }
         Box(
             Modifier.fillMaxWidth().height(1.dp).background(Color.DarkGray)
         )
+    }
+}
+
+@Composable
+fun ToolbarForBublik(vm: BublikData) {
+    val coroutineScope = rememberCoroutineScope()
+
+    var pazPositionLeftTop by remember { vm.pazPositionLeftTop }
+    var pazPositionCenter by remember { vm.pazPositionCenter }
+    var pazPositionLeftBottom by remember { vm.pazPositionLeftBottom }
+    var pazPositionRightTop by remember { vm.pazPositionRightTop }
+    var pazPositionRightBottom by remember { vm.pazPositionRightBottom }
+
+    val radiusBublik = remember { vm.radiusBublik }
+    val radius = remember { vm.radius }
+    val segmentCount = remember { vm.segmentCount }
+    val sideCount = remember { vm.sideCount }
+
+    Row(
+        modifier = TabContentModifier
+    ) {
+        Column(
+            modifier = Modifier.weight(weight = 1f, fill = true)
+        ) {
+            NumericUpDown("Радиус бублика", "мм", radiusBublik)
+            NumericUpDown("Радиус", "мм", radius)
+            NumericUpDown("Число сегментов", "мм", segmentCount)
+            NumericUpDown("Число сторон", "мм", sideCount)
+        }
+        Column(
+            modifier = Modifier.weight(weight = 1f, fill = true)
+        ) {
+            RunCheckBox(
+                checked = pazPositionLeftTop,
+                title = "по левому краю сверху",
+                onCheckedChange = { c ->
+                    pazPositionLeftTop = c
+                    vm.redrawBox()
+                },
+            )
+            RunCheckBox(
+                checked = pazPositionCenter,
+                title = "по центру",
+                onCheckedChange = { c ->
+                    pazPositionCenter = c
+                    vm.redrawBox()
+                },
+            )
+
+            RunCheckBox(
+                checked = pazPositionLeftBottom,
+                title = "по левому краю снизу",
+                onCheckedChange = { c ->
+                    pazPositionLeftBottom = c
+                    vm.redrawBox()
+                },
+            )
+
+            RunCheckBox(
+                checked = pazPositionRightTop,
+                title = "по правому краю сверху",
+                onCheckedChange = { c ->
+                    pazPositionRightTop = c
+                    vm.redrawBox()
+                },
+            )
+
+            RunCheckBox(
+                checked = pazPositionRightBottom,
+                title = "по правому краю снизу",
+                onCheckedChange = { c ->
+                    pazPositionRightBottom = c
+                    vm.redrawBox()
+                },
+            )
+        }
+        Column(
+            modifier = Modifier.weight(weight = 0.5f, fill = true)
+        ) {
+            RunButton("Нарисовать деталь") {
+                coroutineScope.launch {
+                    showFileChooser { f -> vm.save(f) }
+                }
+            }
+        }
     }
 }
 
@@ -115,7 +203,8 @@ object BoxDrawerToolBar{
     const val TAB_GRID = 2
     const val TAB_SOFT = 3
     const val TAB_BEZIER = 4
-    const val TAB_TOOLS = 5
+    const val TAB_BUBLIK = 5
+    const val TAB_TOOLS = 6
 
     val tabs = listOf(
         TabInfo(TAB_BOX, "Коробка"),
@@ -123,6 +212,7 @@ object BoxDrawerToolBar{
         TabInfo(TAB_GRID, "Сетка"),
         TabInfo(TAB_SOFT, "Мягкий рез"),
         TabInfo(TAB_BEZIER, "Безье"),
+        TabInfo(TAB_BUBLIK, "Бублик"),
         TabInfo(TAB_TOOLS, "Инструменты"),
     )
 

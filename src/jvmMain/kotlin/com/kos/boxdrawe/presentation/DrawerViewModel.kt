@@ -14,6 +14,7 @@ class DrawerViewModel {
     val grid = GridData(tools)
     val options = ToolsData(tools)
     val bezier = BezierData(tools)
+    val bublik = BublikData(tools)
     val tabIndex = mutableStateOf(BoxDrawerToolBar.TAB_TORTOISE)
 
 

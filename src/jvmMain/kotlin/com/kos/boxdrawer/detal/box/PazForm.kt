@@ -8,6 +8,7 @@ enum class PazForm {
     BackPaz,
     Flat,
     Paper,
+    Outside,
 }
 
 object PazExt{
@@ -18,6 +19,8 @@ object PazExt{
     val PAZ_BACK = 3
     val PAZ_FLAT = 4
     val PAZ_PAPER = 5
+    val PAZ_OUT = 8
+
     fun intToPaz(pazId:Int):PazForm {
         return when(pazId){
             PAZ_NONE -> PazForm.None
@@ -26,6 +29,7 @@ object PazExt{
             PAZ_BACK -> PazForm.BackPaz
             PAZ_FLAT -> PazForm.Flat
             PAZ_PAPER -> PazForm.Paper
+            PAZ_OUT -> PazForm.Outside
             else -> PazForm.None
         }
     }

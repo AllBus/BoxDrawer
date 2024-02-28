@@ -33,6 +33,7 @@ class BoxData(val tools: ITools) {
             holeWeight = tools.ds().holeWeight,
             topForm = PazExt.intToPaz(selectZigTopId.value),
             bottomForm = PazExt.intToPaz(selectZigBottomId.value),
+            bottomRoundRadius = bottomRadius.decimal,
         )
 
         val boxInfo = BoxInfo(
@@ -107,6 +108,8 @@ class BoxData(val tools: ITools) {
     val edgeBL = NumericTextFieldState(0.0) { redrawBox() }
     val edgeBR = NumericTextFieldState(0.0) { redrawBox() }
     val edgeFR = NumericTextFieldState(0.0) { redrawBox() }
+    val bottomRadius = NumericTextFieldState(0.0) { redrawBox() }
+    val edgeRadius = NumericTextFieldState(0.0) { redrawBox() }
 
 
     val widthZigState = ZigZagState({redrawBox()})

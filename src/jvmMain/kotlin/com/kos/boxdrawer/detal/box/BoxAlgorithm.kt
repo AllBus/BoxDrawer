@@ -141,6 +141,7 @@ class BoxAlgorithm(
                 "back", "b" -> PazForm.BackPaz
                 "flat", "f" -> PazForm.Flat
                 "p", "paper" -> PazForm.Paper
+                "o", "out", "outside" -> PazForm.Outside
                 "", null -> defaultValue
                 else -> PazForm.None
             }
@@ -154,6 +155,7 @@ class BoxAlgorithm(
                 PazForm.BackPaz -> "b"
                 PazForm.Flat -> "f"
                 PazForm.Paper -> "p"
+                PazForm.Outside -> "o"
             }
         }
 
@@ -166,7 +168,8 @@ class BoxAlgorithm(
                     holeTopOffset = 2.0,
                     holeWeight = 0.0,
                     topForm = PazForm.None,
-                    bottomForm = PazForm.Paz
+                    bottomForm = PazForm.Paz,
+                    bottomRoundRadius = 0.0
                 )
             else
                 return WaldParam(
@@ -177,6 +180,7 @@ class BoxAlgorithm(
                     holeBottomOffset = asDouble(block.get(5)),
                     holeTopOffset = asDouble(block.get(6)),
                     holeWeight = asDouble(block.get(7)),
+                    bottomRoundRadius = asDouble(block.get(8)),
                 )
         }
     }

@@ -18,6 +18,7 @@ import com.kos.figure.composition.FigureTranslate
 import com.kos.figure.matrix.Figure3dTransform
 import turtoise.*
 import turtoise.Tortoise.Companion.holes
+import turtoise.Tortoise.Companion.rectangle
 import turtoise.Tortoise.Companion.zigzag
 import vectors.Vec2
 import kotlin.math.min
@@ -82,7 +83,9 @@ object BoxCad {
                             ph,
                             wald.holeWeight
                         )
-                    );
+                    )
+                PazForm.Outside ->
+                    zigzag(points, sp, le, hole, 0.0, ph.copy(reverse = false), boardWeight);
                 else -> {}
             }
         }
@@ -114,6 +117,7 @@ object BoxCad {
 
             when (wald.bottomForm) {
                 PazForm.Paz ->
+
                     zigzag(points, sp, le, hole, 0.0, ph, boardWeight);
 
                 PazForm.Hole ->
@@ -127,7 +131,8 @@ object BoxCad {
                             wald.holeWeight
                         )
                     )
-
+                PazForm.Outside ->
+                    zigzag(points, sp, le, hole, 0.0, ph.copy(reverse = true), boardWeight);
                 else -> {}
             }
         }
@@ -202,6 +207,79 @@ object BoxCad {
         );
 
         return FigurePolyline(points)
+    }
+
+    fun polOutside(
+        width: Double,
+        height: Double,
+        origin: Vec2,
+        zigzagW: ZigzagInfo,
+        zigzagH: ZigzagInfo,
+        boardWeight: Double,
+        roundRadius: Double,
+        holeOffset: Double
+    ): IFigure {
+        val points = mutableListOf<IFigure>()
+
+        val ap = holeOffset+boardWeight
+
+
+        points+= rectangle(
+            origin.x-ap, origin.y-ap,
+            origin.x+width+ap, origin.y+height+ap,
+            roundRadius>0.0, roundRadius
+        )
+
+        points+= holes(
+            origin,
+            height,
+            zigzagH,
+            0.0,
+            DrawingParam(
+                orientation = Orientation.Vertical,
+                reverse = false,
+                back = false,
+            ),
+            boardWeight
+        )
+        points+=holes(
+            origin+Vec2(0.0, height),
+            width,
+            zigzagW,
+            0.0,
+            DrawingParam(
+                orientation = Orientation.Horizontal,
+                reverse = false,
+                back = false,
+            ),
+            boardWeight
+        )
+        points+=holes(
+            origin+Vec2(width, height),
+            height,
+            zigzagH,
+            0.0,
+            DrawingParam(
+                orientation = Orientation.Vertical,
+                reverse = true,
+                back = true,
+            ),
+            boardWeight
+        );
+        points+=holes(
+            origin+Vec2(width, 0.0),
+            width,
+            zigzagW,
+            0.0,
+            DrawingParam(
+                orientation = Orientation.Horizontal,
+                reverse = true,
+                back = true,
+            ),
+            boardWeight
+        );
+
+        return FigureList(points)
     }
 
     /**
@@ -597,12 +675,15 @@ object BoxCad {
 
         if (wald.bottomForm != PazForm.None) {
             resultMap.getOrPut(F_BOTTOM) { mutableListOf() }.add(
-                pol(
-                    width = width - ap,
-                    height = weight - ap,
+                polFigure(
                     origin = Vec2.Zero,
-                    zigzagW = zigW,
-                    zigzagH = zigWe,
+                    pazForm = waldParams.bottomForm,
+                    roundRadius = waldParams.bottomRoundRadius,
+                    holeOffset = waldParams.holeBottomOffset,
+                    width = width -ap,
+                    weight = weight -ap,
+                    zigWidth = zigW,
+                    zigWeight = zigWe,
                     boardWeight = bw
                 )
             );
@@ -610,15 +691,18 @@ object BoxCad {
 
         if (wald.topForm != PazForm.None) {
             resultMap.getOrPut(F_TOP) { mutableListOf() }.add(
-                pol(
-                    width = width - ap,
-                    height = weight - ap,
+                polFigure(
                     origin = Vec2.Zero,
-                    zigzagW = zigW,
-                    zigzagH = zigWe,
+                    pazForm = waldParams.topForm,
+                    roundRadius = waldParams.bottomRoundRadius,
+                    holeOffset = waldParams.holeTopOffset,
+                    width = width -ap,
+                    weight = weight -ap,
+                    zigWidth = zigW,
+                    zigWeight = zigWe,
                     boardWeight = bw
                 )
-            );
+            )
         }
 
         polki.calcList.forEachIndexed { index, polka ->
@@ -687,6 +771,38 @@ object BoxCad {
             EOutVariant.VOLUME -> figure3dTransform(rm, boxInfo, wald, polki, bw)
         }
 
+    }
+
+    private fun polFigure(
+        origin: Vec2,
+        pazForm: PazForm,
+        roundRadius:Double,
+        holeOffset:Double,
+        width: Double,
+        weight: Double,
+        zigWidth: ZigzagInfo,
+        zigWeight: ZigzagInfo,
+        boardWeight: Double
+    ) = if (pazForm == PazForm.Outside) {
+        polOutside(
+            width = width ,
+            height = weight ,
+            origin = origin,
+            zigzagW = zigWidth,
+            zigzagH = zigWeight,
+            boardWeight = boardWeight,
+            roundRadius = roundRadius,
+            holeOffset = holeOffset,
+        )
+    } else {
+        pol(
+            width = width,
+            height = weight,
+            origin = origin,
+            zigzagW = zigWidth,
+            zigzagH = zigWeight,
+            boardWeight = boardWeight
+        )
     }
 
     private fun appendProgram(

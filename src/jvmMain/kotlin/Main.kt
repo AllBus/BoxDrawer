@@ -32,6 +32,7 @@ import com.google.gson.GsonBuilder
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BEZIER
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
+import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BUBLIK
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
@@ -95,6 +96,7 @@ fun App(vm: State<DrawerViewModel>) {
     val figures by remember { vm.value.tortoise.figures }
 
     val boxFigures by remember { vm.value.box.figures }
+    val bublikFigures by remember { vm.value.bublik.figures }
 
     val displayScale = remember { mutableFloatStateOf(2.0f) }
 
@@ -141,6 +143,9 @@ fun App(vm: State<DrawerViewModel>) {
                         DisplayGrid(vm.value.grid)
                     }
 
+                    TAB_BUBLIK -> {
+                        DisplayTortoise(displayScale, matrix, false, bublikFigures)
+                    }
                     TAB_BEZIER -> DisplayBezier(displayScale, vm.value.bezier)
                     else -> {
 
