@@ -19,6 +19,7 @@ class BoxData(val tools: ITools) {
 
     val selectZigTopId = mutableIntStateOf(PazExt.PAZ_NONE)
     val selectZigBottomId = mutableIntStateOf(PazExt.PAZ_HOLE)
+    val selectZigEdgeId = mutableIntStateOf(PazExt.PAZ_PAZ)
 
     fun boxFigures(line: String, outVariant: BoxCad.EOutVariant): BoxAlgorithm {
 
@@ -30,10 +31,16 @@ class BoxData(val tools: ITools) {
             bottomOffset = bottomOffset.decimal,//tools.ds().holeOffset,
             holeBottomOffset = bottomHoleOffset.decimal,
             holeTopOffset = topHoleOffset.decimal,
+            holeEdgeOffset = edgeHoleOffset.decimal,
             holeWeight = tools.ds().holeWeight,
             topForm = PazExt.intToPaz(selectZigTopId.value),
             bottomForm = PazExt.intToPaz(selectZigBottomId.value),
+            edgeForm = PazExt.intToPaz(selectZigEdgeId.value),
             bottomRoundRadius = bottomRadius.decimal,
+            topRoundRadius = topRadius.decimal,
+            edgeTopRoundRadius = edgeRadius.decimal,
+            zigFigure = null,
+            zagFigure = null,
         )
 
         val boxInfo = BoxInfo(
@@ -99,6 +106,7 @@ class BoxData(val tools: ITools) {
     val bottomOffset = NumericTextFieldState(2.0) { redrawBox() }
     val topHoleOffset = NumericTextFieldState(2.0) { redrawBox() }
     val bottomHoleOffset = NumericTextFieldState(2.0) { redrawBox() }
+    val edgeHoleOffset = NumericTextFieldState(2.0) { redrawBox() }
     var insideChecked = mutableStateOf(false)
     var polkiInChecked = mutableStateOf(false)
     var alternative = mutableStateOf(true)
@@ -109,6 +117,7 @@ class BoxData(val tools: ITools) {
     val edgeBR = NumericTextFieldState(0.0) { redrawBox() }
     val edgeFR = NumericTextFieldState(0.0) { redrawBox() }
     val bottomRadius = NumericTextFieldState(0.0) { redrawBox() }
+    val topRadius = NumericTextFieldState(0.0) { redrawBox() }
     val edgeRadius = NumericTextFieldState(0.0) { redrawBox() }
 
 

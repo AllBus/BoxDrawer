@@ -196,7 +196,10 @@ object TortoiseParser {
                 "     delta - расстояние между началами двух зигзагов,\n" +
                 "     zigWidth- длина одноо зигзага,\n" +
                 "     board - толщина доски"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_ZIGZAG_FIGURE, "w delta zigWidth board (@program (args)?)", "Рисовать зигзаги формы описаной в строке @program" ))
         sb.append(helpName(TortoiseCommand.TURTOISE_BEZIER, "(tx1 ty1 tx2 ty2 ex ey)*", "Рисовать линию безье из текущей позиции"))
+        sb.append(helpName(TortoiseCommand.TURTOISE_FIGURE, "f (@program (args)?)", "Рисовать фигуру которая записана в строке начинающейся с @program "))
+
         sb.append(helpName(TortoiseCommand.TURTOISE_LOOP, "c commands* <", "выполнить c раз команды между > <"))
         sb.append(helpName(TortoiseCommand.TURTOISE_MEMORY_ASSIGN, "var arg*", "присвоить переменной var сумму значений arg"))
         sb.append(helpName("", "@var", "подставить значение переменной var"))

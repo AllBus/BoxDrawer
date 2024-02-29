@@ -280,9 +280,6 @@ class Tortoise() {
                     val zigWidth = com.take(2, state.zigWidth, memory)
                     val board = com.take(3, ds.boardWeight, memory)
 
-
-
-
                     val block = com.takeBlock(0)
                     val f = figureList(block, ds, TortoiseState(), maxStackSize, memory, runner)
                     val zf = f?: zigFigure(
@@ -294,9 +291,6 @@ class Tortoise() {
                         board = board,
                         zigWidth = zigWidth
                     )
-
-
-
 
                     val width = com.value(memory)
                     res += ZigConstructor.zigZag(

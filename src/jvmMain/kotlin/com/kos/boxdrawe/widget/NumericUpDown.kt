@@ -31,7 +31,9 @@ import com.kos.boxdrawe.themes.ThemeColors
 fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
                   fieldMaxWidth: Dp = 160.dp,
                   modifier: Modifier = Modifier,
-                  enabled : Boolean = true) {
+                  enabled : Boolean = true,
+                  titleWeight: Boolean = true,
+                  ) {
     //var text by remember { mutableStateOf(title) }
     Row(
         modifier = modifier.padding(2.dp),
@@ -42,7 +44,7 @@ fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
             Text(
                 text = title,
                 fontSize = LocalTextStyle.current.fontSize,
-                modifier = Modifier.align(Alignment.CenterVertically).weight(1f),
+                modifier = if (titleWeight) Modifier.align(Alignment.CenterVertically).weight(1f) else Modifier,
                 softWrap = false,
                 textAlign = TextAlign.End,
             )

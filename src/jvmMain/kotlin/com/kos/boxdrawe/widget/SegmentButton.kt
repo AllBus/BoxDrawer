@@ -2,6 +2,7 @@ package com.kos.boxdrawe.widget
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Button
@@ -38,6 +39,7 @@ fun SegmentButton(
                 border = if (btn.id == selectId.value) {
                     BorderStroke(4.dp, MaterialTheme.colors.onPrimary)
                 } else null,
+                contentPadding = PaddingValues(0.dp)
             ){
                 Icon(painter = btn.icon,
                     contentDescription = null,

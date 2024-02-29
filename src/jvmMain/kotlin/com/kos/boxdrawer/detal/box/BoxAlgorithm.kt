@@ -2,16 +2,24 @@ package com.kos.boxdrawer.detal.box
 
 import androidx.compose.ui.text.AnnotatedString
 import com.kos.figure.IFigure
-import turtoise.*
+import turtoise.DrawerSettings
+import turtoise.TortoiseAlgorithm
+import turtoise.TortoiseBlock
+import turtoise.TortoiseParser
 import turtoise.TortoiseParser.asDouble
+import turtoise.TortoiseRunner
+import turtoise.TortoiseState
+import turtoise.TurtoiseParserStackBlock
+import turtoise.TurtoiseParserStackItem
+import turtoise.ZigzagInfo
 import turtoise.memory.TortoiseMemory
 
 class BoxAlgorithm(
     val boxInfo: BoxInfo,
-    val zigs :ZigInfoList,
+    val zigs: ZigInfoList,
     val wald: WaldParam,
-    val polki : List<Polka>,
-    val outVariant:BoxCad.EOutVariant,
+    val polki: List<Polka>,
+    val outVariant: BoxCad.EOutVariant,
     val polkiIn: Boolean,
 ) : TortoiseAlgorithm {
     override fun commands(name: String, ds: DrawerSettings): List<TortoiseBlock> {
@@ -33,7 +41,7 @@ class BoxAlgorithm(
         val bwe = boxInfo.weight - ds.boardWeight * 2
         val upWidth = if (polkiIn) ds.boardWeight else 0.0
 
-        val polkiSort = CalculatePolka.calculatePolki(polki,  bwi,bwe, upWidth)
+        val polkiSort = CalculatePolka.calculatePolki(polki, bwi, bwe, upWidth)
 
         polkiSort.zigPolkaH = zigs.zigPolka
         polkiSort.zigPolkaPol = zigs.zigPolkaPol
@@ -51,13 +59,13 @@ class BoxAlgorithm(
         )
     }
 
-    fun commandLine():String{
+    fun commandLine(): String {
         val p = polki.joinToString(" ", "(p ", ")") { po ->
             po.commandLine()
         }
 
-        return "box@ ${boxInfo.commandLine()} ${if (polkiIn) 1 else 0} ${outVariantName(outVariant)} ${zigs.commandLine()}"+
-                " (w ${wald.commandLine()}) " + (if (polki.isNotEmpty()) p else "")
+        return "box@ ${boxInfo.commandLine()} ${if (polkiIn) 1 else 0} ${outVariantName(outVariant)} ${zigs.commandLine()}" +
+                "(w ${wald.commandLine()}) " + (if (polki.isNotEmpty()) p else "")
     }
 
     companion object {
@@ -77,14 +85,18 @@ class BoxAlgorithm(
 
             return sb.toAnnotatedString()
         }
-        fun parseBox(items: TurtoiseParserStackItem, useAlgorithms: Array<String>?): TortoiseAlgorithm {
+
+        fun parseBox(
+            items: TurtoiseParserStackItem,
+            useAlgorithms: Array<String>?
+        ): TortoiseAlgorithm {
 
             val (polki, other) = items.blocks.partition { it.name.startsWith("p") }
             val (zig, other2) = other.partition { it.name.startsWith("z") }
             val waldBlock = other2.find { it.name.startsWith("w") }
 
-            val polkiList =  polki.flatMap {
-                it.blocks.map { line -> CalculatePolka.polka(line)  }
+            val polkiList = polki.flatMap {
+                it.blocks.map { line -> CalculatePolka.polka(line) }
             }
 
             val zigs = ZigInfoList(
@@ -99,21 +111,22 @@ class BoxAlgorithm(
                 1 else 0
 
             return BoxAlgorithm(
-                boxInfo =    BoxInfo(
-                    width = asDouble(items.get(0+ind)),
-                    weight = asDouble(items.get(1+ind)),
-                    height = asDouble(items.get(2+ind)),
+                boxInfo = BoxInfo(
+                    width = asDouble(items.get(0 + ind)),
+                    weight = asDouble(items.get(1 + ind)),
+                    height = asDouble(items.get(2 + ind)),
                 ),
                 zigs = zigs,
                 wald = waldInfo(waldBlock),
                 polki = polkiList,
-                outVariant = parseOutVariant(items.get(4+ind)),
-                polkiIn = asDouble(items.get(3+ind))>0.1,
+                outVariant = parseOutVariant(items.get(4 + ind)),
+                polkiIn = asDouble(items.get(3 + ind)) > 0.1,
             )
         }
 
-        fun zigInfo(block: TurtoiseParserStackItem?
-        ):ZigzagInfo{
+        fun zigInfo(
+            block: TurtoiseParserStackItem?
+        ): ZigzagInfo {
             return if (block == null)
                 ZigzagInfo(width = 15.0, delta = 35.0)
             else
@@ -125,8 +138,8 @@ class BoxAlgorithm(
                 )
         }
 
-        fun parseOutVariant(text:String?): BoxCad.EOutVariant{
-            return when (text?.lowercase()){
+        fun parseOutVariant(text: String?): BoxCad.EOutVariant {
+            return when (text?.lowercase()) {
                 "a" -> BoxCad.EOutVariant.ALTERNATIVE
                 "c" -> BoxCad.EOutVariant.COLUMN
                 "v" -> BoxCad.EOutVariant.VOLUME
@@ -134,16 +147,16 @@ class BoxAlgorithm(
             }
         }
 
-        fun outVariantName(variant:BoxCad.EOutVariant):String{
-            return when (variant){
+        fun outVariantName(variant: BoxCad.EOutVariant): String {
+            return when (variant) {
                 BoxCad.EOutVariant.ALTERNATIVE -> "a"
-                BoxCad.EOutVariant.COLUMN ->  "c"
+                BoxCad.EOutVariant.COLUMN -> "c"
                 BoxCad.EOutVariant.VOLUME -> "v"
             }
         }
 
-        fun parsePazForm(text:String?, defaultValue: PazForm):PazForm{
-            return when (text?.lowercase()){
+        fun parsePazForm(text: String?, defaultValue: PazForm): PazForm {
+            return when (text?.lowercase()) {
                 "hole", "h" -> PazForm.Hole
                 "zig", "zag", "zigzag", "paz", "z" -> PazForm.Paz
                 "back", "b" -> PazForm.BackPaz
@@ -155,8 +168,8 @@ class BoxAlgorithm(
             }
         }
 
-        fun pazName(paz: PazForm):String {
-            return when(paz){
+        fun pazName(paz: PazForm): String {
+            return when (paz) {
                 PazForm.None -> "n"
                 PazForm.Paz -> "z"
                 PazForm.Hole -> "h"
@@ -168,7 +181,9 @@ class BoxAlgorithm(
         }
 
         fun waldInfo(block: TurtoiseParserStackItem?): WaldParam {
-            if (block == null)
+            if (block is TurtoiseParserStackBlock)
+                return WaldParam.from(block)
+            else
                 return WaldParam(
                     topOffset = 0.0,
                     bottomOffset = 0.0,
@@ -177,18 +192,13 @@ class BoxAlgorithm(
                     holeWeight = 0.0,
                     topForm = PazForm.None,
                     bottomForm = PazForm.Paz,
-                    bottomRoundRadius = 0.0
-                )
-            else
-                return WaldParam(
-                    bottomForm = parsePazForm(block.get(1), PazForm.Paz),
-                    topForm = parsePazForm(block.get(2),PazForm.None),
-                    bottomOffset = asDouble(block.get(3)),
-                    topOffset = asDouble(block.get(4)),
-                    holeBottomOffset = asDouble(block.get(5)),
-                    holeTopOffset = asDouble(block.get(6)),
-                    holeWeight = asDouble(block.get(7)),
-                    bottomRoundRadius = asDouble(block.get(8)),
+                    edgeForm = PazForm.Paz,
+                    bottomRoundRadius = 0.0,
+                    topRoundRadius = 0.0,
+                    edgeTopRoundRadius = 0.0,
+                    holeEdgeOffset = 0.0,
+                    zigFigure = null,
+                    zagFigure = null,
                 )
         }
     }
@@ -200,12 +210,12 @@ data class ZigInfoList(
     val zigH: ZigzagInfo,
     val zigPolka: ZigzagInfo,
     val zigPolkaPol: ZigzagInfo,
-){
-    fun commandLine():String{
-        return "(z ${zigW.commandLine()}) "+
-        "(z ${zigWe.commandLine()}) "+
-        "(z ${zigH.commandLine()}) "+
-        "(z ${zigPolka.commandLine()}) "+
-        "(z ${zigPolkaPol.commandLine()})"
+) {
+    fun commandLine(): String {
+        return "(z ${zigW.commandLine()}) " +
+                "(z ${zigWe.commandLine()}) " +
+                "(z ${zigH.commandLine()}) " +
+                "(z ${zigPolka.commandLine()}) " +
+                "(z ${zigPolkaPol.commandLine()})"
     }
 }

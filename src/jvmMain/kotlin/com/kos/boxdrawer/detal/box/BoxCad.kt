@@ -34,10 +34,11 @@ object BoxCad {
     }
 
     fun faceWald(
-        origin: Vec2, width: Double,
+        origin: Vec2,
+        width: Double,
         height: Double,
-
-        zigzag: ZigzagInfo, hole: ZigzagInfo,
+        zigzag: ZigzagInfo,
+        hole: ZigzagInfo,
         param: DrawingParam,
         boardWeight: Double,
         wald: WaldParam,
@@ -218,7 +219,8 @@ object BoxCad {
         zigzagH: ZigzagInfo,
         boardWeight: Double,
         roundRadius: Double,
-        holeOffset: Double
+        holeOffset: Double,
+        wald: WaldParam,
     ): IFigure {
         val points = mutableListOf<IFigure>()
 
@@ -241,7 +243,7 @@ object BoxCad {
                 reverse = false,
                 back = false,
             ),
-            boardWeight
+            wald.holeWeight
         )
         points+=holes(
             origin+Vec2(0.0, height),
@@ -253,7 +255,7 @@ object BoxCad {
                 reverse = false,
                 back = false,
             ),
-            boardWeight
+            wald.holeWeight
         )
         points+=holes(
             origin+Vec2(width, height),
@@ -265,7 +267,7 @@ object BoxCad {
                 reverse = true,
                 back = true,
             ),
-            boardWeight
+            wald.holeWeight
         );
         points+=holes(
             origin+Vec2(width, 0.0),
@@ -277,7 +279,7 @@ object BoxCad {
                 reverse = true,
                 back = true,
             ),
-            boardWeight
+            wald.holeWeight
         );
 
         return FigureList(points)
@@ -685,7 +687,8 @@ object BoxCad {
                     weight = weight -ap,
                     zigWidth = zigW,
                     zigWeight = zigWe,
-                    boardWeight = bw
+                    boardWeight = bw,
+                    wald = wald
                 )
             );
         }
@@ -695,13 +698,14 @@ object BoxCad {
                 polFigure(
                     origin = Vec2.Zero,
                     pazForm = waldParams.topForm,
-                    roundRadius = waldParams.bottomRoundRadius,
+                    roundRadius = waldParams.topRoundRadius,
                     holeOffset = waldParams.holeTopOffset,
                     width = width -ap,
                     weight = weight -ap,
                     zigWidth = zigW,
                     zigWeight = zigWe,
-                    boardWeight = bw
+                    boardWeight = bw,
+                    wald = wald
                 )
             )
         }
@@ -783,7 +787,8 @@ object BoxCad {
         weight: Double,
         zigWidth: ZigzagInfo,
         zigWeight: ZigzagInfo,
-        boardWeight: Double
+        boardWeight: Double,
+        wald: WaldParam,
     ) = if (pazForm == PazForm.Outside) {
         polOutside(
             width = width ,
@@ -794,6 +799,7 @@ object BoxCad {
             boardWeight = boardWeight,
             roundRadius = roundRadius,
             holeOffset = holeOffset,
+            wald = wald,
         )
     } else {
         pol(

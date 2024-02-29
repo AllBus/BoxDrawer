@@ -80,6 +80,29 @@ class BezierData(val tools: Tools) {
         redraw()
     }
 
+    fun newBezier(line:String){
+         var pred = Vec2.Zero
+        println(line)
+         val p = line
+            .split(' ', ',', ';', '(', ')', '[', ']', ':' )
+            .filter { it.isNotEmpty() }
+            .mapNotNull {
+                println(it)
+                it.toDoubleOrNull()
+            }
+            .windowed( 2, 2){ l -> Vec2(l[0], l[1])  }
+            .windowed(3,3){ l->
+                val r = l.map {
+                    it+pred
+                }
+                pred =  r.last()
+                println(r)
+                r
+            }.flatten()
+        cList.value = listOf(Vec2.Zero)+p
+        redraw()
+    }
+
     fun movePoint(index: Int, newPosition: Vec2) {
         val r = c1.value
         if (index >= 0 && index < r.size) {

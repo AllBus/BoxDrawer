@@ -61,7 +61,7 @@ class BublikCad {
 
         val r2 = radius * cos(Math.PI / sideCount)
         val list = mutableListOf<Vec2>()
-        for (i in 0..sideCount) {
+        for (i in 0..< sideCount) {
             val alpha = Math.PI * 2 * i / sideCount
             val delta = Math.PI * 2 * (i + 0.5) / sideCount
             val sy = sin(alpha)
@@ -73,13 +73,12 @@ class BublikCad {
                 m3.rotateZ(((delta - Math.PI / 2)*180/ Math.PI).toFloat());
 
             list.addAll(
-
                 listOf(
-                    m3 * Vec3(zig2, r2, 1.0),
-                    m3 * Vec3(zig2, r2 + zihe, 1.0),
-                    m3 * Vec3(-zig2, r2 + zihe, 1.0),
                     m3 * Vec3(-zig2, r2, 1.0),
-                ).map { v3 -> Vec2(v3.x, v3.y) + offset }
+                    m3 * Vec3(-zig2, r2 + zihe, 1.0),
+                    m3 * Vec3(zig2, r2 + zihe, 1.0),
+                    m3 * Vec3(zig2, r2, 1.0),
+                ).map { v3 -> Vec2(-v3.x, v3.y) + offset }
             )
         }
         return FigurePolyline(list, true)
@@ -126,7 +125,7 @@ class BublikCad {
                 m3 * Vec3(-zig2, -zihe, 1.0),
                 m3 * Vec3(zig2, -zihe, 1.0),
                 m3 * Vec3(zig2, 0.0, 1.0),
-            ).map{v3 -> Vec2(v3.x, v3.y) + oxy}, true))
+            ).map{v3 -> Vec2(-v3.x, v3.y) + oxy}, true))
 
             oxy = (cxy - exy) * (dist + zig2) / edge + offset + exy;
 
@@ -135,13 +134,12 @@ class BublikCad {
                 m3 * Vec3(-zig2, -zihe, 1.0),
                 m3 * Vec3(zig2, -zihe, 1.0),
                 m3 * Vec3(zig2, 0.0, 1.0),
-            ).map{v3 -> Vec2(v3.x, v3.y) + oxy}, true))
+            ).map{v3 -> Vec2(-v3.x, v3.y) + oxy}, true))
         }
 
         list.add(FigureCircle(offset, radius - zihe - drawerSettings.holeOffset))
         return list
     }
-
 
     private fun trapecija(
         offset: Vec2,
