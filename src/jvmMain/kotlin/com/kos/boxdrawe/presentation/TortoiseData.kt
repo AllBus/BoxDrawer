@@ -41,9 +41,10 @@ class TortoiseData(val tools: ITools) {
         }
 
         val (c, a) = f.partition { it.first == "" }
+        val k = tools.algorithms()
         return TortoiseProgram(
             commands = c.map { it.second },
-            algorithms = a.toMap()
+            algorithms = (k+a).toMap()
         )
     }
 

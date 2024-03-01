@@ -1,18 +1,25 @@
 package com.kos.boxdrawe.widget.tabbar
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.ToolsData
+import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.TabContentModifier
 
@@ -24,6 +31,7 @@ fun ToolbarForTools(vm: ToolsData) {
     val holeDrop  = remember { vm.holeDrop }
     val holeDropHeight  = remember { vm.holeDropHeight }
     val holeOffset = remember { vm.holeOffset }
+    val algs = remember { vm.tools.figureList }
 
     Row(
         modifier = TabContentModifier
@@ -66,6 +74,22 @@ fun ToolbarForTools(vm: ToolsData) {
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp),
                     ) {
                         Text(item.name)
+                    }
+                }
+            }
+        }
+        Column(
+            modifier = Modifier.weight(weight = 1f, fill = true)
+        ) {
+            Label("Фигуры")
+            LazyColumn(
+               // verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                items(algs.value){ (name, a) ->
+                    ListItem(
+                        Modifier.height(30.dp).border(1.dp, MaterialTheme.colors.primaryVariant.copy(alpha = 0.2f))
+                    ) {
+                        Text(name)
                     }
                 }
             }

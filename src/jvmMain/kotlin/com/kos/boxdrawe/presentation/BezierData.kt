@@ -51,7 +51,6 @@ class BezierData(val tools: Tools) {
     }
 
     fun redraw() {
-
         figure.value = FigureBezier(
             c1.value
         )

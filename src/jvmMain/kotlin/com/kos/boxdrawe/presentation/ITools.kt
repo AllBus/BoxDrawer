@@ -11,14 +11,19 @@ import nl.adaptivity.xmlutil.serialization.XML
 import turtoise.DrawerSettings
 import turtoise.DrawerSettingsList
 import turtoise.FullSettings
+import turtoise.TortoiseAlgorithm
+import turtoise.TortoiseParser
 import java.awt.BasicStroke
 import java.awt.Color
+import java.io.File
 import java.io.FileWriter
 
 interface ITools {
     fun ds(): DrawerSettings
 
     fun saveFigures(fileName: String, figures: IFigure)
+
+    fun algorithms(): List<Pair<String, TortoiseAlgorithm>>
 }
 
 class Tools() : ITools {
@@ -29,11 +34,16 @@ class Tools() : ITools {
 
     val settingsList = mutableStateOf<DrawerSettingsList>(DrawerSettingsList(emptyList()))
 
+    val figureList = mutableStateOf<List<Pair<String, TortoiseAlgorithm>>>( emptyList() )
+
     override fun ds(): DrawerSettings {
 
         return drawingSettings.value
     }
 
+    override fun algorithms(): List<Pair<String, TortoiseAlgorithm>> {
+        return figureList.value
+    }
 
     fun loadSettings(){
         println("loadSettings")
@@ -43,6 +53,23 @@ class Tools() : ITools {
             settingsList.value = settings.properties
             selectSettings(settingsList.value.group.firstOrNull()?: DrawerSettings())
 
+        }
+
+
+        val algorithms = File("./settings/figures.txt")
+        println(algorithms.absolutePath)
+        if (algorithms.exists()){
+            try{
+
+                figureList.value =
+                    algorithms
+                        .readLines(Charsets.UTF_8)
+                        .map { TortoiseParser.extractTortoiseCommands(it) }
+            }catch (
+                e : Throwable
+            ){
+
+            }
         }
     }
 
