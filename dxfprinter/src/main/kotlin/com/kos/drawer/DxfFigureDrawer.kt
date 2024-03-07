@@ -6,7 +6,7 @@ import vectors.Matrix
 import vectors.Vec2
 import java.awt.Color
 import java.awt.geom.AffineTransform
-import java.util.*
+import java.util.Stack
 import kotlin.math.PI
 
 class DxfFigureDrawer(
@@ -18,6 +18,7 @@ class DxfFigureDrawer(
     override fun drawLine(a: Vec2, b: Vec2) {
         g.drawLine(a.x, a.y, b.x, b.y)
     }
+
     override fun drawRect(leftTop: Vec2, size: Vec2) {
         g.drawRect(leftTop.x, leftTop.y, size.x, size.y)
     }
@@ -36,7 +37,13 @@ class DxfFigureDrawer(
         }
     }
 
-    override fun drawArc(center: Vec2, radius: Double, radiusMinor: Double, startAngle: Double, endAngle: Double) {
+    override fun drawArc(
+        center: Vec2,
+        radius: Double,
+        radiusMinor: Double,
+        startAngle: Double,
+        endAngle: Double
+    ) {
         drawArc(g, center, radius, radiusMinor, startAngle, endAngle)
     }
 
@@ -45,7 +52,7 @@ class DxfFigureDrawer(
     }
 
     override fun drawSpline(points: List<Vec2>) {
-        val m = IntArray(points.size) { i -> i/points.size }
+        val m = IntArray(points.size) { i -> i / points.size }
         val controls = DoubleArray(points.size * 2)
 
         for (i in points.indices) {
@@ -69,11 +76,11 @@ class DxfFigureDrawer(
     }
 
     override fun rotate(degrees: Double, pivot: Vec2) {
-        g.rotate(degrees* PI /180.0, pivot.x, pivot.y)
+        g.rotate(degrees * PI / 180.0, pivot.x, pivot.y)
     }
 
     override fun restore() {
-        if (transforms.isNotEmpty()){
+        if (transforms.isNotEmpty()) {
             g.transform = transforms.pop()
         }
     }
@@ -108,13 +115,12 @@ class DxfFigureDrawer(
 
     private fun bezierPoints(g: DXFGraphics, points: List<Vec2>) {
         if (points.isNotEmpty()) {
-            for (r in 1..points.size - 3 step 3) {
-                val a = points[r - 1]
-                val b = points[r]
-                val c = points[r + 1]
-                val d = points[r + 2]
-                g.drawBezier(doubleArrayOf(a.x, a.y, b.x, b.y, c.x, c.y, d.x, d.y))
+            val arr = DoubleArray(points.size * 2)
+            points.forEachIndexed { index, vec2 ->
+                arr[index * 2] = vec2.x
+                arr[index * 2 + 1] = vec2.y
             }
+            g.drawBezier(arr)
         }
     }
 

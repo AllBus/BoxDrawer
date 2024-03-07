@@ -4,11 +4,11 @@ import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
 import vectors.Vec2
 
-class FigureBezierList(val points : List<List<Vec2>>): Figure() {
+class FigureBezierList(val points: List<List<Vec2>>) : Figure() {
 
     constructor(
-        a: Vec2, b : Vec2, c: Vec2, d:Vec2
-    ): this(listOf(listOf(a,b,c,d)))
+        a: Vec2, b: Vec2, c: Vec2, d: Vec2
+    ) : this(listOf(listOf(a, b, c, d)))
 
     override fun crop(k: Double, cropSide: CropSide): IFigure {
         val figures = mutableListOf<List<Vec2>>()
@@ -48,7 +48,14 @@ class FigureBezierList(val points : List<List<Vec2>>): Figure() {
     }
 
     override fun translate(translateX: Double, translateY: Double): IFigure {
-        return FigureBezierList(points.map { l -> l.map { p -> Vec2(p.x + translateX, p.y + translateY) } })
+        return FigureBezierList(points.map { l ->
+            l.map { p ->
+                Vec2(
+                    p.x + translateX,
+                    p.y + translateY
+                )
+            }
+        })
     }
 
     override fun rotate(angle: Double): IFigure {
@@ -65,7 +72,26 @@ class FigureBezierList(val points : List<List<Vec2>>): Figure() {
 
     companion object {
         fun simple(beziers: List<FigureBezierList>): FigureBezierList {
-            return FigureBezierList(beziers.flatMap { it.points })
+            val b = beziers.flatMap { it.points }.filter { it.isNotEmpty() }
+            val list = ArrayList<List<Vec2>>()
+
+            var current: List<Vec2>? = null
+
+            for (a in b) {
+                if (current != null) {
+                    if (current.last() == a.first()) {
+                        current = current + a.drop(1)
+                    } else {
+                        list.add(current)
+                        current = a
+                    }
+                } else {
+                    current = a
+                }
+            }
+            current?.let { list.add(it) }
+
+            return FigureBezierList(list)
         }
     }
 }

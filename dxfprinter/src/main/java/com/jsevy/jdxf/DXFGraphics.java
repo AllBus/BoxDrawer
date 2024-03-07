@@ -27,14 +27,39 @@ package com.jsevy.jdxf;
 
 
 import org.jetbrains.annotations.NotNull;
-import vectors.Vec2;
 
-import javax.swing.text.DefaultCaret;
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.Paint;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.RenderingHints.Key;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
+import java.awt.geom.CubicCurve2D;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D;
+import java.awt.geom.QuadCurve2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RectangularShape;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
@@ -46,6 +71,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+
+import javax.swing.text.DefaultCaret;
+
+import vectors.Vec2;
 
 
 /**
@@ -1743,8 +1772,25 @@ public class DXFGraphics extends Graphics2D {
 
     public void drawBezier(double[] controlPoints) {
         graphicsMatrix.transform(controlPoints, 0, controlPoints, 0, controlPoints.length / 2);
-        DXFSpline spline = new DXFSpline(3, controlPoints, bezierKnots, this);
+        DXFSpline spline = new DXFSpline(3, controlPoints, bezierKnotsFor(controlPoints.length/2), this);
         dxfDocument.addEntity(spline);
+    }
+
+    private double[] bezierKnotsFor(int size) {
+        if (size <= 4)
+            return bezierKnots;
+        else {
+            int x = 1 + (size-1)/3;
+            double[] s = new double[2 + x*3];
+            s[0] = 0;
+            s[1+x*3] = x-1;
+            for(int i = 0; i<x;i++){
+                s[i*3+1]= i;
+                s[i*3+2]= i;
+                s[i*3+3]= i;
+            }
+            return s;
+        }
     }
 
 
