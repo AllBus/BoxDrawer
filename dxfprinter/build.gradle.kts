@@ -12,5 +12,6 @@ java {
 sourceSets {
     dependencies {
         implementation(project(":figure"))
+        implementation(files("libs/miethxml-ui.jar"))
     }
 }

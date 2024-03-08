@@ -11,10 +11,8 @@ import vectors.Vec2
 class ComposeFigureDrawer(
     private val scope: DrawScope,
     var penColor: Color = Color.Gray,
-    var style: DrawStyle = Stroke(width = 1.0f),
+    var style: Stroke = Stroke(width = 1.0f),
 ) : IFigureGraphics {
-
-    val strokeWidth = 1.0f
 
     override fun drawLine(a: Vec2, b: Vec2) {
         val p = Path()
@@ -31,7 +29,7 @@ class ComposeFigureDrawer(
             points = pointsFrom(points),
             pointMode = PointMode.Polygon,
             color = penColor,
-            strokeWidth = strokeWidth
+            strokeWidth = style.width
         )
     }
 

@@ -63,8 +63,9 @@ object ZigConstructor {
         points+=FigureArray(figure = zigzagFigure,
             startPoint = Vec2(offset, z).rotate(angleV) + origin,
             distance = Vec2(deltaV, 0.0),
-            count,
-            angleV*180/ Math.PI,
+            columns = count,
+            rows = 1,
+            angle = angleV*180/ Math.PI,
 
             )
 

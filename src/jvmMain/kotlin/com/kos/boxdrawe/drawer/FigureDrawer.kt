@@ -9,7 +9,7 @@ import vectors.Vec2
 fun DrawScope.drawFigures(figureLine: IFigure) {
 
     val penColor = Color.Gray
-    val style = Stroke(width = 1.0f)
+    val style = Stroke(width = Stroke.HairlineWidth)
 
     val drawer = ComposeFigureDrawer(this, penColor, style)
     figureLine.draw(drawer)

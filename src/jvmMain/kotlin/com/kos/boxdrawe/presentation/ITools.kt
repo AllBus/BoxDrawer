@@ -5,9 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.res.useResource
 import com.jsevy.jdxf.DXFDocument
 import com.kos.drawer.DxfFigureDrawer
+import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import nl.adaptivity.xmlutil.StAXReader
 import nl.adaptivity.xmlutil.serialization.XML
+import org.jetbrains.skiko.SkikoInput
 import turtoise.DrawerSettings
 import turtoise.DrawerSettingsList
 import turtoise.FullSettings
@@ -35,6 +37,8 @@ class Tools() : ITools {
     val settingsList = mutableStateOf<DrawerSettingsList>(DrawerSettingsList(emptyList()))
 
     val figureList = mutableStateOf<List<Pair<String, TortoiseAlgorithm>>>( emptyList() )
+
+    val currentFigure = mutableStateOf<IFigure>(FigureEmpty)
 
     override fun ds(): DrawerSettings {
 
@@ -99,6 +103,10 @@ class Tools() : ITools {
             fileWriter.flush();
         };
 
+    }
+
+    fun selectFigure(index:Int){
+      //  currentFigure.value = figureList.value.getOrNull(index)?.second.?:FigureEmpty
     }
 
 }

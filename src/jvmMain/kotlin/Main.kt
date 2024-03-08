@@ -35,6 +35,7 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BUBLIK
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
+import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TOOLS
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.tabs
 import com.kos.boxdrawe.widget.TabBar
@@ -97,6 +98,7 @@ fun App(vm: State<DrawerViewModel>) {
 
     val boxFigures by remember { vm.value.box.figures }
     val bublikFigures by remember { vm.value.bublik.figures }
+    val toolsFigures by remember { vm.value.tools.currentFigure }
 
     val displayScale = remember { mutableFloatStateOf(2.0f) }
 
@@ -147,6 +149,14 @@ fun App(vm: State<DrawerViewModel>) {
                         DisplayTortoise(displayScale, matrix, false, bublikFigures)
                     }
                     TAB_BEZIER -> DisplayBezier(displayScale, vm.value.bezier)
+                    TAB_TOOLS -> {
+                        DisplayTortoise(
+                            displayScale,
+                            matrix,
+                            false,
+                            toolsFigures,
+                        )
+                    }
                     else -> {
 
                     }

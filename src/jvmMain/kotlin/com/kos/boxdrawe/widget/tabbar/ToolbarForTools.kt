@@ -14,14 +14,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.ToolsData
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericUpDown
+import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.TabContentModifier
+import com.kos.boxdrawe.widget.showFileChooser
+import com.kos.boxdrawe.widget.showLoadFileChooser
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -32,49 +38,58 @@ fun ToolbarForTools(vm: ToolsData) {
     val holeDropHeight  = remember { vm.holeDropHeight }
     val holeOffset = remember { vm.holeOffset }
     val algs = remember { vm.tools.figureList }
+    val coroutineScope = rememberCoroutineScope()
 
     Row(
         modifier = TabContentModifier
     ) {
-        val expanded = remember { mutableStateOf(false) }
-        val settingsList = remember {vm.tools.settingsList }
-        val selectedMovie = remember { vm.tools.settings }
-
-        ExposedDropdownMenuBox(
-            expanded = expanded.value,
-            onExpandedChange = {
-                expanded.value = !expanded.value
-            }
+        Column(
+            modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            // textfield
-            TextField(
-                modifier = Modifier, // menuAnchor modifier must be passed to the text field for correctness.
-                readOnly = true,
-                value = selectedMovie.value.name,
-                onValueChange = {},
-                label = { Text("Шаблон") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded.value) },
-                colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            )
+            val expanded = remember { mutableStateOf(false) }
+            val settingsList = remember { vm.tools.settingsList }
+            val selectedMovie = remember { vm.tools.settings }
 
-            // menu
-            ExposedDropdownMenu(
+            ExposedDropdownMenuBox(
                 expanded = expanded.value,
-                onDismissRequest = {
-                    expanded.value = false
-                },
+                onExpandedChange = {
+                    expanded.value = !expanded.value
+                }
             ) {
-                // menu items
-                settingsList.value.group.forEach { item ->
-                    DropdownMenuItem(
-                        onClick = {
-                            vm.selectSettings(item)
-                            expanded.value = false
-                        },
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp),
-                    ) {
-                        Text(item.name)
+                // textfield
+                TextField(
+                    modifier = Modifier, // menuAnchor modifier must be passed to the text field for correctness.
+                    readOnly = true,
+                    value = selectedMovie.value.name,
+                    onValueChange = {},
+                    label = { Text("Шаблон") },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded.value) },
+                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                )
+                // menu
+                ExposedDropdownMenu(
+                    expanded = expanded.value,
+                    onDismissRequest = {
+                        expanded.value = false
+                    },
+                ) {
+                    // menu items
+                    settingsList.value.group.forEach { item ->
+                        DropdownMenuItem(
+                            onClick = {
+                                vm.selectSettings(item)
+                                expanded.value = false
+                            },
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp),
+                        ) {
+                            Text(item.name)
+                        }
                     }
+                }
+            }
+            RunButton("Открыть файл") {
+                coroutineScope.launch {
+                    showLoadFileChooser { f -> vm.loadDxf(f) }
                 }
             }
         }

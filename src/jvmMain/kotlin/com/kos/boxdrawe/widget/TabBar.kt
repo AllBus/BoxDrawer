@@ -183,6 +183,16 @@ suspend fun showFileChooser(action: (String)-> Unit) {
     }
 }
 
+suspend fun showLoadFileChooser(action: (String)-> Unit) {
+
+    JFileChooser().apply {
+        this.fileFilter = FileNameExtensionFilter("Autocad (*.dxf)", "dxf")
+        if (showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            action(this.selectedFile.path)
+        }
+    }
+}
+
 @Composable
 @Preview
 fun TabBarPreview(){

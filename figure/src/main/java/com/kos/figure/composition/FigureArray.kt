@@ -11,7 +11,8 @@ class FigureArray(
     val figure: IFigure,
     val startPoint: Vec2,
     val distance: Vec2,
-    val size: Int,
+    val columns: Int,
+    val rows : Int,
     val angle: Double = 0.0,
     val scaleX: Double = 1.0,
     val scaleY: Double = 1.0,
@@ -35,26 +36,32 @@ class FigureArray(
         return BoundingRectangle.union(
             listOfNotNull(
                 figureStart?.rect()?.scale(scaleX, scaleY)?.translate(startPoint),
-                figureEnd?.rect()?.scale(scaleX, scaleY)?.translate(startPoint + distance * (size.toDouble()+u)),
+                figureEnd?.rect()?.scale(scaleX, scaleY)?.translate(startPoint + distance * (columns.toDouble()+u)),
                 r.translate(startPoint + distance * u),
-                r.translate(startPoint + distance * (size.toDouble()+u-1)),
+                r.translate(startPoint + distance * (columns.toDouble()+u-1)),
             )
         )
     }
 
-    val endPoint get() = startPoint + distance * (size + 1).toDouble()
+    val endPoint get() = startPoint + distance * (columns + 1).toDouble()
 
 
     override fun translate(translateX: Double, translateY: Double): IFigure {
-        return FigureArray(figure, startPoint + Vec2(translateX, translateY), distance, size)
+        return FigureArray(figure, startPoint + Vec2(translateX, translateY),
+            distance, columns, rows, angle,
+            scaleX, scaleY, figureStart, figureEnd)
     }
 
     override fun rotate(angle: Double): IFigure {
-        return FigureArray(figure, startPoint, distance, size, angle + this.angle)
+        return FigureArray(figure, startPoint,
+            distance, columns, rows,angle + this.angle,
+            scaleX, scaleY, figureStart, figureEnd)
     }
 
     override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
-        return FigureArray(figure, startPoint, distance, size, angle + this.angle)
+        return FigureArray(figure, startPoint,
+            distance, columns, rows, angle + this.angle,
+            scaleX, scaleY, figureStart, figureEnd)
     }
 
     override fun draw(g: IFigureGraphics) {
@@ -72,12 +79,17 @@ class FigureArray(
             g.translate(distance.x, distance.y)
         }
 
-        for (i in 1..size) {
+        for (j in 1 .. rows) {
             g.save()
-            g.scale(scaleX, scaleY)
-            figure.draw(g)
+            for (i in 1..columns) {
+                g.save()
+                g.scale(scaleX, scaleY)
+                figure.draw(g)
+                g.restore()
+                g.translate(distance.x, 0.0)
+            }
             g.restore()
-            g.translate(distance.x, distance.y)
+            g.translate(0.0, distance.y)
         }
 
         figureEnd?.let { f ->

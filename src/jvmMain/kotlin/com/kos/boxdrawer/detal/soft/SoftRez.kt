@@ -108,7 +108,8 @@ class SoftRez {
                     FigureArray(
                     fy, Vec2(x1, y),
                     distance = Vec2(sww, 0.0),
-                    size = sx,
+                    columns = sx,
+                    rows = 1,
                     angle = 0.0,
                     scaleX = scaleX,
                     scaleY = scaleY,
