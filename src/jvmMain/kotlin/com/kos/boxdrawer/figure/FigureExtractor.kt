@@ -28,7 +28,6 @@ class FigureExtractor {
         val result = mutableListOf<IFigure>()
         for (layer in doc.dxfLayerIterator) {
             for (t in layer.dxfEntityTypeIterator) {
-                println(t)
                 for (entry in layer.getDXFEntities(t)) {
                     result += createFigure(entry, doc)
                 }
@@ -41,7 +40,8 @@ class FigureExtractor {
         entry: DXFEntity,
         doc: DXFDocument
     ):IFigure = when (entry) {
-        is DXFLine -> FigureLine(entry.startPoint.vec, entry.endPoint.vec)
+        is DXFLine ->
+            FigureLine(entry.startPoint.vec, entry.endPoint.vec)
         is DXFPolyline -> {
             val vertex = entry.vertexIterator
             FigurePolyline(

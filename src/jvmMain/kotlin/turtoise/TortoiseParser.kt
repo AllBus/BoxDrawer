@@ -49,6 +49,7 @@ object TortoiseParser {
                 "polka" -> PolkaLine.parsePolka(items, f.drop(1).dropLast(1).toTypedArray())
                 "robot" -> RobotLine.parseRobot(items, f.drop(1).dropLast(1).toTypedArray())
                 "box" -> BoxAlgorithm.parseBox(items, f.drop(1).dropLast(1).toTypedArray())
+                "dxf" -> DxfFileAlgorithm(items.blocks.firstOrNull()?.line.orEmpty().drop(1).dropLast(1))
                 "" -> TortoiseFigureAlgorithm(f.getOrElse(1){"figure"}, items)
                 else -> parseSimpleLine(items)
             }
@@ -171,6 +172,7 @@ object TortoiseParser {
             "robot" -> RobotLine.help()
             "polka"-> PolkaLine.help()
             "box" -> BoxAlgorithm.help()
+            "dxf" -> DxfFileAlgorithm.help()
             "hide"-> AnnotatedString("")
             else -> helpCommands()
         }
@@ -232,6 +234,11 @@ object TortoiseParser {
 
         sb.append(helpName("box"))
         sb.append(helpDescr(" - Рисовать коробку"))
+        sb.appendLine()
+        sb.appendLine()
+
+        sb.append(helpName("dxf"))
+        sb.append(helpDescr(" - Рисовать срдержимое dxf файла"))
         sb.appendLine()
         sb.appendLine()
 

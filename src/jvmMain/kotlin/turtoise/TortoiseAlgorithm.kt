@@ -5,10 +5,10 @@ import com.kos.figure.IFigure
 import turtoise.memory.TortoiseMemory
 
 
-data class TortoiseBlock(val commands: List<TortoiseCommand>){
+data class TortoiseBlock(val commands: List<TortoiseCommand>) {
     val size get() = commands.size
 
-    operator fun get(index:Int) = commands[index]
+    operator fun get(index: Int) = commands[index]
 }
 
 interface TortoiseAlgorithm {
@@ -22,7 +22,7 @@ interface TortoiseAlgorithm {
         state: TortoiseState,
         memory: TortoiseMemory,
         runner: TortoiseRunner,
-        maxStackSize:Int,
+        maxStackSize: Int,
     ): IFigure {
         return FigureList(
             commands(name, ds).flatMap { block ->
@@ -30,7 +30,7 @@ interface TortoiseAlgorithm {
                     commands = block,
                     state = state,
                     ds = ds,
-                    maxStackSize = maxStackSize-1,
+                    maxStackSize = maxStackSize - 1,
                     memory = memory,
                     runner = runner
                 )
@@ -54,8 +54,8 @@ class TortoiseSimpleAlgorithm(
 }
 
 class TortoiseFigureAlgorithm(
-    val name:String,
-    val line:TurtoiseParserStackItem
+    val name: String,
+    val line: TurtoiseParserStackItem
 ) : TortoiseAlgorithm {
     private val _names = listOf(name)
 
@@ -63,13 +63,13 @@ class TortoiseFigureAlgorithm(
     override val names: List<String>
         get() = _names
 
-    private var command : TortoiseAlgorithm? = null
+    private var command: TortoiseAlgorithm? = null
     override fun commands(name: String, ds: DrawerSettings): List<TortoiseBlock> {
         if (command == null) {
             command = TortoiseParser.parseSimpleLine(line)
         }
-        return command?.let{ c ->
-            c.commands("_" , ds)
-        }?: emptyList()
+        return command?.let { c ->
+            c.commands("_", ds)
+        } ?: emptyList()
     }
 }
