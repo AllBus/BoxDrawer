@@ -7,6 +7,7 @@ import com.jsevy.jdxf.DXFDocument
 import com.kos.drawer.DxfFigureDrawer
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
+import kotlinx.coroutines.flow.MutableStateFlow
 import nl.adaptivity.xmlutil.StAXReader
 import nl.adaptivity.xmlutil.serialization.XML
 import org.jetbrains.skiko.SkikoInput
@@ -38,7 +39,7 @@ class Tools() : ITools {
 
     val figureList = mutableStateOf<List<Pair<String, TortoiseAlgorithm>>>( emptyList() )
 
-    val currentFigure = mutableStateOf<IFigure>(FigureEmpty)
+    val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
 
     override fun ds(): DrawerSettings {
 

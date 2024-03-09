@@ -28,19 +28,19 @@ val TabContentModifier =  Modifier.fillMaxWidth().fillMaxHeight().padding(vertic
 
 @Composable
 fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
-    var tabIndex by remember { vm.value.tabIndex }
+    var tabIndex = vm.value.tabIndex.collectAsState()
 
     Column(
         Modifier.fillMaxWidth().wrapContentHeight().background(Color.White)
     ){
         ScrollableTabRow(
-            selectedTabIndex = tabIndex,
+            selectedTabIndex = tabIndex.value,
                     modifier = Modifier,
         ) {
             tabs.forEach { info ->
                 Tab(
-                    selected = info.id == tabIndex,
-                    onClick = { tabIndex = info.id },
+                    selected = info.id == tabIndex.value,
+                    onClick = { vm.value.tabIndex.value = info.id },
                     modifier = Modifier,
                     text = { Text(info.title) },
                 )
@@ -48,7 +48,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
         }
         Box(
             Modifier.fillMaxWidth().height(240.dp).background(Color.LightGray)) {
-            when(tabIndex) {
+            when(tabIndex.value) {
                 TAB_BOX -> ToolbarForBox(vm.value.box)
                 TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
                 TAB_GRID -> ToolbarForGrid(vm.value.grid)

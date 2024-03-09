@@ -5,10 +5,11 @@ import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.bublik.BublikCad
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class BublikData(val tools: ITools) {
 
-    val figures = mutableStateOf<IFigure>(Figure.Empty)
+    val figures = MutableStateFlow<IFigure>(Figure.Empty)
 
     val radiusBublik = NumericTextFieldState(120.0) { redrawBox() }
     val radius = NumericTextFieldState(40.0) { redrawBox() }

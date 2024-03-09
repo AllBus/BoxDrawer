@@ -7,11 +7,12 @@ import androidx.compose.ui.text.TextRange
 import com.kos.figure.CropSide
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
+import kotlinx.coroutines.flow.MutableStateFlow
 import turtoise.*
 import turtoise.memory.SimpleTortoiseMemory
 
 class TortoiseData(val tools: ITools) {
-    val figures = mutableStateOf<IFigure>(Figure.Empty)
+    val figures = MutableStateFlow<IFigure>(Figure.Empty)
     val fig = mutableStateOf<IFigure>(Figure.Empty)
     val helpText = mutableStateOf(AnnotatedString(""))
 

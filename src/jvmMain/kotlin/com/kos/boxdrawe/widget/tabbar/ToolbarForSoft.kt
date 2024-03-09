@@ -3,10 +3,18 @@ package com.kos.boxdrawe.widget.tabbar
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.kos.boxdrawe.presentation.SoftRezData
-import com.kos.boxdrawe.widget.*
+import com.kos.boxdrawe.widget.NumericUpDown
+import com.kos.boxdrawe.widget.RunButton
+import com.kos.boxdrawe.widget.RunCheckBox
+import com.kos.boxdrawe.widget.TabContentModifier
+import com.kos.boxdrawe.widget.showFileChooser
 import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
 
@@ -50,7 +58,10 @@ fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
             RunCheckBox(
                 checked = innerChecked,
                 title = "Сохранять пропорции",
-                onCheckedChange = { c -> innerChecked = c },
+                onCheckedChange = { c ->
+                    innerChecked = c
+                    vm.redraw()
+                },
             )
         }
         Column(

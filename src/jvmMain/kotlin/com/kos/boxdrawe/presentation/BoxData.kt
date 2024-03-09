@@ -9,13 +9,14 @@ import com.kos.boxdrawer.detal.box.*
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor
+import kotlinx.coroutines.flow.MutableStateFlow
 import turtoise.DrawerSettings
 import turtoise.ZigzagInfo
 import vectors.Vec2
 
 class BoxData(val tools: ITools) {
 
-    val figures = mutableStateOf<IFigure>(Figure.Empty)
+    val figures = MutableStateFlow<IFigure>(Figure.Empty)
 
     val selectZigTopId = mutableIntStateOf(PazExt.PAZ_NONE)
     val selectZigBottomId = mutableIntStateOf(PazExt.PAZ_HOLE)

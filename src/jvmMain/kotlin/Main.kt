@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +43,7 @@ import com.kos.boxdrawe.widget.TabBar
 import com.kos.boxdrawe.widget.display.DisplayBezier
 import com.kos.boxdrawe.widget.display.DisplayGrid
 import com.kos.boxdrawe.widget.display.DisplayTortoise
+import com.kos.figure.FigureEmpty
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import retrofit2.Retrofit
@@ -94,11 +96,7 @@ data class RetroData(
 @Preview
 fun App(vm: State<DrawerViewModel>) {
 
-    val figures by remember { vm.value.tortoise.figures }
-
-    val boxFigures by remember { vm.value.box.figures }
-    val bublikFigures by remember { vm.value.bublik.figures }
-    val toolsFigures by remember { vm.value.tools.currentFigure }
+    val figures = vm.value.figures.collectAsState(FigureEmpty)
 
     val displayScale = remember { mutableFloatStateOf(2.0f) }
 
@@ -106,7 +104,7 @@ fun App(vm: State<DrawerViewModel>) {
     var dropValueY by remember { mutableStateOf(0f) }
     var dropValueZ by remember { mutableStateOf(0f) }
 
-    val tabIndex by remember { vm.value.tabIndex }
+    val tabIndex = vm.value.tabIndex.collectAsState()
     val helpText by remember { vm.value.tortoise.helpText }
     val matrix = remember { vm.value.tortoise.matrix }
     val alternative = remember { vm.value.box.alternative }
@@ -116,9 +114,9 @@ fun App(vm: State<DrawerViewModel>) {
             TabBar(tabs, vm)
 
             Box(modifier = Modifier.fillMaxSize().background(Color(0xFF02007C))) {
-                when (tabIndex) {
+                when (tabIndex.value) {
                     TAB_TORTOISE -> {
-                        DisplayTortoise(displayScale, matrix, false, figures)
+                        DisplayTortoise(displayScale, matrix, false, figures.value)
                         Text(
                             text = helpText,
                             modifier = Modifier.width(350.dp).wrapContentHeight()
@@ -128,33 +126,24 @@ fun App(vm: State<DrawerViewModel>) {
                         )
                     }
 
-                    TAB_SOFT -> {
-                        DisplayTortoise(
-                            displayScale,
-                            matrix,
-                            false,
-                            vm.value.softRez.drawRez(figures)
-                        )
-                    }
-
                     TAB_BOX -> {
-                        DisplayTortoise(displayScale, matrix, !alternative.value, boxFigures)
+                        DisplayTortoise(displayScale, matrix, !alternative.value,  figures.value)
                     }
 
                     TAB_GRID -> {
                         DisplayGrid(vm.value.grid)
                     }
 
-                    TAB_BUBLIK -> {
-                        DisplayTortoise(displayScale, matrix, false, bublikFigures)
-                    }
                     TAB_BEZIER -> DisplayBezier(displayScale, vm.value.bezier)
+
+                    TAB_SOFT,
+                    TAB_BUBLIK,
                     TAB_TOOLS -> {
                         DisplayTortoise(
                             displayScale,
                             matrix,
                             false,
-                            toolsFigures,
+                            figures.value,
                         )
                     }
                     else -> {
@@ -162,7 +151,7 @@ fun App(vm: State<DrawerViewModel>) {
                     }
                 }
 
-                if (tabIndex == TAB_BOX && !alternative.value) {
+                if (tabIndex.value == TAB_BOX && !alternative.value) {
                     Column(
                         modifier = Modifier.align(Alignment.TopEnd).width(180.dp)
                     ) {

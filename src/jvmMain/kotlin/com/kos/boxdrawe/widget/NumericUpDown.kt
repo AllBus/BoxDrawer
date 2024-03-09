@@ -40,6 +40,13 @@ fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
         verticalAlignment = Alignment.Bottom
     ) {
 
+        val textStyle = TextStyle.Default
+        val colors = TextFieldDefaults.textFieldColors()
+        val textColor = textStyle.color.takeOrElse {
+            colors.textColor(enabled).value
+        }
+
+        val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
         if (title.isNotEmpty()) {
             Text(
                 text = title,
@@ -59,12 +66,13 @@ fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
                 .height(30.dp)
                 .width(fieldMaxWidth)
                 .weight(1f)
-                .background(ThemeColors.inputBackground
-                ).border(1.dp, ThemeColors.inputBorder).padding(4.dp),
+             //   .background(colors.backgroundColor(enabled).value)
+                .background(ThemeColors.inputBackgroundState(enabled))
+                .border(1.dp, ThemeColors.inputBorder).padding(4.dp),
             enabled = enabled,
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            textStyle = TextStyle.Default
+            textStyle = mergedTextStyle
 
         )
         if (postfix.isNotEmpty()) {
