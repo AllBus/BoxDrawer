@@ -3,6 +3,7 @@ package com.kos.boxdrawer.detal.bublik
 import androidx.compose.ui.graphics.Matrix
 import com.kos.boxdrawe.presentation.BublikPaz
 import com.kos.figure.FigureCircle
+import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
@@ -20,6 +21,10 @@ class BublikCad {
         bublikPaz: BublikPaz,
         drawerSettings: DrawerSettings,
     ): IFigure {
+        if (radius<0.001 || torRadius<0.001 || ringPart<3 || stenaPart<3){
+            return FigureEmpty
+        }
+
         val list: MutableList<IFigure> = mutableListOf<IFigure>()
         val xcount = stenaPart
         val ycount = ringPart
@@ -28,7 +33,6 @@ class BublikCad {
         val alpha = Math.PI * 2 / ycount;
 
         val a = 2 * torRadius * sin(teta / 2);
-
 
         var predB = 0.0;
         var b = 0.0;

@@ -31,6 +31,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.google.gson.GsonBuilder
 import com.kos.boxdrawe.presentation.DrawerViewModel
+import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BEZIER
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BUBLIK
@@ -107,7 +108,8 @@ fun App(vm: State<DrawerViewModel>) {
     val tabIndex = vm.value.tabIndex.collectAsState()
     val helpText by remember { vm.value.tortoise.helpText }
     val matrix = remember { vm.value.tortoise.matrix }
-    val alternative = remember { vm.value.box.alternative }
+    val alternative = remember{ vm.value.box.alternative}
+    val stateText = remember { mutableStateOf("") }
 
     MaterialTheme {
         Column {
@@ -116,7 +118,9 @@ fun App(vm: State<DrawerViewModel>) {
             Box(modifier = Modifier.fillMaxSize().background(Color(0xFF02007C))) {
                 when (tabIndex.value) {
                     TAB_TORTOISE -> {
-                        DisplayTortoise(displayScale, matrix, false, figures.value)
+                        DisplayTortoise(displayScale, matrix, false ,figures.value){
+                            text -> stateText.value = text
+                        }
                         Text(
                             text = helpText,
                             modifier = Modifier.width(350.dp).wrapContentHeight()
@@ -127,7 +131,9 @@ fun App(vm: State<DrawerViewModel>) {
                     }
 
                     TAB_BOX -> {
-                        DisplayTortoise(displayScale, matrix, !alternative.value,  figures.value)
+                        DisplayTortoise(displayScale, matrix, !alternative.value,  figures.value){
+                                text -> stateText.value = text
+                        }
                     }
 
                     TAB_GRID -> {
@@ -144,12 +150,19 @@ fun App(vm: State<DrawerViewModel>) {
                             matrix,
                             false,
                             figures.value,
-                        )
+                        ){
+                                text -> stateText.value = text
+                        }
                     }
                     else -> {
 
                     }
                 }
+
+                Text(stateText.value,
+                    Modifier.align(Alignment.TopEnd),
+                    color = ThemeColors.displayLabelColor,
+                    )
 
                 if (tabIndex.value == TAB_BOX && !alternative.value) {
                     Column(
@@ -203,7 +216,7 @@ fun App(vm: State<DrawerViewModel>) {
                         "%.3f".format( displayScale.value),
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth(),
-                        color = Color.White
+                        color =  ThemeColors.displayLabelColor
                     )
                     Slider(
                         modifier = Modifier.wrapContentHeight(),

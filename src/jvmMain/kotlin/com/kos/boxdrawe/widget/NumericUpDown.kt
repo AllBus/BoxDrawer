@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -59,7 +60,7 @@ fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
         }
         BasicTextField(
             value = value.text,
-            onValueChange = { v :String ->
+            onValueChange = { v :TextFieldValue ->
                 value.update(v)
             },
             modifier = Modifier
@@ -174,6 +175,8 @@ class NumericTextFieldState(
 ){
     var decimal: Double by mutableStateOf(value)
 
+    private val fieldValue = mutableStateOf(TextFieldValue(String.format("%1$,.${digits}f", decimal)))
+
     private val spaceReg = "[\\s\\u00A0]+".toRegex()
 
     fun update(newValue: String){
@@ -188,5 +191,26 @@ class NumericTextFieldState(
         }
     }
 
-    val text get() = String.format("%1$,.${digits}f", decimal);
+    fun update(newValue: TextFieldValue){
+        val v = newValue.text.replace(spaceReg, "").replace(',','.').toDoubleOrNull()
+
+        var u = false
+        if (v != null && v != decimal){
+            if (v>maxValue)
+                decimal = maxValue
+            else
+                decimal = v
+
+            u = true
+            updateAction(decimal)
+        }
+
+        if (u){
+            fieldValue.value = newValue.copy(String.format("%1$,.${digits}f", decimal))
+        }else{
+            fieldValue.value = newValue
+        }
+    }
+
+    val text get() = fieldValue.value // String.format("%1$,.${digits}f", decimal);
 }
