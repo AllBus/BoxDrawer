@@ -88,6 +88,7 @@ class BoxData(val tools: ITools) {
         )
 
         tools.saveFigures(fileName, fig)
+        tools.updateChooserDir(fileName)
     }
 
     suspend fun printBox(line: String):String{

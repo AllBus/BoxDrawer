@@ -1,6 +1,17 @@
 package turtoise
 
-import com.kos.figure.*
+import androidx.compose.ui.graphics.Matrix
+import com.kos.figure.FigureBezier
+import com.kos.figure.FigureBezierList
+import com.kos.figure.FigureCircle
+import com.kos.figure.FigureEllipse
+import com.kos.figure.FigureLine
+import com.kos.figure.FigureList
+import com.kos.figure.FigurePolyline
+import com.kos.figure.FigureSpline
+import com.kos.figure.IFigure
+import com.kos.figure.composition.Figure3dTransform
+import com.kos.figure.composition.FigureArray
 import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
@@ -49,7 +60,7 @@ class Tortoise() {
         memory: TortoiseMemory,
         runner: TortoiseRunner,
     ): List<IFigure> {
-        if (maxStackSize<=0)
+        if (maxStackSize <= 0)
             return emptyList()
 
         val res = mutableListOf<IFigure>()
@@ -257,10 +268,10 @@ class Tortoise() {
 
                     res.add(
                         rectangle(
-                        -width2+c2.x, -height2+c2.y, width2+c2.x, height2+c2.y,
-                        enableSmooth = smoothSize!=0.0,
-                        smoothSize = smoothSize,
-                    ).rotate(angle)
+                            -width2 + c2.x, -height2 + c2.y, width2 + c2.x, height2 + c2.y,
+                            enableSmooth = smoothSize != 0.0,
+                            smoothSize = smoothSize,
+                        ).rotate(angle)
                     )
                 }
 
@@ -274,6 +285,7 @@ class Tortoise() {
                         )
                     }
                 }
+
                 TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {
                     saveLine()
 
@@ -282,12 +294,12 @@ class Tortoise() {
 
                     val block = com.takeBlock(0)
                     val f = figureList(block, ds, TortoiseState(), maxStackSize, memory, runner)
-                    val zf = f?: zigFigure(
-                         hz = com.take(4, 0.0, memory),
-                     bz1x = com.take(5, board / 2, memory),
-                     bz2x = com.take(6, board / 2, memory),
-                     bz1y = com.take(7, 0.0, memory),
-                     bz2y = com.take(8, 0.0, memory),
+                    val zf = f ?: zigFigure(
+                        hz = com.take(4, 0.0, memory),
+                        bz1x = com.take(5, board / 2, memory),
+                        bz2x = com.take(6, board / 2, memory),
+                        bz1y = com.take(7, 0.0, memory),
+                        bz2y = com.take(8, 0.0, memory),
                         board = board,
                         zigWidth = zigWidth
                     )
@@ -432,6 +444,10 @@ class Tortoise() {
                     }
                 }
 
+                TortoiseCommand.TURTOISE_MOVE_TO -> {
+                    state.moveTo(Vec2(com[0, memory], com[1, memory]))
+                }
+
                 TortoiseCommand.TURTOISE_MATRIX_TRANSLATE -> {
                     res.add(FigureMatrixTranslate(com[0, memory], com[1, memory]))
                 }
@@ -448,6 +464,67 @@ class Tortoise() {
                     com.assign(memory)
                 }
 
+                TortoiseCommand.TURTOISE_3D -> {
+                    val block = com.takeBlock(0)
+                    val f = figureList(block, ds, state, maxStackSize, memory, runner)
+
+                    f?.let { g ->
+
+                        val mf = Matrix()
+
+                        mf.translate(
+                            com[3, memory].toFloat(),
+                            com[4, memory].toFloat(),
+                            com[5, memory].toFloat()
+                        )
+
+                        mf.rotateX(com[0, memory].toFloat())
+                        mf.rotateY(com[1, memory].toFloat())
+                        mf.rotateZ(com[2, memory].toFloat())
+
+
+                        val f3d = Figure3dTransform(
+                            vectors.Matrix(mf.values),
+                            g
+                        )
+
+                        val ft = com.takeBlock(1)?.let{ a -> a as? TurtoiseParserStackBlock}?.let { a ->
+
+                            val c = a.getBlockAtName("c")
+                            val r = a.getBlockAtName("r")
+                            val s = a.getBlockAtName("s")
+                            val m = (a.getBlockAtName("m")?.let { item -> Vec2(
+                                memory.value(item.get(1).orEmpty(), 0.0),
+                                memory.value(item.get(2).orEmpty(), 0.0),
+                            )  }?:Vec2.Zero)
+
+                            val columns = memory.value(c?.get(1).orEmpty(), 1.0).toInt()
+                            val rows = memory.value(r?.get(1).orEmpty(), 1.0).toInt()
+                            val scaleX = memory.value(s?.get(1).orEmpty(), 1.0)
+                            val scaleY = memory.value(s?.get(2).orEmpty(), scaleX)
+                            val distance = Vec2(
+                                memory.value(c?.get(2).orEmpty(), 1.0),
+                                memory.value(r?.get(2).orEmpty(), 1.0),
+                            )
+
+                            FigureArray(
+                                figure = f3d,
+                                startPoint = m,
+                                distance = distance,
+                                columns = columns,
+                                rows = rows,
+                                angle = state.angle,
+                                scaleX = scaleX,
+                                scaleY = scaleY,
+                            )
+                        }?: f3d
+
+                        res.add(
+                            ft
+                        )
+                    }
+                }
+
                 TortoiseCommand.TURTOISE_SAVE -> {
                     stateStack.push(TortoiseState().from(state))
                 }
@@ -457,6 +534,7 @@ class Tortoise() {
                         state.from(stateStack.pop())
                     }
                 }
+
                 TortoiseCommand.TURTOISE_PEEK -> {
                     if (stateStack.isNotEmpty()) {
                         state.from(stateStack.peek())
@@ -487,7 +565,7 @@ class Tortoise() {
             val st = TortoiseState().from(state)
 
             val n = block.name
-            if (n.startsWith("@")){
+            if (n.startsWith("@")) {
                 runner.figure(
                     algName = n.drop(1),
                     ds = ds,
@@ -496,7 +574,7 @@ class Tortoise() {
                     arguments = block
                 )
 
-            }else {
+            } else {
                 FigureList(
                     l.commands(l.names.first(), ds).flatMap { c ->
                         draw(
@@ -673,7 +751,14 @@ class Tortoise() {
             )
         }
 
-        fun bezierLine(v: Vec2, v2: Vec2, smoothSizeStart: Double, smoothSizeEnd:Double, g1: Int, g2: Int): FigureBezierList {
+        fun bezierLine(
+            v: Vec2,
+            v2: Vec2,
+            smoothSizeStart: Double,
+            smoothSizeEnd: Double,
+            g1: Int,
+            g2: Int
+        ): FigureBezierList {
             val p1 = next[g1 % 4]
             val p2 = next[g2 % 4]
             return FigureBezierList(
@@ -727,14 +812,14 @@ class Tortoise() {
         }
 
         fun zigFigure(
-             hz : Double,
-             bz1x : Double,
-             bz2x : Double,
-             bz1y : Double,
-             bz2y : Double,
-             board: Double,
-             zigWidth: Double,
-        ):IFigure{
+            hz: Double,
+            bz1x: Double,
+            bz2x: Double,
+            bz1y: Double,
+            bz2y: Double,
+            board: Double,
+            zigWidth: Double,
+        ): IFigure {
             return FigureList(
                 listOf(
                     FigureLine(
@@ -744,8 +829,8 @@ class Tortoise() {
                     FigureBezier(
                         listOf(
                             Vec2(0.0, hz),
-                            Vec2(-bz1x, hz+bz1y),
-                            Vec2(-bz2x, board+bz2y),
+                            Vec2(-bz1x, hz + bz1y),
+                            Vec2(-bz2x, board + bz2y),
                             Vec2(0.0, board),
                         )
                     ),
@@ -757,8 +842,8 @@ class Tortoise() {
                     FigureBezier(
                         listOf(
                             Vec2(zigWidth, hz),
-                            Vec2(zigWidth + bz1x, hz+bz1y),
-                            Vec2(zigWidth + bz2x, board+bz2y),
+                            Vec2(zigWidth + bz1x, hz + bz1y),
+                            Vec2(zigWidth + bz2x, board + bz2y),
                             Vec2(zigWidth, board),
                         )
                     ),

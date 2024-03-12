@@ -96,6 +96,7 @@ class GridData(val tools: ITools) {
         )
 
         tools.saveFigures(fileName, fig)
+        tools.updateChooserDir(fileName)
     }
 
     fun redraw() {

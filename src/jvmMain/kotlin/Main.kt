@@ -118,7 +118,7 @@ fun App(vm: State<DrawerViewModel>) {
             Box(modifier = Modifier.fillMaxSize().background(Color(0xFF02007C))) {
                 when (tabIndex.value) {
                     TAB_TORTOISE -> {
-                        DisplayTortoise(displayScale, matrix, false ,figures.value){
+                        DisplayTortoise(displayScale, matrix, true ,figures.value){
                             text -> stateText.value = text
                         }
                         Text(
@@ -164,7 +164,7 @@ fun App(vm: State<DrawerViewModel>) {
                     color = ThemeColors.displayLabelColor,
                     )
 
-                if (tabIndex.value == TAB_BOX && !alternative.value) {
+                if ((tabIndex.value == TAB_BOX && !alternative.value) || tabIndex.value == TAB_TORTOISE) {
                     Column(
                         modifier = Modifier.align(Alignment.TopEnd).width(180.dp)
                     ) {

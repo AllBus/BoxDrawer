@@ -8,19 +8,13 @@ import vectors.BoundingRectangle
 import vectors.Vec2
 
 class FigureRotate(
-    val figure: IFigure,
+    override val figure: IFigure,
     val angle: Double,
     val pivot: Vec2,
-): IFigure {
-    override val count: Int
-        get() = figure.count
+): FigureComposition() {
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
-        return this // TODO("Not yet implemented")
-    }
-
-    override fun list(): List<Figure> {
-        return figure.list()
+    override fun create(figure: IFigure): FigureComposition {
+        return FigureRotate(figure, angle, pivot)
     }
 
     override fun rect(): BoundingRectangle {
@@ -54,5 +48,9 @@ class FigureRotate(
         g.rotate(angle,  pivot)
         figure.draw(g)
         g.restore()
+    }
+
+    override fun print(): String {
+        return "R (${figure.print()})"
     }
 }

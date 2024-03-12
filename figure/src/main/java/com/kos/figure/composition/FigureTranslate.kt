@@ -8,18 +8,12 @@ import vectors.Vec2
 import vectors.BoundingRectangle as BoundingRectangle1
 
 class FigureTranslate(
-    val figure: IFigure,
+    override val figure: IFigure,
     val offset: Vec2,
-): IFigure {
-    override val count: Int
-        get() = figure.count
+): FigureComposition() {
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
-        return this // TODO("Not yet implemented")
-    }
-
-    override fun list(): List<Figure> {
-        return figure.list()
+    override fun create(figure: IFigure): FigureComposition {
+        return FigureTranslate(figure, offset)
     }
 
     override fun rect(): BoundingRectangle1 {
@@ -52,5 +46,9 @@ class FigureTranslate(
         g.translate(offset.x, offset.y)
         figure.draw(g)
         g.restore()
+    }
+
+    override fun print(): String {
+        return "T (${figure.print()})"
     }
 }

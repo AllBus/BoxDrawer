@@ -20,7 +20,7 @@ interface IRobotCommandFactory{
 abstract class RobotCommandWithParams(val params: List<String>): IRobotCommand{
 
     operator fun get(index:Int):String{
-        return  params.getOrElse(index){""}
+        return params.getOrElse(index){""}
     }
     operator fun get(index:Int, value: Double):Double{
         return params.getOrElse(index){""}.toDoubleOrNull()?: value

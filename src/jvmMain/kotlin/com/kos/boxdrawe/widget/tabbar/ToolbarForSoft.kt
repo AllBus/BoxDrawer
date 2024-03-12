@@ -80,7 +80,7 @@ fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
         ) {
             RunButton("Нарисовать деталь") {
                 coroutineScope.launch {
-                    showFileChooser { f -> vm.saveRez(f, figures()) }
+                    showFileChooser(vm.tools.chooserDir()) { f -> vm.saveRez(f, figures()) }
                 }
             }
         }

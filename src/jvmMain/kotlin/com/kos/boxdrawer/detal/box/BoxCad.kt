@@ -15,7 +15,7 @@ import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslate
-import com.kos.figure.matrix.Figure3dTransform
+import com.kos.figure.composition.Figure3dTransform
 import turtoise.*
 import turtoise.Tortoise.Companion.holes
 import turtoise.Tortoise.Companion.rectangle

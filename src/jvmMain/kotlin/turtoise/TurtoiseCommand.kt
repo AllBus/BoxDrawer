@@ -79,6 +79,7 @@ interface TortoiseCommand {
                 TURTOISE_MATRIX_TRANSLATE -> "TURTOISE_MATRIX_TRANSLATE"
                 TURTOISE_MATRIX_SCALE -> "TURTOISE_MATRIX_SCALE"
                 TURTOISE_MEMORY_ASSIGN -> "TURTOISE_MEMORY_ASSIGN"
+                TURTOISE_COLOR -> "TURTOISE_COLOR"
                 else -> c.toString()
             }
         }
@@ -86,6 +87,7 @@ interface TortoiseCommand {
         const val TURTOISE_ZIGZAG = 'z'
         const val TURTOISE_ZIGZAG_FIGURE = 'Z'
         const val TURTOISE_FIGURE = 'f';
+        const val TURTOISE_3D = 'd';
         const val TURTOISE_VERTICAL = 'v';
         const val TURTOISE_SPLINE = 's';
         const val TURTOISE_RECTANGLE = 'x';
@@ -111,10 +113,12 @@ interface TortoiseCommand {
       //  const val TURTOISE_METHOD_RUN = '=';
         const val TURTOISE_LOOP = '>';
         const val TURTOISE_END_LOOP = '<';
+        const val TURTOISE_MOVE_TO = 'M';
         const val TURTOISE_MATRIX_ROTATE = 'R';
         const val TURTOISE_MATRIX_TRANSLATE = 'T';
         const val TURTOISE_MATRIX_SCALE = 'S';
         const val TURTOISE_MEMORY_ASSIGN = '='
+        const val TURTOISE_COLOR = 'C';
 
         fun Move(x: Double) = DoubleTortoiseCommand(TURTOISE_MOVE, x)
         fun Move(x: String) = SmallTortoiseCommand(TURTOISE_MOVE, x)

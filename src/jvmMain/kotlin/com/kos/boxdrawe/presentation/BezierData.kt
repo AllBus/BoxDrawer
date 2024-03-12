@@ -59,6 +59,7 @@ class BezierData(val tools: Tools) {
     fun save(fileName: String) {
         redraw()
         tools.saveFigures(fileName, figure.value)
+        tools.updateChooserDir(fileName)
     }
 
     fun print(): String {

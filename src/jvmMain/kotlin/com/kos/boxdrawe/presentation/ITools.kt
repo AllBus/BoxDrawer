@@ -27,6 +27,10 @@ interface ITools {
     fun saveFigures(fileName: String, figures: IFigure)
 
     fun algorithms(): List<Pair<String, TortoiseAlgorithm>>
+
+    fun chooserDir():File
+
+    fun updateChooserDir(fileName:String)
 }
 
 class Tools() : ITools {
@@ -40,6 +44,18 @@ class Tools() : ITools {
     val figureList = mutableStateOf<List<Pair<String, TortoiseAlgorithm>>>( emptyList() )
 
     val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
+
+    val lastSelectDir = MutableStateFlow<File>(File(""))
+
+    override fun updateChooserDir(fileName:String){
+        File(fileName).parentFile?.let{ p ->
+            lastSelectDir.value = p
+        }
+    }
+
+    override fun chooserDir(): File {
+        return lastSelectDir.value
+    }
 
     override fun ds(): DrawerSettings {
 
@@ -57,15 +73,12 @@ class Tools() : ITools {
             val settings = XML.decodeFromReader<FullSettings>(StAXReader(input, "UTF-8"))
             settingsList.value = settings.properties
             selectSettings(settingsList.value.group.firstOrNull()?: DrawerSettings())
-
         }
-
 
         val algorithms = File("./settings/figures.txt")
         println(algorithms.absolutePath)
         if (algorithms.exists()){
             try{
-
                 figureList.value =
                     algorithms
                         .readLines(Charsets.UTF_8)

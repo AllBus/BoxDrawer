@@ -20,9 +20,14 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TOOLS
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
 import com.kos.boxdrawe.widget.tabbar.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.lwjgl.system.MemoryStack
+import org.lwjgl.util.tinyfd.TinyFileDialogs
+import java.io.File
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
+
 
 val TabContentModifier =  Modifier.fillMaxWidth().fillMaxHeight().padding(vertical = 4.dp, horizontal = 16.dp)
 
@@ -142,7 +147,7 @@ fun ToolbarForBublik(vm: BublikData) {
         ) {
             RunButton("Нарисовать деталь") {
                 coroutineScope.launch {
-                    showFileChooser { f -> vm.save(f) }
+                    showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
                 }
             }
         }
@@ -169,28 +174,63 @@ fun ToolbarForBublik(vm: BublikData) {
 //    dispose = FileDialog::dispose
 //)
 
-suspend fun showFileChooser(action: (String)-> Unit) {
+suspend fun showFileChooser(directory: File, action: (String)-> Unit) {
+    delay(100)
 
-    JFileChooser().apply {
-        this.fileFilter = FileNameExtensionFilter("Autocad (*.dxf)", "dxf")
-        if (showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-            val p = if (this.selectedFile.extension.lowercase() !="dxf"){
-                ".dxf"
-            }else
-                ""
-            action(this.selectedFile.path+p)
+    MemoryStack.stackPush().use { stack ->
+        val aFilterPatterns = stack.mallocPointer(1)
+        aFilterPatterns.put(stack.UTF8("*.dxf"))
+        aFilterPatterns.flip()
+
+        TinyFileDialogs.tinyfd_saveFileDialog(
+            "Сохранить фигуру как...",
+            directory.absolutePath,
+            aFilterPatterns,
+            null,
+        )?.let { fileName ->
+            action(fileName)
         }
     }
+
+//    JFileChooser().apply {
+//        this.fileFilter = FileNameExtensionFilter("Autocad (*.dxf)", "dxf")
+//        this.currentDirectory = directory
+//        if (showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+//            val p = if (this.selectedFile.extension.lowercase() !="dxf"){
+//                ".dxf"
+//            }else
+//                ""
+//            action(this.selectedFile.path+p)
+//        }
+//    }
 }
 
-suspend fun showLoadFileChooser(action: (String)-> Unit) {
+suspend fun showLoadFileChooser(directory: File, action: (String)-> Unit) {
+    delay(100)
 
-    JFileChooser().apply {
-        this.fileFilter = FileNameExtensionFilter("Autocad (*.dxf)", "dxf")
-        if (showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            action(this.selectedFile.path)
+    MemoryStack.stackPush().use { stack ->
+        val aFilterPatterns = stack.mallocPointer(1)
+        aFilterPatterns.put(stack.UTF8("*.dxf"))
+        aFilterPatterns.flip()
+
+        TinyFileDialogs.tinyfd_openFileDialog(
+            "Олткрыть фигуру",
+            directory.absolutePath,
+            aFilterPatterns,
+            null,
+            false,
+        )?.let { fileName ->
+            action(fileName)
         }
     }
+//
+//    JFileChooser().apply {
+//        this.fileFilter = FileNameExtensionFilter("Autocad (*.dxf)", "dxf")
+//        this.currentDirectory = directory
+//        if (showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+//            action(this.selectedFile.path)
+//        }
+//    }
 }
 
 @Composable

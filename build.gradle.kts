@@ -66,6 +66,8 @@ kotlin {
    //     val jvmTest by getting
         val jvmMain by getting
 
+        val lwjglVersion = "3.3.1"
+
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3")
@@ -81,8 +83,11 @@ kotlin {
             implementation("androidx.collection:collection:1.4.0-rc01")
             implementation("androidx.collection:collection-ktx:1.4.0-rc01")
             implementation("org.jetbrains.skiko:skiko-awt-runtime-$target:0.7.90")
+            implementation("com.darkrockstudios:mpfilepicker:3.1.0")
+            implementation("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}")
             implementation(project(":figure"))
             implementation(project(":dxfprinter"))
+
 
             // implementation("com.groupdocs:groupdocs-comparison:22.3")
         }

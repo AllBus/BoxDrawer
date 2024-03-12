@@ -50,4 +50,8 @@ class FigureList(
     fun simple(): FigureList {
         return FigureList(list())
     }
+
+    override fun print(): String {
+        return figures.joinToString(" ") { it.print() }
+    }
 }

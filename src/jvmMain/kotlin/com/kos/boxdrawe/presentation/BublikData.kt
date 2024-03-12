@@ -6,6 +6,7 @@ import com.kos.boxdrawer.detal.bublik.BublikCad
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.io.File
 
 class BublikData(val tools: ITools) {
 
@@ -46,6 +47,8 @@ class BublikData(val tools: ITools) {
 
     fun save(fileName: String) {
         tools.saveFigures(fileName, createFigure())
+
+        tools.updateChooserDir(fileName)
     }
 }
 

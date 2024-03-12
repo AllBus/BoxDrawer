@@ -12,4 +12,8 @@ class FigureSpline(points: List<Vec2>): FigurePolygon(points) {
     override fun draw(g: IFigureGraphics) {
         g.drawSpline(points)
     }
+
+    override fun print(): String {
+        return "M 0 0 s "+points.map { p ->"${p.x} ${p.y}" }.joinToString(" ")
+    }
 }

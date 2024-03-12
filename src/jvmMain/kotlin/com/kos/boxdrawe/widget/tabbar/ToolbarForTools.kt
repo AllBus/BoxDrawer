@@ -89,7 +89,7 @@ fun ToolbarForTools(vm: ToolsData) {
             }
             RunButton("Открыть файл") {
                 coroutineScope.launch {
-                    showLoadFileChooser { f -> vm.loadDxf(f) }
+                    showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.loadDxf(f) }
                 }
             }
         }

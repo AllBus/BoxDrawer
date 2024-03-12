@@ -24,6 +24,7 @@ class TortoiseData(val tools: ITools) {
         val state = TortoiseState()
         val fig = t.draw(state, tools.ds())
         tools.saveFigures(fileName, fig)
+        tools.updateChooserDir(fileName)
     }
 
     suspend fun printCommand(lines: String):String{

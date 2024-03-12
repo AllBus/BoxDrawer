@@ -148,7 +148,7 @@ fun ToolbarForBox(vm: BoxData) {
         ) {
             RunButton("Нарисовать коробку") {
                 coroutineScope.launch {
-                    showFileChooser { f -> vm.saveBox(f, text.value) }
+                    showFileChooser(vm.tools.chooserDir()) { f -> vm.saveBox(f, text.value) }
                 }
             }
             Spacer(Modifier.height(4.dp))

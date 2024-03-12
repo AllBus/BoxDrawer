@@ -37,9 +37,9 @@ class FigureArray(
             listOfNotNull(
                 figureStart?.rect()?.scale(scaleX, scaleY)?.translate(startPoint),
                 figureEnd?.rect()?.scale(scaleX, scaleY)
-                    ?.translate(startPoint + distance * (columns.toDouble() + u)),
+                    ?.translate(startPoint + Vec2(distance.x * (columns.toDouble() + u),0.0)),
                 r.translate(startPoint + distance * u),
-                r.translate(startPoint + distance * (columns.toDouble() + u - 1)),
+                r.translate(startPoint + Vec2(distance.x * (columns.toDouble() + u - 1), distance.y * (rows.toDouble() - 1))),
             )
         )
     }
@@ -88,7 +88,6 @@ class FigureArray(
                 g.translate(distance.x, distance.y)
             }
 
-
             for (i in 1..columns) {
                 g.save()
                 g.scale(scaleX, scaleY)
@@ -108,5 +107,13 @@ class FigureArray(
             g.translate(0.0, distance.y)
         }
         g.restore()
+    }
+
+    override fun print(): String {
+        //Todo: need print arguments
+        return "M ${startPoint.x} ${startPoint.y} a ${angle}" +
+                "d (${figure.print()}) " +
+                "(c ($columns ${distance.x}) (r $rows ${distance.y}) (s ${scaleX} ${scaleY}))" +
+                ""
     }
 }

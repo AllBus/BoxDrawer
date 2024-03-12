@@ -17,6 +17,7 @@ interface IFigure {
     fun rotate(angle: Double, rotateCenter: Vec2): IFigure
     fun draw(g: IFigureGraphics)
 
+    fun print():String
 }
 
 enum class CropSide {
@@ -57,5 +58,8 @@ object FigureEmpty: IFigure {
     override fun rotate(angle: Double, rotateCenter: Vec2): IFigure = this
 
     override fun draw(g: IFigureGraphics) {}
+    override fun print(): String {
+        return ""
+    }
 
 }

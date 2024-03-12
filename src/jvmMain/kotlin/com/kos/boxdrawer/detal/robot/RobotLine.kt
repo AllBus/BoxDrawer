@@ -33,6 +33,7 @@ class RobotLine(
             RobotHardRect.Factory,
             RobotUnion.Factory,
             CompositeBox.Factory,
+            RobotCube.Factory
         )
 
         private val simpleFactories = factories.asSequence().filter { it.isSimple }.flatMap { f -> f.names.map { n -> n to f } }.toMap()

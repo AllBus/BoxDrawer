@@ -84,4 +84,8 @@ class FigureCircle(
     private fun normalizeAngle(angle: Double): Double {
         return (angle % 360 + 360) % 360
     }
+
+    override fun print(): String {
+        return "M ${center.x} ${center.y} c ${radius} ${segmentStart} ${segmentEnd}"
+    }
 }

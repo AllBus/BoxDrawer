@@ -53,5 +53,16 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points) {
             g.drawBezier(points)
         }
     }
+
+    override fun print(): String {
+        var st = points.first()
+        return "M ${st.x} ${st.y} b ${
+            points.drop(1).flatMapIndexed { i, v ->
+                val r = listOf(v.x - st.x, v.y - st.y)
+                if ((i+1) % 3 == 0) st = v
+                r
+            }.joinToString(" ")
+        }"
+    }
 }
 

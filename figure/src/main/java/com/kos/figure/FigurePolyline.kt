@@ -86,4 +86,8 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points) {
             g.drawPolyline(points)
         }
     }
+
+    override fun print(): String {
+        return "M 0 0 L "+points.map { p ->"${p.x} ${p.y}" }.joinToString(" ")
+    }
 }

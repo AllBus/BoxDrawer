@@ -75,7 +75,7 @@ fun ToolbarForGrid(vm: GridData) {
         ) {
             RunButton("Нарисовать деталь") {
                 coroutineScope.launch {
-                    showFileChooser { f -> vm.save(f) }
+                    showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
                 }
 
             }

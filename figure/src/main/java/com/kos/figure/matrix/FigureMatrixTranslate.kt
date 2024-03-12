@@ -5,7 +5,6 @@ import com.kos.figure.CropSide
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
-import vectors.Matrix
 import vectors.Vec2
 
 
@@ -32,6 +31,10 @@ abstract class FigureMatrix(): Figure(){
 
     override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
         return this
+    }
+
+    override fun print(): String {
+        return ""
     }
 }
 class FigureMatrixTranslate(val x: Double, val y: Double) : FigureMatrix() {
@@ -65,15 +68,3 @@ class FigureMatrixRestore() : FigureMatrix() {
     }
 }
 
-class Figure3dTransform(val m : Matrix, val figure: IFigure): FigureMatrix(){
-
-    override fun draw(g: IFigureGraphics) {
-        g.save()
-        g.transform(m){
-            figure.draw(g)
-        }
-
-        g.restore()
-
-    }
-}

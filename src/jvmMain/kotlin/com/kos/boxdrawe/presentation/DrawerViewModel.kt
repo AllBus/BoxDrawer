@@ -1,6 +1,5 @@
 package com.kos.boxdrawe.presentation
 
-import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.figure.FigureExtractor
@@ -8,14 +7,12 @@ import com.kos.figure.FigureEmpty
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import org.kabeja.dxf.DXFDocument
 import org.kabeja.parser.DXFParser
 import org.kabeja.parser.ParserBuilder
 import turtoise.DrawerSettings
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 
 class DrawerViewModel {
 
@@ -79,6 +76,7 @@ class ToolsData(val tools: Tools) {
 
             val extractor = FigureExtractor()
             tools.currentFigure.value = extractor.extractFigures(doc)
+            tools.updateChooserDir(fileName)
         } catch (e: Exception) {
             e.printStackTrace()
         }

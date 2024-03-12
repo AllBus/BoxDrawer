@@ -37,7 +37,7 @@ fun ToolbarForTortoise(vm: TortoiseData) {
         ) {
             RunButton("Нарисовать деталь") {
                 coroutineScope.launch {
-                    showFileChooser { f -> vm.saveTortoise(f, text.value.text) }
+                    showFileChooser(vm.tools.chooserDir()) { f -> vm.saveTortoise(f, text.value.text) }
                 }
             }
             Spacer(Modifier.height(4.dp))

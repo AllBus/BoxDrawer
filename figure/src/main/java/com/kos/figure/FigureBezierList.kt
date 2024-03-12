@@ -70,6 +70,19 @@ class FigureBezierList(val points: List<List<Vec2>>) : Figure() {
         g.drawBezierList(points)
     }
 
+    override fun print(): String {
+        return points.joinToString(" ") { point ->
+            var st = point.first()
+            "M ${st.x} ${st.y} b ${
+                point.drop(1).flatMapIndexed { i, v ->
+                    val r = listOf(v.x - st.x, v.y - st.y)
+                    if ((i + 1) % 3 == 0) st = v
+                    r
+                }.joinToString(" ")
+            }"
+        }
+    }
+
     companion object {
         fun simple(beziers: List<FigureBezierList>): FigureBezierList {
             val b = beziers.flatMap { it.points }.filter { it.isNotEmpty() }

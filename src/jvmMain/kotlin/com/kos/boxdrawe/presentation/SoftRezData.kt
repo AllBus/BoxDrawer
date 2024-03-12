@@ -14,6 +14,7 @@ class SoftRezData(val tools: ITools, val tortoise: TortoiseData) {
 
     fun saveRez(fileName: String, figure: IFigure) {
         tools.saveFigures(fileName, drawRez(figure))
+        tools.updateChooserDir(fileName)
     }
 
     val figures = MutableStateFlow<IFigure>(Figure.Empty)
