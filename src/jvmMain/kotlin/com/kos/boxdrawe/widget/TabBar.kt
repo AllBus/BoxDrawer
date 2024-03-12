@@ -214,7 +214,7 @@ suspend fun showLoadFileChooser(directory: File, action: (String)-> Unit) {
         aFilterPatterns.flip()
 
         TinyFileDialogs.tinyfd_openFileDialog(
-            "Олткрыть фигуру",
+            "Открыть фигуру",
             directory.absolutePath,
             aFilterPatterns,
             null,
