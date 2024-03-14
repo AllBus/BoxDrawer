@@ -59,8 +59,11 @@ fun EditTextField(title:String, postfix:String, value: MutableState<TextFieldVal
         OutlinedTextField(
             value = value.value,
             onValueChange = {
+                val change = (value.value.text != it.text)
                 value.value = it
-                onChange(it)
+                if (change) {
+                    onChange(it)
+                }
             },
             label = { Text(title) },
             singleLine = false,

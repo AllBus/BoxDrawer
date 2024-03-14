@@ -21,9 +21,6 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TOOLS
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
 import com.kos.boxdrawe.widget.tabbar.*
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import org.lwjgl.system.MemoryStack
-import org.lwjgl.util.tinyfd.TinyFileDialogs
 import java.io.File
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
@@ -69,91 +66,6 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
     }
 }
 
-@Composable
-fun ToolbarForBublik(vm: BublikData) {
-    val coroutineScope = rememberCoroutineScope()
-
-    var pazPositionLeftTop by remember { vm.pazPositionLeftTop }
-    var pazPositionCenter by remember { vm.pazPositionCenter }
-    var pazPositionLeftBottom by remember { vm.pazPositionLeftBottom }
-    var pazPositionRightTop by remember { vm.pazPositionRightTop }
-    var pazPositionRightBottom by remember { vm.pazPositionRightBottom }
-
-    val radiusBublik = remember { vm.radiusBublik }
-    val radius = remember { vm.radius }
-    val segmentCount = remember { vm.segmentCount }
-    val sideCount = remember { vm.sideCount }
-
-    Row(
-        modifier = TabContentModifier
-    ) {
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            NumericUpDown("Радиус бублика", "мм", radiusBublik)
-            NumericUpDown("Радиус", "мм", radius)
-            NumericUpDown("Число сегментов", "мм", segmentCount)
-            NumericUpDown("Число сторон", "мм", sideCount)
-        }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            RunCheckBox(
-                checked = pazPositionLeftTop,
-                title = "по левому краю сверху",
-                onCheckedChange = { c ->
-                    pazPositionLeftTop = c
-                    vm.redrawBox()
-                },
-            )
-            RunCheckBox(
-                checked = pazPositionCenter,
-                title = "по центру",
-                onCheckedChange = { c ->
-                    pazPositionCenter = c
-                    vm.redrawBox()
-                },
-            )
-
-            RunCheckBox(
-                checked = pazPositionLeftBottom,
-                title = "по левому краю снизу",
-                onCheckedChange = { c ->
-                    pazPositionLeftBottom = c
-                    vm.redrawBox()
-                },
-            )
-
-            RunCheckBox(
-                checked = pazPositionRightTop,
-                title = "по правому краю сверху",
-                onCheckedChange = { c ->
-                    pazPositionRightTop = c
-                    vm.redrawBox()
-                },
-            )
-
-            RunCheckBox(
-                checked = pazPositionRightBottom,
-                title = "по правому краю снизу",
-                onCheckedChange = { c ->
-                    pazPositionRightBottom = c
-                    vm.redrawBox()
-                },
-            )
-        }
-        Column(
-            modifier = Modifier.weight(weight = 0.5f, fill = true)
-        ) {
-            RunButton("Нарисовать деталь") {
-                coroutineScope.launch {
-                    showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
-                }
-            }
-        }
-    }
-}
-
 
 //@Composable
 //fun showFileChooser(
@@ -177,60 +89,64 @@ fun ToolbarForBublik(vm: BublikData) {
 suspend fun showFileChooser(directory: File, action: (String)-> Unit) {
     delay(100)
 
-    MemoryStack.stackPush().use { stack ->
-        val aFilterPatterns = stack.mallocPointer(1)
-        aFilterPatterns.put(stack.UTF8("*.dxf"))
-        aFilterPatterns.flip()
+//    try {
+//        MemoryStack.stackPush().use { stack ->
+//            val aFilterPatterns = stack.mallocPointer(1)
+//            aFilterPatterns.put(stack.UTF8("*.dxf"))
+//            aFilterPatterns.flip()
+//
+//            TinyFileDialogs.tinyfd_saveFileDialog(
+//                "Сохранить фигуру как...",
+//                directory.absolutePath,
+//                aFilterPatterns,
+//                "Autocad (*.dxf)",
+//            )?.let { fileName ->
+//                action(fileName)
+//            }
+//        }
+//    }catch (e : Exception){
+//        e.printStackTrace()
+//    }
 
-        TinyFileDialogs.tinyfd_saveFileDialog(
-            "Сохранить фигуру как...",
-            directory.absolutePath,
-            aFilterPatterns,
-            null,
-        )?.let { fileName ->
-            action(fileName)
+    JFileChooser().apply {
+        this.fileFilter = FileNameExtensionFilter("Autocad (*.dxf)", "dxf")
+        this.currentDirectory = directory
+        if (showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+            val p = if (this.selectedFile.extension.lowercase() !="dxf"){
+                ".dxf"
+            }else
+                ""
+            action(this.selectedFile.path+p)
         }
     }
-
-//    JFileChooser().apply {
-//        this.fileFilter = FileNameExtensionFilter("Autocad (*.dxf)", "dxf")
-//        this.currentDirectory = directory
-//        if (showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-//            val p = if (this.selectedFile.extension.lowercase() !="dxf"){
-//                ".dxf"
-//            }else
-//                ""
-//            action(this.selectedFile.path+p)
-//        }
-//    }
 }
 
 suspend fun showLoadFileChooser(directory: File, action: (String)-> Unit) {
     delay(100)
 
-    MemoryStack.stackPush().use { stack ->
-        val aFilterPatterns = stack.mallocPointer(1)
-        aFilterPatterns.put(stack.UTF8("*.dxf"))
-        aFilterPatterns.flip()
-
-        TinyFileDialogs.tinyfd_openFileDialog(
-            "Открыть фигуру",
-            directory.absolutePath,
-            aFilterPatterns,
-            null,
-            false,
-        )?.let { fileName ->
-            action(fileName)
-        }
-    }
+//    MemoryStack.stackPush().use { stack ->
+//        val aFilterPatterns = stack.mallocPointer(1)
+//        aFilterPatterns.put(stack.UTF8("*.dxf"))
+//        aFilterPatterns.flip()
 //
-//    JFileChooser().apply {
-//        this.fileFilter = FileNameExtensionFilter("Autocad (*.dxf)", "dxf")
-//        this.currentDirectory = directory
-//        if (showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-//            action(this.selectedFile.path)
+//        TinyFileDialogs.tinyfd_openFileDialog(
+//            "Открыть фигуру",
+//            directory.absolutePath,
+//            aFilterPatterns,
+//            "Autocad (*.dxf)",
+//            false,
+//        )?.let { fileName ->
+//            action(fileName)
 //        }
 //    }
+
+    JFileChooser().apply {
+        this.fileFilter = FileNameExtensionFilter("Autocad (*.dxf)", "dxf")
+        this.currentDirectory = directory
+        if (showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            action(this.selectedFile.path)
+        }
+    }
 }
 
 @Composable
