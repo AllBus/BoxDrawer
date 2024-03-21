@@ -24,7 +24,7 @@ class TemplateCreator {
 
     private fun createItem(block: TurtoiseParserStackBlock): TemplateItem? {
         val title = block.inner.getOrNull(2)?.line.orEmpty().dropSkobki()
-        val argument = block.inner.getOrNull(1)?.line.orEmpty().dropSkobki()
+        val argument = block.inner.getOrNull(1)?.argument.orEmpty()
         val name = block.name.lowercase()
 
         return when (name){

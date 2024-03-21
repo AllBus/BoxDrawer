@@ -40,18 +40,21 @@ import com.kos.boxdrawer.template.TemplateItemTriple
 @Composable
 fun TemplateBox(
     modifier: Modifier,
-    menu: State<TemplateForm>
+    menu: State<TemplateForm>,
+    templateGenerator: (String, String)-> Unit
 ) {
 
     Box(modifier = modifier) {
-        TemplateFormBox(form = menu.value)
+        TemplateFormBox(form = menu.value, prefix = "."+menu.value.argumentName, templateGenerator = templateGenerator)
     }
 }
 
 @Composable
 fun TemplateFormBox(
     modifier: Modifier = Modifier,
-    form: TemplateForm
+    form: TemplateForm,
+    prefix:String,
+    templateGenerator: (String, String)-> Unit
 ) {
 
     Column(
@@ -66,113 +69,127 @@ fun TemplateFormBox(
             Text(form.argumentName, color = ThemeColors.templateArgumentColor)
         }
         form.list.forEach {
-            TemplateItemBox(it)
-
+            TemplateItemBox(item = it, prefix = prefix, templateGenerator = templateGenerator)
         }
-
     }
 }
 
 @Composable
-fun TemplateItemBox(item: TemplateItem) {
+fun TemplateItemBox(item: TemplateItem,
+                    prefix:String,
+                    templateGenerator: (String, String)-> Unit) {
+    val newPrefix = prefix+"."+item.argumentName
     when (item) {
-        is TemplateForm -> TemplateFormBox(form = item)
-        is TemplateItemNumeric -> TemplateNumericBox(form = item)
-        is TemplateItemSize -> TemplateSizeBox(form = item)
-        is TemplateItemRect -> TemplateRectBox(form = item)
-        is TemplateItemTriple -> TemplateTripleBox(form = item)
-        is TemplateItemInt -> TemplateIntBox(form = item)
-        is TemplateItemString -> TemplateStringBox(form = item)
-        is TemplateItemCheck -> TemplateCheckBox(form = item)
+        is TemplateForm -> TemplateFormBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
+        is TemplateItemNumeric -> TemplateNumericBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
+        is TemplateItemSize -> TemplateSizeBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
+        is TemplateItemRect -> TemplateRectBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
+        is TemplateItemTriple -> TemplateTripleBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
+        is TemplateItemInt -> TemplateIntBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
+        is TemplateItemString -> TemplateStringBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
+        is TemplateItemCheck -> TemplateCheckBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
         is TemplateItemLabel -> TemplateLabelBox(form = item)
     }
 }
 
 @Composable
-fun TemplateTripleBox(form: TemplateItemTriple) {
-    val input1 = remember { mutableStateOf(NumericTextFieldState(0.0)) }
-    val input2 = remember { mutableStateOf(NumericTextFieldState(0.0)) }
-    val input3 = remember { mutableStateOf(NumericTextFieldState(0.0)) }
+fun TemplateTripleBox(form: TemplateItemTriple,
+                      prefix:String,
+                      templateGenerator: (String, String)-> Unit) {
+    val input1 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.0", v.toString()) } }
+    val input2 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.1", v.toString()) } }
+    val input3 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.2", v.toString()) } }
     Row() {
         Label(
             form.title,
             singleLine = true,
             modifier = Modifier.align(alignment = Alignment.CenterVertically)
         )
-        NumericUpDown("", "", input1.value, modifier = Modifier.weight(1f))
-        NumericUpDown("", "", input2.value, modifier = Modifier.weight(1f))
-        NumericUpDown("", "", input3.value, modifier = Modifier.weight(1f))
+        NumericUpDown("", "", input1, modifier = Modifier.weight(1f))
+        NumericUpDown("", "", input2, modifier = Modifier.weight(1f))
+        NumericUpDown("", "", input3, modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun TemplateRectBox(form: TemplateItemRect) {
-    val input1 = remember { mutableStateOf(NumericTextFieldState(0.0)) }
-    val input2 = remember { mutableStateOf(NumericTextFieldState(0.0)) }
-    val input3 = remember { mutableStateOf(NumericTextFieldState(0.0)) }
-    val input4 = remember { mutableStateOf(NumericTextFieldState(0.0)) }
+fun TemplateRectBox(form: TemplateItemRect,
+                    prefix:String,
+                    templateGenerator: (String, String)-> Unit) {
+    val input1 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.0", v.toString()) } }
+    val input2 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.1", v.toString()) } }
+    val input3 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.2", v.toString()) } }
+    val input4 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.3", v.toString()) } }
     Row() {
         Label(
             form.title,
             singleLine = true,
             modifier = Modifier.align(alignment = Alignment.CenterVertically)
         )
-        NumericUpDown("", "", input1.value, modifier = Modifier.weight(1f))
-        NumericUpDown("", "", input2.value, modifier = Modifier.weight(1f))
-        NumericUpDown("", "", input3.value, modifier = Modifier.weight(1f))
-        NumericUpDown("", "", input4.value, modifier = Modifier.weight(1f))
+        NumericUpDown("", "", input1, modifier = Modifier.weight(1f))
+        NumericUpDown("", "", input2, modifier = Modifier.weight(1f))
+        NumericUpDown("", "", input3, modifier = Modifier.weight(1f))
+        NumericUpDown("", "", input4, modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun TemplateSizeBox(form: TemplateItemSize) {
-    val input1 = remember { mutableStateOf(NumericTextFieldState(0.0)) }
-    val input2 = remember { mutableStateOf(NumericTextFieldState(0.0)) }
+fun TemplateSizeBox(form: TemplateItemSize,
+                    prefix:String,
+                    templateGenerator: (String, String)-> Unit) {
+    val input1 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.0", v.toString()) } }
+    val input2 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.1", v.toString()) } }
     Row() {
         Label(
             form.title,
             singleLine = true,
             modifier = Modifier.align(alignment = Alignment.CenterVertically)
         )
-        NumericUpDown("", "", input1.value, modifier = Modifier.weight(1f))
-        NumericUpDown("", "", input2.value, modifier = Modifier.weight(1f))
+        NumericUpDown("", "", input1, modifier = Modifier.weight(1f))
+        NumericUpDown("", "", input2, modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun TemplateNumericBox(form: TemplateItemNumeric) {
-    val input = remember { mutableStateOf(NumericTextFieldState(0.0)) }
+fun TemplateNumericBox(form: TemplateItemNumeric,
+                       prefix:String,
+                       templateGenerator: (String, String)-> Unit) {
+    val input = remember { NumericTextFieldState(0.0){ v -> templateGenerator(prefix, v.toString()) } }
     Row() {
         Label(
             form.title,
             singleLine = true,
             modifier = Modifier.align(alignment = Alignment.CenterVertically)
         )
-        NumericUpDown("", "", input.value, modifier = Modifier.weight(1f))
+        NumericUpDown("", "", input, modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun TemplateIntBox(form: TemplateItemInt) {
-    val input = remember { mutableStateOf(NumericTextFieldState(0.0, digits = 0)) }
+fun TemplateIntBox(form: TemplateItemInt,
+                   prefix:String,
+                   templateGenerator: (String, String)-> Unit) {
+    val input = remember { NumericTextFieldState(0.0){ v -> templateGenerator(prefix, v.toString()) } }
     Row() {
         Label(
             form.title,
             singleLine = true,
             modifier = Modifier.align(alignment = Alignment.CenterVertically)
         )
-        NumericUpDown("", "", input.value, modifier = Modifier.weight(1f))
+        NumericUpDown("", "", input, modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun TemplateCheckBox(form: TemplateItemCheck) {
+fun TemplateCheckBox(form: TemplateItemCheck,
+                     prefix:String,
+                     templateGenerator: (String, String)-> Unit) {
     val checkState = remember { mutableStateOf(true) }
     RunCheckBox(
         checked = checkState.value,
         title = form.title,
         onCheckedChange = { c ->
             checkState.value = c
+            templateGenerator(prefix, c.toString())
         },
     )
 }
@@ -190,15 +207,18 @@ fun TemplateLabelBox(form: TemplateItemLabel) {
 
 
 @Composable
-fun TemplateStringBox(form: TemplateItemString) {
+fun TemplateStringBox(form: TemplateItemString,
+                      prefix:String,
+                      templateGenerator: (String, String)-> Unit) {
     val text = remember { mutableStateOf("") }
     OutlinedTextField(
         value = text.value.toString(),
         onValueChange = {
             text.value = it
+            templateGenerator(prefix, it)
         },
         label = { Text(form.title) },
-        singleLine = false,
+        singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         modifier = Modifier.wrapContentHeight().fillMaxWidth(),
         enabled = true,

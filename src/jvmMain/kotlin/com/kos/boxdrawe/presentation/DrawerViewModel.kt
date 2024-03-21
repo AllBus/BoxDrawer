@@ -27,22 +27,7 @@ class DrawerViewModel {
     val bezier = BezierData(tools)
     val bublik = BublikData(tools)
     val tabIndex = MutableStateFlow(BoxDrawerToolBar.TAB_TORTOISE)
-
-    val templater = TemplateCreator()
-    val menu = MutableStateFlow("(form  (arg u) (title (Кубик)) " +
-            "(items " +
-            "(size s (Размер)) " +
-            "(float w (Ширина)) " +
-            "(rect r (Область)) " +
-            "(triple t (Положение)) " +
-            "(form (arg f) (title (Узлы)) (items "+
-                "(check ch (Внутреняя)) " +
-                "(int ci (Количество узлов)) " +
-                "(string cs (Большая надпись))"+
-                "(label l (Готово для вывода))"+
-            "))"+
-            ")" +
-            ")").map { templater.parse(it) }
+    val template = TemplateData(tools)
 
     private val noneFigure = MutableStateFlow(FigureEmpty).asStateFlow()
 

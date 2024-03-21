@@ -58,7 +58,8 @@ fun App(vm: State<DrawerViewModel>) {
     val matrix = remember { vm.value.tortoise.matrix }
     val alternative = remember { vm.value.box.alternative }
     val stateText = remember { mutableStateOf("") }
-    val menu = vm.value.menu.collectAsState(TemplateForm("", "", emptyList()))
+    val menu = vm.value.template.menu.collectAsState(TemplateForm("", "", emptyList()))
+    val templateText = vm.value.template.templateText.collectAsState("")
 
     MaterialTheme {
         Column {
@@ -77,9 +78,14 @@ fun App(vm: State<DrawerViewModel>) {
                             fontSize = 10.sp,
                             lineHeight = 12.sp,
                         )
-                        TemplateBox(Modifier.align(Alignment.TopStart).padding(8.dp).width(250.dp).verticalScroll(
-                            rememberScrollState()
-                        ),  menu)
+                        TemplateBox(
+                            modifier = Modifier.align(Alignment.TopStart).padding(8.dp).width(250.dp)
+                                .verticalScroll(
+                                    rememberScrollState()
+                                ),
+                            menu = menu,
+                            templateGenerator = vm.value.template::templateGenerator,
+                        )
                     }
 
                     BoxDrawerToolBar.TAB_BOX -> {
@@ -117,11 +123,18 @@ fun App(vm: State<DrawerViewModel>) {
                     }
                 }
 
-                Text(
-                    stateText.value,
+                Column(
                     Modifier.align(Alignment.TopEnd),
-                    color = ThemeColors.displayLabelColor,
-                )
+                ) {
+                    Text(
+                        stateText.value,
+                        color = ThemeColors.displayLabelColor,
+                    )
+                    Text(
+                        templateText.value,
+                        color = ThemeColors.displayLabelColor,
+                    )
+                }
 
                 if ((tabIndex.value == BoxDrawerToolBar.TAB_BOX && !alternative.value) || tabIndex.value == BoxDrawerToolBar.TAB_TORTOISE) {
                     Column(
