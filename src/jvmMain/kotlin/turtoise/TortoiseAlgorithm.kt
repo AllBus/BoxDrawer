@@ -53,12 +53,11 @@ class TortoiseSimpleAlgorithm(
     }
 }
 
-class TortoiseFigureAlgorithm(
+open class TortoiseFigureAlgorithm(
     val name: String,
-    val line: TurtoiseParserStackItem
+    val line: TurtoiseParserStackItem,
 ) : TortoiseAlgorithm {
     private val _names = listOf(name)
-
 
     override val names: List<String>
         get() = _names

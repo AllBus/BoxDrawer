@@ -9,6 +9,7 @@ class TemplateForm(override val title: String,
                    override val argumentName: String,
                    val list: List<TemplateItem>,
 ): TemplateItem{
+    fun isEmpty() : Boolean = list.isEmpty()
 }
 
 class TemplateItemInt(

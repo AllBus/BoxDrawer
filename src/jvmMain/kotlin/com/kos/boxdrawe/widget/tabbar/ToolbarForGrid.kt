@@ -2,8 +2,11 @@ package com.kos.boxdrawe.widget.tabbar
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.GridData
 import com.kos.boxdrawe.widget.*
 import kotlinx.coroutines.launch
@@ -79,9 +82,11 @@ fun ToolbarForGrid(vm: GridData) {
                 }
 
             }
+            Spacer(Modifier.height(4.dp))
             RunButton("Посторить по тексту") {
                 vm.createFromText()
             }
+            Spacer(Modifier.height(4.dp))
             RunButton("Получить текст") {
                 vm.saveToText()
             }

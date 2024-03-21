@@ -2,6 +2,7 @@ package com.kos.boxdrawer.template
 
 import turtoise.TortoiseParser
 import turtoise.TurtoiseParserStackBlock
+import turtoise.TurtoiseParserStackItem
 
 class TemplateCreator {
 
@@ -9,13 +10,18 @@ class TemplateCreator {
         return parse(TortoiseParser.parseSkobki(line))
     }
 
-    fun parse(skobki: TurtoiseParserStackBlock): TemplateForm {
-        return createForm(skobki.blocks.firstOrNull()?:TurtoiseParserStackBlock())
+    fun parse(skobki: TurtoiseParserStackItem): TemplateForm {
+        if (skobki is TurtoiseParserStackBlock){
+            return createForm(skobki)
+        }else{
+            return TemplateForm("", "", emptyList())
+        }
     }
 
     private fun createForm(block: TurtoiseParserStackBlock): TemplateForm {
         val title = block.getBlockAtName("title")?.blocks?.firstOrNull()?.line.orEmpty().dropSkobki()
         val argument = block.getBlockAtName("arg")?.argument.orEmpty()
+
         val items = block.getBlockAtName("items")?.blocks?.mapNotNull { b ->
             createItem(b)
         }.orEmpty()

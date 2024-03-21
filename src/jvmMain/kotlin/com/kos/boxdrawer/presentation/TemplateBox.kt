@@ -44,8 +44,16 @@ fun TemplateBox(
     templateGenerator: (String, String)-> Unit
 ) {
 
-    Box(modifier = modifier) {
-        TemplateFormBox(form = menu.value, prefix = "."+menu.value.argumentName, templateGenerator = templateGenerator)
+    if (!menu.value.isEmpty()) {
+        Box(modifier = modifier) {
+            val prefix =
+                if (menu.value.argumentName.isNotEmpty()) "." + menu.value.argumentName else ""
+            TemplateFormBox(
+                form = menu.value,
+                prefix = prefix,
+                templateGenerator = templateGenerator
+            )
+        }
     }
 }
 

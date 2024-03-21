@@ -196,8 +196,6 @@ class PolkaLine(
         }
 
         fun parsePolka(items: TurtoiseParserStackItem, useAlgorithms: Array<String>?): TortoiseAlgorithm {
-
-
             val polka = PolkaLine(
                 useAlgorithms = useAlgorithms,
                 startHeight = items.doubleValue(0, 0.0),

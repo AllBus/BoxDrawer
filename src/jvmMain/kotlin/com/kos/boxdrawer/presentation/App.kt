@@ -78,14 +78,6 @@ fun App(vm: State<DrawerViewModel>) {
                             fontSize = 10.sp,
                             lineHeight = 12.sp,
                         )
-                        TemplateBox(
-                            modifier = Modifier.align(Alignment.TopStart).padding(8.dp).width(250.dp)
-                                .verticalScroll(
-                                    rememberScrollState()
-                                ),
-                            menu = menu,
-                            templateGenerator = vm.value.template::templateGenerator,
-                        )
                     }
 
                     BoxDrawerToolBar.TAB_BOX -> {
@@ -106,7 +98,16 @@ fun App(vm: State<DrawerViewModel>) {
                     BoxDrawerToolBar.TAB_BEZIER -> DisplayBezier(displayScale, vm.value.bezier)
 
                     BoxDrawerToolBar.TAB_SOFT,
-                    BoxDrawerToolBar.TAB_BUBLIK,
+                    BoxDrawerToolBar.TAB_BUBLIK -> {
+                        DisplayTortoise(
+                            displayScale,
+                            matrix,
+                            false,
+                            figures.value,
+                        ) { text ->
+                            stateText.value = text
+                        }
+                    }
                     BoxDrawerToolBar.TAB_TOOLS -> {
                         DisplayTortoise(
                             displayScale,
@@ -116,6 +117,14 @@ fun App(vm: State<DrawerViewModel>) {
                         ) { text ->
                             stateText.value = text
                         }
+                        TemplateBox(
+                            modifier = Modifier.align(Alignment.TopStart).padding(8.dp).width(250.dp)
+                                .verticalScroll(
+                                    rememberScrollState()
+                                ),
+                            menu = menu,
+                            templateGenerator = vm.value.template::templateGenerator,
+                        )
                     }
 
                     else -> {
