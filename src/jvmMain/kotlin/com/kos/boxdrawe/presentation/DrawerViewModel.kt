@@ -3,10 +3,12 @@ package com.kos.boxdrawe.presentation
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.figure.FigureExtractor
+import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.figure.FigureEmpty
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import org.kabeja.dxf.DXFDocument
 import org.kabeja.parser.DXFParser
 import org.kabeja.parser.ParserBuilder
@@ -25,6 +27,22 @@ class DrawerViewModel {
     val bezier = BezierData(tools)
     val bublik = BublikData(tools)
     val tabIndex = MutableStateFlow(BoxDrawerToolBar.TAB_TORTOISE)
+
+    val templater = TemplateCreator()
+    val menu = MutableStateFlow("(form  (arg u) (title (Кубик)) " +
+            "(items " +
+            "(size s (Размер)) " +
+            "(float w (Ширина)) " +
+            "(rect r (Область)) " +
+            "(triple t (Положение)) " +
+            "(form (arg f) (title (Узлы)) (items "+
+                "(check ch (Внутреняя)) " +
+                "(int ci (Количество узлов)) " +
+                "(string cs (Большая надпись))"+
+                "(label l (Готово для вывода))"+
+            "))"+
+            ")" +
+            ")").map { templater.parse(it) }
 
     private val noneFigure = MutableStateFlow(FigureEmpty).asStateFlow()
 

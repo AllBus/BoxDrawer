@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.*
+import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BEZIER
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BUBLIK
@@ -49,7 +50,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
             }
         }
         Box(
-            Modifier.fillMaxWidth().height(240.dp).background(Color.LightGray)) {
+            Modifier.fillMaxWidth().height(240.dp).background(ThemeColors.tabBackground)) {
             when(tabIndex.value) {
                 TAB_BOX -> ToolbarForBox(vm.value.box)
                 TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)

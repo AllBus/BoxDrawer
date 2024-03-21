@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
@@ -35,6 +37,7 @@ import com.kos.boxdrawe.widget.TabBar
 import com.kos.boxdrawe.widget.display.DisplayBezier
 import com.kos.boxdrawe.widget.display.DisplayGrid
 import com.kos.boxdrawe.widget.display.DisplayTortoise
+import com.kos.boxdrawer.template.TemplateForm
 import com.kos.figure.FigureEmpty
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -55,6 +58,7 @@ fun App(vm: State<DrawerViewModel>) {
     val matrix = remember { vm.value.tortoise.matrix }
     val alternative = remember { vm.value.box.alternative }
     val stateText = remember { mutableStateOf("") }
+    val menu = vm.value.menu.collectAsState(TemplateForm("", "", emptyList()))
 
     MaterialTheme {
         Column {
@@ -73,6 +77,9 @@ fun App(vm: State<DrawerViewModel>) {
                             fontSize = 10.sp,
                             lineHeight = 12.sp,
                         )
+                        TemplateBox(Modifier.align(Alignment.TopStart).padding(8.dp).width(250.dp).verticalScroll(
+                            rememberScrollState()
+                        ),  menu)
                     }
 
                     BoxDrawerToolBar.TAB_BOX -> {
@@ -183,3 +190,4 @@ fun App(vm: State<DrawerViewModel>) {
         }
     }
 }
+
