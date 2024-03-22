@@ -80,6 +80,7 @@ interface TortoiseCommand {
                 TURTOISE_MATRIX_SCALE -> "TURTOISE_MATRIX_SCALE"
                 TURTOISE_MEMORY_ASSIGN -> "TURTOISE_MEMORY_ASSIGN"
                 TURTOISE_COLOR -> "TURTOISE_COLOR"
+                TURTOISE_REGULAR_POLYGON -> "TURTOISE_REGULAR_POLYGON"
                 else -> c.toString()
             }
         }
@@ -93,6 +94,7 @@ interface TortoiseCommand {
         const val TURTOISE_RECTANGLE = 'x';
         const val TURTOISE_ROUND_RECTANGLE = 'r';
         const val TURTOISE_POLYLINE = 'L';
+        const val TURTOISE_REGULAR_POLYGON = 'n';
         const val TURTOISE_MOVE = 'm';
         const val TURTOISE_LINE = 'l';
         const val TURTOISE_LINE_WITH_ANGLE = 'л';

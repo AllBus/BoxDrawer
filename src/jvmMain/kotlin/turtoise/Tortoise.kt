@@ -20,8 +20,12 @@ import vectors.Vec2
 import java.util.Stack
 import kotlin.math.PI
 import kotlin.math.atan2
+import kotlin.math.cos
 import kotlin.math.min
+import kotlin.math.sin
 import kotlin.math.truncate
+
+private const val MAX_REGULAR_POLYGON_EDGES = 500
 
 class Tortoise() {
 
@@ -286,6 +290,17 @@ class Tortoise() {
                     }
                 }
 
+                TortoiseCommand.TURTOISE_REGULAR_POLYGON -> {
+                    val r = com.take(0, 0.0, memory)
+                    val count = min(com.take(1, 3.0, memory).toInt(), MAX_REGULAR_POLYGON_EDGES)
+
+                    val p = (1..count).map { ind ->
+                        val ang = state.angle + 2 * Math.PI * ind / count
+                        state.xy + Vec2(sin(ang), cos(ang)) * r
+                    }
+                    res += FigurePolyline(p, true)
+                }
+
                 TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {
                     saveLine()
 
@@ -488,36 +503,39 @@ class Tortoise() {
                             g
                         )
 
-                        val ft = com.takeBlock(1)?.let{ a -> a as? TurtoiseParserStackBlock}?.let { a ->
+                        val ft = com.takeBlock(1)?.let { a -> a as? TurtoiseParserStackBlock }
+                            ?.let { a ->
 
-                            val c = a.getBlockAtName("c")
-                            val r = a.getBlockAtName("r")
-                            val s = a.getBlockAtName("s")
-                            val m = (a.getBlockAtName("m")?.let { item -> Vec2(
-                                memory.value(item.get(1).orEmpty(), 0.0),
-                                memory.value(item.get(2).orEmpty(), 0.0),
-                            )  }?:Vec2.Zero)
+                                val c = a.getBlockAtName("c")
+                                val r = a.getBlockAtName("r")
+                                val s = a.getBlockAtName("s")
+                                val m = (a.getBlockAtName("m")?.let { item ->
+                                    Vec2(
+                                        memory.value(item.get(1).orEmpty(), 0.0),
+                                        memory.value(item.get(2).orEmpty(), 0.0),
+                                    )
+                                } ?: Vec2.Zero)
 
-                            val columns = memory.value(c?.get(1).orEmpty(), 1.0).toInt()
-                            val rows = memory.value(r?.get(1).orEmpty(), 1.0).toInt()
-                            val scaleX = memory.value(s?.get(1).orEmpty(), 1.0)
-                            val scaleY = memory.value(s?.get(2).orEmpty(), scaleX)
-                            val distance = Vec2(
-                                memory.value(c?.get(2).orEmpty(), 1.0),
-                                memory.value(r?.get(2).orEmpty(), 1.0),
-                            )
+                                val columns = memory.value(c?.get(1).orEmpty(), 1.0).toInt()
+                                val rows = memory.value(r?.get(1).orEmpty(), 1.0).toInt()
+                                val scaleX = memory.value(s?.get(1).orEmpty(), 1.0)
+                                val scaleY = memory.value(s?.get(2).orEmpty(), scaleX)
+                                val distance = Vec2(
+                                    memory.value(c?.get(2).orEmpty(), 1.0),
+                                    memory.value(r?.get(2).orEmpty(), 1.0),
+                                )
 
-                            FigureArray(
-                                figure = f3d,
-                                startPoint = m,
-                                distance = distance,
-                                columns = columns,
-                                rows = rows,
-                                angle = state.angle,
-                                scaleX = scaleX,
-                                scaleY = scaleY,
-                            )
-                        }?: f3d
+                                FigureArray(
+                                    figure = f3d,
+                                    startPoint = m,
+                                    distance = distance,
+                                    columns = columns,
+                                    rows = rows,
+                                    angle = state.angle,
+                                    scaleX = scaleX,
+                                    scaleY = scaleY,
+                                )
+                            } ?: f3d
 
                         res.add(
                             ft

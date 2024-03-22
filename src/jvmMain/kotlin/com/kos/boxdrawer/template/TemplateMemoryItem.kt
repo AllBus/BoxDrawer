@@ -7,8 +7,23 @@ class TemplateMemoryItem(val values: List<String>) {
             if (i + 1 == index) {
                 value
             } else
-                values.getOrNull(i) ?: "0.0"
+                values.getOrNull(i) ?: "+"
         }
         return TemplateMemoryItem(r)
     }
+
+    fun merge(other: TemplateMemoryItem):TemplateMemoryItem {
+        if (values.size <= 1)
+            return other
+
+        val nm = other.values.mapIndexed{ i, v ->
+            if (v.isEmpty() || v =="+")
+                values.getOrNull(i)?:"+"
+            else
+                v
+        }
+
+        return TemplateMemoryItem(nm)
+    }
 }
+

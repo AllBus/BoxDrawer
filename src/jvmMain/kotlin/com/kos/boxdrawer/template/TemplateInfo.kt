@@ -1,14 +1,13 @@
 package com.kos.boxdrawer.template
 
 import com.kos.boxdrawer.presentation.TemplateFormBox
-import turtoise.TurtoiseParserStackBlock
 import turtoise.TurtoiseParserStackItem
 
 class TemplateInfo(
-    val form :TemplateForm,
+    val form: TemplateForm,
     val values: TurtoiseParserStackItem,
 ) {
-    fun memoryValues(): Map<String,String>{
+    fun memoryValues(): TemplateMemory {
 
         val block = values
         if (form.argumentName.isNotEmpty()) {
@@ -18,31 +17,58 @@ class TemplateInfo(
 
         val prefix =
             if (form.argumentName.isNotEmpty()) "." + form.argumentName else ""
+     //   println(">>")
+        val v = memoryFormValues(form, block, prefix)
 
-        return memoryValues(form, block,  prefix)
+       // println(v.map { (k, v) -> "$k : ${v.values.joinToString(", ")}" })
+        return TemplateMemory(v)
     }
 
-    fun memoryValues(item: TemplateItem, block: TurtoiseParserStackItem, prefix:String): Map<String,String>{
+    fun memoryFormValues(
+        form: TemplateForm,
+        block: TurtoiseParserStackItem,
+        prefix: String
+    ): Map<String, TemplateMemoryItem> {
+
+        val mapp = mutableMapOf<String, TemplateMemoryItem>()
+        form.list.forEach {
+            mapp += memoryValues(it, block, prefix)
+        }
+        return mapp
+    }
+
+    fun memoryValues(
+        item: TemplateItem,
+        block: TurtoiseParserStackItem,
+        prefix: String
+    ): Map<String, TemplateMemoryItem> {
         val newPrefix = prefix + "." + item.argumentName
-        val inner = block.getInnerAtName(item.argumentName)?: return  emptyMap()
+//        println(newPrefix)
+//        println(block.line)
+//        println()
+        val inner = block.getInnerAtName(item.argumentName) ?: return emptyMap()
 
         return when (item) {
             is TemplateForm -> {
-                var mapp = mutableMapOf<String, String>()
-                form.list.forEach {
-                    mapp+= memoryValues(it, inner, newPrefix)
-                }
-                mapp
+                memoryFormValues(
+                    form = item,
+                    block = inner,
+                    prefix = newPrefix,
+                )
             }
+
             is TemplateItemLabel -> emptyMap()
 
             else -> {
-                if (item.argumentCount == 1){
-                    mapOf(newPrefix to inner.argument)
-                }else{
-                    (1..item.argumentCount).map{i ->
-                        "$newPrefix.$i" to inner.get(i).orEmpty()
-                    }.toMap()
+                if (item.argumentCount == 1) {
+                    mapOf(newPrefix to TemplateMemoryItem(listOf(inner.argument)))
+                } else {
+                    mapOf(
+                        newPrefix to TemplateMemoryItem((1..item.argumentCount).map { i ->
+                            inner.get(i).orEmpty()
+                        })
+                    )
+
                 }
             }
         }

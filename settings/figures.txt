@@ -1,0 +1,5 @@
+@re a @.b x.size
+@circlerect >.1 c3 x8 m.2 <
+template@noga (default (w 50) (h 70)(zt 12) (zb 20) (zh 4)) (form (title (Соединение ноги)) (items (float w (Ширина))(float h (Высота))(float zt (Отступ сверху) )(float zb (Отступ снизу) )(float zh (Глубина паза)) )) (figure =a @.h @-.zt @-.zb l.w @.zt @-.zh @a @.zh @.zb @-.w @-.zb @.zh @-a @-.zh @-.zt)
+template@example (form  (arg u) (title (Мишени)) (items (size s (Размер)) (float w (Ширина))  (rect r (Область)) (triple t (Положение)) (form (arg f) (title (Узлы)) (items (check ch (Внутреняя)) (int ci (Количество узлов))(string cs (Большая надпись))(label l (Готово для вывода)) )))) (figure > @.u.f.ci l @.u.w c.u.r.1 c.u.r.2 c.u.r.3 c.u.r.4 <)
+template@ruka (form (title (Соединение руки)) (items (float d (Диаметр отверстия))(float w (Ширина))(float h (Высота от центра отверстия))(size z (паз)))) (default (h 10) (d 6) (w 12) (z 8 4)) (figure =a @.w @-.z.1 =b @=-a/2 c=.d/2 c=.w/2 0 180 m=.w/2 l0 @.h @b @-.z.2 @-.z.1 @.z.2 @b @-.h)

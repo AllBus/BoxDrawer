@@ -247,6 +247,13 @@ object TortoiseParser {
         )
         sb.append(
             helpName(
+                TortoiseCommand.TURTOISE_REGULAR_POLYGON,
+                "r n",
+                "многоугольник радиуса r с числом сторон n"
+            )
+        )
+        sb.append(
+            helpName(
                 TortoiseCommand.TURTOISE_ZIGZAG, "w delta zigWidth board", "Рисовать зигзаги:\n" +
                         "     w - общая длина,\n" +
                         "     delta - расстояние между началами двух зигзагов,\n" +
