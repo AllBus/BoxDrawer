@@ -4,7 +4,7 @@ import turtoise.TortoiseParser
 import turtoise.TurtoiseParserStackBlock
 import turtoise.TurtoiseParserStackItem
 
-class TemplateCreator {
+object TemplateCreator {
 
     fun parse(line: String): TemplateForm {
         return parse(TortoiseParser.parseSkobki(line))

@@ -11,8 +11,8 @@ open class SimpleTortoiseMemory : TortoiseMemory {
                 return d
 
             return when (variable[0]) {
-                '-' -> -(m[variable.drop(1)] ?: defaultValue)
-                '+' -> m[variable.drop(1)] ?: defaultValue
+                '-' -> -value(variable.drop(1), defaultValue)
+                '+' -> value(variable.drop(1), defaultValue)
                 '=' -> calculate(variable.drop(1), defaultValue)
                 else -> m[variable] ?: defaultValue
             }

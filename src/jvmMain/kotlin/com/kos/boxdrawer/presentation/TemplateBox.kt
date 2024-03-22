@@ -26,7 +26,10 @@ import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.RunCheckBox
+import com.kos.boxdrawer.template.TemplateCreator.dropSkobki
 import com.kos.boxdrawer.template.TemplateForm
+import com.kos.boxdrawer.template.TemplateGeneratorListener
+import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.boxdrawer.template.TemplateItem
 import com.kos.boxdrawer.template.TemplateItemCheck
 import com.kos.boxdrawer.template.TemplateItemInt
@@ -36,22 +39,32 @@ import com.kos.boxdrawer.template.TemplateItemRect
 import com.kos.boxdrawer.template.TemplateItemSize
 import com.kos.boxdrawer.template.TemplateItemString
 import com.kos.boxdrawer.template.TemplateItemTriple
+import turtoise.TurtoiseParserStackItem
 
 @Composable
 fun TemplateBox(
     modifier: Modifier,
-    menu: State<TemplateForm>,
-    templateGenerator: (String, String)-> Unit
+    menu: State<TemplateInfo>,
+    templateGenerator: TemplateGeneratorListener,
 ) {
 
-    if (!menu.value.isEmpty()) {
+    val form = menu.value.form
+    val block = menu.value.values
+    if (form.argumentName.isNotEmpty()) {
+        menu.value.values.getInnerAtName(form.argumentName)
+    } else
+        menu.value.values
+
+
+    if (!form.isEmpty()) {
         Box(modifier = modifier) {
             val prefix =
-                if (menu.value.argumentName.isNotEmpty()) "." + menu.value.argumentName else ""
+                if (form.argumentName.isNotEmpty()) "." + form.argumentName else ""
             TemplateFormBox(
-                form = menu.value,
+                form = form,
                 prefix = prefix,
-                templateGenerator = templateGenerator
+                block = block,
+                templateGenerator = templateGenerator,
             )
         }
     }
@@ -61,8 +74,9 @@ fun TemplateBox(
 fun TemplateFormBox(
     modifier: Modifier = Modifier,
     form: TemplateForm,
-    prefix:String,
-    templateGenerator: (String, String)-> Unit
+    block: TurtoiseParserStackItem?,
+    prefix: String,
+    templateGenerator: TemplateGeneratorListener,
 ) {
 
     Column(
@@ -77,36 +91,123 @@ fun TemplateFormBox(
             Text(form.argumentName, color = ThemeColors.templateArgumentColor)
         }
         form.list.forEach {
-            TemplateItemBox(item = it, prefix = prefix, templateGenerator = templateGenerator)
+            TemplateItemBox(
+                item = it,
+                block = block,
+                prefix = prefix,
+                templateGenerator = templateGenerator,
+            )
         }
     }
 }
 
 @Composable
-fun TemplateItemBox(item: TemplateItem,
-                    prefix:String,
-                    templateGenerator: (String, String)-> Unit) {
-    val newPrefix = prefix+"."+item.argumentName
+fun TemplateItemBox(
+    item: TemplateItem,
+    block: TurtoiseParserStackItem?,
+    prefix: String,
+    templateGenerator: TemplateGeneratorListener,
+) {
+    val newPrefix = prefix + "." + item.argumentName
+    val inner = block?.getInnerAtName(item.argumentName)
     when (item) {
-        is TemplateForm -> TemplateFormBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
-        is TemplateItemNumeric -> TemplateNumericBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
-        is TemplateItemSize -> TemplateSizeBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
-        is TemplateItemRect -> TemplateRectBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
-        is TemplateItemTriple -> TemplateTripleBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
-        is TemplateItemInt -> TemplateIntBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
-        is TemplateItemString -> TemplateStringBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
-        is TemplateItemCheck -> TemplateCheckBox(form = item, prefix = newPrefix, templateGenerator = templateGenerator)
+        is TemplateForm -> TemplateFormBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator,
+        )
+
+        is TemplateItemNumeric -> TemplateNumericBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemSize -> TemplateSizeBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemRect -> TemplateRectBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemTriple -> TemplateTripleBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemInt -> TemplateIntBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemString -> TemplateStringBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemCheck -> TemplateCheckBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
         is TemplateItemLabel -> TemplateLabelBox(form = item)
     }
 }
 
 @Composable
-fun TemplateTripleBox(form: TemplateItemTriple,
-                      prefix:String,
-                      templateGenerator: (String, String)-> Unit) {
-    val input1 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.0", v.toString()) } }
-    val input2 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.1", v.toString()) } }
-    val input3 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.2", v.toString()) } }
+fun TemplateTripleBox(
+    form: TemplateItemTriple,
+    block: TurtoiseParserStackItem?,
+    prefix: String,
+    templateGenerator: TemplateGeneratorListener
+) {
+    val input1 = remember("$prefix.1") {
+        NumericTextFieldState(block?.doubleValue(1, 0.0)?:0.0) { v ->
+            templateGenerator.templateGenerator(
+                prefix,
+                1,
+                form.argumentCount,
+                v.toString()
+            )
+        }
+    }
+    val input2 = remember("$prefix.2") {
+        NumericTextFieldState(block?.doubleValue(2, 0.0)?:0.0) { v ->
+            templateGenerator.templateGenerator(
+                prefix,
+                2,
+                form.argumentCount,
+                v.toString()
+            )
+        }
+    }
+    val input3 = remember("$prefix.3") {
+        NumericTextFieldState(block?.doubleValue(3, 0.0)?:0.0) { v ->
+            templateGenerator.templateGenerator(
+                prefix,
+                3,
+                form.argumentCount,
+                v.toString()
+            )
+        }
+    }
     Row() {
         Label(
             form.title,
@@ -120,13 +221,52 @@ fun TemplateTripleBox(form: TemplateItemTriple,
 }
 
 @Composable
-fun TemplateRectBox(form: TemplateItemRect,
-                    prefix:String,
-                    templateGenerator: (String, String)-> Unit) {
-    val input1 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.0", v.toString()) } }
-    val input2 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.1", v.toString()) } }
-    val input3 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.2", v.toString()) } }
-    val input4 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.3", v.toString()) } }
+fun TemplateRectBox(
+    form: TemplateItemRect,
+    block: TurtoiseParserStackItem?,
+    prefix: String,
+    templateGenerator: TemplateGeneratorListener
+) {
+    val input1 = remember("$prefix.1") {
+        NumericTextFieldState(block?.doubleValue(1, 0.0)?:0.0) { v ->
+            templateGenerator.templateGenerator(
+                prefix,
+                1,
+                form.argumentCount,
+                v.toString()
+            )
+        }
+    }
+    val input2 = remember("$prefix.2") {
+        NumericTextFieldState(block?.doubleValue(2, 0.0)?:0.0) { v ->
+            templateGenerator.templateGenerator(
+                prefix,
+                2,
+                form.argumentCount,
+                v.toString()
+            )
+        }
+    }
+    val input3 = remember("$prefix.3") {
+        NumericTextFieldState(block?.doubleValue(3, 0.0)?:0.0) { v ->
+            templateGenerator.templateGenerator(
+                prefix,
+                3,
+                form.argumentCount,
+                v.toString()
+            )
+        }
+    }
+    val input4 = remember("$prefix.4") {
+        NumericTextFieldState(block?.doubleValue(4, 0.0)?:0.0) { v ->
+            templateGenerator.templateGenerator(
+                prefix,
+                4,
+                form.argumentCount,
+                v.toString()
+            )
+        }
+    }
     Row() {
         Label(
             form.title,
@@ -141,11 +281,32 @@ fun TemplateRectBox(form: TemplateItemRect,
 }
 
 @Composable
-fun TemplateSizeBox(form: TemplateItemSize,
-                    prefix:String,
-                    templateGenerator: (String, String)-> Unit) {
-    val input1 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.0", v.toString()) } }
-    val input2 = remember { NumericTextFieldState(0.0){ v -> templateGenerator("$prefix.1", v.toString()) } }
+fun TemplateSizeBox(
+    form: TemplateItemSize,
+    block: TurtoiseParserStackItem?,
+    prefix: String,
+    templateGenerator: TemplateGeneratorListener
+) {
+    val input1 = remember("$prefix.1") {
+        NumericTextFieldState(block?.doubleValue(1, 0.0)?:0.0) { v ->
+            templateGenerator.templateGenerator(
+                prefix,
+                1,
+                form.argumentCount,
+                v.toString()
+            )
+        }
+    }
+    val input2 = remember("$prefix.2") {
+        NumericTextFieldState(block?.doubleValue(2, 0.0)?:0.0) { v ->
+            templateGenerator.templateGenerator(
+                prefix,
+                2,
+                form.argumentCount,
+                v.toString()
+            )
+        }
+    }
     Row() {
         Label(
             form.title,
@@ -158,10 +319,18 @@ fun TemplateSizeBox(form: TemplateItemSize,
 }
 
 @Composable
-fun TemplateNumericBox(form: TemplateItemNumeric,
-                       prefix:String,
-                       templateGenerator: (String, String)-> Unit) {
-    val input = remember { NumericTextFieldState(0.0){ v -> templateGenerator(prefix, v.toString()) } }
+fun TemplateNumericBox(
+    form: TemplateItemNumeric,
+    block: TurtoiseParserStackItem?,
+    prefix: String,
+    templateGenerator: TemplateGeneratorListener
+) {
+    val input =
+        remember("$prefix") { NumericTextFieldState(block?.doubleValue(1, 0.0)?:0.0) { v ->
+            templateGenerator.templateGenerator(
+                prefix,
+                v.toString())
+        } }
     Row() {
         Label(
             form.title,
@@ -173,10 +342,19 @@ fun TemplateNumericBox(form: TemplateItemNumeric,
 }
 
 @Composable
-fun TemplateIntBox(form: TemplateItemInt,
-                   prefix:String,
-                   templateGenerator: (String, String)-> Unit) {
-    val input = remember { NumericTextFieldState(0.0){ v -> templateGenerator(prefix, v.toString()) } }
+fun TemplateIntBox(
+    form: TemplateItemInt,
+    block: TurtoiseParserStackItem?,
+    prefix: String,
+    templateGenerator: TemplateGeneratorListener
+) {
+    val input =
+        remember("$prefix") { NumericTextFieldState(block?.doubleValue(1, 0.0)?:0.0, 0) { v ->
+            templateGenerator.templateGenerator(
+                prefix,
+                v.toString()
+            )
+        } }
     Row() {
         Label(
             form.title,
@@ -188,16 +366,22 @@ fun TemplateIntBox(form: TemplateItemInt,
 }
 
 @Composable
-fun TemplateCheckBox(form: TemplateItemCheck,
-                     prefix:String,
-                     templateGenerator: (String, String)-> Unit) {
-    val checkState = remember { mutableStateOf(true) }
+fun TemplateCheckBox(
+    form: TemplateItemCheck,
+    block: TurtoiseParserStackItem?,
+    prefix: String,
+    templateGenerator: TemplateGeneratorListener
+) {
+    val checkState = remember("$prefix") { mutableStateOf(block?.line == "true") }
     RunCheckBox(
         checked = checkState.value,
         title = form.title,
         onCheckedChange = { c ->
             checkState.value = c
-            templateGenerator(prefix, c.toString())
+            templateGenerator.templateGenerator(
+                prefix,
+                c.toString()
+            )
         },
     )
 }
@@ -215,15 +399,21 @@ fun TemplateLabelBox(form: TemplateItemLabel) {
 
 
 @Composable
-fun TemplateStringBox(form: TemplateItemString,
-                      prefix:String,
-                      templateGenerator: (String, String)-> Unit) {
-    val text = remember { mutableStateOf("") }
+fun TemplateStringBox(
+    form: TemplateItemString,
+    block: TurtoiseParserStackItem?,
+    prefix: String,
+    templateGenerator: TemplateGeneratorListener
+) {
+    val text = remember("$prefix") { mutableStateOf(block?.line.orEmpty().dropSkobki()) }
     OutlinedTextField(
         value = text.value.toString(),
         onValueChange = {
             text.value = it
-            templateGenerator(prefix, it)
+            templateGenerator.templateGenerator(
+                prefix,
+                it
+            )
         },
         label = { Text(form.title) },
         singleLine = true,

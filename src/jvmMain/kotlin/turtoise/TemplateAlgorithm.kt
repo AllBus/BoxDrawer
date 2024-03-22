@@ -6,4 +6,6 @@ class TemplateAlgorithm(
     val default: TurtoiseParserStackItem,
     val template: TurtoiseParserStackItem,
 ) : TortoiseFigureAlgorithm(name, line) {
+
+
 }

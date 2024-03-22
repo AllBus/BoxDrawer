@@ -1,10 +1,15 @@
 package com.kos.boxdrawe.presentation
 
 import com.kos.boxdrawer.template.TemplateCreator
+import com.kos.boxdrawer.template.TemplateGeneratorListener
+import com.kos.boxdrawer.template.TemplateInfo
+import com.kos.boxdrawer.template.TemplateMemoryItem
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import turtoise.TemplateAlgorithm
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
@@ -13,9 +18,10 @@ import turtoise.TurtoiseParserStackBlock
 import turtoise.TurtoiseParserStackItem
 import turtoise.memory.BlockTortoiseMemory
 import turtoise.memory.SimpleTortoiseMemory
+import turtoise.memory.TwoBlockTortoiseMemory
 
 class TemplateData(val tools: Tools) {
-    private val templater = TemplateCreator()
+    private val templater = TemplateCreator
 
     private val emptyAlgorithm = TemplateAlgorithm(
         "",
@@ -29,49 +35,59 @@ class TemplateData(val tools: Tools) {
     )
 
     private val algorithmName = MutableStateFlow("")
-    private val menuText = algorithm.map { it.template }
-
-    val menu = menuText.map {
-        templater.parse(it)
+    val menu = algorithm.map {
+        TemplateInfo(
+            templater.parse(it.template),
+            it.default,
+        )
     }
 
     val templateText = MutableStateFlow("")
 
-    val memory = mutableMapOf<String, String>()
+    val memory = mutableMapOf<String, TemplateMemoryItem>()
 
     fun redraw() {
         val runner = TortoiseRunner(TortoiseProgram(emptyList() ,tools.algorithms().toMap()))
         val mb = memoryBlock()
-        val m = BlockTortoiseMemory(mb)
+        val m = TwoBlockTortoiseMemory(mb, algorithm.value.default)
 
         templateText.value = mb.line
 
         tools.currentFigure.value = algorithm.value.draw("", tools.ds(), TortoiseState(), m, runner,10)
     }
 
-    fun templateGenerator(arg: String, value: String) {
+     val templateGenerator = object:TemplateGeneratorListener {
+         override fun templateGenerator(arg: String, index:Int, count: Int, value: String) {
 //        when (value) {
 //            "true" -> memory.assign(arg, 1.0)
 //            "false" -> memory.assign(arg, 0.0)
 //            else -> memory.assign(arg, value.toDoubleOrNull() ?: 0.0)
 //        }
 
-        memory.put(arg, value)
-       // templateText.value = memory.m.map { (k, v) -> "$k : $v" }.joinToString("\n")
-        redraw()
-    }
+
+             if (count > 1) {
+                 memory.put(arg,
+                     (memory.get(arg)?: TemplateMemoryItem(ArrayList<String>(count))).update(index, value)
+                 )
+                 redraw()
+             } else {
+                 templateGenerator(arg, value)
+             }
+         }
+         override fun templateGenerator(arg: String, value: String) {
+             memory.put(arg, TemplateMemoryItem(listOf(value)))
+             redraw()
+         }
+     }
 
     fun setTemplate(a: TemplateAlgorithm, name:String ){
         algorithm.value = a
         algorithmName.value = name
         memory.clear()
-        putMemoryArguments(a.default)
+
         redraw()
     }
 
-    private fun putMemoryArguments(default: TurtoiseParserStackItem) {
-        // Todo:
-    }
 
     fun clearTemplate() {
         algorithm.value = emptyAlgorithm
@@ -96,7 +112,7 @@ class TemplateData(val tools: Tools) {
 
     private fun memoryBlock(): TurtoiseParserStackBlock {
         val top = TurtoiseParserStackBlock()
-        memory.forEach { (k, v) ->
+        memory.forEach { (k, value) ->
             val sp = k.split('.').drop(1)
             var p = top
             for (c in sp) {
@@ -109,7 +125,9 @@ class TemplateData(val tools: Tools) {
                 } else
                     p = b
             }
-            p.add(v)
+            value.values.forEach { vv ->
+                p.add(vv)
+            }
         }
         return top
     }

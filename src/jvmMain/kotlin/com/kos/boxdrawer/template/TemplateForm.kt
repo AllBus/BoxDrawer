@@ -3,58 +3,87 @@ package com.kos.boxdrawer.template
 interface TemplateItem{
     val title:String
     val argumentName:String
+
+    val argumentCount : Int
 }
 
-class TemplateForm(override val title: String,
+data class TemplateForm(override val title: String,
                    override val argumentName: String,
                    val list: List<TemplateItem>,
 ): TemplateItem{
     fun isEmpty() : Boolean = list.isEmpty()
+
+    override val argumentCount: Int
+        get() = 1
 }
 
-class TemplateItemInt(
+data class TemplateItemInt(
     override val title: String,
     override val argumentName: String
-) : TemplateItem
+) : TemplateItem{
+    override val argumentCount: Int
+        get() = 1
+}
 
-class TemplateItemNumeric(
-    override val title: String,
-    override val argumentName: String
-
-) : TemplateItem
-
-class TemplateItemSize(
+data class TemplateItemNumeric(
     override val title: String,
     override val argumentName: String
 
-) : TemplateItem
+) : TemplateItem{
+    override val argumentCount: Int
+        get() = 1
+}
 
-class TemplateItemTriple(
+data class TemplateItemSize(
     override val title: String,
     override val argumentName: String
 
-) : TemplateItem
+) : TemplateItem{
+    override val argumentCount: Int
+        get() = 2
+}
 
-class TemplateItemRect(
+data class TemplateItemTriple(
     override val title: String,
     override val argumentName: String
 
-) : TemplateItem
+) : TemplateItem{
+    override val argumentCount: Int
+        get() = 3
+}
 
-class TemplateItemCheck(
+data class TemplateItemRect(
     override val title: String,
     override val argumentName: String
 
-) : TemplateItem
+) : TemplateItem{
+    override val argumentCount: Int
+        get() = 4
+}
 
-class TemplateItemString(
+data class TemplateItemCheck(
     override val title: String,
     override val argumentName: String
 
-) : TemplateItem
+) : TemplateItem{
+    override val argumentCount: Int
+        get() = 1
+}
 
-class TemplateItemLabel(
+data class TemplateItemString(
     override val title: String,
     override val argumentName: String
 
-) : TemplateItem
+) : TemplateItem{
+    override val argumentCount: Int
+        get() = 1
+}
+
+data class TemplateItemLabel(
+    override val title: String,
+    override val argumentName: String
+
+) : TemplateItem{
+    override val argumentCount: Int
+        get() = 0
+}

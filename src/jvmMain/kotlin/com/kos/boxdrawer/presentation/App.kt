@@ -38,7 +38,9 @@ import com.kos.boxdrawe.widget.display.DisplayBezier
 import com.kos.boxdrawe.widget.display.DisplayGrid
 import com.kos.boxdrawe.widget.display.DisplayTortoise
 import com.kos.boxdrawer.template.TemplateForm
+import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.figure.FigureEmpty
+import turtoise.TurtoiseParserStackBlock
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -58,7 +60,7 @@ fun App(vm: State<DrawerViewModel>) {
     val matrix = remember { vm.value.tortoise.matrix }
     val alternative = remember { vm.value.box.alternative }
     val stateText = remember { mutableStateOf("") }
-    val menu = vm.value.template.menu.collectAsState(TemplateForm("", "", emptyList()))
+    val menu = vm.value.template.menu.collectAsState(TemplateInfo(TemplateForm("", "", emptyList()), TurtoiseParserStackBlock()))
     val templateText = vm.value.template.templateText.collectAsState("")
 
     MaterialTheme {
@@ -123,7 +125,7 @@ fun App(vm: State<DrawerViewModel>) {
                                     rememberScrollState()
                                 ),
                             menu = menu,
-                            templateGenerator = vm.value.template::templateGenerator,
+                            templateGenerator = vm.value.template.templateGenerator,
                         )
                     }
 

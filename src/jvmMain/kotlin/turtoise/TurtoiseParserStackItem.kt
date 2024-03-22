@@ -36,6 +36,8 @@ abstract class TurtoiseParserStackItem(
         return text?.toDoubleOrNull() ?: defaultValue
     }
 
+    abstract fun getInnerAtName(name:String): TurtoiseParserStackItem?
+
     abstract fun arguments(): List<String>
 
     abstract val size: Int
@@ -66,6 +68,10 @@ class TurtoiseParserStackArgument(
 
     override fun stringValue(index: Int): String? {
         return if (index == 0) argument else null
+    }
+
+    override fun getInnerAtName(name: String): TurtoiseParserStackItem? {
+        return null
     }
 
     override fun arguments(): List<String> {
@@ -170,7 +176,7 @@ class TurtoiseParserStackBlock(
         }
     }
 
-    fun getInnerAtName(name:String): TurtoiseParserStackItem?{
+    override fun getInnerAtName(name:String): TurtoiseParserStackItem?{
         val i = name.toIntOrNull()
         return if (i != null)
             inner.getOrNull(i)
