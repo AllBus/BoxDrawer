@@ -88,7 +88,7 @@ class FigureOnPath(
             val p = path.positionInPath(pos)
             g.save()
             g.translate(p.point.x, p.point.y)
-//            g.drawLine(Vec2.Zero, p.normal*20.0)
+         //   g.drawLine(Vec2.Zero, p.normal*20.0)
             if (useNormal) {
                 g.rotate(p.normal.angle*180.0/Math.PI, Vec2.Zero)
             }

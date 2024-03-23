@@ -6,6 +6,7 @@ import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureCircle
+import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
@@ -82,7 +83,21 @@ class BezierData(val tools: Tools) {
             pivot = Vec2.Zero
         )
 
-        figure.value = FigureList( listOf( fb, fp ))
+        val cc = c1.value
+        val pe =  FigureEllipse(cc[0], Vec2.distance(cc[1], cc[0]), Vec2.distance(cc[2], cc[0]), 10.0  )
+
+        val fp2 = FigureOnPath(
+            figure = pathFigure.value,
+            path = pe,
+            count = pathCount.decimal.toInt(),
+            distanceInPercent = pathRast.decimal,
+            startOffsetInPercent = pathOffset.decimal,
+            reverse = false,
+            useNormal = true,
+            angle = 0.0,
+            pivot = Vec2.Zero
+        )
+        figure.value = FigureList( listOf( fb, fp, fp2, pe ))
     }
 
     fun save(fileName: String) {

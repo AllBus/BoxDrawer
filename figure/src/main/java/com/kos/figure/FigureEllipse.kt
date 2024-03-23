@@ -6,7 +6,6 @@ import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.acos
 import kotlin.math.asin
-import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
@@ -20,7 +19,7 @@ open class FigureEllipse(
     val rotation: Double,
     val segmentStart: Double = 0.0,
     val segmentEnd: Double = 0.0,
-    ) : Figure(), IFigurePath{
+) : Figure(), IFigurePath {
 
     override fun crop(k: Double, cropSide: CropSide): IFigure {
         //Todo: Правильно отрезать
@@ -67,12 +66,14 @@ open class FigureEllipse(
         return BoundingRectangle.apply(center, radius, radiusMinor, rotation)
     }
 
-    open fun create(center: Vec2,
-                    radius: Double,
-                    radiusMinor: Double,
-                    rotation: Double,
-                    segmentStart: Double,
-                    segmentEnd: Double): FigureEllipse {
+    open fun create(
+        center: Vec2,
+        radius: Double,
+        radiusMinor: Double,
+        rotation: Double,
+        segmentStart: Double,
+        segmentEnd: Double
+    ): FigureEllipse {
         return FigureEllipse(center, radius, radiusMinor, rotation, segmentStart, segmentEnd)
     }
 
@@ -92,7 +93,7 @@ open class FigureEllipse(
             center = center.rotate(angle),
             radius = radius,
             radiusMinor = radiusMinor,
-            rotation = (rotation + angle)%(2*PI),
+            rotation = (rotation + angle) % (2 * PI),
             segmentStart = segmentStart,
             segmentEnd = segmentEnd
         )
@@ -100,10 +101,10 @@ open class FigureEllipse(
 
     override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
         return FigureEllipse(
-            center = (center-rotateCenter).rotate(angle)+rotateCenter,
+            center = (center - rotateCenter).rotate(angle) + rotateCenter,
             radius = radius,
             radiusMinor = radiusMinor,
-            rotation = (rotation + angle)%(2*PI),
+            rotation = (rotation + angle) % (2 * PI),
             segmentStart = segmentStart,
             segmentEnd = segmentEnd
         )
@@ -111,7 +112,7 @@ open class FigureEllipse(
 
     override fun draw(g: IFigureGraphics) {
         g.save()
-        g.rotate(rotation*180/ PI, center)
+        g.rotate(rotation * 180 / PI, center)
         g.drawArc(center, radius, radiusMinor, segmentStart, segmentEnd)
         g.restore()
     }
@@ -179,28 +180,38 @@ open class FigureEllipse(
     }
 
     open fun perimeter(): Double {
-        if (segmentStart == segmentEnd){
-            return Math.PI*(3* (radius+radiusMinor) - sqrt((3*radius+radiusMinor)*(radius+3*radiusMinor)))
-        }else{
-            val startAngle = segmentStart*Math.PI/180;
-            val endAngle = segmentEnd*Math.PI/180;
-            val delta =  0.01
+        if (segmentStart == segmentEnd) {
+            return Math.PI * (3 * (radius + radiusMinor) - sqrt((3 * radius + radiusMinor) * (radius + 3 * radiusMinor)))
+        } else {
+            val startAngle = segmentStart * Math.PI / 180;
+            val endAngle = segmentEnd * Math.PI / 180;
+            val dt = Math.PI * 0.001
             // считаем эксцентриситет
             val a = radius
             val b = radiusMinor
-            val ex = 1.0 -b*b/a*a
+            val a2 = a*a
+            val b2 = b*b
+            val ex = 1.0 - b * b / a * a
 
             var result = 0.0
             var t = startAngle
-            while (t<= endAngle){
+            while (t <= endAngle) {
                 // сумма, интеграл
+//                val ct = cos(t)
+//                result += sqrt(1 - ex * ct * ct)
                 val ct = cos(t)
-                result += sqrt(1 - ex * ct*ct)
-                t+=delta
+                val ct2 = ct*ct
+                val st2 = 1 - ct2
+                result += sqrt(a2*st2+b2*ct2)*dt
+                // sqrt(1 - ex * ct * ct) need a >= b
+                t += dt
             }
-            return a*result
+            return result
+            //a * result
         }
     }
+
+    private val length by lazy { perimeter() }
 
     override fun positionInPath(delta: Double): PointWithNormal {
         /**
@@ -217,12 +228,44 @@ open class FigureEllipse(
         val d = if (segmentStart == segmentEnd) {
             360.0
         } else
-            segmentEnd - segmentStart
+            segmentEnd
 
-        val rot = (segmentStart + delta * d) * Math.PI / 180
-        val pos = center + Vec2(radius, 0.0).rotate(rot)
-        val normal = Vec2(1.0, 0.0).rotate(rot)
-        return PointWithNormal(pos, normal)
+        val startAngle = segmentStart * Math.PI / 180;
+        val endAngle = d * Math.PI / 180;
+
+        val pos = if (delta <= 0) {
+            Vec2(radius * cos(startAngle), radiusMinor * sin(startAngle))
+        } else
+            if (delta >= 1.0) {
+                Vec2(radius * cos(endAngle), radiusMinor * sin(endAngle))
+            } else {
+                val dt = Math.PI * 0.001
+                val a = radius
+                val b = radiusMinor
+                //val ex = 1.0 - b * b / a * a
+                val a2 = a*a
+                val b2 = b*b
+
+                var result = 0.0
+                var t = startAngle
+                val tj = delta * length
+                while (t <= endAngle && result < tj) {
+                    // сумма, интеграл
+                    val ct = cos(t)
+                    val ct2 = ct*ct
+                    val st2 = 1 - ct2
+                    result += sqrt(a2*st2+b2*ct2)*dt
+                    // sqrt(1 - ex * ct * ct) need a >= b
+                    t += dt
+                }
+                Vec2(radius * cos(t), radiusMinor * sin(t))
+
+            }
+
+        val pr = center+  pos.rotate(rotation)
+
+        val normal =  Vec2.normalize(Vec2.Zero, Vec2(radiusMinor*radiusMinor*pos.x, radius*radius* pos.y)).rotate(rotation)
+        return PointWithNormal(pr, normal)
     }
 }
 
