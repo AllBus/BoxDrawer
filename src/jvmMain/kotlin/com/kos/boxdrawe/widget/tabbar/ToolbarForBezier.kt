@@ -19,6 +19,7 @@ import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.kos.boxdrawe.presentation.BezierData
 import com.kos.boxdrawe.widget.EditText
 import com.kos.boxdrawe.widget.Label
+import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SegmentDoubleButton
 import com.kos.boxdrawe.widget.TabContentModifier
@@ -47,6 +48,10 @@ fun ToolbarForBezier(vm: BezierData) {
     val selectedId = remember { mutableIntStateOf(4) }
     val bezierText = remember { mutableStateOf("") }
 
+    val pathRast = remember { vm.pathRast }
+    val pathOffset = remember { vm.pathOffset }
+    val pathCount = remember { vm.pathCount }
+    val pathFigure = remember { vm.pathFigureText }
 
     val c1 = vm.c1.collectAsState()
 
@@ -83,6 +88,15 @@ fun ToolbarForBezier(vm: BezierData) {
                         vm.newBezier(text)
                 }
             }
+        }
+
+        Column(
+            modifier = Modifier.weight(weight = 1f, fill = true)
+        ) {
+            NumericUpDown("Расстояние", "%", pathRast)
+            NumericUpDown("Отсуп", "%", pathOffset)
+            NumericUpDown("Количество", "шт", pathCount)
+            EditText("Фигура", "", pathFigure, true) { vm.createFigure(it) }
         }
 
         Column(

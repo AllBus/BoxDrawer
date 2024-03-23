@@ -27,7 +27,7 @@ class DrawerViewModel {
             BoxDrawerToolBar.TAB_SOFT -> softRez.figures
             BoxDrawerToolBar.TAB_BOX -> box.figures
             BoxDrawerToolBar.TAB_BUBLIK -> bublik.figures
-            BoxDrawerToolBar.TAB_TOOLS -> tools.currentFigure
+            BoxDrawerToolBar.TAB_TOOLS -> template.currentFigure
             else ->  noneFigure
         }
     }

@@ -3,7 +3,7 @@ package com.kos.figure
 import vectors.BoundingRectangle
 import vectors.Vec2
 
-abstract class FigurePolygon(val points: List<Vec2>) : Figure() {
+abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath {
     override fun rect(): BoundingRectangle {
         return if (points.size < 2)
             BoundingRectangle(Vec2(0.0, 0.0), 0.0)
@@ -35,7 +35,7 @@ abstract class FigurePolygon(val points: List<Vec2>) : Figure() {
 
     abstract fun create(points: List<Vec2>): FigurePolygon
 
-    override fun translate(translateX: Double, translateY: Double): IFigure {
+    override fun translate(translateX: Double, translateY: Double): FigurePolygon {
         return create(points.map { p ->
             Vec2(
                 p.x + translateX,
@@ -44,13 +44,13 @@ abstract class FigurePolygon(val points: List<Vec2>) : Figure() {
         })
     }
 
-    override fun rotate(angle: Double): IFigure {
+    override fun rotate(angle: Double): FigurePolygon {
         return create(points.map { p ->
             p.rotate(angle)
         })
     }
 
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
+    override fun rotate(angle: Double, rotateCenter: Vec2): FigurePolygon {
         return create(points.map { p ->
             (p-rotateCenter).rotate(angle)+rotateCenter
         })

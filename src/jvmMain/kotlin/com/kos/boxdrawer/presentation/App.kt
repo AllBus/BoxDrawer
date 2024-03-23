@@ -61,7 +61,6 @@ fun App(vm: State<DrawerViewModel>) {
     val alternative = remember { vm.value.box.alternative }
     val stateText = remember { mutableStateOf("") }
     val menu = vm.value.template.menu.collectAsState(TemplateInfo(TemplateForm("", "", emptyList()), TurtoiseParserStackBlock()))
-    val templateText = vm.value.template.templateText.collectAsState("")
 
     MaterialTheme {
         Column {
@@ -139,10 +138,6 @@ fun App(vm: State<DrawerViewModel>) {
                 ) {
                     Text(
                         stateText.value,
-                        color = ThemeColors.displayLabelColor,
-                    )
-                    Text(
-                        templateText.value,
                         color = ThemeColors.displayLabelColor,
                     )
                 }

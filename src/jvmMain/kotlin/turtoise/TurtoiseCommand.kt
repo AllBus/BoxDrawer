@@ -103,6 +103,7 @@ interface TortoiseCommand {
         const val TURTOISE_ELLIPSE = 'e';
         const val TURTOISE_CIRCLE = 'c';
         const val TURTOISE_BEZIER = 'b';
+        const val TURTOISE_PATH = 'P';
         const val TURTOISE_ANGLE = 'a';
         const val TURTOISE_ANGLE_ADD = 'q';
         const val TURTOISE_SPLIT = '|';

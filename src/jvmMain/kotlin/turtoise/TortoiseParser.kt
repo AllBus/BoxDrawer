@@ -248,8 +248,8 @@ object TortoiseParser {
         sb.append(
             helpName(
                 TortoiseCommand.TURTOISE_REGULAR_POLYGON,
-                "r n",
-                "многоугольник радиуса r с числом сторон n"
+                "n r",
+                "многоугольник радиуса с числом сторон n r"
             )
         )
         sb.append(

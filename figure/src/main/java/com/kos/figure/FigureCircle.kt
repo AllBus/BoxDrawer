@@ -12,14 +12,14 @@ class FigureCircle(
     radius: Double,
     segmentStart: Double = 0.0,
     segmentEnd: Double = 0.0,
-    ): FigureEllipse(
+) : FigureEllipse(
     center = center,
     radius = radius,
     radiusMinor = radius,
     rotation = 0.0,
     segmentStart = segmentStart,
     segmentEnd = segmentEnd
-){
+) {
     override fun crop(k: Double, cropSide: CropSide): IFigure {
         return if (radius <= 0) Empty else when (cropSide) {
             CropSide.LEFT -> {
@@ -64,19 +64,21 @@ class FigureCircle(
         return BoundingRectangle(center, radius)
     }
 
-    override fun create(center: Vec2,
-                        radius: Double,
-                        radiusMinor: Double,
-                        rotation: Double,
-                        segmentStart: Double,
-                        segmentEnd: Double): FigureEllipse {
+    override fun create(
+        center: Vec2,
+        radius: Double,
+        radiusMinor: Double,
+        rotation: Double,
+        segmentStart: Double,
+        segmentEnd: Double
+    ): FigureEllipse {
         return FigureCircle(center, radius, segmentStart, segmentEnd)
     }
 
     override fun draw(g: IFigureGraphics) {
         if (segmentStart == segmentEnd) {
             g.drawCircle(center, radius)
-        }else{
+        } else {
             g.drawArc(center, radius, radiusMinor, segmentStart, segmentEnd)
         }
     }
@@ -87,5 +89,22 @@ class FigureCircle(
 
     override fun print(): String {
         return "M ${center.x} ${center.y} c ${radius} ${segmentStart} ${segmentEnd}"
+    }
+
+    override fun perimeter(): Double {
+        if (segmentStart == segmentEnd) return 2 * Math.PI * radius
+        return (segmentEnd - segmentStart) * Math.PI / 180.0 * radius
+    }
+
+    override fun positionInPath(delta: Double): PointWithNormal {
+        val d = if (segmentStart == segmentEnd) {
+            360.0
+        } else
+            segmentEnd - segmentStart
+
+        val rot = (segmentStart + delta * d) * Math.PI / 180
+        val pos = center + Vec2(radius, 0.0).rotate(rot)
+        val normal = Vec2(1.0, 0.0).rotate(rot)
+        return PointWithNormal(pos, normal)
     }
 }

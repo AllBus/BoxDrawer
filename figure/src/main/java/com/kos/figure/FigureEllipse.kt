@@ -6,8 +6,12 @@ import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.acos
 import kotlin.math.asin
+import kotlin.math.atan2
+import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 open class FigureEllipse(
     val center: Vec2,
@@ -16,7 +20,7 @@ open class FigureEllipse(
     val rotation: Double,
     val segmentStart: Double = 0.0,
     val segmentEnd: Double = 0.0,
-    ) : Figure(){
+    ) : Figure(), IFigurePath{
 
     override fun crop(k: Double, cropSide: CropSide): IFigure {
         //Todo: Правильно отрезать
@@ -172,6 +176,53 @@ open class FigureEllipse(
 
     override fun print(): String {
         return "M ${center.x} ${center.y} a $rotation e ${radius} ${radiusMinor} ${segmentStart} ${segmentEnd}"
+    }
+
+    open fun perimeter(): Double {
+        if (segmentStart == segmentEnd){
+            return Math.PI*(3* (radius+radiusMinor) - sqrt((3*radius+radiusMinor)*(radius+3*radiusMinor)))
+        }else{
+            val startAngle = segmentStart*Math.PI/180;
+            val endAngle = segmentEnd*Math.PI/180;
+            val delta =  0.01
+            // считаем эксцентриситет
+            val a = radius
+            val b = radiusMinor
+            val ex = 1.0 -b*b/a*a
+
+            var result = 0.0
+            var t = startAngle
+            while (t<= endAngle){
+                // сумма, интеграл
+                val ct = cos(t)
+                result += sqrt(1 - ex * ct*ct)
+                t+=delta
+            }
+            return a*result
+        }
+    }
+
+    override fun positionInPath(delta: Double): PointWithNormal {
+        /**
+         * Уравнение эллипса
+         * x^2 / a^2 + y^2 / b^2 = 1
+         * Уравнение нормали
+         * (y - y1) / (x - x1) = (a^2 y1) / (b^2 x1)
+         *
+         * Уравнение касательных
+         * (y - y1) / (x - x1) = (- x1 y1 +- sqrt(b^2 x1^2 + a^2 y1^2 - a^2 b^2)) / a^2 - x1^2
+         */
+
+        // Todo Значение вычисено для круга нкжно переписать для эллипса
+        val d = if (segmentStart == segmentEnd) {
+            360.0
+        } else
+            segmentEnd - segmentStart
+
+        val rot = (segmentStart + delta * d) * Math.PI / 180
+        val pos = center + Vec2(radius, 0.0).rotate(rot)
+        val normal = Vec2(1.0, 0.0).rotate(rot)
+        return PointWithNormal(pos, normal)
     }
 }
 

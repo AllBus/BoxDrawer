@@ -1,6 +1,15 @@
 package vectors
 
-import kotlin.math.*
+import com.kos.figure.PointWithNormal
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.acos
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.hypot
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
 
@@ -20,7 +29,7 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
         return Vec2(x / k, y / k)
     }
 
-    operator fun rem(k: Double):Vec2 {
+    operator fun rem(k: Double): Vec2 {
         return Vec2(x % k, y % k)
     }
 
@@ -37,6 +46,10 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
         return Vec2(y, x)
     }
 
+    val magnitude: Double get() = hypot(x, y)
+
+    val angle: Double get() = atan2(y, x)
+
     override fun toString(): String {
         return "($x $y)"
     }
@@ -49,7 +62,7 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             return hypot((a.x - b.x), (a.y - b.y))
         }
 
-        fun normal(a: Vec2, b: Vec2): Vec2 {
+        fun normalize(a: Vec2, b: Vec2): Vec2 {
             val d = distance(a, b)
             return if (d == 0.0) {
                 Vec2.Zero
@@ -58,8 +71,22 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             }
         }
 
-        fun freqency(a:Vec2, f:Double): Vec2{
-            return Vec2(a.x - a.x%f , a.y - a.y%f )
+        fun normal(a: Vec2, b: Vec2): Vec2 {
+            val d = distance(a, b)
+            return if (d == 0.0) {
+                Vec2.Zero
+            } else {
+                val ba = (b - a) / d
+                Vec2(-ba.y, ba.x)
+            }
+        }
+
+        fun dot(a: Vec2, b: Vec2): Double {
+            return a.x * b.x + a.y * b.y
+        }
+
+        fun freqency(a: Vec2, f: Double): Vec2 {
+            return Vec2(a.x - a.x % f, a.y - a.y % f)
         }
 
         fun lerp(a: Vec2, b: Vec2, t: Double): Vec2 {
@@ -210,6 +237,109 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
                         listOf(root1)
                     }
             }).filter(::accept).sorted()
+        }
+
+        fun bezierLength(points: List<Vec2>): Double {
+            if (points.size == 4) {
+                return bezierSingleLength(points.toTypedArray())
+            } else {
+                return 0.0
+            }
+        }
+
+        fun bezierPosition(points: List<Vec2>, k: Double, steps:Int, length:Double): PointWithNormal {
+            var pred = points[0]
+            var sum = 0.0
+            val tr = k*length
+            if (k>=1.0)
+                return  PointWithNormal.fromPreviousPoint(points.last(), points[points.size-2])
+            if (k<=0.0)
+                return  PointWithNormal.from(points.first(), points[1])
+            var predt= 0.0
+            for (i in 0..<steps){
+                val t = i.toDouble() / (steps - 1)
+                val current = bezierLerp(points, t)
+                val dist = distance(current, pred)
+                val ns = sum+dist
+
+                if (ns == tr)
+                    return PointWithNormal.fromPreviousPoint(current, pred)
+
+                if (ns > tr){
+//                    var predtj = predt
+//                    for (j in 0..<10){
+//                        val tj = predt+ j.toDouble() / (10 *  (steps - 1))
+//                        val currentj = bezierLerp(points, tj)
+//                        val distj = distance(currentj, pred)
+//                        val nj = sum+distj
+//                        if (nj== tr)
+//                            return PointWithNormal.fromPreviousPoint(currentj, pred)
+//                        if (nj>tr){
+//                            return PointWithNormal.fromPreviousPoint(
+//                                bezierLerp(points, predtj+ (tr-sum)/length),
+//                                pred
+//                            )
+//                        }
+//                        sum = nj
+//                        pred = currentj
+//                        predtj = tj
+//                    }
+
+                    return PointWithNormal.fromPreviousPoint(
+                        bezierLerp(points, predt+ (tr-sum)/length),
+                        pred
+                    )
+                }
+                sum = ns
+                pred = current
+                predt = t
+            }
+            return PointWithNormal.fromPreviousPoint(points.last(), points[points.size-2])
+        }
+
+
+
+        fun bezierLerp(points: List<Vec2>, t: Double): Vec2 {
+
+            val u = 1.0 - t // mt
+            val tt = t * t;  //t2
+            val uu = u * u;//mt2
+            val uuu = uu * u; //a
+            val ttt = tt * t; // d
+
+            val p = points[0] * uuu +   //first term
+                    points[1] * 3.0 * uu * t +   //second term
+                    points[2] * 3.0 * u * tt +   //third term
+                    points[3] * ttt          //fourth term
+
+            return p;
+        }
+
+        private fun bezierSingleLength(points: Array<Vec2?>): Double {
+            var p0 = points[0]!! - points[1]!!
+            var p1 = points[2]!! - points[1]!!
+            var p3 = points[3]!! - points[2]!!
+            val l0 = p0.magnitude
+            val l1 = p1.magnitude
+            val l3 = p3.magnitude
+            if (l0 > 0) p0 /= l0
+            if (l1 > 0) p1 /= l1
+            if (l3 > 0) p3 /= l3
+            val p2 = -p1
+            val a = abs(dot(p0, p1)) + abs(dot(p2, p3))
+            if (a > 1.98 || l0 + l1 + l3 < (4 - a) * 8) return l0 + l1 + l3
+            val bl = arrayOfNulls<Vec2>(4)
+            val br = arrayOfNulls<Vec2>(4)
+            bl[0] = points[0]
+            bl[1] = (points[0]!! + points[1]!!) * 0.5
+            val mid = (points[1]!! + points[2]!!) * 0.5
+            bl[2] = (bl[1]!! + mid) * 0.5
+            br[3] = points[3]
+            br[2] = (points[2]!! + points[3]!!) * 0.5
+            br[1] = (br[2]!! + mid) * 0.5
+            br[0] = (br[1]!! + bl[2]!!) * 0.5
+            bl[3] = br[0]
+            return bezierSingleLength(bl) + bezierSingleLength(br)
         }
     }
 }

@@ -1,21 +1,29 @@
 package com.kos.boxdrawe.presentation
 
+import com.kos.boxdrawer.figure.FigureExtractor
 import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.boxdrawer.template.TemplateMemoryItem
+import com.kos.figure.FigureEmpty
+import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import org.kabeja.dxf.DXFDocument
+import org.kabeja.parser.DXFParser
+import org.kabeja.parser.ParserBuilder
 import turtoise.TemplateAlgorithm
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
 import turtoise.TurtoiseParserStackBlock
 import turtoise.memory.TwoBlockTortoiseMemory
+import java.io.File
+import java.io.FileInputStream
 
-class TemplateData(val tools: Tools) {
+class TemplateData(val tools: ITools) {
     private val templater = TemplateCreator
 
     private val emptyAlgorithm = TemplateAlgorithm(
@@ -37,9 +45,9 @@ class TemplateData(val tools: Tools) {
         )
     }
 
-    val templateText = MutableStateFlow("")
-
     val memory = TemplateMemory()
+
+    val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
 
     fun redraw() {
         val runner = TortoiseRunner(TortoiseProgram(emptyList(), tools.algorithms().toMap()))
@@ -49,9 +57,7 @@ class TemplateData(val tools: Tools) {
 
         val m = TwoBlockTortoiseMemory(top, algorithm.value.default)
 
-        templateText.value = top.line
-
-        tools.currentFigure.value =
+        currentFigure.value =
             algorithm.value.draw("", tools.ds(), TortoiseState(), m, runner, 10)
     }
 
@@ -88,7 +94,7 @@ class TemplateData(val tools: Tools) {
 
     fun save(fileName: String) {
         //   redraw()
-        tools.saveFigures(fileName, tools.currentFigure.value)
+        tools.saveFigures(fileName, currentFigure.value)
         tools.updateChooserDir(fileName)
     }
 
@@ -104,5 +110,20 @@ class TemplateData(val tools: Tools) {
         return "f (@${name} ${memoryarguments})"
     }
 
+    fun loadDxf(fileName: String) {
+        try {
+            val f = File(fileName)
+            val parser = ParserBuilder.createDefaultParser()
+
+            parser.parse(FileInputStream(f), DXFParser.DEFAULT_ENCODING)
+            val doc: DXFDocument = parser.getDocument()
+
+            val extractor = FigureExtractor()
+            currentFigure.value = extractor.extractFigures(doc)
+            tools.updateChooserDir(fileName)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
 }

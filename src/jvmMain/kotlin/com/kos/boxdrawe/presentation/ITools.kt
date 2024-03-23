@@ -43,8 +43,6 @@ class Tools() : ITools {
 
     val figureList = mutableStateOf<List<Pair<String, TortoiseAlgorithm>>>( emptyList() )
 
-    val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
-
     val lastSelectDir = MutableStateFlow<File>(File(""))
 
     override fun updateChooserDir(fileName:String){

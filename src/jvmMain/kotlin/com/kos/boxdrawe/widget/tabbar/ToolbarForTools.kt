@@ -80,7 +80,7 @@ fun ToolbarForTools(vm: ToolsData) {
 
             RunButton("Открыть файл") {
                 coroutineScope.launch {
-                    showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.loadDxf(f) }
+                    showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.templateData.loadDxf(f) }
                 }
             }
             Spacer(Modifier.height(4.dp))

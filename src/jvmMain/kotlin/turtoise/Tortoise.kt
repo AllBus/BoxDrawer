@@ -29,33 +29,6 @@ private const val MAX_REGULAR_POLYGON_EDGES = 500
 
 class Tortoise() {
 
-//    fun draw(
-//        program: TortoiseProgram,
-//        startPoint: Vec2,
-//        ds: DrawerSettings,
-//        memory: TortoiseMemory
-//    ): FigureList {
-//        memory.reset()
-//        this.program = program
-//        val commands = program.commands.flatMap { a -> a.names.flatMap { n -> a.commands(n, ds) } }
-//        val state = TortoiseState()
-//        state.moveTo(startPoint)
-//        return FigureList(
-//            commands.flatMap { c -> draw(c, state, ds, 10, memory) }
-//        )
-//    }
-
-//    fun draw(
-//        commands: TortoiseBlock,
-//        startPoint: Vec2,
-//        ds: DrawerSettings,
-//        memory: TortoiseMemory
-//    ): FigureList {
-//        val state = TortoiseState()
-//        state.moveTo(startPoint);
-//        return FigureList(draw(commands, state, ds, 10, memory))
-//    }
-
     fun draw(
         commands: TortoiseBlock,
         state: TortoiseState,
@@ -89,67 +62,8 @@ class Tortoise() {
 
             when (com.command) {
                 TortoiseCommand.TURTOISE_CLEAR -> state.clear()
-                TortoiseCommand.TURTOISE_CIRCLE -> {
-                    val r = com.take(0, 0.0, memory)
-
-                    if (com.size == 1) {
-                        res.add(
-                            FigureCircle(
-                                center = state.xy,
-                                radius = r,
-                            )
-                        )
-                    } else {
-                        for (d in 1 until com.size step 2) {
-                            res.add(
-                                FigureCircle(
-                                    center = state.xy,
-                                    radius = r,
-                                    segmentStart = com.take(d + 0, 0.0, memory) - state.a,
-                                    segmentEnd = com.take(d + 1, 0.0, memory) - state.a,
-                                )
-                            )
-                        }
-                    }
-                }
-
-                TortoiseCommand.TURTOISE_ELLIPSE -> {
-                    val r1 = com.take(0, 0.0, memory)
-                    val r2 = com.take(1, r1, memory)
-
-                    if (com.size == 1) {
-                        res.add(
-                            FigureCircle(
-                                center = state.xy,
-                                radius = r1,
-                            )
-                        )
-                    } else
-                        if (com.size == 2) {
-                            res.add(
-                                FigureEllipse(
-                                    center = state.xy,
-                                    radius = r1,
-                                    radiusMinor = r2,
-                                    rotation = state.angle,
-                                )
-                            )
-                        } else {
-
-                            for (d in 2 until com.size step 2) {
-                                res.add(
-                                    FigureEllipse(
-                                        center = state.xy,
-                                        radius = r1,
-                                        radiusMinor = r2,
-                                        rotation = state.angle,
-                                        segmentStart = com.take(d, 0.0, memory),
-                                        segmentEnd = com.take(d + 1, 0.0, memory),
-                                    )
-                                )
-                            }
-                        }
-                }
+                TortoiseCommand.TURTOISE_CIRCLE -> circle(com, memory, res, state)
+                TortoiseCommand.TURTOISE_ELLIPSE -> ellipse(com, memory, res, state)
 
                 TortoiseCommand.TURTOISE_MOVE -> {
                     state.move(com[0, memory], com[1, memory])
@@ -239,44 +153,11 @@ class Tortoise() {
                 }
 
                 TortoiseCommand.TURTOISE_RECTANGLE -> {
-                    val width = com.value(memory)
-                    val height = com[1, width, memory]
-
-                    val width2 = width / 2
-                    val height2 = height / 2
-
-                    val c2 = state.xy
-                    val angle = state.angle
-                    val points = listOf<Vec2>(
-                        c2 + Vec2(-width2, -height2).rotate(angle),
-                        c2 + Vec2(-width2, height2).rotate(angle),
-                        c2 + Vec2(width2, height2).rotate(angle),
-                        c2 + Vec2(width2, -height2).rotate(angle),
-                        c2 + Vec2(-width2, -height2).rotate(angle),
-                    )
-
-                    res.add(FigurePolyline(points))
+                    rectangle(com, memory, state, res)
                 }
 
                 TortoiseCommand.TURTOISE_ROUND_RECTANGLE -> {
-                    val width = com.value(memory)
-                    val height = com[1, width, memory]
-
-                    val width2 = width / 2
-                    val height2 = height / 2
-
-                    val smoothSize = com[2, min(width2, height2), memory]
-
-                    val c2 = state.xy
-                    val angle = state.angle
-
-                    res.add(
-                        rectangle(
-                            -width2 + c2.x, -height2 + c2.y, width2 + c2.x, height2 + c2.y,
-                            enableSmooth = smoothSize != 0.0,
-                            smoothSize = smoothSize,
-                        ).rotate(angle)
-                    )
+                    roundrectangle(com, memory, state, res)
                 }
 
                 TortoiseCommand.TURTOISE_FIGURE -> {
@@ -291,14 +172,15 @@ class Tortoise() {
                 }
 
                 TortoiseCommand.TURTOISE_REGULAR_POLYGON -> {
-                    val r = com.take(0, 0.0, memory)
-                    val count = min(com.take(1, 3.0, memory).toInt(), MAX_REGULAR_POLYGON_EDGES)
+                    val r = com.take(1, 0.0, memory)
+                    val count = min(com.take(0, 3.0, memory).toInt(), MAX_REGULAR_POLYGON_EDGES)
 
-                    val p = (1..count).map { ind ->
-                        val ang = state.angle + 2 * Math.PI * ind / count
-                        state.xy + Vec2(sin(ang), cos(ang)) * r
-                    }
-                    res += FigurePolyline(p, true)
+                    res.add(regularPolygon(
+                        center = state.xy,
+                        count = count,
+                        angle = state.angle,
+                        radius = r
+                    ))
                 }
 
                 TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {
@@ -485,61 +367,7 @@ class Tortoise() {
 
                     f?.let { g ->
 
-                        val mf = Matrix()
-
-                        mf.translate(
-                            com[3, memory].toFloat(),
-                            com[4, memory].toFloat(),
-                            com[5, memory].toFloat()
-                        )
-
-                        mf.rotateX(com[0, memory].toFloat())
-                        mf.rotateY(com[1, memory].toFloat())
-                        mf.rotateZ(com[2, memory].toFloat())
-
-
-                        val f3d = Figure3dTransform(
-                            vectors.Matrix(mf.values),
-                            g
-                        )
-
-                        val ft = com.takeBlock(1)?.let { a -> a as? TurtoiseParserStackBlock }
-                            ?.let { a ->
-
-                                val c = a.getBlockAtName("c")
-                                val r = a.getBlockAtName("r")
-                                val s = a.getBlockAtName("s")
-                                val m = (a.getBlockAtName("m")?.let { item ->
-                                    Vec2(
-                                        memory.value(item.get(1).orEmpty(), 0.0),
-                                        memory.value(item.get(2).orEmpty(), 0.0),
-                                    )
-                                } ?: Vec2.Zero)
-
-                                val columns = memory.value(c?.get(1).orEmpty(), 1.0).toInt()
-                                val rows = memory.value(r?.get(1).orEmpty(), 1.0).toInt()
-                                val scaleX = memory.value(s?.get(1).orEmpty(), 1.0)
-                                val scaleY = memory.value(s?.get(2).orEmpty(), scaleX)
-                                val distance = Vec2(
-                                    memory.value(c?.get(2).orEmpty(), 1.0),
-                                    memory.value(r?.get(2).orEmpty(), 1.0),
-                                )
-
-                                FigureArray(
-                                    figure = f3d,
-                                    startPoint = m,
-                                    distance = distance,
-                                    columns = columns,
-                                    rows = rows,
-                                    angle = state.angle,
-                                    scaleX = scaleX,
-                                    scaleY = scaleY,
-                                )
-                            } ?: f3d
-
-                        res.add(
-                            ft
-                        )
+                        figure3d(com, memory, g, state, res)
                     }
                 }
 
@@ -568,6 +396,192 @@ class Tortoise() {
         saveLine()
         return res
 
+    }
+    private fun figure3d(
+        com: TortoiseCommand,
+        memory: TortoiseMemory,
+        g: IFigure,
+        state: TortoiseState,
+        res: MutableList<IFigure>
+    ): Boolean {
+        val mf = Matrix()
+
+        mf.translate(
+            com[3, memory].toFloat(),
+            com[4, memory].toFloat(),
+            com[5, memory].toFloat()
+        )
+
+        mf.rotateX(com[0, memory].toFloat())
+        mf.rotateY(com[1, memory].toFloat())
+        mf.rotateZ(com[2, memory].toFloat())
+
+
+        val f3d = Figure3dTransform(
+            vectors.Matrix(mf.values),
+            g
+        )
+
+        val ft = com.takeBlock(1)?.let { a -> a as? TurtoiseParserStackBlock }
+            ?.let { a ->
+
+                val c = a.getBlockAtName("c")
+                val r = a.getBlockAtName("r")
+                val s = a.getBlockAtName("s")
+                val m = (a.getBlockAtName("m")?.let { item ->
+                    Vec2(
+                        memory.value(item.get(1).orEmpty(), 0.0),
+                        memory.value(item.get(2).orEmpty(), 0.0),
+                    )
+                } ?: Vec2.Zero)
+
+                val columns = memory.value(c?.get(1).orEmpty(), 1.0).toInt()
+                val rows = memory.value(r?.get(1).orEmpty(), 1.0).toInt()
+                val scaleX = memory.value(s?.get(1).orEmpty(), 1.0)
+                val scaleY = memory.value(s?.get(2).orEmpty(), scaleX)
+                val distance = Vec2(
+                    memory.value(c?.get(2).orEmpty(), 1.0),
+                    memory.value(r?.get(2).orEmpty(), 1.0),
+                )
+
+                FigureArray(
+                    figure = f3d,
+                    startPoint = m,
+                    distance = distance,
+                    columns = columns,
+                    rows = rows,
+                    angle = state.angle,
+                    scaleX = scaleX,
+                    scaleY = scaleY,
+                )
+            } ?: f3d
+
+        return res.add(
+            ft
+        )
+    }
+
+    private fun roundrectangle(
+        com: TortoiseCommand,
+        memory: TortoiseMemory,
+        state: TortoiseState,
+        res: MutableList<IFigure>
+    ) {
+        val width = com.value(memory)
+        val height = com[1, width, memory]
+
+        val width2 = width / 2
+        val height2 = height / 2
+
+        val smoothSize = com[2, min(width2, height2), memory]
+
+        val c2 = state.xy
+        val angle = state.angle
+
+        res.add(
+            rectangle(
+                -width2 + c2.x, -height2 + c2.y, width2 + c2.x, height2 + c2.y,
+                enableSmooth = smoothSize != 0.0,
+                smoothSize = smoothSize,
+            ).rotate(angle)
+        )
+    }
+
+    private fun rectangle(
+        com: TortoiseCommand,
+        memory: TortoiseMemory,
+        state: TortoiseState,
+        res: MutableList<IFigure>
+    ) {
+        val width = com.value(memory)
+        val height = com[1, width, memory]
+
+        val width2 = width / 2
+        val height2 = height / 2
+
+        val c2 = state.xy
+        val angle = state.angle
+        val points = listOf<Vec2>(
+            c2 + Vec2(-width2, -height2).rotate(angle),
+            c2 + Vec2(-width2, height2).rotate(angle),
+            c2 + Vec2(width2, height2).rotate(angle),
+            c2 + Vec2(width2, -height2).rotate(angle),
+            c2 + Vec2(-width2, -height2).rotate(angle),
+        )
+
+        res.add(FigurePolyline(points))
+    }
+
+    private fun ellipse(
+        com: TortoiseCommand,
+        memory: TortoiseMemory,
+        res: MutableList<IFigure>,
+        state: TortoiseState
+    ) {
+        val r1 = com.take(0, 0.0, memory)
+        val r2 = com.take(1, r1, memory)
+
+        if (com.size == 1) {
+            res.add(
+                FigureCircle(
+                    center = state.xy,
+                    radius = r1,
+                )
+            )
+        } else
+            if (com.size == 2) {
+                res.add(
+                    FigureEllipse(
+                        center = state.xy,
+                        radius = r1,
+                        radiusMinor = r2,
+                        rotation = state.angle,
+                    )
+                )
+            } else {
+
+                for (d in 2 until com.size step 2) {
+                    res.add(
+                        FigureEllipse(
+                            center = state.xy,
+                            radius = r1,
+                            radiusMinor = r2,
+                            rotation = state.angle,
+                            segmentStart = com.take(d, 0.0, memory),
+                            segmentEnd = com.take(d + 1, 0.0, memory),
+                        )
+                    )
+                }
+            }
+    }
+
+    private fun circle(
+        com: TortoiseCommand,
+        memory: TortoiseMemory,
+        res: MutableList<IFigure>,
+        state: TortoiseState
+    ) {
+        val r = com.take(0, 0.0, memory)
+
+        if (com.size == 1) {
+            res.add(
+                FigureCircle(
+                    center = state.xy,
+                    radius = r,
+                )
+            )
+        } else {
+            for (d in 1 until com.size step 2) {
+                res.add(
+                    FigureCircle(
+                        center = state.xy,
+                        radius = r,
+                        segmentStart = com.take(d + 0, 0.0, memory) - state.a,
+                        segmentEnd = com.take(d + 1, 0.0, memory) - state.a,
+                    )
+                )
+            }
+        }
     }
 
     private fun figureList(
@@ -615,6 +629,20 @@ class Tortoise() {
     }
 
     companion object {
+
+        fun regularPolygon(
+            center:Vec2,
+            count: Int,
+            angle: Double,
+            radius: Double,
+        ):IFigure {
+            val p = (1..count).map { ind ->
+                val ang = angle + 2 * Math.PI * ind / count
+                center + Vec2(sin(ang), cos(ang)) * radius
+            }
+            return  FigurePolyline(p, true)
+        }
+
         fun zigzag(
             points: MutableList<Vec2>,
             origin: Vec2,

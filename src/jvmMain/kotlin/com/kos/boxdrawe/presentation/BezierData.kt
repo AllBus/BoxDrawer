@@ -2,14 +2,22 @@ package com.kos.boxdrawe.presentation
 
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
+import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
+import com.kos.figure.FigureCircle
+import com.kos.figure.FigureList
+import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
+import com.kos.figure.composition.FigureOnPath
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import turtoise.TortoiseParser
+import turtoise.TortoiseProgram
+import turtoise.TortoiseRunner
+import turtoise.TortoiseState
 import vectors.Vec2
-import kotlin.math.atan
 import kotlin.math.atan2
 
 class BezierData(val tools: Tools) {
@@ -26,7 +34,7 @@ class BezierData(val tools: Tools) {
         if (bezier.size > 2) {
             val v0 = bezier.first()
             val v1 = bezier[1]
-            v0 + Vec2.normal(v0, v1) * -30.0
+            v0 + Vec2.normalize(v0, v1) * -30.0
         } else {
             Vec2.Zero
         }
@@ -36,7 +44,7 @@ class BezierData(val tools: Tools) {
         if (bezier.size > 2) {
             val v0 = bezier.last()
             val v1 = bezier[bezier.size - 2]
-            v0 + Vec2.normal(v0, v1) * -30.0
+            v0 + Vec2.normalize(v0, v1) * -30.0
         } else {
             Vec2.Zero
         }
@@ -46,14 +54,35 @@ class BezierData(val tools: Tools) {
 
     val figure = mutableStateOf<IFigure>(Figure.Empty)
 
+    private val pathFigure = mutableStateOf<IFigure>(Figure.Empty)
+
+    val pathRast = NumericTextFieldState(0.01) { redraw() }
+    val pathOffset = NumericTextFieldState(0.0) { redraw() }
+    val pathCount = NumericTextFieldState(100.0, 0) { redraw() }
+    val pathFigureText = mutableStateOf("")
+
     init {
         redraw()
     }
 
     fun redraw() {
-        figure.value = FigureBezier(
+        val fb = FigureBezier(
             c1.value
         )
+
+        val fp = FigureOnPath(
+            figure = pathFigure.value,
+            path = fb,
+            count = pathCount.decimal.toInt(),
+            distanceInPercent = pathRast.decimal,
+            startOffsetInPercent = pathOffset.decimal,
+            reverse = false,
+            useNormal = true,
+            angle = 0.0,
+            pivot = Vec2.Zero
+        )
+
+        figure.value = FigureList( listOf( fb, fp ))
     }
 
     fun save(fileName: String) {
@@ -129,13 +158,15 @@ class BezierData(val tools: Tools) {
                     val d = Vec2.distance(r[p3], r[pp])
                     val a = r[p3]-newPosition
                     val d2 = Vec2.distance(r[p3], newPosition)
-                    val position2 = r[p3] + a*d /d2
-                    cList.value = r.mapIndexed { i, vec ->
-                        if (i == index) newPosition else
-                        if (i == pp) position2 else
-                            vec
+                    if (d2>0.0) {
+                        val position2 = r[p3] + a * d / d2
+                        cList.value = r.mapIndexed { i, vec ->
+                            if (i == index) newPosition else
+                                if (i == pp) position2 else
+                                    vec
+                        }
+                        redraw()
                     }
-                    redraw()
                     return
                 }
             }
@@ -163,14 +194,12 @@ class BezierData(val tools: Tools) {
                     val n1 = r[p3] - r[index]
                     val nn = r[p3] - newPosition
 
-                    val t2 = atan2(n2.y, n2.x)
                     val t1 = atan2(n1.y, n1.x)
                     val tn = atan2(nn.y, nn.x)
 
                     val dn = tn-t1
 
                     val position2 = r[p3]+ n2.rotate(dn)
-                    //val newN2 = n2+dn
 
                     cList.value = r.mapIndexed { i, vec ->
                         if (i == index) newPosition else
@@ -221,7 +250,7 @@ class BezierData(val tools: Tools) {
         val p = if (list.size > 2) {
             val v0 = list.first()
             val v1 = list[1]
-            Vec2.normal(v0, v1) * -30.0
+            Vec2.normalize(v0, v1) * -30.0
         } else {
             Vec2(-100.0, 0.0)
         }
@@ -238,7 +267,7 @@ class BezierData(val tools: Tools) {
         val p = if (list.size > 2) {
             val v0 = list.last()
             val v1 = list[list.size - 2]
-            Vec2.normal(v0, v1) * -30.0
+            Vec2.normalize(v0, v1) * -30.0
         } else {
             Vec2(100.0, 0.0)
         }
@@ -261,5 +290,26 @@ class BezierData(val tools: Tools) {
         }
     }
 
+    fun createFigure(lines: String) {
+        val program = tortoiseProgram(lines)
+        val t = TortoiseRunner( program)
+        val state = TortoiseState()
+        val dr = t.draw(state, tools.ds())
+        pathFigure.value = dr
+        redraw()
+    }
+
+    private fun tortoiseProgram(lines: String): TortoiseProgram {
+        val f = lines.split("\n").map { line ->
+            TortoiseParser.extractTortoiseCommands(line)
+        }
+
+        val (c, a) = f.partition { it.first == "" }
+        val k = tools.algorithms()
+        return TortoiseProgram(
+            commands = c.map { it.second },
+            algorithms = (k+a).toMap()
+        )
+    }
 
 }
