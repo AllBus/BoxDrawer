@@ -84,7 +84,9 @@ class FigureOnPath(
     override fun draw(g: IFigureGraphics) {
         g.save()
         for (i in 0..<count) {
-            val pos = startOffsetInPercent + distanceInPercent*i
+            val d = startOffsetInPercent + distanceInPercent*i
+            val pos = if (reverse) (1 - d) else d
+
             val p = path.positionInPath(pos)
             g.save()
             g.translate(p.point.x, p.point.y)
@@ -92,6 +94,8 @@ class FigureOnPath(
             if (useNormal) {
                 g.rotate(p.normal.angle*180.0/Math.PI, Vec2.Zero)
             }
+            g.translate(pivot.x, pivot.y)
+            g.rotate(angle, Vec2.Zero)
             figure.draw(g)
             g.restore()
         }

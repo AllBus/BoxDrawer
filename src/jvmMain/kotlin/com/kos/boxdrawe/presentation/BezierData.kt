@@ -83,21 +83,21 @@ class BezierData(val tools: Tools) {
             pivot = Vec2.Zero
         )
 
-        val cc = c1.value
-        val pe =  FigureEllipse(cc[0], Vec2.distance(cc[1], cc[0]), Vec2.distance(cc[2], cc[0]), 10.0  )
-
-        val fp2 = FigureOnPath(
-            figure = pathFigure.value,
-            path = pe,
-            count = pathCount.decimal.toInt(),
-            distanceInPercent = pathRast.decimal,
-            startOffsetInPercent = pathOffset.decimal,
-            reverse = false,
-            useNormal = true,
-            angle = 0.0,
-            pivot = Vec2.Zero
-        )
-        figure.value = FigureList( listOf( fb, fp, fp2, pe ))
+//        val cc = c1.value
+//        val pe =  FigureEllipse(cc[0], Vec2.distance(cc[1], cc[0]), Vec2.distance(cc[2], cc[0]), 10.0  )
+//
+//        val fp2 = FigureOnPath(
+//            figure = pathFigure.value,
+//            path = pe,
+//            count = pathCount.decimal.toInt(),
+//            distanceInPercent = pathRast.decimal,
+//            startOffsetInPercent = pathOffset.decimal,
+//            reverse = false,
+//            useNormal = true,
+//            angle = 0.0,
+//            pivot = Vec2.Zero
+//        )
+        figure.value = FigureList( listOf( fb, fp ))
     }
 
     fun save(fileName: String) {
