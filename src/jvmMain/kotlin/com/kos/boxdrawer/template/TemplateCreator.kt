@@ -67,8 +67,22 @@ object TemplateCreator {
                 argumentName = argument,
             )
             "form" -> createForm(block)
+            "multi" -> createMulti(block)
             else -> null
         }
+    }
+
+    fun createMulti(block: TurtoiseParserStackBlock): TemplateItemMulti? {
+        val title = block.getBlockAtName("title")?.blocks?.firstOrNull()?.line.orEmpty().dropSkobki()
+        val argument = block.getBlockAtName("arg")?.argument.orEmpty()
+
+        return block.getBlockAtName("item")?.blocks?.firstOrNull()?.let { b ->
+            createItem(b)
+        }?.let { item -> TemplateItemMulti(
+            title,
+            argument,
+            item
+        ) }
     }
 
     fun String.dropSkobki():String{

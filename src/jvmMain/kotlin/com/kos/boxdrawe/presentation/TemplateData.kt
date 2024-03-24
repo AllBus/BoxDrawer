@@ -62,18 +62,32 @@ class TemplateData(val tools: ITools) {
     }
 
     val templateGenerator = object : TemplateGeneratorListener {
-        override fun templateGenerator(arg: String, index: Int, count: Int, value: String) {
+        override fun put(arg: String, index: Int, count: Int, value: String) {
             if (count > 1) {
                 memory.put(arg, index, count, value)
                 redraw()
             } else {
-                templateGenerator(arg, value)
+                put(arg, value)
             }
         }
 
-        override fun templateGenerator(arg: String, value: String) {
+        override fun put(arg: String, value: String) {
             memory.put(arg, value)
             redraw()
+        }
+
+        override fun putList(arg: String, value: List<String>) {
+            memory.put(arg, TemplateMemoryItem(value))
+            redraw()
+        }
+
+        override fun removeItem(arg: String) {
+            memory.remove(arg)
+            redraw()
+        }
+
+        override fun get(arg: String): List<String> {
+            return memory.get(arg)
         }
     }
 

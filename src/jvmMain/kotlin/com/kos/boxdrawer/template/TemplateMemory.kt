@@ -39,6 +39,10 @@ class TemplateMemory(){
         memory.clear()
     }
 
+    fun remove(arg: String) {
+        memory.remove(arg)
+    }
+
     fun put(arg: String, templateMemoryItem: TemplateMemoryItem) {
         memory.put(arg, templateMemoryItem)
     }
@@ -70,5 +74,9 @@ class TemplateMemory(){
             nm.put(k, r)
         }
         return nm
+    }
+
+    fun get(arg: String): List<String> {
+        return memory.get(arg)?.values.orEmpty()
     }
 }

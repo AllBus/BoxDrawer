@@ -17,6 +17,15 @@ data class TemplateForm(override val title: String,
         get() = 1
 }
 
+data class TemplateItemMulti(override val title: String,
+                        override val argumentName: String,
+                        val data: TemplateItem,
+): TemplateItem{
+
+    override val argumentCount: Int
+        get() = 1
+}
+
 data class TemplateItemInt(
     override val title: String,
     override val argumentName: String
