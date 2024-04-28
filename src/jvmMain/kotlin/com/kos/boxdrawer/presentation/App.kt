@@ -4,6 +4,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -60,7 +61,7 @@ fun App(vm: State<DrawerViewModel>) {
     val matrix = remember { vm.value.tortoise.matrix }
     val alternative = remember { vm.value.box.alternative }
     val stateText = remember { mutableStateOf("") }
-    val menu = vm.value.template.menu.collectAsState(TemplateInfo(TemplateForm("", "", emptyList()), TurtoiseParserStackBlock()))
+    val menu = vm.value.template.menu.collectAsState(TemplateInfo.EMPTY)
 
     MaterialTheme {
         Column {
@@ -118,14 +119,15 @@ fun App(vm: State<DrawerViewModel>) {
                         ) { text ->
                             stateText.value = text
                         }
-                        TemplateBox(
-                            modifier = Modifier.align(Alignment.TopStart).padding(8.dp).width(250.dp)
-                                .verticalScroll(
-                                    rememberScrollState()
-                                ),
-                            menu = menu,
-                            templateGenerator = vm.value.template.templateGenerator,
-                        )
+
+                        Row(
+                            modifier = Modifier.align(Alignment.TopStart)
+                        ) {
+                            TemplateEditorBox(
+                                menu = menu,
+                                templateGenerator = vm.value.template.templateGenerator,
+                            )
+                        }
                     }
 
                     else -> {

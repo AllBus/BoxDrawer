@@ -6,4 +6,7 @@ interface TemplateGeneratorListener {
     fun putList(arg: String, value: List<String>)
     fun removeItem(arg:String)
     fun get(arg:String): List<String>
+
+    fun editorRemoveItem(arg:String)
+    fun editorAddItem(name:String, title:String, argument:String)
 }

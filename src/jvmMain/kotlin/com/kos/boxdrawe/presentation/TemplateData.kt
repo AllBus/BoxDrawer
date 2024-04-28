@@ -2,13 +2,16 @@ package com.kos.boxdrawe.presentation
 
 import com.kos.boxdrawer.figure.FigureExtractor
 import com.kos.boxdrawer.template.TemplateCreator
+import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.boxdrawer.template.TemplateMemoryItem
+import com.kos.boxdrawer.template.editor.TemplateEditorForm
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.kabeja.dxf.DXFDocument
@@ -25,7 +28,6 @@ import java.io.FileInputStream
 
 class TemplateData(val tools: ITools) {
     private val templater = TemplateCreator
-
     private val emptyAlgorithm = TemplateAlgorithm(
         "",
         TurtoiseParserStackBlock(),
@@ -38,16 +40,25 @@ class TemplateData(val tools: ITools) {
     )
 
     private val algorithmName = MutableStateFlow("")
-    val menu = algorithm.map {
+    val menu2 = algorithm.map {
         TemplateInfo(
             templater.parse(it.template),
             it.default,
+            false,
         )
     }
 
     val memory = TemplateMemory()
 
     val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
+
+    val templateEditor = MutableStateFlow<TemplateEditorForm>(TemplateEditorForm(TemplateForm("", "", emptyList())))
+
+    val menu = menu2.combine(templateEditor){n, e ->
+        if (n.form.isEmpty()) TemplateInfo(e.form,   TurtoiseParserStackBlock(), true) else n
+    }
+
+
 
     fun redraw() {
         val runner = TortoiseRunner(TortoiseProgram(emptyList(), tools.algorithms().toMap()))
@@ -88,6 +99,33 @@ class TemplateData(val tools: ITools) {
 
         override fun get(arg: String): List<String> {
             return memory.get(arg)
+        }
+
+        override fun editorRemoveItem(arg: String) {
+            templateEditor.value =
+                TemplateEditorForm(
+                    form = templateEditor.value.form.remove(arg)
+                )
+        }
+
+        override fun editorAddItem(name:String, title:String, argument:String){
+            val arg = argument.split(".").last()
+            templater.createItem(name, title, arg,
+                TurtoiseParserStackBlock(
+
+                ).apply {
+                    TurtoiseParserStackBlock().apply {
+                        add(listOf("title", title))
+                        add(listOf("arg", arg))
+                    }
+                })?.let { item ->
+                val frm = templateEditor.value.form.replace(".$argument", item)
+
+                templateEditor.value =
+                    TemplateEditorForm(
+                        frm
+                    )
+            }
         }
     }
 

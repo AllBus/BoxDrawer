@@ -5,6 +5,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
+import com.jsevy.jdxf.DXFColor
 import com.kos.drawer.IFigureGraphics
 import vectors.Vec2
 
@@ -92,7 +93,7 @@ class ComposeFigureDrawer(
     }
 
     override fun setColor(color: Int) {
-        penColor = Color(color).copy(alpha = 1.0f)
+        penColor = Color(DXFColor.getRgbColor(color))
     }
 
     override fun getColor():Int {

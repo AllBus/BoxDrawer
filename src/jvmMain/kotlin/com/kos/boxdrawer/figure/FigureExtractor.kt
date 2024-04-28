@@ -9,6 +9,8 @@ import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureArray
+import com.kos.figure.composition.FigureColor
+import org.jetbrains.skia.Color
 import org.kabeja.dxf.DXFArc
 import org.kabeja.dxf.DXFCircle
 import org.kabeja.dxf.DXFDocument
@@ -24,24 +26,44 @@ import vectors.Vec2
 
 class FigureExtractor {
 
-    fun extractFigures(doc: DXFDocument) : IFigure{
+    fun extractFigures(doc: DXFDocument): IFigure {
         val result = mutableListOf<IFigure>()
+
         for (layer in doc.dxfLayerIterator) {
+            var currentColor = layer.color
+            var colorBlock = mutableListOf<IFigure>()
+            println( layer.name+" -- "+layer.color)
             for (t in layer.dxfEntityTypeIterator) {
                 for (entry in layer.getDXFEntities(t)) {
-                    result += createFigure(entry, doc)
-                }
+                    if (entry.color != currentColor) {
+                        if (colorBlock.isNotEmpty()) {
+                            result += FigureColor(
+                                currentColor,
+                                FigureList(colorBlock.toList()).simple()
+                            )
+                            colorBlock = mutableListOf<IFigure>()
+                        }
+                        currentColor = entry.color
+                    }
+                    val figure = createFigure(entry, doc)
+                    if (figure != FigureEmpty) {
+                        println( entry.id+" "+entry.color)
+                        colorBlock += figure
+                    }
+                } //end for entry
             }
+            result += FigureColor(currentColor, FigureList(colorBlock.toList()).simple())
         }
-        return FigureList(result.toList()).simple()
+        return FigureList(result.toList())
     }
 
     private fun createFigure(
         entry: DXFEntity,
         doc: DXFDocument
-    ):IFigure = when (entry) {
+    ): IFigure = when (entry) {
         is DXFLine ->
             FigureLine(entry.startPoint.vec, entry.endPoint.vec)
+
         is DXFPolyline -> {
             val vertex = entry.vertexIterator
             FigurePolyline(
@@ -62,16 +84,18 @@ class FigureExtractor {
             FigureCircle(entry.centerPoint.vec, entry.radius)
 
         is DXFEllipse -> {
+
             //println("E ${entry.ratio} ${entry.halfMajorAxisLength} ${entry.rotationAngle}")
             FigureEllipse(
                 center = entry.centerPoint.vec,
-                radius =entry.halfMajorAxisLength,
+                radius = entry.halfMajorAxisLength,
                 radiusMinor = entry.ratio * entry.halfMajorAxisLength,
                 rotation = entry.rotationAngle,
                 segmentStart = entry.startParameter * 180.0 / Math.PI,
                 segmentEnd = entry.endParameter * 180.0 / Math.PI,
             )
         }
+
         is DXFArc -> {
             //println("A ${entry.radius} ${entry.startAngle} ${entry.endAngle} ${entry.isCounterClockwise}")
 
@@ -79,9 +103,10 @@ class FigureExtractor {
                 center = entry.centerPoint.vec,
                 radius = entry.radius,
                 segmentStart = entry.startAngle,
-                segmentEnd = if (entry.endAngle< entry.startAngle) 360.0 else 0.0 + entry.endAngle,
+                segmentEnd = if (entry.endAngle < entry.startAngle) 360.0 else 0.0 + entry.endAngle,
             )
         }
+
         is DXFInsert -> {
             doc.getDXFBlock(entry.blockID)?.let { block ->
                 val f = FigureList(
@@ -95,7 +120,7 @@ class FigureExtractor {
                     distance = Vec2(entry.columnSpacing, entry.rowSpacing),
                     columns = entry.columns,
                     rows = entry.rows,
-                    angle = entry.rotate*180.0/Math.PI,
+                    angle = entry.rotate * 180.0 / Math.PI,
                     scaleX = entry.scaleX,
                     scaleY = entry.scaleY,
                 )

@@ -1,11 +1,13 @@
 package com.kos.boxdrawer.template
 
 import com.kos.boxdrawer.presentation.TemplateFormBox
+import turtoise.TurtoiseParserStackBlock
 import turtoise.TurtoiseParserStackItem
 
 class TemplateInfo(
     val form: TemplateForm,
     val values: TurtoiseParserStackItem,
+    val edit: Boolean,
 ) {
     fun memoryValues(): TemplateMemory {
 
@@ -72,5 +74,9 @@ class TemplateInfo(
                 }
             }
         }
+    }
+
+    companion object {
+        val EMPTY = TemplateInfo(TemplateForm("", "", emptyList()), TurtoiseParserStackBlock(), false)
     }
 }

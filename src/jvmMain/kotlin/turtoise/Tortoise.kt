@@ -10,8 +10,10 @@ import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.FigureSpline
 import com.kos.figure.IFigure
+import com.kos.figure.IFigurePath
 import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.composition.FigureArray
+import com.kos.figure.composition.FigureOnPath
 import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
@@ -160,17 +162,6 @@ class Tortoise() {
                     roundrectangle(com, memory, state, res)
                 }
 
-                TortoiseCommand.TURTOISE_FIGURE -> {
-                    val block = com.takeBlock(0)
-                    val f = figureList(block, ds, state, maxStackSize, memory, runner)
-
-                    f?.let { g ->
-                        res.add(
-                            g
-                        )
-                    }
-                }
-
                 TortoiseCommand.TURTOISE_REGULAR_POLYGON -> {
                     val r = com.take(1, 0.0, memory)
                     val count = min(com.take(0, 3.0, memory).toInt(), MAX_REGULAR_POLYGON_EDGES)
@@ -181,6 +172,49 @@ class Tortoise() {
                         angle = state.angle,
                         radius = r
                     ))
+                }
+
+                TortoiseCommand.TURTOISE_FIGURE -> {
+                    val block = com.takeBlock(0)
+                    figureList(block, ds, state, maxStackSize, memory, runner)?.let { g ->
+                        res.add(
+                            g
+                        )
+                    }
+                }
+
+                TortoiseCommand.TURTOISE_PATH -> {
+                    val block = com.takeBlock(0)
+                    val blockFigure = com.takeBlock(1)
+                    val blockProperties = com.takeBlock(2)
+                    val count = com.take(0, 2.0, memory).toInt()
+                    if (count>0) {
+                        figureList(block, ds, state, maxStackSize, memory, runner)?.let { f ->
+                            f.list().filterIsInstance(IFigurePath::class.java).firstOrNull()?.let { path ->
+
+                                figureList(
+                                    blockFigure,
+                                    ds,
+                                    state,
+                                    maxStackSize,
+                                    memory,
+                                    runner
+                                )?.let { figure ->
+                                    res += FigureOnPath(
+                                        figure = figure,
+                                        path = path,
+                                        count = count,
+                                        distanceInPercent = com.take(1, 1.0/count, memory),
+                                        startOffsetInPercent = com.take(2, 0.0, memory),
+                                        reverse = com.take(7, 0.0, memory)>=1.0,
+                                        useNormal = com.take(4, 1.0, memory)>=1.0,
+                                        angle = com.take(3, 0.0, memory),
+                                        pivot = Vec2(com.take(5, 0.0, memory), com.take(6, 0.0, memory)),
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {
