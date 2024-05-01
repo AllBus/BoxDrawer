@@ -83,6 +83,10 @@ class FigureBezierList(val points: List<List<Vec2>>) : Figure() {
         }
     }
 
+    override fun name(): String {
+        return "Кривые ${this.points.size}"
+    }
+
     companion object {
         fun simple(beziers: List<FigureBezierList>): FigureBezierList {
             val b = beziers.flatMap { it.points }.filter { it.isNotEmpty() }
@@ -107,4 +111,5 @@ class FigureBezierList(val points: List<List<Vec2>>) : Figure() {
             return FigureBezierList(list)
         }
     }
+
 }

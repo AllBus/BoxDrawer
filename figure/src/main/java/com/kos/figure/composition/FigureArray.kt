@@ -116,4 +116,10 @@ class FigureArray(
                 "(c ($columns ${distance.x}) (r $rows ${distance.y}) (s ${scaleX} ${scaleY}))" +
                 ""
     }
+
+    override fun collection(): List<IFigure> {
+        return listOfNotNull(figure, figureStart, figureEnd)
+    }
+
+    override fun name(): String = "Array(${columns}x$rows)"
 }

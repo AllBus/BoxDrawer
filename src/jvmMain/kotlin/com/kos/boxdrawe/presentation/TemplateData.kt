@@ -35,7 +35,7 @@ class TemplateData(val tools: ITools) {
         TurtoiseParserStackBlock()
     )
 
-    private val algorithm = MutableStateFlow<TemplateAlgorithm>(
+    private val algorithm = MutableStateFlow(
         emptyAlgorithm
     )
 
@@ -52,12 +52,12 @@ class TemplateData(val tools: ITools) {
 
     val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
 
-    val templateEditor = MutableStateFlow<TemplateEditorForm>(TemplateEditorForm(TemplateForm("", "", emptyList())))
+    val templateEditor =
+        MutableStateFlow(TemplateEditorForm(TemplateForm("", "", emptyList())))
 
-    val menu = menu2.combine(templateEditor){n, e ->
-        if (n.form.isEmpty()) TemplateInfo(e.form,   TurtoiseParserStackBlock(), true) else n
+    val menu = menu2.combine(templateEditor) { n, e ->
+        if (n.form.isEmpty()) TemplateInfo(e.form, TurtoiseParserStackBlock(), true) else n
     }
-
 
 
     fun redraw() {
@@ -108,16 +108,21 @@ class TemplateData(val tools: ITools) {
                 )
         }
 
-        override fun editorAddItem(name:String, title:String, argument:String){
+        override fun editorAddItem(name: String, title: String, argument: String) {
             val arg = argument.split(".").last()
             templater.createItem(name, title, arg,
                 TurtoiseParserStackBlock(
 
                 ).apply {
-                    TurtoiseParserStackBlock().apply {
-                        add(listOf("title", title))
-                        add(listOf("arg", arg))
-                    }
+                    addItems(
+                        listOf(TurtoiseParserStackBlock().apply {
+                            add(listOf("title", title))
+                        },
+                            TurtoiseParserStackBlock().apply {
+                                add(listOf("arg", arg))
+                            }
+                        )
+                    )
                 })?.let { item ->
                 val frm = templateEditor.value.form.replace(".$argument", item)
 
@@ -155,7 +160,7 @@ class TemplateData(val tools: ITools) {
 
         val top = TurtoiseParserStackBlock()
 
-        memory.union( menu.first().memoryValues()).memoryBlock(top)
+        memory.union(menu.first().memoryValues()).memoryBlock(top)
 
         val memoryarguments = top.line
 

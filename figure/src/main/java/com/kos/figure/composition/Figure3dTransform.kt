@@ -14,4 +14,8 @@ class Figure3dTransform(val m : Matrix, val figure: IFigure): FigureMatrix(){
         }
         g.restore()
     }
+
+    override fun print(): String {
+        return "3dTransform"
+    }
 }

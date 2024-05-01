@@ -116,5 +116,9 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points) {
             sum
         }
     }
+
+    override fun name(): String {
+        return "Кривая ${this.points.size/3}"
+    }
 }
 

@@ -108,6 +108,14 @@ public class DXFColor {
         };
     private static final String DEFAULT_COLOR = "0,0,0";
 
+    public static int getRgbColor(int color) {
+        if (color <= 0 || color >= rgbs.length)
+            return 0xFF000000;
+        else {
+            int[] rgb = rgbs[color];
+            return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[0];
+        }
+    }
     public static String getRGBString(int dxfColorCode) {
         if ((dxfColorCode > 0) && ((dxfColorCode - 1) <= (rgbs.length - 1))) {
             // the StringBuffer is faster then the String concat

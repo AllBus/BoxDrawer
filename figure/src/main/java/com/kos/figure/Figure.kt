@@ -18,6 +18,15 @@ interface IFigure {
     fun draw(g: IFigureGraphics)
 
     fun print():String
+    fun collection(): List<IFigure>
+    fun name():String
+
+    companion object {
+        fun list(figure:IFigure):List<IFigure>{
+            return listOf(figure)+figure.collection().flatMap { list(it) }
+        }
+
+    }
 }
 
 enum class CropSide {
@@ -33,6 +42,12 @@ abstract class Figure : IFigure {
 
     override fun list(): List<Figure> {
         return listOf(this)
+    }
+
+    override fun collection(): List<IFigure> = emptyList()
+
+    override fun name(): String {
+        return this.javaClass.name
     }
 
     companion object {
@@ -62,4 +77,7 @@ object FigureEmpty: IFigure {
         return ""
     }
 
+    override fun collection(): List<IFigure> = emptyList()
+
+    override fun name(): String = "Empty"
 }

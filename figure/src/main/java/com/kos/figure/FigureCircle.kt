@@ -107,4 +107,8 @@ class FigureCircle(
         val normal = Vec2(1.0, 0.0).rotate(rot)
         return PointWithNormal(pos, normal)
     }
+
+    override fun name(): String {
+        return "Круг"
+    }
 }

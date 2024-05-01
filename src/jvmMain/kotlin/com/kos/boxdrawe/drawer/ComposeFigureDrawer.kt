@@ -93,7 +93,7 @@ class ComposeFigureDrawer(
     }
 
     override fun setColor(color: Int) {
-        penColor = Color(DXFColor.getRgbColor(color))
+        penColor = Color(color).copy(alpha = 1.0f)
     }
 
     override fun getColor():Int {

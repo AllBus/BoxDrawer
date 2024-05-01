@@ -5,8 +5,15 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableFloatState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -19,14 +26,26 @@ import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isAltPressed
 import androidx.compose.ui.input.pointer.isCtrlPressed
-import androidx.compose.ui.input.pointer.isShiftPressed
 import androidx.compose.ui.input.pointer.onPointerEvent
 import com.kos.boxdrawe.drawer.drawFigures
 import com.kos.boxdrawe.presentation.BezierData
 import com.kos.boxdrawe.widget.toOffset
 import com.kos.boxdrawe.widget.toVec2
+import com.kos.figure.FigureEmpty
 import vectors.Vec2
 
+private fun indexOfPoint(points: List<Vec2>, position: Vec2, maxDistance: Double): Int {
+    var index = -1
+    var dist = maxDistance + 1
+    points.forEachIndexed { i, v ->
+        val nd = Vec2.distance(v, position)
+        if (nd < dist) {
+            index = i
+            dist = nd
+        }
+    }
+    return index
+}
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -47,40 +66,40 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
     val scale = displayScale.value
 
     Canvas(modifier = Modifier.fillMaxSize().clipToBounds().onPointerEvent(PointerEventType.Press) {
-        val sp = (it.changes.first().position.toVec2()- size.toVec2() / 2.0)/scale.toDouble()-pos.toVec2()/scale.toDouble()
-       // if (it.button == PointerButton.Primary) {
-            selectIndex.value = c1.value.indexOfFirst { Vec2.distance(it, sp) < 20.0 }
-       /// }
+        val sp =
+            (it.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.toVec2() / scale.toDouble()
+        // if (it.button == PointerButton.Primary) {
+        selectIndex.value = indexOfPoint(c1.value, sp, 20.0)
+        /// }
 
-        if (selectIndex.value < 0){
-            if (Vec2.distance(cst.value, sp) < 20.0){
+        if (selectIndex.value < 0) {
+            if (Vec2.distance(cst.value, sp) < 20.0) {
                 if (it.button == PointerButton.Secondary)
                     vm.deleteStart()
                 else
                     vm.addStartBezier()
             }
-            if (Vec2.distance(cen.value, sp) < 20.0){
+            if (Vec2.distance(cen.value, sp) < 20.0) {
                 if (it.button == PointerButton.Secondary)
                     vm.deleteEnd()
                 else
                     vm.addEndBezier()
             }
         }
-        if ( it.keyboardModifiers.isAltPressed){
+        if (it.keyboardModifiers.isAltPressed) {
             selectedType.value = 3
             vm.movePointLine(selectIndex.value)
         } else
-        if ( it.keyboardModifiers.isCtrlPressed){
-            selectedType.value = 1
-            vm.movePointLine(selectIndex.value)
-        }
-        else {
-            when (it.button) {
-                PointerButton.Primary -> selectedType.value = 0
-                PointerButton.Secondary -> selectedType.value = 1
-                PointerButton.Tertiary -> selectedType.value = 2
+            if (it.keyboardModifiers.isCtrlPressed) {
+                selectedType.value = 1
+                vm.movePointLine(selectIndex.value)
+            } else {
+                when (it.button) {
+                    PointerButton.Primary -> selectedType.value = 0
+                    PointerButton.Secondary -> selectedType.value = 1
+                    PointerButton.Tertiary -> selectedType.value = 2
+                }
             }
-        }
 
     }.onPointerEvent(PointerEventType.Release) {
         selectIndex.value = -1
@@ -88,10 +107,13 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
     }.onPointerEvent(PointerEventType.Move) {
 
         if (it.changes.first().pressed) {
-            val sp = Vec2.freqency((it.changes.first().position.toVec2() - size.toVec2() / 2.0)/scale.toDouble()-pos.toVec2()/scale.toDouble(),currentDistance.value)
+            val sp = Vec2.freqency(
+                (it.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.toVec2() / scale.toDouble(),
+                currentDistance.value
+            )
             val v = selectIndex.value
             if (v >= 0) {
-                when (selectedType.value){
+                when (selectedType.value) {
                     0 -> vm.movePoint(v, sp)
                     1 -> vm.movePointFlat(v, sp)
                     2 -> vm.movePointEdge(v, sp)
@@ -101,7 +123,9 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
         }
 
     }.onDrag(
-        matcher = PointerMatcher.mouse(PointerButton.Secondary) + PointerMatcher.mouse(PointerButton.Tertiary)+PointerMatcher.stylus,
+        matcher = PointerMatcher.mouse(PointerButton.Secondary) + PointerMatcher.mouse(
+            PointerButton.Tertiary
+        ) + PointerMatcher.stylus,
         onDrag = { offset ->
             if (selectIndex.value < 0)
                 pos += offset
@@ -114,7 +138,8 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
         translate(pos.x, pos.y) {
             this.scale(scale = displayScale.value) {
                 this.translate(c.width, c.height) {
-                    val gm = 20f* (if (scale>100) 0.01f else if (scale>10) 0.1f else if (scale<0.5) 10f else 1f)
+                    val gm =
+                        20f * (if (scale > 100) 0.01f else if (scale > 10) 0.1f else if (scale < 0.5) 10f else 1f)
                     for (j in -razm.width.toInt()..razm.width.toInt()) {
                         for (k in -razm.height.toInt()..razm.height.toInt()) {
                             this.drawCircle(
@@ -142,7 +167,7 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
                         )
                     }
 
-                    this.drawFigures(figure.value)
+                    this.drawFigures(figure.value, FigureEmpty)
                 }
             }
         }

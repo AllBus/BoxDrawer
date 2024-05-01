@@ -38,7 +38,7 @@ class FigureExtractor {
                     if (entry.color != currentColor) {
                         if (colorBlock.isNotEmpty()) {
                             result += FigureColor(
-                                currentColor,
+                                org.kabeja.dxf.DXFColor.getRgbColor(currentColor),
                                 FigureList(colorBlock.toList()).simple()
                             )
                             colorBlock = mutableListOf<IFigure>()

@@ -46,4 +46,8 @@ class FigureSpline(points: List<Vec2>) : FigurePolygon(points) {
             Vec2.bezierLength(p)
         }
     }
+
+    override fun name(): String {
+        return "Сплайн"
+    }
 }

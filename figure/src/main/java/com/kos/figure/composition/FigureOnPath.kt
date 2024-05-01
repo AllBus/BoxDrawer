@@ -106,5 +106,9 @@ class FigureOnPath(
         return "P"
     }
 
+    override fun collection(): List<IFigure> {
+        return listOf(figure)
+    }
 
+    override fun name(): String = "OnPath"
 }

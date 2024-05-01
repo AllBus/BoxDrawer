@@ -111,4 +111,8 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
         } else
             PointWithNormal.EMPTY
     }
+
+    override fun name(): String {
+        return "Линия"
+    }
 }

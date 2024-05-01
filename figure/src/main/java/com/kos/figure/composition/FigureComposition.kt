@@ -38,4 +38,12 @@ abstract class FigureComposition : IFigure {
     override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
         return create(figure.rotate(angle, rotateCenter))
     }
+
+    override fun collection(): List<IFigure> {
+        return listOf(figure)
+    }
+
+    override fun name(): String {
+        return this.javaClass.name
+    }
 }

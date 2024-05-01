@@ -53,4 +53,8 @@ class FigureRotate(
     override fun print(): String {
         return "R (${figure.print()})"
     }
+
+    override fun name(): String {
+        return "Поворот(${angle})"
+    }
 }

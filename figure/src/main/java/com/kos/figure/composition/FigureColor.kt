@@ -24,4 +24,8 @@ class FigureColor(val color: Int, override val figure: IFigure) : FigureComposit
         return "C (${figure.print()})"
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
+    override fun name(): String {
+        return "Цвет(${color.toHexString()})"
+    }
 }

@@ -146,4 +146,11 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points) {
         }
         return result
     }
+
+    override fun name(): String {
+        return if (points.first() == points.last())
+            "Многоугольник ${points.size}"
+        else
+            "Полилиния ${points.size}"
+    }
 }

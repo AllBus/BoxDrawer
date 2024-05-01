@@ -267,6 +267,11 @@ open class FigureEllipse(
         val normal =  Vec2.normalize(Vec2.Zero, Vec2(radiusMinor*radiusMinor*pos.x, radius*radius* pos.y)).rotate(rotation)
         return PointWithNormal(pr, normal)
     }
+
+
+    override fun name(): String {
+        return "Эллипс"
+    }
 }
 
 

@@ -51,4 +51,8 @@ class FigureTranslate(
     override fun print(): String {
         return "T (${figure.print()})"
     }
+
+    override fun name(): String {
+        return "Сдвиг $offset"
+    }
 }

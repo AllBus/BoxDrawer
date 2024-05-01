@@ -1,6 +1,8 @@
 package com.kos.boxdrawe.themes
 
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 object ThemeColors {
 
@@ -11,5 +13,10 @@ object ThemeColors {
     val templateFormBorder = Color(0xFF203020)
     val templateArgumentColor = Color(0xFFAA3020)
     val tabBackground = Color.LightGray
+    val figureListBorder = Color(0xff49463A)
+    val figureListBackground = Color(0x90DDD7C3)
+    val selectedFigureColor = Color(0xff6BFF60)
+    val figureListItemShape = RoundedCornerShape(4.dp)
+
 
 }

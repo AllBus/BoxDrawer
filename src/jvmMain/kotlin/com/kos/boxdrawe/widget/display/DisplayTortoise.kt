@@ -34,8 +34,12 @@ import kotlin.math.sign
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun DisplayTortoise(displayScale: MutableFloatState, matrix: State<Matrix>, enableMatrix: Boolean,
-                    figures: IFigure, onStateChange: (String)-> Unit) {
+fun DisplayTortoise(displayScale: MutableFloatState,
+                    matrix: State<Matrix>,
+                    enableMatrix: Boolean,
+                    figures: IFigure,
+                    selectedItem: State<IFigure>,
+                    onStateChange: (String)-> Unit) {
 //    val posX = rememberSaveable("DisplayTortoiseX") { mutableStateOf(0f) }
 //    val posY = rememberSaveable("DisplayTortoiseY") { mutableStateOf(0f) }
 
@@ -96,7 +100,8 @@ fun DisplayTortoise(displayScale: MutableFloatState, matrix: State<Matrix>, enab
                        }
                     }
                 ) {
-                    this.drawFigures(figures)
+                    this.drawFigures(figures, selectedItem.value)
+
                 }
         })
 

@@ -54,4 +54,12 @@ class FigureList(
     override fun print(): String {
         return figures.joinToString(" ") { it.print() }
     }
+
+    override fun collection(): List<IFigure> {
+        return figures
+    }
+
+    override fun name(): String {
+        return "List"
+    }
 }

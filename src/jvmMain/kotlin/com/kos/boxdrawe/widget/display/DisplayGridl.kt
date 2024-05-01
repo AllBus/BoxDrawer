@@ -208,7 +208,7 @@ fun DisplayGrid(gridData: GridData) {
                             sc,
                             Offset(0.0f, 0.0f)
                         ) {
-                            drawFigures(figure.value)
+                            drawFigures(figure.value, FigureEmpty)
                         }
 
                 }
