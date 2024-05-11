@@ -32,6 +32,8 @@ object BoxCad {
         ALTERNATIVE,
         VOLUME
     }
+    private const val angle90 = Math.PI / 2
+    private const val angle0 = 0.0
 
     private const val F_BOTTOM = -1
     private const val F_TOP = -2
@@ -56,7 +58,6 @@ object BoxCad {
         val points = mutableListOf<Vec2>()
 
         var p = DrawingParam(
-            orientation = Orientation.Vertical,
             reverse = !param.reverse,
             back = false
         )
@@ -65,12 +66,11 @@ object BoxCad {
         //Левая сторона
         points.add(origin)
         points.add(origin + Vec2(0.0, wald.bottomOffset))
-        zigzag(points, points.last(), height - wald.verticalOffset, zigzag, 0.0, p, boardWeight)
+        zigzag(points, points.last(), height - wald.verticalOffset, zigzag, angle90, p, boardWeight)
         points.add(origin + Vec2(0.0, height))
 
         if (wald.topForm != PazForm.None) {
             val ph = DrawingParam(
-                orientation = Orientation.Horizontal,
                 reverse = true,
                 back = false,
             )
@@ -100,7 +100,6 @@ object BoxCad {
         }
 
         p = DrawingParam(
-            orientation = Orientation.Vertical,
             reverse = param.reverse,
             back = true,
         )
@@ -110,12 +109,11 @@ object BoxCad {
 
         // Правая сторона
         points.add(origin + Vec2(width, heightEnd - wald.topOffset))
-        zigzag(points, points.last(), heightEnd - wald.verticalOffset, zigzag, 0.0, p, boardWeight)
+        zigzag(points, points.last(), heightEnd - wald.verticalOffset, zigzag, angle90, p, boardWeight)
         points.add(origin + Vec2(width, 0.0))
 
         if (wald.bottomForm != PazForm.None) {
             val ph = DrawingParam(
-                orientation = Orientation.Horizontal,
                 reverse = false,
                 back = true,
             )
@@ -167,9 +165,8 @@ object BoxCad {
             points.last(),
             height,
             zigzagH,
-            0.0,
+            angle90,
             DrawingParam(
-                orientation = Orientation.Vertical,
                 reverse = false,
                 back = false,
             ),
@@ -182,7 +179,6 @@ object BoxCad {
             zigzagW,
             0.0,
             DrawingParam(
-                orientation = Orientation.Horizontal,
                 reverse = false,
                 back = false,
             ),
@@ -193,9 +189,8 @@ object BoxCad {
             points.last(),
             height,
             zigzagH,
-            0.0,
+            angle90,
             DrawingParam(
-                orientation = Orientation.Vertical,
                 reverse = true,
                 back = true,
             ),
@@ -208,7 +203,6 @@ object BoxCad {
             zigzagW,
             0.0,
             DrawingParam(
-                orientation = Orientation.Horizontal,
                 reverse = true,
                 back = true,
             ),
@@ -244,9 +238,8 @@ object BoxCad {
             origin,
             height,
             zigzagH,
-            0.0,
+            angle90,
             DrawingParam(
-                orientation = Orientation.Vertical,
                 reverse = false,
                 back = false,
             ),
@@ -258,7 +251,6 @@ object BoxCad {
             zigzagW,
             0.0,
             DrawingParam(
-                orientation = Orientation.Horizontal,
                 reverse = false,
                 back = false,
             ),
@@ -268,9 +260,8 @@ object BoxCad {
             origin+Vec2(width, height),
             height,
             zigzagH,
-            0.0,
+            angle90,
             DrawingParam(
-                orientation = Orientation.Vertical,
                 reverse = true,
                 back = true,
             ),
@@ -282,7 +273,6 @@ object BoxCad {
             zigzagW,
             0.0,
             DrawingParam(
-                orientation = Orientation.Horizontal,
                 reverse = true,
                 back = true,
             ),
@@ -363,10 +353,8 @@ object BoxCad {
         //Левый край
         points.add(origin + Vec2(ssx, 0.0));
 
-
         zigzag(
-            points, points.last(), he0, zigzag, 0.0, DrawingParam(
-                orientation = Orientation.Vertical,
+            points, points.last(), he0, zigzag, angle90, DrawingParam(
                 reverse = false,
                 back = false
             ),
@@ -374,14 +362,12 @@ object BoxCad {
         );
         result.startHole.addAll(
             holes(
-                startOrigin, he0, zigzag, 0.0,
+                startOrigin, he0, zigzag, angle90,
                 DrawingParam(
-                    orientation = Orientation.Vertical,
                     reverse = false,
                     back = false,
                 ),
                 wald.holeWeight
-
             )
         );
 
@@ -394,9 +380,8 @@ object BoxCad {
 
         result.endHole.addAll(
             holes(
-                endOrigin, heE, zigzag, 0.0,
+                endOrigin, heE, zigzag, angle90,
                 DrawingParam(
-                    orientation = Orientation.Vertical,
                     reverse = false,
                     back = false,
                 ),
@@ -457,9 +442,8 @@ object BoxCad {
 
         //  currentPoint = Vec2(0.0, points.last().y - origin.y) + endOrigin
         zigzag(
-            points, points.last(), he0, zigzag, 0.0,
+            points, points.last(), he0, zigzag, angle90,
             DrawingParam(
-                orientation = Orientation.Vertical,
                 reverse = true,
                 back = true,
             ),
@@ -509,15 +493,13 @@ object BoxCad {
                     val currentPoint = getCoord(polka, points.last() - origin) + originForPol;
                     zigzag(
                         points, points.last(), d, zigzagPol, 0.0, DrawingParam(
-                            orientation = Orientation.Horizontal,
                             reverse = true,
                             back = true
                         ), boardWeight
                     );
                     result.polHole.addAll(
                         holes(
-                            currentPoint, d, zigzagPol, 0.0, DrawingParam(
-                                orientation = or,
+                            currentPoint, d, zigzagPol,  if (or == Orientation.Vertical) angle90 else angle0, DrawingParam(
                                 reverse = true,
                                 back = true
                             ), wald.holeWeight
@@ -538,7 +520,6 @@ object BoxCad {
             val currentPoint = getCoord(polka, points.last() - origin) + originForPol;
             zigzag(
                 points, points.last(), d, zigzagPol, 0.0, DrawingParam(
-                    orientation = Orientation.Horizontal,
                     reverse = true,
                     back = true
                 ),
@@ -546,8 +527,7 @@ object BoxCad {
             );
             result.polHole.addAll(
                 holes(
-                    currentPoint, d, zigzagPol, 0.0, DrawingParam(
-                        orientation = or,
+                    currentPoint, d, zigzagPol, if (or == Orientation.Vertical) angle90 else angle0, DrawingParam(
                         reverse = true,
                         back = true
                     ),
@@ -582,7 +562,6 @@ object BoxCad {
         // две толщины доски
         val ap = drawerSettings.boardWeight * 2
         val p = DrawingParam(
-            orientation = Orientation.Horizontal,
             reverse = true,
             back = false
         )

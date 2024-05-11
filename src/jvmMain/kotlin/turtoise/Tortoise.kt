@@ -689,8 +689,7 @@ class Tortoise() {
         ) {
             val bot = if (param.back) -1 else 1
             val z = 0.0
-            val angleV =
-                if (param.orientation == Orientation.Vertical) (angle + Math.PI / 2) else angle
+            val angleV =  angle
 
             if (!zig.enable) {
                 points.add(Vec2(width * bot, z).rotate(angleV) + origin)
@@ -761,9 +760,6 @@ class Tortoise() {
                 zigzagWidthV = deltaV - boardWeight * 2
                 if (zigzagWidthV < boardWeight) return emptyList()
             }
-
-            val angle =
-                if (param.orientation == Orientation.Vertical) (angle + Math.PI / 2) else angle
 
             val bot = if (param.back) -1 else 1
             val distance = deltaV - zigzagWidthV

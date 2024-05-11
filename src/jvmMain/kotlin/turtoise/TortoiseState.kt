@@ -11,7 +11,6 @@ class TortoiseState {
     var zigWidth = 15.0
 
     var zigParam = DrawingParam(
-        orientation = Orientation.Horizontal,
         reverse = false,
         back = false,
     )
@@ -23,7 +22,6 @@ class TortoiseState {
         zigDelta = other.zigDelta
         zigWidth = other.zigWidth
         zigParam = DrawingParam(
-            orientation = other.zigParam.orientation,
             reverse = other.zigParam.reverse,
             back = other.zigParam.back,
         )
@@ -66,7 +64,6 @@ class TortoiseState {
         zigWidth = 15.0
 
         zigParam = DrawingParam(
-            orientation = Orientation.Horizontal,
             reverse = false,
             back = false,
         )

@@ -18,7 +18,7 @@ object ZigConstructor {
     ): IFigure {
         val bot = if (param.back) -1 else 1
         val z = 0.0
-        val angleV = if (param.orientation == Orientation.Vertical) (angle + Math.PI / 2) else angle
+        val angleV = angle
 
         /* Зигзаг выключен нарисуем прямую */
         if (!zig.enable){

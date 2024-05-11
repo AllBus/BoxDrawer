@@ -40,7 +40,7 @@ enum class Orientation {
 }
 
 data class DrawingParam(
-    val orientation: Orientation = Orientation.Horizontal,
+  //  val orientation: Orientation = Orientation.Horizontal,
     val reverse: Boolean = false,
     val back: Boolean = false,
 ) {
