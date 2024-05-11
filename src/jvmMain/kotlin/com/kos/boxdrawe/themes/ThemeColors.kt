@@ -17,6 +17,7 @@ object ThemeColors {
     val figureListBackground = Color(0x90DDD7C3)
     val selectedFigureColor = Color(0xff6BFF60)
     val figureListItemShape = RoundedCornerShape(4.dp)
+    val editorBackground = Color(0x30FFFFFF)
 
 
 }

@@ -90,3 +90,4 @@ private fun SegmentButtonPreview() = MaterialTheme {
     SegmentButton(selectId, zigVariants) { id -> selectId.value = id }
 
 }
+

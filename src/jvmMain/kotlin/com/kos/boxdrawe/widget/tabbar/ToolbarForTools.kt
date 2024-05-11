@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.onClick
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,9 +28,11 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.ToolsData
+import com.kos.boxdrawe.widget.CheckboxK
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.RunButton
+import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.TabContentModifier
 import com.kos.boxdrawe.widget.showFileChooser
 import com.kos.boxdrawe.widget.showLoadFileChooser
@@ -45,6 +48,7 @@ fun ToolbarForTools(vm: ToolsData) {
     val holeDropHeight  = remember { vm.holeDropHeight }
     val holeOffset = remember { vm.holeOffset }
     val algs = remember { vm.tools.figureList }
+    val checkboxEditor = vm.templateData.checkboxEditor.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     val clipboardManager = LocalClipboardManager.current
 
@@ -55,7 +59,12 @@ fun ToolbarForTools(vm: ToolsData) {
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            Label("Фигуры")
+            Row {
+                Label("Фигуры")
+                RunCheckBox(checkboxEditor.value, "Редактор меню") { checked ->
+                    vm.templateData.checkboxEditor.value = checked
+                }
+            }
             LazyColumn(
                // verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {

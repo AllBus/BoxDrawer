@@ -79,6 +79,7 @@ fun App(vm: State<DrawerViewModel>) {
     }
 
     val selectedItem = remember(figures) { mutableStateOf<IFigure> (FigureEmpty) }
+    val checkboxEditor = vm.value.template.checkboxEditor.collectAsState()
 
     MaterialTheme {
         Column {
@@ -168,16 +169,16 @@ fun App(vm: State<DrawerViewModel>) {
                                 )
                             }
                         } else {
-                            if (tabIndex.value == BoxDrawerToolBar.TAB_TOOLS) {
+                            if (tabIndex.value == BoxDrawerToolBar.TAB_TOOLS && !checkboxEditor.value) {
                                 Box(
                                     modifier = Modifier.align(Alignment.TopEnd).width(180.dp)
                                 ) {
-                                    FigureListBox(figureList.value, selectedItem, {f -> selectedItem.value = f})
+                                    FigureListBox(figureList.value, selectedItem) { f ->
+                                        selectedItem.value = f
+                                    }
                                 }
                             }
-
                         }
-
                     }
                     StatusBar(displayScale)
                 }

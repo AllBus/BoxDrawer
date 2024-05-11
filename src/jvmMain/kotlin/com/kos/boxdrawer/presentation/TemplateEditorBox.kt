@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.presentation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SimpleEditText
@@ -50,8 +52,10 @@ fun TemplateEditorBox(
         val name = remember { mutableStateOf("") }
         val argument = remember { mutableStateOf("") }
 
-        Row {
-            Column(modifier = Modifier.width(170.dp)) {
+        Row(
+            Modifier.background(ThemeColors.editorBackground, ThemeColors.figureListItemShape)
+        ) {
+            Column(modifier = Modifier.width(200.dp)) {
                 Label("Ввод чисел")
                 Row {
                     RunButton("1", Modifier.weight(1f)) {
@@ -83,12 +87,12 @@ fun TemplateEditorBox(
                         createItem("label", name.value, argument.value)
                     }
                 }
-                RunButton("форма") {
-                    createItem("form", name.value, argument.value)
-                }
-                RunButton("множество") {
-                    createItem("multi", name.value, argument.value)
-                }
+//                RunButton("форма") {
+//                    createItem("form", name.value, argument.value)
+//                }
+//                RunButton("множество") {
+//                    createItem("multi", name.value, argument.value)
+//                }
             }
             Column(modifier = Modifier.width(300.dp)) {
                 SimpleEditText("Название", "", name) { v ->

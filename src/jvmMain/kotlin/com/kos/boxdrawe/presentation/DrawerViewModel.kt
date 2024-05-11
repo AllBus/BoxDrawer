@@ -2,6 +2,8 @@ package com.kos.boxdrawe.presentation
 
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.figure.FigureEmpty
+import com.kos.figure.IFigure
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -17,21 +19,22 @@ class DrawerViewModel {
     val options = ToolsData(tools, template)
     val bezier = BezierData(tools)
     val bublik = BublikData(tools)
+    val rectData = RectToolsData(tools)
     val tabIndex = MutableStateFlow(BoxDrawerToolBar.TAB_TORTOISE)
-
 
     private val noneFigure = MutableStateFlow(FigureEmpty).asStateFlow()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val figures = tabIndex.flatMapLatest { tab -> when (tab) {
             BoxDrawerToolBar.TAB_TORTOISE -> tortoise.figures
             BoxDrawerToolBar.TAB_SOFT -> softRez.figures
             BoxDrawerToolBar.TAB_BOX -> box.figures
             BoxDrawerToolBar.TAB_BUBLIK -> bublik.figures
+            BoxDrawerToolBar.TAB_RECT -> rectData.figures
             BoxDrawerToolBar.TAB_TOOLS -> template.currentFigure
-            else ->  noneFigure
+            else -> noneFigure
         }
     }
-
 
     init {
         println("DrawerViewModel")

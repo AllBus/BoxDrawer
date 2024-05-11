@@ -7,6 +7,7 @@ import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
+import com.kos.figure.FigurePolygon
 import com.kos.figure.FigurePolyline
 import com.kos.figure.FigureSpline
 import com.kos.figure.IFigure
@@ -933,6 +934,22 @@ class Tortoise() {
                     )
                 )
             )
+        }
+
+        fun rectangle(center: Vec2, width: Double, height: Double) :IFigure{
+            val c2 = center
+            val angle = 0.0
+            val width2 = width/2.0
+            val height2 = height/2.0
+            val points = listOf<Vec2>(
+                c2 + Vec2(-width2, -height2).rotate(angle),
+                c2 + Vec2(-width2, height2).rotate(angle),
+                c2 + Vec2(width2, height2).rotate(angle),
+                c2 + Vec2(width2, -height2).rotate(angle),
+                c2 + Vec2(-width2, -height2).rotate(angle),
+            )
+
+            return FigurePolyline(points)
         }
     }
 }

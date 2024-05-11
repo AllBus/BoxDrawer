@@ -35,12 +35,14 @@ class TemplateData(val tools: ITools) {
         TurtoiseParserStackBlock()
     )
 
+    val checkboxEditor = MutableStateFlow(false)
+
     private val algorithm = MutableStateFlow(
         emptyAlgorithm
     )
 
     private val algorithmName = MutableStateFlow("")
-    val menu2 = algorithm.map {
+    private val menu2 = algorithm.map {
         TemplateInfo(
             templater.parse(it.template),
             it.default,
@@ -55,10 +57,9 @@ class TemplateData(val tools: ITools) {
     val templateEditor =
         MutableStateFlow(TemplateEditorForm(TemplateForm("", "", emptyList())))
 
-    val menu = menu2.combine(templateEditor) { n, e ->
-        if (n.form.isEmpty()) TemplateInfo(e.form, TurtoiseParserStackBlock(), true) else n
+    val menu = combine(menu2, templateEditor, checkboxEditor) { n, e, check ->
+        if (check) TemplateInfo(e.form, TurtoiseParserStackBlock(), true) else n
     }
-
 
     fun redraw() {
         val runner = TortoiseRunner(TortoiseProgram(emptyList(), tools.algorithms().toMap()))
@@ -150,7 +151,6 @@ class TemplateData(val tools: ITools) {
     }
 
     fun save(fileName: String) {
-        //   redraw()
         tools.saveFigures(fileName, currentFigure.value)
         tools.updateChooserDir(fileName)
     }
