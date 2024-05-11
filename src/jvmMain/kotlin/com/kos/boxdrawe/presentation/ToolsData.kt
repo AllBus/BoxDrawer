@@ -19,11 +19,11 @@ class ToolsData(val tools: Tools, val templateData: TemplateData) {
 
     fun selectSettings(newDs: DrawerSettings) {
         tools.selectSettings(newDs.copy())
-        boardWeight.decimal = tools.settings.value.boardWeight
-        holeWeight.decimal = tools.settings.value.holeWeight
-        holeDrop.decimal = tools.settings.value.holeDrop
-        holeDropHeight.decimal = tools.settings.value.holeDropHeight
-        holeOffset.decimal = tools.settings.value.holeOffset
+        boardWeight.update(tools.settings.value.boardWeight)
+        holeWeight.update(tools.settings.value.holeWeight)
+        holeDrop.update(tools.settings.value.holeDrop)
+        holeDropHeight.update(tools.settings.value.holeDropHeight)
+        holeOffset.update(tools.settings.value.holeOffset)
     }
 
     fun selectFigure(a: TortoiseAlgorithm, name: String) {

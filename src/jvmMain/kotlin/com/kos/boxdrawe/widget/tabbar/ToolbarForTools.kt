@@ -37,6 +37,7 @@ import com.kos.boxdrawe.widget.TabContentModifier
 import com.kos.boxdrawe.widget.showFileChooser
 import com.kos.boxdrawe.widget.showLoadFileChooser
 import kotlinx.coroutines.launch
+import turtoise.DrawerSettings
 import turtoise.TemplateAlgorithm
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -110,47 +111,15 @@ fun ToolbarForTools(vm: ToolsData) {
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            val expanded = remember { mutableStateOf(false) }
             val settingsList = remember { vm.tools.settingsList }
             val selectedMovie = remember { vm.tools.settings }
 
-            ExposedDropdownMenuBox(
-                expanded = expanded.value,
-                onExpandedChange = {
-                    expanded.value = !expanded.value
-                }
-            ) {
-                // textfield
-                TextField(
-                    modifier = Modifier, // menuAnchor modifier must be passed to the text field for correctness.
-                    readOnly = true,
-                    value = selectedMovie.value.name,
-                    onValueChange = {},
-                    label = { Text("Шаблон") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded.value) },
-                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                )
-                // menu
-                ExposedDropdownMenu(
-                    expanded = expanded.value,
-                    onDismissRequest = {
-                        expanded.value = false
-                    },
-                ) {
-                    // menu items
-                    settingsList.value.group.forEach { item ->
-                        DropdownMenuItem(
-                            onClick = {
-                                vm.selectSettings(item)
-                                expanded.value = false
-                            },
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp),
-                        ) {
-                            Text(item.name)
-                        }
-                    }
-                }
-            }
+            ComboBox(
+                label = "Шаблон",
+                selectedTitle = selectedMovie.value.name,
+                items = settingsList.value.group,
+                onClick = { item -> vm.selectSettings(item) }
+            )
             Column(
                 modifier = Modifier.weight(weight = 1f, fill = true)
             ) {
@@ -172,10 +141,59 @@ fun ToolbarForTools(vm: ToolsData) {
                 softWrap = false,
                 textAlign = TextAlign.Center
             )
-            NumericUpDown("Ширина", "мм", holeWeight)
+            NumericUpDown("Высота", "мм", holeWeight)
             NumericUpDown("Уменьшение длины", "мм", holeDrop)
             NumericUpDown("Уменьшение высоты", "мм", holeDropHeight)
             NumericUpDown("Отступ от края", "мм", holeOffset)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ComboBox(
+    label:String,
+    selectedTitle:String,
+    items : List<DrawerSettings>,
+    onClick: (DrawerSettings) -> Unit,
+){
+    val expanded = remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded.value,
+        onExpandedChange = {
+            expanded.value = !expanded.value
+        }
+    ) {
+        // textfield
+        TextField(
+            modifier = Modifier, // menuAnchor modifier must be passed to the text field for correctness.
+            readOnly = true,
+            value = selectedTitle,
+            onValueChange = {},
+            label = { Text(label) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded.value) },
+            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+        )
+        // menu
+        ExposedDropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = {
+                expanded.value = false
+            },
+        ) {
+            // menu items
+            items.forEach { item ->
+                DropdownMenuItem(
+                    onClick = {
+                        onClick(item)
+                        expanded.value = false
+                    },
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp),
+                ) {
+                    Text(item.name)
+                }
+            }
         }
     }
 }

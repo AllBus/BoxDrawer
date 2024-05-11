@@ -33,6 +33,13 @@ object BoxCad {
         VOLUME
     }
 
+    private const val F_BOTTOM = -1
+    private const val F_TOP = -2
+    private const val F_LEFT = -3
+    private const val F_RIGHT = -4
+    private const val F_FACE = -5
+    private const val F_BACK = -6
+
     fun faceWald(
         origin: Vec2,
         width: Double,
@@ -559,13 +566,6 @@ object BoxCad {
     private fun eps(a: Double, b: Double): Boolean {
         return Math.abs(a - b) < 0.01
     }
-
-    private const val F_BOTTOM = -1
-    private const val F_TOP = -2
-    private const val F_LEFT = -3
-    private const val F_RIGHT = -4
-    private const val F_FACE = -5
-    private const val F_BACK = -6
 
     fun box(
         startPoint: Vec2,

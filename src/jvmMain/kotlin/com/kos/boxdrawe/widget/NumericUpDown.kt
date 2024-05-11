@@ -184,6 +184,15 @@ class NumericTextFieldState(
                 decimal = v
 
             updateAction(decimal)
+            fieldValue.value = TextFieldValue(String.format("%1$,.${digits}f", decimal))
+        }
+    }
+
+    fun update(newValue: Double){
+        if (newValue != decimal) {
+            decimal = newValue
+            updateAction(decimal)
+            fieldValue.value = TextFieldValue(String.format("%1$,.${digits}f", decimal))
         }
     }
 
@@ -209,6 +218,8 @@ class NumericTextFieldState(
     }
 
     val text get() = fieldValue.value // String.format("%1$,.${digits}f", decimal);
+
+
 }
 
 

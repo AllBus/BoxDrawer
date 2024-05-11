@@ -3,7 +3,7 @@
     <DrawerSettingsList>
         <DrawerSettings
                 boardWeight="3.0"
-                holeWeight="3.04"
+                holeWeight="2.8"
                 zigDrop="0.3"
                 holeDrop="0.3"
                 holeDropHeight="0.0"
@@ -21,7 +21,7 @@
         />
       <DrawerSettings
               boardWeight="4.0"
-              holeWeight="4.04"
+              holeWeight="3.8"
               zigDrop="0.3"
               holeDrop="0.3"
               holeDropHeight="0.0"
