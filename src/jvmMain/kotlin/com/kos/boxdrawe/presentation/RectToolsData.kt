@@ -4,111 +4,58 @@ import com.kos.figure.Figure
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
-import com.kos.figure.composition.FigureColor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import turtoise.Tortoise
-import turtoise.memory.DoubleMemoryKey
-import turtoise.memory.MemoryKey
 import turtoise.memory.SimpleTortoiseMemory
-import turtoise.memory.TriangleAngleMemoryKey
+import turtoise.memory.keys.DoubleMemoryKey
+import turtoise.memory.keys.MemoryKey
 import turtoise.rect.EStorona
+import turtoise.rect.Kubik
+import turtoise.rect.Kubik.Companion.STORONA_CL
+import turtoise.rect.Kubik.Companion.STORONA_CR
+import turtoise.rect.Kubik.Companion.STORONA_L
+import turtoise.rect.Kubik.Companion.STORONA_R
+import turtoise.rect.KubikGroup
 import turtoise.rect.RectBlock
 import turtoise.rect.RectBlockEdges
 import turtoise.rect.RectBlockParent
 import turtoise.rect.Reka
-import turtoise.rect.RekaStorona
+import turtoise.rect.RekaCad
+import turtoise.rect.RekaCad.newReka
+import turtoise.rect.RekaCad.rekaPoints
 import vectors.Vec2
 
 class RectToolsData(val tools: ITools) {
 
-
-    fun createFigureFor(block: RectBlock, position: Vec2): IFigure {
-        return Tortoise.rectangle(position, block.width, block.height)
-    }
-
-    fun calculatePosition(block: RectBlock, c: RectBlock, position: Vec2): Vec2 {
-        val pif = c.parentInfo
-        val inverse = if (pif.inside) -1.0 else 1.0
-        return position + when (c.parentInfo.storona) {
-            EStorona.LEFT -> Vec2(
-                -block.width / 2.0 - c.width / 2.0 * inverse,
-                -block.height / 2.0 + pif.bias * block.height + pif.padding
-            )
-
-            EStorona.RIGHT -> Vec2(
-                block.width / 2.0 + c.width / 2.0 * inverse,
-                -block.height / 2.0 + pif.bias * block.height + pif.padding
-            )
-
-            EStorona.TOP -> Vec2(
-                -block.width / 2.0 + pif.bias * block.width + pif.padding,
-                -block.height / 2.0 - c.height / 2.0 * inverse
-            )
-
-            EStorona.BOTTOM -> Vec2(
-                -block.width / 2.0 + pif.bias * block.width + pif.padding,
-                block.height / 2.0 + c.height / 2.0 * inverse
-            )
-        }
-    }
-
-    fun createFigure(block: RectBlock, position: Vec2): IFigure {
-        return FigureList(
-            listOf(
-                createFigureFor(block, position)
-            ) +
-                    block.children.map { c ->
-                        val pos = calculatePosition(block, c, position)
-                        createFigure(c, pos)
-
-                    }
-        )
-    }
-
-    fun calculatePosition(block: RectBlock, center: Vec2): Vec2 {
-        var p: RectBlock? = block.parent
-        var r = block
-        var pos = center
-
-        while (p != null) {
-            pos = calculatePosition(p, r, pos)
-            r = p
-            p = p.parent
-        }
-        return pos
-    }
-
-    val rectBlocks = MutableStateFlow(
-        RectBlock(
-            width = 10.0,
-            height = 10.0,
-            edges = RectBlockEdges.default(),
-            parentInfo = RectBlockParent(
-                storona = EStorona.LEFT,
-                inside = false,
-                padding = 0.0,
-                bias = 0.5,
-            )
-        )
-    )
-
     private val memory = SimpleTortoiseMemory()
 
     private val redrawEvent = MutableStateFlow(0)
-    private val selectPos = MutableStateFlow<IFigure>(Figure.Empty)
-    private val points = MutableStateFlow<List<Vec2>>(emptyList())
-
+    private val points = MutableStateFlow<List<String>>(emptyList())
 
     private val currentReka = Reka(DoubleMemoryKey(10.0))
-    private val rekaFigure = MutableStateFlow<IFigure>(Figure.Empty)
 
-    val figures = combine(redrawEvent, rectBlocks, selectPos, rekaFigure) { e, block, s, reka ->
-        FigureList(listOf(createFigure(block, Vec2.Zero), s, reka))
+    private val topReka = MutableStateFlow(Reka(DoubleMemoryKey(10.0)))
+    private val rekaFigure = MutableStateFlow<IFigure>(Figure.Empty)
+    private var current: MutableStateFlow<RectBlockPosition> = MutableStateFlow(
+        RectBlockPosition(
+            reka = currentReka,
+            parent = null,
+            position = RekaStoronaPosition(
+                edge = 1,
+                storona = STORONA_L,
+                block = 0,
+            ),
+        )
+    )
+
+    val figures = combine(redrawEvent, topReka, current, rekaFigure) { e,  reka , cur , f ->
+        FigureList(listOf(RekaCad.createFigure(reka, Vec2.Zero, 0.0, cur, memory),f))
     }
 
     fun createRekaFigure() {
         currentReka.recalculate(memory = memory)
+        // println(currentReka.points)
         rekaFigure.value = FigurePolyline(currentReka.points)
 
     }
@@ -117,192 +64,162 @@ class RectToolsData(val tools: ITools) {
         redrawEvent.value += 1
     }
 
-    private var current = RectBlockPosition(
-        rect = rectBlocks.value,
-        storona = EStorona.TOP
-    )
-    private var currentY: Int = 0
-
-    fun selectPosition(x: Int, y: Int) {
-        val (a, b) = when (Pair(x, y)) {
-            -1 to 0 -> {
-                EStorona.LEFT to EStorona.RIGHT
+    fun selectPosition(napravlenie: Int) {
+        val cv = current.value
+        when (napravlenie) {
+            DOWN_BLOCK -> {
+                if (cv.parent != null) {
+                    current.value = cv.parent
+                }
             }
 
-            1 to 0 -> {
-                EStorona.RIGHT to EStorona.LEFT
-
+            UP_BLOCK -> {
+                val b = findBlock(cv.reka, cv.position)
+                if (b != null) {
+                    current.value = RectBlockPosition(
+                        b,
+                        parent = cv,
+                        position = RekaStoronaPosition(
+                            edge = 1,
+                            storona = STORONA_L,
+                            block = 0,
+                        )
+                    )
+                }
             }
 
-            0 to 1 -> {
-                EStorona.BOTTOM to EStorona.TOP
+            NEXT_EDGE -> {
+                val e = cv.position.edge + 1
+                val e2 = if (e > cv.reka.storoni.size) 1 else e
+
+                current.value = cv.copy(
+                    position = cv.position.copy(edge = e2)
+                )
             }
 
-            0 to -1 -> {
-                EStorona.TOP to EStorona.BOTTOM
+            BACK_EDGE -> {
+                val e = cv.position.edge - 1
+                val e2 = if (e < 1) cv.reka.storoni.size else e
 
+                current.value = cv.copy(
+                    position = cv.position.copy(edge = e2)
+                )
             }
 
-            else -> {
-                return
+            STORONA_L,
+            STORONA_CL,
+            STORONA_CR,
+            STORONA_R -> {
+                current.value = cv.copy(
+                    position = cv.position.copy(block = 0, storona = STORONA_L)
+                )
+            }
+
+            NEXT_BLOCK -> {
+                val kubiki = findKubiki(cv.reka, cv.position)
+                if (kubiki != null) {
+                    val e = cv.position.block + 1
+                    val e2 = if (e > kubiki.size) kubiki.size else e
+
+                    current.value = cv.copy(
+                        position = cv.position.copy(block = e2)
+                    )
+                }
+            }
+
+            BACK_BLOCK -> {
+                val e = cv.position.block - 1
+                val e2 = if (e < 0) 0 else e
+
+                current.value = cv.copy(
+                    position = cv.position.copy(block = e2)
+                )
             }
         }
-        if (current.storona != a) {
-            current = RectBlockPosition(
-                current.rect,
-                a
-            )
-        } else {
-            if (current.rect.parentInfo.storona == b) {
-                current.rect.parent?.let { p ->
-                    current = RectBlockPosition(
-                        p,
-                        a
-                    )
-                }
-            } else {
-                current.rect.children.find {
-                    it.parentInfo.storona == a
-                }?.let { p ->
-                    current = RectBlockPosition(
-                        p,
-                        a
-                    )
-                }
-            }
-        }
+    }
 
-        val rr = current.rect
-        val pos = calculatePosition(rr, Vec2.Zero)
-        selectPos.value = FigureColor(
-            0xFF00ff,
+    private fun findKubiki(reka: Reka, position: RekaStoronaPosition): KubikGroup? {
+        val p = reka.storoni.getOrNull(position.storona - 1) ?: return null
+        val k = p.kubiki.find { it.napravlenie == position.storona } ?: return null
 
-            FigurePolyline(
-                when (current.storona) {
-                    EStorona.LEFT -> listOf(
-                        pos + Vec2(-rr.width / 2.0, -rr.height / 2.0),
-                        pos + Vec2(-rr.width / 2.0, rr.height / 2.0)
-                    )
+        return k
+    }
 
-                    EStorona.RIGHT -> listOf(
-                        pos + Vec2(rr.width / 2.0, -rr.height / 2.0),
-                        pos + Vec2(rr.width / 2.0, rr.height / 2.0)
-                    )
+    private fun findBlock(reka: Reka, position: RekaStoronaPosition): Reka? {
+        val k = findKubiki(reka, position) ?: return null
+        return k.group.getOrNull(position.block)?.reka
+    }
 
-                    EStorona.TOP -> listOf(
-                        pos + Vec2(-rr.width / 2.0, -rr.height / 2.0),
-                        pos + Vec2(rr.width / 2.0, -rr.height / 2.0)
-                    )
+    private fun insertKubik(reka: Reka, position: RekaStoronaPosition, newKubik: Kubik): Boolean {
+        val k = findKubiki(reka, position) ?: return false
+        k.add(position.block, newKubik)
 
-                    EStorona.BOTTOM -> listOf(
-                        pos + Vec2(-rr.width / 2.0, rr.height / 2.0),
-                        pos + Vec2(rr.width / 2.0, rr.height / 2.0)
-                    )
-                }
-            )
-        )
 
+        return true
     }
 
     fun createBox() {
         val pt = points.value
         if (pt.isNotEmpty()) {
 
-            val b = RectBlock(
-                width = pt[0].x,
-                height = pt[0].y,
-                edges = RectBlockEdges.default(),
-                parentInfo = RectBlockParent(
-                    storona = current.storona,
-                    inside = false,
-                    padding = 0.0,
-                    bias = 0.5,
+            val b = newReka(pt, memory)
+            val cv = current.value
+            if (insertKubik(
+                    reka = cv.reka, position = cv.position, newKubik = Kubik(
+                        padding = MemoryKey.ZERO,
+                        reka = b
+                    )
                 )
-            )
-            b.parent = current.rect
+            ) {
+                cv.reka.recalculate(memory = memory)
+                redraw()
+            }
+        }
+    }
 
+    fun removeBox() {
+        val cv = current.value
+        if (cv.parent != null) {
+            val cp = cv.parent
+            cp.reka.remove(cv.reka)
+            cv.reka.recalculate(memory = memory)
+            current.value = cv.parent
             redraw()
         }
     }
 
     fun setPoints(text: String) {
         val tv = text.split(",").map { it.trim() }
-        points.value = tv.windowed(2, 2) { l ->
-            Vec2(l[0].toDoubleOrNull() ?: 0.0, l[1].toDoubleOrNull() ?: 0.0)
-        }
+        points.value = tv
 
         if (tv.isNotEmpty()) {
-            currentReka.podoshva = MemoryKey.create(tv.first())
+            currentReka.podoshva = MemoryKey(tv.first())
             currentReka.storoni.clear()
-            val st = when (tv.size) {
-                2 -> {
-                    listOf(
-                        RekaStorona(
-                            length = MemoryKey.create(tv[1]),
-                            angle = DoubleMemoryKey.PI2
-                        ),
-                        RekaStorona(
-                            length = MemoryKey.create(tv[0]),
-                            angle = DoubleMemoryKey.PI2
-                        ),
-                        RekaStorona(
-                            length = MemoryKey.create(tv[1]),
-                            angle = DoubleMemoryKey.PI2
-                        ),
-                    )
-                }
-
-                3 -> {
-
-                    val ma = MemoryKey.create(tv[0])
-                    val mb = MemoryKey.create(tv[1])
-                    val mc = MemoryKey.create(tv[2])
-
-                    listOf(
-                        RekaStorona(
-                            length = mb,
-                            angle = TriangleAngleMemoryKey(mc, ma, mb)
-                        ),
-                        RekaStorona(
-                            length = mc,
-                            angle = TriangleAngleMemoryKey(ma, mb, mc)
-                        ),
-                    )
-                }
-
-                1 -> {
-                    listOf(
-                        RekaStorona(
-                            length = MemoryKey.create(tv[0]),
-                            angle = DoubleMemoryKey.PI2
-                        ),
-                        RekaStorona(
-                            length = MemoryKey.create(tv[0]),
-                            angle = DoubleMemoryKey.PI2
-                        ),
-                        RekaStorona(
-                            length = MemoryKey.create(tv[0]),
-                            angle = DoubleMemoryKey.PI2
-                        ),
-                    )
-                }
-
-                else -> {
-                    tv.drop(1).windowed(2, 2).map { v ->
-                        RekaStorona(
-                            length = MemoryKey.create(v[0]),
-                            angle = MemoryKey.create(v[1]),
-                        )
-                    }
-                }
-            }
+            val st = rekaPoints(tv)
             currentReka.storoni.addAll(st)
+            createRekaFigure()
         }
-        createRekaFigure()
+    }
+
+    companion object {
+
+        const val NEXT_EDGE = 10
+        const val BACK_EDGE = 20
+        const val NEXT_BLOCK = 11
+        const val BACK_BLOCK = 21
+        const val UP_BLOCK = 12
+        const val DOWN_BLOCK = 22
     }
 }
 
 data class RectBlockPosition(
-    val rect: RectBlock,
-    val storona: EStorona,
+    val reka: Reka,
+    val parent: RectBlockPosition?,
+    val position: RekaStoronaPosition,
+)
+
+data class RekaStoronaPosition(
+    val edge: Int,
+    val storona: Int,
+    val block: Int,
 )

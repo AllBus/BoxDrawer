@@ -1,6 +1,6 @@
 package turtoise
 
-import turtoise.memory.MemoryKey
+import turtoise.memory.keys.MemoryKey
 import turtoise.memory.TortoiseMemory
 
 class UniTortoiseCommand(

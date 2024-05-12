@@ -2,10 +2,7 @@ package com.kos.boxdrawer.detal.robot
 
 import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
-import turtoise.memory.MemoryKey
-import turtoise.memory.MemoryKey.Companion.div
-import turtoise.memory.MemoryKey.Companion.plus
-import turtoise.memory.MemoryKey.Companion.unaryMinus
+import turtoise.memory.keys.MemoryKey
 
 class RobotRect(
     params: List<MemoryKey>

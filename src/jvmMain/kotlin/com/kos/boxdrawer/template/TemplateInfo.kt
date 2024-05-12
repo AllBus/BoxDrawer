@@ -1,9 +1,8 @@
 package com.kos.boxdrawer.template
 
-import com.kos.boxdrawer.presentation.TemplateFormBox
 import turtoise.TurtoiseParserStackBlock
 import turtoise.TurtoiseParserStackItem
-import turtoise.memory.MemoryKey.Companion.orEmpty
+import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 
 class TemplateInfo(
     val form: TemplateForm,

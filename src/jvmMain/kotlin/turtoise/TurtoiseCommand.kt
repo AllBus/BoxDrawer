@@ -1,7 +1,7 @@
 package turtoise
 
 import turtoise.TortoiseCommand.Companion.commandToName
-import turtoise.memory.MemoryKey
+import turtoise.memory.keys.MemoryKey
 import turtoise.memory.TortoiseMemory
 
 interface TortoiseCommand {
@@ -132,7 +132,7 @@ interface TortoiseCommand {
         fun Move(x: String) = SmallTortoiseCommand(TURTOISE_MOVE, x)
         fun Move(x: Double, y: Double) = TwoDoubleTortoiseCommand(TURTOISE_MOVE, x, y)
         fun Move(x: String, y: String) =
-            UniTortoiseCommand(TURTOISE_MOVE, listOf(x, y).map(MemoryKey::create))
+            UniTortoiseCommand(TURTOISE_MOVE, listOf(x, y).map(MemoryKey::invoke))
         fun Move(x: MemoryKey, y: MemoryKey) =
             UniTortoiseCommand(TURTOISE_MOVE, listOf(x, y))
 
@@ -141,7 +141,7 @@ interface TortoiseCommand {
         fun Line(x: String) = SmallTortoiseCommand(TURTOISE_LINE, x)
         fun Line(x: Double, y: Double) = TwoDoubleTortoiseCommand(TURTOISE_LINE, x, y)
         fun Line(x: String, y: String) =
-            UniTortoiseCommand(TURTOISE_LINE, listOf(x, y).map(MemoryKey::create))
+            UniTortoiseCommand(TURTOISE_LINE, listOf(x, y).map(MemoryKey::invoke))
 
         /** Завершить рисование текущей линии */
         fun Split() = ZeroTortoiseCommand(TURTOISE_SPLIT)
@@ -150,7 +150,7 @@ interface TortoiseCommand {
             TwoDoubleTortoiseCommand(TURTOISE_RECTANGLE, width, height)
 
         fun Rectangle(width: String, height: String) =
-            UniTortoiseCommand(TURTOISE_RECTANGLE, listOf(width, height).map(MemoryKey::create))
+            UniTortoiseCommand(TURTOISE_RECTANGLE, listOf(width, height).map(MemoryKey::invoke))
 
         fun Rectangle(width: MemoryKey, height: MemoryKey) =
             UniTortoiseCommand(TURTOISE_RECTANGLE, listOf(width, height))
@@ -171,7 +171,7 @@ interface TortoiseCommand {
         fun AngleAdd(angle: String) = SmallTortoiseCommand(TURTOISE_ANGLE_ADD, angle)
 
         fun PolylineString(points: List<String>) =
-            UniTortoiseCommand(TURTOISE_POLYLINE, points.map(MemoryKey::create))
+            UniTortoiseCommand(TURTOISE_POLYLINE, points.map(MemoryKey::invoke))
 
         fun PolylineDouble(points: List<Double>) =
             ListDoubleTortoiseCommand(TURTOISE_POLYLINE, points)
@@ -248,7 +248,7 @@ class SmallTortoiseCommand(
         value: String,
     ) : this(
         command,
-        MemoryKey.create(value)
+        MemoryKey(value)
     ) {
 
     }

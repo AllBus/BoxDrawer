@@ -1,5 +1,8 @@
 package turtoise.memory
 
+import turtoise.memory.keys.ICalculatorMemoryKey
+import turtoise.memory.keys.MemoryKey
+
 open class SimpleTortoiseMemory : TortoiseMemory {
 
     val m = mutableMapOf<MemoryKey, Double>()
@@ -37,14 +40,13 @@ open class SimpleTortoiseMemory : TortoiseMemory {
                 '+',
                 '-',
                 '*',
-                '(',
                 '/' -> {
                     if (varName.isEmpty()) {
                         if (c == '+' || c == '-') {
                             varName += c
                         }
                     } else {
-                        val e = value(MemoryKey.create(varName), defaultValue)
+                        val e = value(MemoryKey(varName), defaultValue)
 
                         when (com) {
                             '+' -> sum += e
@@ -66,7 +68,7 @@ open class SimpleTortoiseMemory : TortoiseMemory {
         }
 
         if (varName.isNotEmpty()) {
-            val e = value(MemoryKey.create(varName), defaultValue)
+            val e = value(MemoryKey(varName), defaultValue)
             when (com) {
                 '+' -> sum += e
                 '-' -> sum -= e
@@ -80,7 +82,7 @@ open class SimpleTortoiseMemory : TortoiseMemory {
 
     private fun calculateCalculator(variable: MemoryKey, defaultValue: Double): Double {
         if (variable is ICalculatorMemoryKey) {
-            return variable.calculate(variable.keys.map{ calculate(it, defaultValue) })
+            return variable.calculate { v -> value(v, defaultValue) }
         } else
             return defaultValue
     }

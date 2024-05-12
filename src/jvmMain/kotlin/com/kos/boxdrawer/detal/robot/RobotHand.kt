@@ -2,7 +2,7 @@ package com.kos.boxdrawer.detal.robot
 
 import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
-import turtoise.memory.MemoryKey
+import turtoise.memory.keys.MemoryKey
 
 class RobotHand(
     params: List<MemoryKey>,

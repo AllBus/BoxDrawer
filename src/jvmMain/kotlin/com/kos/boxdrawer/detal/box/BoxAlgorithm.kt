@@ -12,7 +12,7 @@ import turtoise.TortoiseState
 import turtoise.TurtoiseParserStackBlock
 import turtoise.TurtoiseParserStackItem
 import turtoise.ZigzagInfo
-import turtoise.memory.MemoryKey
+import turtoise.memory.keys.MemoryKey
 import turtoise.memory.TortoiseMemory
 
 class BoxAlgorithm(

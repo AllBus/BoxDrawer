@@ -3,9 +3,8 @@ package com.kos.boxdrawer.detal.box
 import androidx.compose.ui.text.AnnotatedString
 import com.kos.boxdrawer.detal.robot.IRobotCommand
 import com.kos.boxdrawer.detal.robot.IRobotCommandFactory
-import com.kos.boxdrawer.detal.robot.RobotHole
 import turtoise.*
-import turtoise.memory.MemoryKey
+import turtoise.memory.keys.MemoryKey
 
 /**
  * TODO:

@@ -3,7 +3,7 @@ package com.kos.boxdrawer.template
 import turtoise.TortoiseParser
 import turtoise.TurtoiseParserStackBlock
 import turtoise.TurtoiseParserStackItem
-import turtoise.memory.MemoryKey.Companion.orEmpty
+import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 
 object TemplateCreator {
 

@@ -1,6 +1,6 @@
 package turtoise
 
-import turtoise.memory.MemoryKey
+import turtoise.memory.keys.MemoryKey
 
 abstract class TurtoiseParserStackItem(
 //    /** Тип скобок '(','[','{'*/
@@ -96,7 +96,7 @@ class TurtoiseParserStackBlock(
     override val blocks = mutableListOf<TurtoiseParserStackBlock>()
 
     override val argument: MemoryKey
-        get() = arguments().getOrNull(1)?:MemoryKey.EMPTY
+        get() = arguments().getOrNull(1)?: MemoryKey.EMPTY
 
     override val name
         get() = inner.firstOrNull()?.argument ?: MemoryKey.BLOCK
@@ -110,7 +110,7 @@ class TurtoiseParserStackBlock(
     fun add(argument: String) {
         inner.add(
             TurtoiseParserStackArgument(
-                argument = MemoryKey.create(argument)
+                argument = MemoryKey(argument)
             )
         )
     }
@@ -173,7 +173,7 @@ class TurtoiseParserStackBlock(
     }
 
     fun getBlockAtName(name:String): TurtoiseParserStackBlock?{
-        val nm = MemoryKey.create(name)
+        val nm = MemoryKey(name)
         return blocks.find {
             it.name == nm
         }

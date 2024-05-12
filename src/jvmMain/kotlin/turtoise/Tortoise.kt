@@ -7,7 +7,6 @@ import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
-import com.kos.figure.FigurePolygon
 import com.kos.figure.FigurePolyline
 import com.kos.figure.FigureSpline
 import com.kos.figure.IFigure
@@ -18,7 +17,7 @@ import com.kos.figure.composition.FigureOnPath
 import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
-import turtoise.memory.MemoryKey.Companion.orEmpty
+import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 import java.util.Stack

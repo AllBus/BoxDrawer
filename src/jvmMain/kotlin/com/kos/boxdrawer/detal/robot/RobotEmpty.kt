@@ -4,7 +4,7 @@ import androidx.compose.ui.text.AnnotatedString
 import turtoise.DrawerSettings
 import turtoise.TortoiseBlock
 import turtoise.TurtoiseParserStackItem
-import turtoise.memory.MemoryKey
+import turtoise.memory.keys.MemoryKey
 
 class RobotEmpty(): IRobotCommand {
     override fun draw(ds: DrawerSettings): TortoiseBlock {

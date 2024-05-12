@@ -2,9 +2,9 @@ package com.kos.boxdrawer.detal.robot
 
 import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
-import turtoise.memory.DoubleMemoryKey
-import turtoise.memory.MemoryKey
-import turtoise.memory.MemoryKey.Companion.ifEmpty
+import turtoise.memory.keys.DoubleMemoryKey
+import turtoise.memory.keys.MemoryKey
+import turtoise.memory.keys.MemoryKey.Companion.ifEmpty
 
 class RobotCircle(
     val radius: MemoryKey,

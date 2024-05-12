@@ -2,25 +2,23 @@ package com.kos.boxdrawer.detal.robot
 
 import androidx.compose.ui.text.AnnotatedString
 import turtoise.DrawerSettings
-import turtoise.TortoiseAlgorithm
 import turtoise.TortoiseBlock
 import turtoise.TortoiseCommand
 import turtoise.TortoiseParser
 import turtoise.TurtoiseParserStackItem
-import turtoise.memory.DividerMemoryKey
-import turtoise.memory.MemoryKey
-import turtoise.memory.MemoryKey.Companion.EMPTY
-import turtoise.memory.MemoryKey.Companion.div
-import turtoise.memory.MemoryKey.Companion.plus
-import turtoise.memory.MemoryKey.Companion.unaryMinus
+import turtoise.memory.keys.MemoryKey
+import turtoise.memory.keys.MemoryKey.Companion.EMPTY
+import turtoise.memory.keys.MemoryKey.Companion.div
+import turtoise.memory.keys.MemoryKey.Companion.plus
+import turtoise.memory.keys.MemoryKey.Companion.unaryMinus
 
 class RobotCube(
-    val width:MemoryKey,
-    val height:MemoryKey,
-    val weight:MemoryKey,
-    val boardWeight:MemoryKey,
-    val holeDrop:MemoryKey,
-    val pazWidth:MemoryKey,
+    val width: MemoryKey,
+    val height: MemoryKey,
+    val weight: MemoryKey,
+    val boardWeight: MemoryKey,
+    val holeDrop: MemoryKey,
+    val pazWidth: MemoryKey,
 ): IRobotCommand {
 
     override fun draw(ds: DrawerSettings): TortoiseBlock {
@@ -31,7 +29,7 @@ class RobotCube(
         )
     }
 
-    fun rect(width:MemoryKey, height:MemoryKey, zigWidth:MemoryKey, zigHeight:MemoryKey):TortoiseCommand{
+    fun rect(width: MemoryKey, height: MemoryKey, zigWidth: MemoryKey, zigHeight: MemoryKey):TortoiseCommand{
         val w2 = width / 2.0
         val h2 = height /2.0
 
