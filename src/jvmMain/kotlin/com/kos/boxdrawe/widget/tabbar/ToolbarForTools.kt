@@ -46,6 +46,7 @@ fun ToolbarForTools(vm: ToolsData) {
     val boardWeight = remember { vm.boardWeight }
     val holeWeight = remember { vm.holeWeight }
     val holeDrop  = remember { vm.holeDrop }
+    val zigDrop  = remember { vm.zigDrop }
     val holeDropHeight  = remember { vm.holeDropHeight }
     val holeOffset = remember { vm.holeOffset }
     val algs = remember { vm.tools.figureList }
@@ -146,6 +147,17 @@ fun ToolbarForTools(vm: ToolsData) {
             NumericUpDown("Уменьшение высоты", "мм", holeDropHeight)
             NumericUpDown("Отступ от края", "мм", holeOffset)
         }
+//        Column(
+//            modifier = Modifier.weight(weight = 1f, fill = true)
+//        ) {
+//            Text(
+//                text = "Паз",
+//                modifier = Modifier.fillMaxWidth(),
+//                softWrap = false,
+//                textAlign = TextAlign.Center
+//            )
+//            NumericUpDown("Уменьшение длины", "мм", zigDrop)
+//        }
     }
 }
 

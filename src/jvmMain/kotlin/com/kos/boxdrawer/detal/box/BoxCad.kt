@@ -51,6 +51,7 @@ object BoxCad {
         param: DrawingParam,
         boardWeight: Double,
         wald: WaldParam,
+        zigzagOffset: Double,
         heightEnd: Double = height
     ): List<IFigure> {
         val result = mutableListOf<IFigure>()
@@ -61,6 +62,8 @@ object BoxCad {
             reverse = !param.reverse,
             back = false
         )
+
+        val zigzagLength = width - zigzagOffset
 
 
         //Левая сторона
@@ -75,28 +78,20 @@ object BoxCad {
                 back = false,
             )
 
-            val dwe = if (param.reverse) boardWeight else 0.0
-            val sp = points.last() + Vec2(dwe, 0.0);
-            val le = width - 2 * dwe;
+            val sp = points.last() + Vec2((width - zigzagLength) /2.0, 0.0);
 
-            when (wald.topForm) {
-                PazForm.Paz ->
-                    zigzag(points, sp, le, hole, 0.0, ph, boardWeight);
-                PazForm.Hole ->
-                    result.addAll(
-                        holes(
-                            sp - Vec2(0.0, wald.holeTopOffset),
-                            le,
-                            hole,
-                            0.0,
-                            ph,
-                            wald.holeWeight
-                        )
-                    )
-                PazForm.Outside ->
-                    zigzag(points, sp, le, hole, 0.0, ph.copy(reverse = false), boardWeight);
-                else -> {}
-            }
+            waldZigzag(
+                points = points,
+                sp = sp,
+                form = wald.topForm,
+                zigzagLength = zigzagLength,
+                zigzagInfo = hole,
+                ph = ph,
+                boardWeight = boardWeight,
+                holeWeight = wald.holeWeight,
+                holeOffset = -wald.holeTopOffset,
+                result = result
+            )
         }
 
         p = DrawingParam(
@@ -118,35 +113,74 @@ object BoxCad {
                 back = true,
             )
 
-            val dwe = if (param.reverse) boardWeight else 0.0
-            val sp = points.last() - Vec2(dwe, 0.0);
-            val le = width - 2.0 * dwe;
+            val sp = points.last() - Vec2((width - zigzagLength) /2.0, 0.0);
 
-            when (wald.bottomForm) {
-                PazForm.Paz ->
-
-                    zigzag(points, sp, le, hole, 0.0, ph, boardWeight);
-
-                PazForm.Hole ->
-                    result.addAll(
-                        holes(
-                            sp + Vec2(0.0, wald.holeBottomOffset),
-                            le,
-                            hole,
-                            0.0,
-                            ph,
-                            wald.holeWeight
-                        )
-                    )
-                PazForm.Outside ->
-                    zigzag(points, sp, le, hole, 0.0, ph.copy(reverse = true), boardWeight);
-                else -> {}
-            }
+            waldZigzag(
+                points = points,
+                sp = sp,
+                form = wald.bottomForm,
+                zigzagLength = zigzagLength,
+                zigzagInfo = hole,
+                ph = ph,
+                boardWeight = boardWeight,
+                holeWeight = wald.holeWeight,
+                holeOffset = wald.holeBottomOffset,
+                result = result
+            )
         }
 
         points.add(origin)
         result.add(FigurePolyline(points.toList()))
         return result.toList()
+    }
+
+    private fun waldZigzag(
+        points: MutableList<Vec2>,
+        sp: Vec2,
+        form: PazForm,
+        zigzagLength: Double,
+        zigzagInfo: ZigzagInfo,
+        ph: DrawingParam,
+        boardWeight: Double,
+        holeWeight:Double,
+        holeOffset:Double,
+        result: MutableList<IFigure>
+    ) {
+        when (form) {
+            PazForm.Paz ->
+                zigzag(
+                    points = points,
+                    origin = sp,
+                    width = zigzagLength,
+                    zig = zigzagInfo,
+                    angle = 0.0,
+                    param = ph,
+                    boardWeight = boardWeight
+                );
+            PazForm.Hole ->
+                result.addAll(
+                    holes(
+                        origin = sp + Vec2(0.0, holeOffset),
+                        width = zigzagLength,
+                        zig = zigzagInfo,
+                        angle = 0.0,
+                        param = ph,
+                        boardWeight = holeWeight
+                    )
+                )
+
+            PazForm.Outside ->
+                zigzag(
+                    points = points,
+                    origin = sp,
+                    width = zigzagLength,
+                    zig = zigzagInfo,
+                    angle = 0.0,
+                    param = ph.copy(reverse = !ph.reverse),
+                    boardWeight = boardWeight
+                );
+            else -> {}
+        }
     }
 
     fun pol(
@@ -561,7 +595,7 @@ object BoxCad {
 
         // две толщины доски
         val ap = drawerSettings.boardWeight * 2
-        val p = DrawingParam(
+        val horizontalWaldParam = DrawingParam(
             reverse = true,
             back = false
         )
@@ -604,9 +638,10 @@ object BoxCad {
                 height = heights.getOrElse(0) { height },
                 zigzag = zigH,
                 hole = holeW,
-                param = p,
+                param = horizontalWaldParam,
                 boardWeight = bw,
                 wald = wald,
+                zigzagOffset = 0.0,
                 heightEnd = heights.getOrElse(2) { height }
             )
         )
@@ -619,25 +654,27 @@ object BoxCad {
                 heightEnd = heights.getOrElse(3) { height },
                 zigzag = zigH,
                 hole = holeW,
-                param = p,
+                param = horizontalWaldParam,
                 boardWeight = bw,
+                zigzagOffset = 0.0,
                 wald = wald,
             )
         )
 
-        val p2 = p.copy(reverse = false)
+        val verticalWaldParam = horizontalWaldParam.copy(reverse = false)
 
         resultMap.getOrPut(F_FACE) { mutableListOf() }.addAll(
             faceWald(
                 origin = Vec2(-holeH.height, 0.0),
                 width = weight,
                 height = heights.getOrElse(0) { height },
+                heightEnd = heights.getOrElse(1) { height },
                 zigzag = holeH,
                 hole = holeWe,
-                param = p2,
+                param = verticalWaldParam,
                 boardWeight = bw,
+                zigzagOffset = ap,
                 wald = wald,
-                heightEnd = heights.getOrElse(1) { height }
             )
         )
 
@@ -649,8 +686,9 @@ object BoxCad {
                 heightEnd = heights.getOrElse(3) { height },
                 zigzag = holeH,
                 hole = holeWe,
-                param = p2,
+                param = verticalWaldParam,
                 boardWeight = bw,
+                zigzagOffset = ap,
                 wald = wald
             )
         )
@@ -669,7 +707,7 @@ object BoxCad {
                     boardWeight = bw,
                     wald = wald
                 )
-            );
+            )
         }
 
         if (wald.topForm != PazForm.None) {

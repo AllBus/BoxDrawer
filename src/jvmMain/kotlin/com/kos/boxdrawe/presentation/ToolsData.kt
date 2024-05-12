@@ -12,6 +12,8 @@ class ToolsData(val tools: Tools, val templateData: TemplateData) {
         NumericTextFieldState(4.05) { tools.selectSettings(tools.settings.value.copy(holeWeight = it)) }
     val holeDrop =
         NumericTextFieldState(0.3) { tools.selectSettings(tools.settings.value.copy(holeDrop = it)) }
+    val zigDrop =
+        NumericTextFieldState(0.3) { tools.selectSettings(tools.settings.value.copy(zigDrop = it)) }
     val holeDropHeight =
         NumericTextFieldState(0.0) { tools.selectSettings(tools.settings.value.copy(holeDropHeight = it)) }
     val holeOffset =
@@ -22,6 +24,7 @@ class ToolsData(val tools: Tools, val templateData: TemplateData) {
         boardWeight.update(tools.settings.value.boardWeight)
         holeWeight.update(tools.settings.value.holeWeight)
         holeDrop.update(tools.settings.value.holeDrop)
+        zigDrop.update(tools.settings.value.zigDrop)
         holeDropHeight.update(tools.settings.value.holeDropHeight)
         holeOffset.update(tools.settings.value.holeOffset)
     }
