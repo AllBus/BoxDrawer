@@ -125,21 +125,14 @@ object RekaCad {
         val tek = top === cur.reka
         var a = angle
 
-
         val pv = memory.value(top.podoshva, 0.0)
 
         /* Вспомогательные фигуры */
+        val av = -angle*180/ PI
         val cn = listOf(
             FigureColor(
                 if (tek) 0xff00ff else 0xffff00,
-                FigureCircle(center, 2.5),
-            ),
-            FigureColor(
-                0xffff00,
-                FigureLine(
-                    center + Vec2(-2.5, 0.0).rotate(angle),
-                    center + Vec2(2.5, 0.0).rotate(angle)
-                )
+                FigureCircle(center, 2.5, segmentStart = av-180f,  segmentEnd = av ),
             ),
         )
 

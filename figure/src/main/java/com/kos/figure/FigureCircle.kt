@@ -7,6 +7,10 @@ import kotlin.math.PI
 import kotlin.math.acos
 import kotlin.math.asin
 
+/**
+ *  @param segmentStart degrees
+ *  @param segmentEnd degrees
+ */
 class FigureCircle(
     center: Vec2,
     radius: Double,
