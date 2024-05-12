@@ -1,6 +1,8 @@
 package turtoise.rect
 
 import com.kos.boxdrawe.presentation.RectBlockPosition
+import com.kos.figure.FigureCircle
+import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
@@ -17,6 +19,17 @@ import vectors.Vec2
 import kotlin.math.PI
 
 object RekaCad {
+
+    fun updateReka(reka: Reka, tv: List<String>, memory: TortoiseMemory): Reka {
+        if (tv.isNotEmpty()) {
+            reka.podoshva = MemoryKey(tv.first())
+            reka.storoni.clear()
+            reka.storoni.addAll(rekaPoints(tv))
+        }
+
+        reka.recalculate(memory)
+        return reka
+    }
 
     fun newReka(tv: List<String>, memory: TortoiseMemory): Reka {
         val reka = if (tv.isNotEmpty()) {
@@ -105,25 +118,40 @@ object RekaCad {
         center: Vec2,
         angle: Double,
         cur: RectBlockPosition,
-        memory: TortoiseMemory
+        memory: TortoiseMemory,
+        points: MutableList<Vec2>
     ): IFigure {
 
-        val p = FigurePolyline(top.points.map { it.rotate(angle) + center })
-        val p2 = if (top === cur.reka) {
-            FigureColor(0xff00ff, p)
-        } else {
-            p
-        }
+        val tek = top === cur.reka
+        var a = angle
+
 
         val pv = memory.value(top.podoshva, 0.0)
 
-        var a = angle
-        var current = center + Vec2(pv / 2, 0.0)
-        top.storoni.forEach { storona ->
+        /* Вспомогательные фигуры */
+        val cn = listOf(
+            FigureColor(
+                if (tek) 0xff00ff else 0xffff00,
+                FigureCircle(center, 2.5),
+            ),
+            FigureColor(
+                0xffff00,
+                FigureLine(
+                    center + Vec2(-2.5, 0.0).rotate(angle),
+                    center + Vec2(2.5, 0.0).rotate(angle)
+                )
+            ),
+        )
+
+
+        var current = center + Vec2(pv / 2, 0.0).rotate(a)
+        //   var points = mutableListOf(current)
+        points.add(current)
+        val ps = top.storoni.flatMapIndexed { i, storona ->
             a += (PI - memory.value(storona.angle, 0.0))
             val ps = memory.value(storona.length, 0.0)
 
-            storona.kubiki.forEach { kubik ->
+            val pk = storona.kubiki.flatMap { kubik ->
 
                 val np = when (kubik.napravlenie) {
                     STORONA_L -> Vec2(0.0, 0.0)
@@ -141,15 +169,34 @@ object RekaCad {
 
                 var kubikStart = current + np
 
-                kubik.group.forEach { block ->
-                    kubikStart+= nap*memory.value(block.padding, 0.0)
-                    createFigure(block.reka, kubikStart, a, cur, memory)
-                }
-            }
+                val pg = kubik.group.map { block ->
+                    val pod2 = memory.value(block.reka.podoshva, 0.0) / 2
+                    kubikStart += nap * (memory.value(block.padding, 0.0) + pod2)
+                    val f = createFigure(block.reka, kubikStart, PI + a, cur, memory, points)
+                    kubikStart += nap * pod2
+                    f
+                } // end block
+
+                pg
+            } // end kubik
+
+
+            /* Вспомогательные фигуры */
+            val pt = if (tek && cur.position.edge == i + 1) {
+                listOf(
+                    FigureColor(
+                        0xff00ff,
+                        FigureLine(current+Vec2(0.0, 1.0).rotate(a), current + Vec2(ps, 1.0).rotate(a))
+                    )
+                )
+            } else emptyList()
 
             current += Vec2(ps, 0.0).rotate(a)
-        }
 
-        return FigureList(listOf(p2))
+            points += current
+            pk + pt
+        } //end storona
+
+        return FigureList( ps + cn)
     }
 }

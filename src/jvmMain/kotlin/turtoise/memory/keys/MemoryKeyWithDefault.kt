@@ -23,15 +23,11 @@ data class MemoryKeyWithDefault(
 
     override fun isCalculator(): Boolean = key.isCalculator()
 
-    override fun calculate(value: List<Double>): Double {
+    override fun calculate(value: (MemoryKey) -> Double): Double {
         return if (key is ICalculatorMemoryKey) {
             key.calculate(value)
         } else
             defaultValue
     }
 
-    override val keys: List<MemoryKey>
-        get() = if (key is ICalculatorMemoryKey)
-            key.keys
-        else emptyList()
 }

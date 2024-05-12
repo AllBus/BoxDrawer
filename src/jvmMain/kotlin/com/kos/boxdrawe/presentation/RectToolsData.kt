@@ -6,20 +6,15 @@ import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import turtoise.Tortoise
 import turtoise.memory.SimpleTortoiseMemory
 import turtoise.memory.keys.DoubleMemoryKey
 import turtoise.memory.keys.MemoryKey
-import turtoise.rect.EStorona
 import turtoise.rect.Kubik
 import turtoise.rect.Kubik.Companion.STORONA_CL
 import turtoise.rect.Kubik.Companion.STORONA_CR
 import turtoise.rect.Kubik.Companion.STORONA_L
 import turtoise.rect.Kubik.Companion.STORONA_R
 import turtoise.rect.KubikGroup
-import turtoise.rect.RectBlock
-import turtoise.rect.RectBlockEdges
-import turtoise.rect.RectBlockParent
 import turtoise.rect.Reka
 import turtoise.rect.RekaCad
 import turtoise.rect.RekaCad.newReka
@@ -32,14 +27,15 @@ class RectToolsData(val tools: ITools) {
 
     private val redrawEvent = MutableStateFlow(0)
     private val points = MutableStateFlow<List<String>>(emptyList())
+    private val paddingNext = MutableStateFlow<String>("0.0")
 
     private val currentReka = Reka(DoubleMemoryKey(10.0))
 
     private val topReka = MutableStateFlow(Reka(DoubleMemoryKey(10.0)))
     private val rekaFigure = MutableStateFlow<IFigure>(Figure.Empty)
-    private var current: MutableStateFlow<RectBlockPosition> = MutableStateFlow(
+    var current: MutableStateFlow<RectBlockPosition> = MutableStateFlow(
         RectBlockPosition(
-            reka = currentReka,
+            reka = topReka.value,
             parent = null,
             position = RekaStoronaPosition(
                 edge = 1,
@@ -49,8 +45,20 @@ class RectToolsData(val tools: ITools) {
         )
     )
 
-    val figures = combine(redrawEvent, topReka, current, rekaFigure) { e,  reka , cur , f ->
-        FigureList(listOf(RekaCad.createFigure(reka, Vec2.Zero, 0.0, cur, memory),f))
+    val figures = combine(redrawEvent, topReka, current, rekaFigure) { e, reka, cur, f ->
+        val p = mutableListOf(
+            Vec2(-memory.value(reka.podoshva, 0.0) / 2.0, 0.0)
+        )
+        val c = RekaCad.createFigure(
+            reka, Vec2.Zero, 0.0, cur, memory, p
+        )
+        FigureList(
+            listOf(
+                FigurePolyline(p),
+                c,
+                f
+            )
+        )
     }
 
     fun createRekaFigure() {
@@ -111,7 +119,7 @@ class RectToolsData(val tools: ITools) {
             STORONA_CR,
             STORONA_R -> {
                 current.value = cv.copy(
-                    position = cv.position.copy(block = 0, storona = STORONA_L)
+                    position = cv.position.copy(block = 0, storona = napravlenie)
                 )
             }
 
@@ -139,7 +147,7 @@ class RectToolsData(val tools: ITools) {
     }
 
     private fun findKubiki(reka: Reka, position: RekaStoronaPosition): KubikGroup? {
-        val p = reka.storoni.getOrNull(position.storona - 1) ?: return null
+        val p = reka.storoni.getOrNull(position.edge - 1) ?: return null
         val k = p.kubiki.find { it.napravlenie == position.storona } ?: return null
 
         return k
@@ -166,7 +174,7 @@ class RectToolsData(val tools: ITools) {
             val cv = current.value
             if (insertKubik(
                     reka = cv.reka, position = cv.position, newKubik = Kubik(
-                        padding = MemoryKey.ZERO,
+                        padding = MemoryKey(paddingNext.value),
                         reka = b
                     )
                 )
@@ -188,6 +196,14 @@ class RectToolsData(val tools: ITools) {
         }
     }
 
+    fun updateBox() {
+        val cv = current.value
+        val pt = points.value
+        if (pt.isNotEmpty()) {
+            RekaCad.updateReka(cv.reka, pt, memory)
+        }
+    }
+
     fun setPoints(text: String) {
         val tv = text.split(",").map { it.trim() }
         points.value = tv
@@ -199,6 +215,10 @@ class RectToolsData(val tools: ITools) {
             currentReka.storoni.addAll(st)
             createRekaFigure()
         }
+    }
+
+    fun setPadding(text: String) {
+        paddingNext.value = text
     }
 
     companion object {

@@ -49,7 +49,8 @@ fun SimpleEditText(title:String, postfix:String, value: State<String>,
             Text(
                 text = title,
                 fontSize = LocalTextStyle.current.fontSize,
-                modifier = if (titleWeight) Modifier.align(Alignment.CenterVertically)
+                modifier = if (titleWeight) Modifier
+                    .align(Alignment.CenterVertically)
                     .weight(1f) else Modifier,
                 softWrap = false,
                 textAlign = TextAlign.End,
