@@ -2,9 +2,10 @@ package com.kos.boxdrawer.detal.robot
 
 import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.memory.MemoryKey
 
 class RobotAngle(
-    val angle: String,
+    val angle: MemoryKey,
 ): IRobotCommand {
     override fun draw(ds: DrawerSettings): TortoiseBlock {
         return TortoiseBlock(
@@ -15,8 +16,8 @@ class RobotAngle(
     }
 
     object Factory: IRobotCommandFactory {
-        override fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand {
-            return RobotAngle(args.getOrElse(0) { "" })
+        override fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand {
+            return RobotAngle(args.getOrElse(0) { MemoryKey.EMPTY })
         }
 
         override val names: List<String>

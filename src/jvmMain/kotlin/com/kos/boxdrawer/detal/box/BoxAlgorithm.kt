@@ -12,6 +12,7 @@ import turtoise.TortoiseState
 import turtoise.TurtoiseParserStackBlock
 import turtoise.TurtoiseParserStackItem
 import turtoise.ZigzagInfo
+import turtoise.memory.MemoryKey
 import turtoise.memory.TortoiseMemory
 
 class BoxAlgorithm(
@@ -91,9 +92,9 @@ class BoxAlgorithm(
             useAlgorithms: Array<String>?
         ): TortoiseAlgorithm {
 
-            val (polki, other) = items.blocks.partition { it.name.startsWith("p") }
-            val (zig, other2) = other.partition { it.name.startsWith("z") }
-            val waldBlock = other2.find { it.name.startsWith("w") }
+            val (polki, other) = items.blocks.partition { it.name.name.startsWith("p") }
+            val (zig, other2) = other.partition { it.name.name.startsWith("z") }
+            val waldBlock = other2.find { it.name.name.startsWith("w") }
 
             val polkiList = polki.flatMap {
                 it.blocks.map { line -> CalculatePolka.polka(line) }
@@ -107,7 +108,7 @@ class BoxAlgorithm(
                 zigPolkaPol = zigInfo(zig.getOrNull(4)),
             )
 
-            val ind = if (items.name.contains("@"))
+            val ind = if (items.name.name.contains("@"))
                 1 else 0
 
             return BoxAlgorithm(
@@ -119,7 +120,7 @@ class BoxAlgorithm(
                 zigs = zigs,
                 wald = waldInfo(waldBlock),
                 polki = polkiList,
-                outVariant = parseOutVariant(items.get(4 + ind)),
+                outVariant = parseOutVariant(items.get(4 + ind)?.name),
                 polkiIn = asDouble(items.get(3 + ind)) > 0.1,
             )
         }
@@ -134,7 +135,7 @@ class BoxAlgorithm(
                     width = asDouble(block.get(1), 15.0),
                     delta = asDouble(block.get(2), 35.0),
                     height = asDouble(block.get(3), 0.0),
-                    enable = block.get(4)?.lowercase()?.startsWith("f") != true
+                    enable = block.get(4)?.name?.lowercase()?.startsWith("f") != true
                 )
         }
 
@@ -153,6 +154,10 @@ class BoxAlgorithm(
                 BoxCad.EOutVariant.COLUMN -> "c"
                 BoxCad.EOutVariant.VOLUME -> "v"
             }
+        }
+
+        fun parsePazForm(key: MemoryKey?, defaultValue: PazForm): PazForm {
+            return parsePazForm(key?.name, defaultValue)
         }
 
         fun parsePazForm(text: String?, defaultValue: PazForm): PazForm {

@@ -3,6 +3,7 @@ package com.kos.boxdrawer.template
 import com.kos.boxdrawer.presentation.TemplateFormBox
 import turtoise.TurtoiseParserStackBlock
 import turtoise.TurtoiseParserStackItem
+import turtoise.memory.MemoryKey.Companion.orEmpty
 
 class TemplateInfo(
     val form: TemplateForm,
@@ -63,11 +64,11 @@ class TemplateInfo(
 
             else -> {
                 if (item.argumentCount == 1) {
-                    mapOf(newPrefix to TemplateMemoryItem(listOf(inner.argument)))
+                    mapOf(newPrefix to TemplateMemoryItem(listOf(inner.argument.name)))
                 } else {
                     mapOf(
                         newPrefix to TemplateMemoryItem((1..item.argumentCount).map { i ->
-                            inner.get(i).orEmpty()
+                            inner.get(i).orEmpty().name
                         })
                     )
 

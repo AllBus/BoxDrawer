@@ -1,5 +1,7 @@
 package turtoise
 
+import turtoise.memory.MemoryKey
+
 abstract class TurtoiseParserStackItem(
 //    /** Тип скобок '(','[','{'*/
 //    val skobka: Char = ' ',
@@ -11,16 +13,16 @@ abstract class TurtoiseParserStackItem(
     }
 
     abstract fun isArgument(): Boolean
-    open val argument: String = ""
-    abstract val name: String
+    open val argument: MemoryKey = MemoryKey.EMPTY
+    abstract val name: MemoryKey
     abstract val line: String
 
     abstract val inner: List<TurtoiseParserStackItem>
     abstract val blocks: List<TurtoiseParserStackItem>
 
-    abstract fun get(index: Int): String?
+    abstract fun get(index: Int): MemoryKey?
 
-    abstract fun get(index: String): String?
+    abstract fun get(index: String): MemoryKey?
 
     open fun doubleValue(index: Int, defaultValue: Double): Double {
         val sv = stringValue(index)
@@ -38,18 +40,18 @@ abstract class TurtoiseParserStackItem(
 
     abstract fun getInnerAtName(name:String): TurtoiseParserStackItem?
 
-    abstract fun arguments(): List<String>
+    abstract fun arguments(): List<MemoryKey>
 
     abstract val size: Int
 }
 
 class TurtoiseParserStackArgument(
-    override val argument: String,
+    override val argument: MemoryKey,
 ) : TurtoiseParserStackItem() {
     override fun isArgument(): Boolean = true
 
 
-    override val name: String = argument
+    override val name: MemoryKey = argument
 
     override val inner: List<TurtoiseParserStackItem>
         get() = emptyList()
@@ -57,31 +59,31 @@ class TurtoiseParserStackArgument(
     override val blocks: List<TurtoiseParserStackItem>
         get() = emptyList()
 
-    override fun get(index: Int): String? {
+    override fun get(index: Int): MemoryKey? {
         return if (index == 0) argument else null
     }
 
-    override fun get(index: String): String? {
+    override fun get(index: String): MemoryKey? {
         return if (index.isEmpty() || index == "0" || index == ".")
             argument else null
     }
 
     override fun stringValue(index: Int): String? {
-        return if (index == 0) argument else null
+        return if (index == 0) argument.name else null
     }
 
     override fun getInnerAtName(name: String): TurtoiseParserStackItem? {
         return null
     }
 
-    override fun arguments(): List<String> {
+    override fun arguments(): List<MemoryKey> {
         return listOf(argument)
     }
 
     override val size: Int
         get() = 1
 
-    override val line: String get() = argument
+    override val line: String get() = argument.name
 }
 
 class TurtoiseParserStackBlock(
@@ -93,11 +95,11 @@ class TurtoiseParserStackBlock(
     override val inner = mutableListOf<TurtoiseParserStackItem>()
     override val blocks = mutableListOf<TurtoiseParserStackBlock>()
 
-    override val argument: String
-        get() = arguments().getOrNull(1)?:""
+    override val argument: MemoryKey
+        get() = arguments().getOrNull(1)?:MemoryKey.EMPTY
 
     override val name
-        get() = inner.firstOrNull()?.argument ?: "%%" //?.takeIf { it.isArgument() }?.argument?:""
+        get() = inner.firstOrNull()?.argument ?: MemoryKey.BLOCK
     override val line: String
         get() = inner.joinToString(" ", "$skobka", "${closeBrace()}") { it.line }
 
@@ -108,7 +110,7 @@ class TurtoiseParserStackBlock(
     fun add(argument: String) {
         inner.add(
             TurtoiseParserStackArgument(
-                argument = argument
+                argument = MemoryKey.create(argument)
             )
         )
     }
@@ -127,18 +129,18 @@ class TurtoiseParserStackBlock(
         blocks.addAll(values.filterIsInstance<TurtoiseParserStackBlock>())
     }
 
-    override fun arguments(): List<String> {
+    override fun arguments(): List<MemoryKey> {
         return inner.filter { it.isArgument() }.map { it.argument }
     }
 
     override val size: Int
         get() = inner.size
 
-    override fun get(index: Int): String? {
+    override fun get(index: Int): MemoryKey? {
         return if (index < 0 || index >= inner.size) null else inner[index].argument
     }
 
-    override fun get(index: String): String? {
+    override fun get(index: String): MemoryKey? {
         return if (index.startsWith(".")){
             val i = index.indexOf('.', 1)
             if (i>0){
@@ -163,7 +165,7 @@ class TurtoiseParserStackBlock(
         var c = 0
         for (i in 0 until inner.size) {
             if (inner[i].isArgument()) {
-                if (c == index) return inner[i].argument
+                if (c == index) return inner[i].argument.name
                 c++
             }
         }
@@ -171,8 +173,9 @@ class TurtoiseParserStackBlock(
     }
 
     fun getBlockAtName(name:String): TurtoiseParserStackBlock?{
+        val nm = MemoryKey.create(name)
         return blocks.find {
-            it.name == name
+            it.name == nm
         }
     }
 

@@ -3,6 +3,7 @@ package com.kos.boxdrawer.template
 import turtoise.TortoiseParser
 import turtoise.TurtoiseParserStackBlock
 import turtoise.TurtoiseParserStackItem
+import turtoise.memory.MemoryKey.Companion.orEmpty
 
 object TemplateCreator {
 
@@ -21,7 +22,7 @@ object TemplateCreator {
     private fun createForm(block: TurtoiseParserStackBlock): TemplateForm {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.line.orEmpty().dropSkobki()
-        val argument = block.getBlockAtName("arg")?.argument.orEmpty()
+        val argument = block.getBlockAtName("arg")?.argument.orEmpty().name
 
         val items = block.getBlockAtName("items")?.blocks?.mapNotNull { b ->
             createItem(b)
@@ -31,8 +32,8 @@ object TemplateCreator {
 
     private fun createItem(block: TurtoiseParserStackBlock): TemplateItem? {
         val title = block.inner.getOrNull(2)?.line.orEmpty().dropSkobki()
-        val argument = block.inner.getOrNull(1)?.argument.orEmpty()
-        val name = block.name.lowercase()
+        val argument = block.inner.getOrNull(1)?.argument.orEmpty().name
+        val name = block.name.name.lowercase()
 
         return createItem(name = name, title = title, argument = argument, block = block)
     }
@@ -40,7 +41,7 @@ object TemplateCreator {
     fun createMulti(block: TurtoiseParserStackBlock): TemplateItemMulti? {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.line.orEmpty().dropSkobki()
-        val argument = block.getBlockAtName("arg")?.argument.orEmpty()
+        val argument = block.getBlockAtName("arg")?.argument.orEmpty().name
 
         return block.getBlockAtName("item")?.blocks?.firstOrNull()?.let { b ->
             createItem(b)

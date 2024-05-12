@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -42,6 +44,36 @@ fun ImageButton(
         val contentAlpha = if (enabled) LocalContentAlpha.current else ContentAlpha.disabled
         CompositionLocalProvider(LocalContentAlpha provides contentAlpha, content = {
             Icon(icon, null)
+        })
+    }
+}
+
+@Composable
+fun CharButton(
+    text: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .size(24.dp)
+            .clickable(
+                onClick = onClick,
+                enabled = enabled,
+                role = Role.Button,
+                interactionSource = interactionSource,
+                indication = rememberRipple(bounded = false, radius = RippleRadius)
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        val contentAlpha = if (enabled) LocalContentAlpha.current else ContentAlpha.disabled
+        CompositionLocalProvider(LocalContentAlpha provides contentAlpha, content = {
+            Text(
+                text,
+                color = LocalContentColor.current.copy(alpha = contentAlpha)
+            )
         })
     }
 }

@@ -6,9 +6,9 @@ class BlockTortoiseMemory(
     val block: TurtoiseParserStackItem
 ) : SimpleTortoiseMemory() {
 
-    override fun value(variable: String, defaultValue: Double): Double {
+    override fun value(variable: MemoryKey, defaultValue: Double): Double {
         return super.value(
-            variable = block.get(variable) ?: variable,
+            variable = block.get(variable.name)?: variable,
             defaultValue = defaultValue
         )
     }
@@ -19,9 +19,12 @@ class TwoBlockTortoiseMemory(
     val defaultBlock: TurtoiseParserStackItem,
 ) : SimpleTortoiseMemory() {
 
-    override fun value(variable: String, defaultValue: Double): Double {
+    override fun value(variable: MemoryKey, defaultValue: Double): Double {
         return super.value(
-            variable = block.get(variable) ?: defaultBlock.get(variable) ?: variable,
+            variable = (
+                    block.get(variable.name) ?:
+                    defaultBlock.get(variable.name)
+                    ) ?: variable,
             defaultValue = defaultValue
         )
     }

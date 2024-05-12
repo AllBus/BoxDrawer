@@ -2,22 +2,28 @@ package com.kos.boxdrawer.detal.robot
 
 import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.memory.DoubleMemoryKey
+import turtoise.memory.MemoryKey
+import turtoise.memory.MemoryKey.Companion.ifEmpty
 
 class RobotHole(
-    val width: String,
-    val height: String,
+    val width: MemoryKey,
+    val height: MemoryKey,
 ): IRobotCommand {
     override fun draw(ds: DrawerSettings): TortoiseBlock {
         return TortoiseBlock(
             listOf(
-                TortoiseCommand.Rectangle(width, height.ifEmpty { ds.holeWeight.toString() })
+                TortoiseCommand.Rectangle(width, height.ifEmpty { DoubleMemoryKey(ds.holeWeight) })
             )
         )
     }
 
     object Factory: IRobotCommandFactory{
-        override fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand {
-            return RobotHole(args.getOrElse(0) { "" }, args.getOrElse(1) { "" })
+        override fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand {
+            return RobotHole(
+                args.getOrElse(0) { MemoryKey.EMPTY },
+                args.getOrElse(1) { MemoryKey.EMPTY }
+            )
         }
 
         override val names: List<String>

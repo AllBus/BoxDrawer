@@ -1,11 +1,13 @@
 package turtoise
 
+import turtoise.memory.MemoryKey
 import turtoise.memory.TortoiseMemory
 
 class UniTortoiseCommand(
     override val command: Char,
-    private val values: List<String>,
+    private val values: List<MemoryKey>,
 ) : TortoiseCommand {
+
     override val size: Int
         get() = values.size
 
@@ -26,7 +28,7 @@ class UniTortoiseCommand(
     }
 
     override fun print(): String {
-        val args = values.joinToString(", "){"\"$it\""}
+        val args = values.joinToString(", ") { "\"$it\"" }
         return when (values.size) {
             1 -> {
                 when (command) {
@@ -38,13 +40,15 @@ class UniTortoiseCommand(
                     else -> "UniTortoiseCommand(${TortoiseCommand.commandToName(command)}, $args)"
                 }
             }
+
             2 ->
-            when (command) {
-                TortoiseCommand.TURTOISE_MOVE -> "Move($args)"
-                TortoiseCommand.TURTOISE_LINE -> "Line($args)"
-                TortoiseCommand.TURTOISE_RECTANGLE -> "Rectangle($args)"
-                else -> "UniTortoiseCommand(${TortoiseCommand.commandToName(command)}, $args)"
-            }
+                when (command) {
+                    TortoiseCommand.TURTOISE_MOVE -> "Move($args)"
+                    TortoiseCommand.TURTOISE_LINE -> "Line($args)"
+                    TortoiseCommand.TURTOISE_RECTANGLE -> "Rectangle($args)"
+                    else -> "UniTortoiseCommand(${TortoiseCommand.commandToName(command)}, $args)"
+                }
+
             else -> "UniTortoiseCommand(${TortoiseCommand.commandToName(command)}, $args)"
         }
     }

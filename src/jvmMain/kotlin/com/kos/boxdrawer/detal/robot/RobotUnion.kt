@@ -2,9 +2,10 @@ package com.kos.boxdrawer.detal.robot
 
 import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.memory.MemoryKey
 
 class RobotUnion(
-    params: List<String>
+    params: List<MemoryKey>
 ): RobotCommandWithParams(params) {
 
     override fun draw(ds: DrawerSettings): TortoiseBlock {
@@ -42,7 +43,7 @@ class RobotUnion(
     }
 
     object Factory: IRobotCommandFactory{
-        override fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand {
+        override fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand {
             return RobotUnion(args)
         }
 

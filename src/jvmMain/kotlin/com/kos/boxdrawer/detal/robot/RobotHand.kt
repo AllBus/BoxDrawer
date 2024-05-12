@@ -2,9 +2,10 @@ package com.kos.boxdrawer.detal.robot
 
 import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.memory.MemoryKey
 
 class RobotHand(
-    params: List<String>,
+    params: List<MemoryKey>,
     val leftForm: List<IRobotCommand>,
     val rightForm: List<IRobotCommand>,
 
@@ -72,7 +73,7 @@ class RobotHand(
     }
 
     object Factory: IRobotCommandFactory{
-        override fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand {
+        override fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand {
             return  RobotHand(
                 args,
                 item.blocks.firstOrNull()?.let { b -> RobotLine.parseRobot(b, true) } ?: emptyList(),

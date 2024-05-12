@@ -37,6 +37,9 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
         return Vec2(-x, -y)
     }
 
+    /**
+     * @param angle radians
+     */
     fun rotate(angle: Double): Vec2 = Vec2(
         cos(angle) * x - sin(angle) * y,
         cos(angle) * y + sin(angle) * x
@@ -48,6 +51,9 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
 
     val magnitude: Double get() = hypot(x, y)
 
+    /**
+     * in radians
+     */
     val angle: Double get() = atan2(y, x)
 
     override fun toString(): String {

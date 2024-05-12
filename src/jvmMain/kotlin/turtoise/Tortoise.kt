@@ -18,6 +18,7 @@ import com.kos.figure.composition.FigureOnPath
 import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
+import turtoise.memory.MemoryKey.Companion.orEmpty
 import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 import java.util.Stack
@@ -631,7 +632,7 @@ class Tortoise() {
             val l = TortoiseParser.parseSimpleLine(block)
             val st = TortoiseState().from(state)
 
-            val n = block.name
+            val n = block.name.name
             if (n.startsWith("@")) {
                 runner.figure(
                     algName = n.drop(1),

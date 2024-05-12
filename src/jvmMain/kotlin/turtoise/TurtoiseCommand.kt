@@ -1,26 +1,31 @@
 package turtoise
 
 import turtoise.TortoiseCommand.Companion.commandToName
+import turtoise.memory.MemoryKey
 import turtoise.memory.TortoiseMemory
 
 interface TortoiseCommand {
     val command: Char
     val size: Int
     fun take(index: Int, defaultValue: Double, memory: TortoiseMemory): Double
-    fun takeBlock(index:Int): TurtoiseParserStackItem? = null
+    fun takeBlock(index: Int): TurtoiseParserStackItem? = null
 
     fun assign(memory: TortoiseMemory) {}
 
     operator fun get(index: Int, memory: TortoiseMemory) = take(index, 0.0, memory)
 
-    operator fun get(index: Int, defaultValue: Double, memory: TortoiseMemory) = take(index, defaultValue, memory)
+    operator fun get(index: Int, defaultValue: Double, memory: TortoiseMemory) =
+        take(index, defaultValue, memory)
 
     fun value(memory: TortoiseMemory) = take(0, 0.0, memory)
 
-     fun print():String
+    fun print(): String
 
     companion object {
-        fun createFromItem(currentCommand: Char, currentValues: List<TurtoiseParserStackItem>): TortoiseCommand {
+        fun createFromItem(
+            currentCommand: Char,
+            currentValues: List<TurtoiseParserStackItem>
+        ): TortoiseCommand {
             if (currentValues.size == 0) {
                 return ZeroTortoiseCommand(currentCommand)
             }
@@ -32,10 +37,10 @@ interface TortoiseCommand {
             }
             val b = TurtoiseParserStackBlock(' ')
             b.addItems(currentValues)
-            return BlockTortoiseCommand(currentCommand,  b)
+            return BlockTortoiseCommand(currentCommand, b)
         }
 
-        fun create(currentCommand: Char, currentValues: List<String>): TortoiseCommand {
+        fun create(currentCommand: Char, currentValues: List<MemoryKey>): TortoiseCommand {
             if (currentValues.size == 0) {
                 return ZeroTortoiseCommand(currentCommand)
             }
@@ -47,8 +52,7 @@ interface TortoiseCommand {
             return UniTortoiseCommand(currentCommand, currentValues)
         }
 
-        fun commandToName(c:Char):String
-        {
+        fun commandToName(c: Char): String {
             return when (c) {
                 TURTOISE_ZIGZAG -> "TURTOISE_ZIGZAG"
                 TURTOISE_VERTICAL -> "TURTOISE_VERTICAL"
@@ -69,10 +73,10 @@ interface TortoiseCommand {
                 TURTOISE_CLEAR -> "TURTOISE_CLEAR"
                 TURTOISE_CLOSE -> "TURTOISE_CLOSE"
                 TURTOISE_SAVE -> "TURTOISE_SAVE"
-                TURTOISE_LOAD-> "TURTOISE_LOAD"
+                TURTOISE_LOAD -> "TURTOISE_LOAD"
                 TURTOISE_PEEK -> "TURTOISE_PEEK"
                 TURTOISE_METHOD_NAME -> "TURTOISE_METHOD_NAME"
-              //  TURTOISE_METHOD_RUN -> "TURTOISE_METHOD_RUN"
+                //  TURTOISE_METHOD_RUN -> "TURTOISE_METHOD_RUN"
                 TURTOISE_LOOP -> "TURTOISE_LOOP"
                 TURTOISE_END_LOOP -> "TURTOISE_END_LOOP"
                 TURTOISE_MATRIX_ROTATE -> "TURTOISE_MATRIX_ROTATE"
@@ -113,7 +117,8 @@ interface TortoiseCommand {
         const val TURTOISE_LOAD = 'W';
         const val TURTOISE_PEEK = 'E';
         const val TURTOISE_METHOD_NAME = '@';
-      //  const val TURTOISE_METHOD_RUN = '=';
+
+        //  const val TURTOISE_METHOD_RUN = '=';
         const val TURTOISE_LOOP = '>';
         const val TURTOISE_END_LOOP = '<';
         const val TURTOISE_MOVE_TO = 'M';
@@ -126,35 +131,53 @@ interface TortoiseCommand {
         fun Move(x: Double) = DoubleTortoiseCommand(TURTOISE_MOVE, x)
         fun Move(x: String) = SmallTortoiseCommand(TURTOISE_MOVE, x)
         fun Move(x: Double, y: Double) = TwoDoubleTortoiseCommand(TURTOISE_MOVE, x, y)
-        fun Move(x: String, y: String) = UniTortoiseCommand(TURTOISE_MOVE, listOf(x, y))
+        fun Move(x: String, y: String) =
+            UniTortoiseCommand(TURTOISE_MOVE, listOf(x, y).map(MemoryKey::create))
+        fun Move(x: MemoryKey, y: MemoryKey) =
+            UniTortoiseCommand(TURTOISE_MOVE, listOf(x, y))
 
 
         fun Line(x: Double) = DoubleTortoiseCommand(TURTOISE_LINE, x)
         fun Line(x: String) = SmallTortoiseCommand(TURTOISE_LINE, x)
         fun Line(x: Double, y: Double) = TwoDoubleTortoiseCommand(TURTOISE_LINE, x, y)
-        fun Line(x: String, y: String) = UniTortoiseCommand(TURTOISE_LINE, listOf(x, y))
+        fun Line(x: String, y: String) =
+            UniTortoiseCommand(TURTOISE_LINE, listOf(x, y).map(MemoryKey::create))
 
         /** Завершить рисование текущей линии */
         fun Split() = ZeroTortoiseCommand(TURTOISE_SPLIT)
 
-        fun Rectangle(width: Double, height: Double) = TwoDoubleTortoiseCommand(TURTOISE_RECTANGLE, width, height)
-        fun Rectangle(width: String, height: String) = UniTortoiseCommand(TURTOISE_RECTANGLE, listOf(width, height))
+        fun Rectangle(width: Double, height: Double) =
+            TwoDoubleTortoiseCommand(TURTOISE_RECTANGLE, width, height)
+
+        fun Rectangle(width: String, height: String) =
+            UniTortoiseCommand(TURTOISE_RECTANGLE, listOf(width, height).map(MemoryKey::create))
+
+        fun Rectangle(width: MemoryKey, height: MemoryKey) =
+            UniTortoiseCommand(TURTOISE_RECTANGLE, listOf(width, height))
 
         fun Circle(r: Double) = DoubleTortoiseCommand(TURTOISE_CIRCLE, r)
         fun Circle(r: String) = SmallTortoiseCommand(TURTOISE_CIRCLE, r)
+        fun Circle(r: MemoryKey) = SmallTortoiseCommand(TURTOISE_CIRCLE, r)
         fun Arc(r: Double, startAngle: Double, endAngle: Double) =
             ThreeDoubleTortoiseCommand(TURTOISE_CIRCLE, r, startAngle, endAngle)
 
-        fun Ellipse(r1: Double, r2 :Double) = TwoDoubleTortoiseCommand(TURTOISE_ELLIPSE, r1, r2)
+        fun Ellipse(r1: Double, r2: Double) = TwoDoubleTortoiseCommand(TURTOISE_ELLIPSE, r1, r2)
 
         fun Angle(angle: Double) = DoubleTortoiseCommand(TURTOISE_ANGLE, angle)
         fun Angle(angle: String) = SmallTortoiseCommand(TURTOISE_ANGLE, angle)
+        fun Angle(angle: MemoryKey) = SmallTortoiseCommand(TURTOISE_ANGLE, angle)
 
         fun AngleAdd(angle: Double) = DoubleTortoiseCommand(TURTOISE_ANGLE_ADD, angle)
         fun AngleAdd(angle: String) = SmallTortoiseCommand(TURTOISE_ANGLE_ADD, angle)
 
-        fun Polyline(points: List<String>) = UniTortoiseCommand(TURTOISE_POLYLINE, points)
-        fun PolylineDouble(points: List<Double>) = ListDoubleTortoiseCommand(TURTOISE_POLYLINE, points)
+        fun PolylineString(points: List<String>) =
+            UniTortoiseCommand(TURTOISE_POLYLINE, points.map(MemoryKey::create))
+
+        fun PolylineDouble(points: List<Double>) =
+            ListDoubleTortoiseCommand(TURTOISE_POLYLINE, points)
+
+        fun Polyline(points: List<MemoryKey>) =
+            UniTortoiseCommand(TURTOISE_POLYLINE, points)
 
         /** Нарисовать зигзаги*/
         fun Zig(startPosition: Double, height: Double, length: Double) = ListDoubleTortoiseCommand(
@@ -167,7 +190,12 @@ interface TortoiseCommand {
         )
 
         /** Нарисовать зигзаги с наклоном*/
-        fun SuperZig(startPosition: Double, height: Double, length: Double, angle: Double): TortoiseCommand {
+        fun SuperZig(
+            startPosition: Double,
+            height: Double,
+            length: Double,
+            angle: Double
+        ): TortoiseCommand {
 
             val si = Math.abs(Math.cos(angle * Math.PI / 180))
             return if (si == 0.0) {
@@ -212,8 +240,19 @@ interface TortoiseCommand {
 
 class SmallTortoiseCommand(
     override val command: Char,
-    private val value: String,
+    private val value: MemoryKey,
 ) : TortoiseCommand {
+
+    constructor(
+        command: Char,
+        value: String,
+    ) : this(
+        command,
+        MemoryKey.create(value)
+    ) {
+
+    }
+
     override val size: Int
         get() = 1
 

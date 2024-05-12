@@ -7,6 +7,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.kos.boxdrawer.detal.box.BoxAlgorithm
 import com.kos.boxdrawer.detal.polka.PolkaLine
 import com.kos.boxdrawer.detal.robot.RobotLine
+import turtoise.memory.MemoryKey
 import java.util.Stack
 
 
@@ -38,8 +39,8 @@ object TortoiseParser {
         val items: TurtoiseParserStackBlock = TortoiseParser.parseSkobki(line)
 
         val n = items.name
-        return if (n.contains("@")) {
-            val f = items.name.split('@')
+        return if (n.name.contains("@")) {
+            val f = items.name.name.split('@')
             (f.drop(1).lastOrNull() ?: "") to when (f[0]) {
                 "polka" -> PolkaLine.parsePolka(items, f.drop(1).dropLast(1).toTypedArray())
                 "robot" -> RobotLine.parseRobot(items, f.drop(1).dropLast(1).toTypedArray())
@@ -73,12 +74,13 @@ object TortoiseParser {
                 is TurtoiseParserStackArgument -> {
                     val d = item.argument
                     if (d.isNotEmpty()) {
-                        val c = d.first()
+                        val c = d.prefix()
+
                         if (c.isDigit() || c == '-') {
                             currentValues.add(item)
                         } else
                             if (c == '@') {
-                                currentValues.add(TurtoiseParserStackArgument(d.drop(1)))
+                                currentValues.add(TurtoiseParserStackArgument(d.drop()))
                             } else {
                                 result.add(
                                     TortoiseCommand.createFromItem(
@@ -87,7 +89,7 @@ object TortoiseParser {
                                     )
                                 )
                                 currentValues = mutableListOf<TurtoiseParserStackItem>()
-                                val b = d.drop(1)
+                                val b = d.drop()
                                 if (b.isNotEmpty()) {
                                     currentValues.add(TurtoiseParserStackArgument(b))
                                 }
@@ -168,11 +170,11 @@ object TortoiseParser {
         return top;
     }
 
-    fun asDouble(text: String?): Double {
+    fun asDouble(text: MemoryKey?): Double {
         return text?.toDoubleOrNull() ?: 0.0
     }
 
-    fun asDouble(text: String?, defaultValue: Double): Double {
+    fun asDouble(text: MemoryKey?, defaultValue: Double): Double {
         return text?.toDoubleOrNull() ?: defaultValue
     }
 

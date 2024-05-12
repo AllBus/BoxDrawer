@@ -63,7 +63,7 @@ class RobotLine(
                 if (!v.isArgument()) {
                     val args = v.arguments()
                     if (args.size > 1) {
-                        val com = args.first()
+                        val com = args.first().name
 
                         val factory = simpleFactories[com] ?: (
                             if (!onlySimple) {

@@ -194,7 +194,7 @@ object CalculatePolka {
         var i = 1
         var index = 0;
         while (i < args.size) {
-            val c = args[i]
+            val c = args[i].name
             i++
             when {
                 isInt(c) -> {
@@ -219,8 +219,8 @@ object CalculatePolka {
         val heights = item.blocks.firstOrNull()?.arguments().orEmpty().mapNotNull { it.toDoubleOrNull() }.toDoubleArray()
         val programs = item.blocks.filter { it.blocks.isNotEmpty() }.map {
             val bargs = it.arguments()
-            val side  = (bargs.take(1)+bargs.drop(2)).map(::parseSide)
-            val cell = bargs.getOrNull(1)?.toIntOrNull()?:0
+            val side  = (bargs.take(1)+bargs.drop(2)).map { v -> v.name }.map(::parseSide)
+            val cell = bargs.getOrNull(1)?.name?.toIntOrNull()?:0
             PolkaProgram(
                 algorithm = it.blocks.firstOrNull()?.line.orEmpty().drop(1).dropLast(1),
                 startCell = cell,

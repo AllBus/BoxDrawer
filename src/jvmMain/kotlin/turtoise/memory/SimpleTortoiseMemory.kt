@@ -2,44 +2,49 @@ package turtoise.memory
 
 open class SimpleTortoiseMemory : TortoiseMemory {
 
-    val m = mutableMapOf<String, Double>()
+    val m = mutableMapOf<MemoryKey, Double>()
 
-    override fun value(variable: String, defaultValue: Double): Double {
+    override fun value(variable: MemoryKey, defaultValue: Double): Double {
         if (variable.isNotEmpty()) {
             val d = variable.toDoubleOrNull()
             if (d != null)
                 return d
 
-            return when (variable[0]) {
-                '-' -> -value(variable.drop(1), defaultValue)
-                '+' -> value(variable.drop(1), defaultValue)
-                '=' -> calculate(variable.drop(1), defaultValue)
+            if (variable.isCalculator()){
+                return calculateCalculator(variable, defaultValue)
+            }
+
+            return when (variable.prefix()) {
+                '-' -> -value(variable.drop(), defaultValue)
+                '+' -> value(variable.drop(), defaultValue)
+                '=' -> calculate(variable.drop(), defaultValue)
                 else -> m[variable] ?: defaultValue
             }
         }
         return defaultValue
     }
 
-    private fun calculate(variables: String, defaultValue: Double): Double {
+    private fun calculate(variables: MemoryKey, defaultValue: Double): Double {
+        if (variables.isCalculator()){
+            return calculateCalculator(variables, defaultValue)
+        }
         var com = '+'
         var varName = ""
         var sum = 0.0
-        for (i in variables.indices) {
-            val c = variables[i]
+        for (i in variables.name.indices) {
+            val c = variables.name[i]
             when (c) {
                 '+',
                 '-',
                 '*',
+                '(',
                 '/' -> {
                     if (varName.isEmpty()) {
                         if (c == '+' || c == '-') {
                             varName += c
-                        } else {
                         }
-
-
                     } else {
-                        val e = value(varName, defaultValue)
+                        val e = value(MemoryKey.create(varName), defaultValue)
 
                         when (com) {
                             '+' -> sum += e
@@ -61,7 +66,7 @@ open class SimpleTortoiseMemory : TortoiseMemory {
         }
 
         if (varName.isNotEmpty()) {
-            val e = value(varName, defaultValue)
+            val e = value(MemoryKey.create(varName), defaultValue)
             when (com) {
                 '+' -> sum += e
                 '-' -> sum -= e
@@ -73,12 +78,18 @@ open class SimpleTortoiseMemory : TortoiseMemory {
         return sum
     }
 
+    private fun calculateCalculator(variable: MemoryKey, defaultValue: Double): Double {
+        if (variable is ICalculatorMemoryKey) {
+            return variable.calculate(variable.keys.map{ calculate(it, defaultValue) })
+        } else
+            return defaultValue
+    }
 
-    override fun assign(variable: String, value: Double) {
+    override fun assign(variable: MemoryKey, value: Double) {
         m[variable] = value
     }
 
-    override fun clear(variable: String) {
+    override fun clear(variable: MemoryKey) {
         m.remove(variable)
     }
 
@@ -86,3 +97,4 @@ open class SimpleTortoiseMemory : TortoiseMemory {
         m.clear()
     }
 }
+

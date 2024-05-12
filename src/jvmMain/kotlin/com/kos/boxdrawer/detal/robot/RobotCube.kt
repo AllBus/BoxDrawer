@@ -7,14 +7,20 @@ import turtoise.TortoiseBlock
 import turtoise.TortoiseCommand
 import turtoise.TortoiseParser
 import turtoise.TurtoiseParserStackItem
+import turtoise.memory.DividerMemoryKey
+import turtoise.memory.MemoryKey
+import turtoise.memory.MemoryKey.Companion.EMPTY
+import turtoise.memory.MemoryKey.Companion.div
+import turtoise.memory.MemoryKey.Companion.plus
+import turtoise.memory.MemoryKey.Companion.unaryMinus
 
 class RobotCube(
-    val width:Double,
-    val height:Double,
-    val weight:Double,
-    val boardWeight:Double,
-    val holeDrop:Double,
-    val pazWidth:Double,
+    val width:MemoryKey,
+    val height:MemoryKey,
+    val weight:MemoryKey,
+    val boardWeight:MemoryKey,
+    val holeDrop:MemoryKey,
+    val pazWidth:MemoryKey,
 ): IRobotCommand {
 
     override fun draw(ds: DrawerSettings): TortoiseBlock {
@@ -25,15 +31,15 @@ class RobotCube(
         )
     }
 
-    fun rect(width:Double, height:Double, zigWidth:Double, zigHeight:Double):TortoiseCommand{
-        val w2 = width/2
-        val h2 = height/2
+    fun rect(width:MemoryKey, height:MemoryKey, zigWidth:MemoryKey, zigHeight:MemoryKey):TortoiseCommand{
+        val w2 = width / 2.0
+        val h2 = height /2.0
 
-        return TortoiseCommand.PolylineDouble(
+        return TortoiseCommand.Polyline(
             listOf(
                 -w2, -h2,
-                -w2, -h2 - zigHeight,
-                w2, -h2 - zigHeight,
+                -w2, -(h2 + zigHeight),
+                w2, -(h2 + zigHeight),
                 w2, -h2,
                 w2 + zigWidth, -h2,
                 w2 + zigWidth, h2,
@@ -41,22 +47,22 @@ class RobotCube(
                 w2, h2 + zigHeight,
                 -w2, h2 + zigHeight,
                 -w2, h2,
-                -w2 - zigWidth, h2,
-                -w2 - zigWidth, -h2,
+                -(w2 + zigWidth), h2,
+                -(w2 + zigWidth), -h2,
                 -w2, -h2,
             )
         )
     }
 
     object Factory: IRobotCommandFactory{
-        override fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand {
+        override fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand {
             return RobotCube(
-                width = item.doubleValue(0, 0.0),
-                height = item.doubleValue(1, 0.0),
-                weight = item.doubleValue(2, 0.0),
-                boardWeight = item.doubleValue(3, 0.0),
-                holeDrop = item.doubleValue(4, 0.0),
-                pazWidth = item.doubleValue(5, 0.0),
+                width = item.get(0)?: EMPTY,
+                height = item.get(1)?: EMPTY,
+                weight = item.get(2)?: EMPTY,
+                boardWeight = item.get(3)?: EMPTY,
+                holeDrop = item.get(4)?: EMPTY,
+                pazWidth = item.get(5)?: EMPTY,
             )
         }
 

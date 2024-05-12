@@ -8,10 +8,16 @@ import com.kos.figure.composition.FigureColor
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import turtoise.Tortoise
+import turtoise.memory.DoubleMemoryKey
+import turtoise.memory.MemoryKey
+import turtoise.memory.SimpleTortoiseMemory
+import turtoise.memory.TriangleAngleMemoryKey
 import turtoise.rect.EStorona
 import turtoise.rect.RectBlock
 import turtoise.rect.RectBlockEdges
 import turtoise.rect.RectBlockParent
+import turtoise.rect.Reka
+import turtoise.rect.RekaStorona
 import vectors.Vec2
 
 class RectToolsData(val tools: ITools) {
@@ -87,13 +93,24 @@ class RectToolsData(val tools: ITools) {
         )
     )
 
+    private val memory = SimpleTortoiseMemory()
+
     private val redrawEvent = MutableStateFlow(0)
     private val selectPos = MutableStateFlow<IFigure>(Figure.Empty)
     private val points = MutableStateFlow<List<Vec2>>(emptyList())
 
 
-    val figures = combine(redrawEvent, rectBlocks, selectPos) { e, block, s ->
-        FigureList(listOf(createFigure(block, Vec2.Zero), s))
+    private val currentReka = Reka(DoubleMemoryKey(10.0))
+    private val rekaFigure = MutableStateFlow<IFigure>(Figure.Empty)
+
+    val figures = combine(redrawEvent, rectBlocks, selectPos, rekaFigure) { e, block, s, reka ->
+        FigureList(listOf(createFigure(block, Vec2.Zero), s, reka))
+    }
+
+    fun createRekaFigure() {
+        currentReka.recalculate(memory = memory)
+        rekaFigure.value = FigurePolyline(currentReka.points)
+
     }
 
     fun redraw() {
@@ -209,9 +226,79 @@ class RectToolsData(val tools: ITools) {
     }
 
     fun setPoints(text: String) {
-        points.value = text.split(",").map { it.trim() }.windowed(2, 2) { l ->
+        val tv = text.split(",").map { it.trim() }
+        points.value = tv.windowed(2, 2) { l ->
             Vec2(l[0].toDoubleOrNull() ?: 0.0, l[1].toDoubleOrNull() ?: 0.0)
         }
+
+        if (tv.isNotEmpty()) {
+            currentReka.podoshva = MemoryKey.create(tv.first())
+            currentReka.storoni.clear()
+            val st = when (tv.size) {
+                2 -> {
+                    listOf(
+                        RekaStorona(
+                            length = MemoryKey.create(tv[1]),
+                            angle = DoubleMemoryKey.PI2
+                        ),
+                        RekaStorona(
+                            length = MemoryKey.create(tv[0]),
+                            angle = DoubleMemoryKey.PI2
+                        ),
+                        RekaStorona(
+                            length = MemoryKey.create(tv[1]),
+                            angle = DoubleMemoryKey.PI2
+                        ),
+                    )
+                }
+
+                3 -> {
+
+                    val ma = MemoryKey.create(tv[0])
+                    val mb = MemoryKey.create(tv[1])
+                    val mc = MemoryKey.create(tv[2])
+
+                    listOf(
+                        RekaStorona(
+                            length = mb,
+                            angle = TriangleAngleMemoryKey(mc, ma, mb)
+                        ),
+                        RekaStorona(
+                            length = mc,
+                            angle = TriangleAngleMemoryKey(ma, mb, mc)
+                        ),
+                    )
+                }
+
+                1 -> {
+                    listOf(
+                        RekaStorona(
+                            length = MemoryKey.create(tv[0]),
+                            angle = DoubleMemoryKey.PI2
+                        ),
+                        RekaStorona(
+                            length = MemoryKey.create(tv[0]),
+                            angle = DoubleMemoryKey.PI2
+                        ),
+                        RekaStorona(
+                            length = MemoryKey.create(tv[0]),
+                            angle = DoubleMemoryKey.PI2
+                        ),
+                    )
+                }
+
+                else -> {
+                    tv.drop(1).windowed(2, 2).map { v ->
+                        RekaStorona(
+                            length = MemoryKey.create(v[0]),
+                            angle = MemoryKey.create(v[1]),
+                        )
+                    }
+                }
+            }
+            currentReka.storoni.addAll(st)
+        }
+        createRekaFigure()
     }
 }
 

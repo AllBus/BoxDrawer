@@ -2,6 +2,7 @@ package com.kos.boxdrawer.detal.robot
 
 import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.memory.MemoryKey
 
 interface IRobotCommand {
     fun draw(ds: DrawerSettings):TortoiseBlock
@@ -9,7 +10,7 @@ interface IRobotCommand {
 }
 
 interface IRobotCommandFactory{
-    fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand
+    fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand
 
     val names : List<String>
 
@@ -17,13 +18,16 @@ interface IRobotCommandFactory{
     fun help() : AnnotatedString
 }
 
-abstract class RobotCommandWithParams(val params: List<String>): IRobotCommand{
+abstract class RobotCommandWithParams(val params: List<MemoryKey>): IRobotCommand{
 
-    operator fun get(index:Int):String{
-        return params.getOrElse(index){""}
+    operator fun get(index:Int):MemoryKey{
+        return params.getOrElse(index){ MemoryKey.EMPTY}
     }
     operator fun get(index:Int, value: Double):Double{
-        return params.getOrElse(index){""}.toDoubleOrNull()?: value
+        return params.getOrElse(index){MemoryKey.EMPTY}.toDoubleOrNull()?: value
     }
+//    operator fun get(index:Int, value: Double):MemoryKey{
+//        return MemoryKeyWithDefault( params.getOrElse(index){MemoryKey.EMPTY} , value)
+//    }
 }
 

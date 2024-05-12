@@ -2,9 +2,13 @@ package com.kos.boxdrawer.detal.robot
 
 import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.memory.MemoryKey
+import turtoise.memory.MemoryKey.Companion.div
+import turtoise.memory.MemoryKey.Companion.plus
+import turtoise.memory.MemoryKey.Companion.unaryMinus
 
 class RobotRect(
-    params: List<String>
+    params: List<MemoryKey>
 ): RobotCommandWithParams(params) {
 
     override fun draw(ds: DrawerSettings): TortoiseBlock {
@@ -43,7 +47,7 @@ class RobotRect(
     }
 
     object Factory: IRobotCommandFactory{
-        override fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand {
+        override fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand {
             return RobotRect(args)
         }
 
@@ -57,7 +61,7 @@ class RobotRect(
 }
 
 class RobotHardRect(
-    params: List<String>
+    params: List<MemoryKey>
 ): RobotCommandWithParams(params) {
 
     override fun draw(ds: DrawerSettings): TortoiseBlock {
@@ -73,10 +77,10 @@ class RobotHardRect(
         val h = if (height == 0.0)
             width else height
 
-        val w2 = width/2
-        val h2 = h/2
-        val zw2 = zigWidth/2
-        val zh2 = zigHeight/2
+        val w2 = width/2.0
+        val h2 = h/2.0
+        val zw2 = zigWidth/2.0
+        val zh2 = zigHeight/2.0
 
         return TortoiseBlock(
             listOf(
@@ -87,8 +91,8 @@ class RobotHardRect(
                             ),
                         listOf(
                             -zw2, -h2,
-                            -zw2, -h2 - zwga,
-                            zw2, -h2 - zwga,
+                            -zw2, -(h2 + zwga),
+                            zw2, -(h2 + zwga),
                             zw2, -h2,
                         ).takeIf { zw2 != 0.0 },
                         listOf(
@@ -114,8 +118,8 @@ class RobotHardRect(
                         ),
                         listOf(
                             -w2, zh2,
-                            -w2 - zhgb, zh2,
-                            -w2 - zhgb, -zh2,
+                            -(w2 + zhgb), zh2,
+                            -(w2 + zhgb), -zh2,
                             -w2, -zh2,
                         ).takeIf { zh2 != 0.0 },
                         listOf(
@@ -128,7 +132,7 @@ class RobotHardRect(
     }
 
     object Factory: IRobotCommandFactory{
-        override fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand {
+        override fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand {
             return RobotHardRect(args)
         }
 

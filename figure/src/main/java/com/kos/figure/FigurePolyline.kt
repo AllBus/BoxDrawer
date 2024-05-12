@@ -8,8 +8,8 @@ import vectors.Vec2.Companion.coordForY
 class FigurePolyline(points: List<Vec2>) : FigurePolygon(points) {
 
     constructor(points: List<Vec2>, close: Boolean) : this(
-        points +
-                if (close) listOfNotNull(points.firstOrNull()) else emptyList()
+        if (close) (points + listOfNotNull(points.firstOrNull()))
+        else points
     )
 
     override fun create(points: List<Vec2>): FigurePolygon {
@@ -148,8 +148,9 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points) {
     }
 
     override fun name(): String {
+        if (points.isEmpty()) return "Пустой Многоугольник"
         return if (points.first() == points.last())
-            "Многоугольник ${points.size}"
+            "Многоугольник ${points.size - 1}"
         else
             "Полилиния ${points.size}"
     }
