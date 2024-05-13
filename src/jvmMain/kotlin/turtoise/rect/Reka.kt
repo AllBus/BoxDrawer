@@ -6,6 +6,11 @@ import turtoise.rect.Kubik.Companion.STORONA_CL
 import turtoise.rect.Kubik.Companion.STORONA_CR
 import turtoise.rect.Kubik.Companion.STORONA_L
 import turtoise.rect.Kubik.Companion.STORONA_R
+import turtoise.rect.Kubik.Companion.biasCenter
+import turtoise.rect.Kubik.Companion.biasCenterLeft
+import turtoise.rect.Kubik.Companion.biasCenterRight
+import turtoise.rect.Kubik.Companion.biasLeft
+import turtoise.rect.Kubik.Companion.biasRight
 import vectors.Vec2
 import kotlin.math.PI
 
@@ -55,11 +60,12 @@ class RekaStorona(
     var angle: MemoryKey,
     var visible: Boolean = true,
 ) {
-    val kubikiL = KubikGroup(STORONA_L)
-    val kubikiR = KubikGroup(STORONA_R)
-    val kubikiCL = KubikGroup(STORONA_CL)
-    val kubikiCR = KubikGroup(STORONA_CR)
-    val kubiki = listOf(kubikiL, kubikiCL, kubikiCR, kubikiR)
+    private val kubikiL = KubikGroup(biasLeft)
+    private val kubikiR = KubikGroup(biasRight)
+    private val kubikiCL = KubikGroup(biasCenterLeft)
+    private val kubikiCR = KubikGroup(biasCenterRight)
+    private val kubikiC = KubikGroup(biasCenter)
+    val kubiki = listOf(kubikiL, kubikiCL,kubikiC, kubikiCR, kubikiR)
 }
 
 class Kubik(
@@ -71,11 +77,29 @@ class Kubik(
         const val STORONA_CL = 2
         const val STORONA_CR = 3
         const val STORONA_R = 4
+        const val STORONA_C = 5
+
+        val biasLeft = KubikBias(0,1, EBiasNapravlenie.RIGHT)
+        val biasRight = KubikBias(1,1, EBiasNapravlenie.LEFT)
+        val biasCenter = KubikBias(1,2, EBiasNapravlenie.CENTER)
+        val biasCenterLeft = KubikBias(1,2, EBiasNapravlenie.LEFT)
+        val biasCenterRight = KubikBias(1,2, EBiasNapravlenie.RIGHT)
+
+        fun toBias(storona:Int): KubikBias{
+            return when(storona){
+                STORONA_L -> biasLeft
+                STORONA_CL -> biasCenterLeft
+                STORONA_CR -> biasCenterRight
+                STORONA_R -> biasRight
+                STORONA_C -> biasCenter
+                else -> biasCenter
+            }
+        }
     }
 }
 
 class KubikGroup(
-    val napravlenie: Int,
+    val napravlenie: KubikBias,
 ) {
     fun add(index: Int, newKubik: Kubik) {
         if (index >= 0 && index < group.size)
@@ -87,4 +111,16 @@ class KubikGroup(
     val group: MutableList<Kubik> = mutableListOf<Kubik>()
 
     val size: Int get() = group.size
+}
+
+data class KubikBias(
+    val biasT:Int,
+    val biasB:Int,
+    val napravlenie:EBiasNapravlenie,
+){
+    val offset:Double get() = biasT*1.0/biasB
+}
+
+enum class EBiasNapravlenie(val value:Int){
+    LEFT(-1), RIGHT(1), CENTER(0)
 }

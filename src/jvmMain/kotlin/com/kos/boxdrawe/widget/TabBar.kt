@@ -33,7 +33,7 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
 import com.kos.boxdrawe.widget.tabbar.ToolbarForBezier
 import com.kos.boxdrawe.widget.tabbar.ToolbarForBox
 import com.kos.boxdrawe.widget.tabbar.ToolbarForGrid
-import com.kos.boxdrawe.widget.tabbar.ToolbarForRect
+import com.kos.boxdrawe.widget.tabbar.ToolbarForReka
 import com.kos.boxdrawe.widget.tabbar.ToolbarForSoft
 import com.kos.boxdrawe.widget.tabbar.ToolbarForTools
 import com.kos.boxdrawe.widget.tabbar.ToolbarForTortoise
@@ -76,7 +76,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                 TAB_SOFT -> ToolbarForSoft(vm.value.softRez, { vm.value.tortoise.figures.value })
                 TAB_BEZIER -> ToolbarForBezier(vm.value.bezier)
                 TAB_BUBLIK -> ToolbarForBublik(vm.value.bublik)
-                TAB_RECT -> ToolbarForRect(vm.value.rectData)
+                TAB_RECT -> ToolbarForReka(vm.value.rectData)
                 TAB_TOOLS -> ToolbarForTools(vm.value.options)
             }
         }

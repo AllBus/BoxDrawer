@@ -1,12 +1,9 @@
 package com.kos.boxdrawe.widget.tabbar
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -19,7 +16,6 @@ import androidx.compose.material.icons.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,29 +31,19 @@ import com.kos.boxdrawe.presentation.RectToolsData.Companion.NEXT_BLOCK
 import com.kos.boxdrawe.presentation.RectToolsData.Companion.NEXT_EDGE
 import com.kos.boxdrawe.presentation.RectToolsData.Companion.UP_BLOCK
 import com.kos.boxdrawe.widget.CharButton
-import com.kos.boxdrawe.widget.EditTextField
 import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SimpleEditText
 import com.kos.boxdrawe.widget.TabContentModifier
-import com.kos.figure.FigureList
-import com.kos.figure.IFigure
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import turtoise.Tortoise
-import turtoise.rect.EStorona
+import turtoise.rect.Kubik.Companion.STORONA_C
 import turtoise.rect.Kubik.Companion.STORONA_CL
 import turtoise.rect.Kubik.Companion.STORONA_CR
 import turtoise.rect.Kubik.Companion.STORONA_L
 import turtoise.rect.Kubik.Companion.STORONA_R
-import turtoise.rect.RectBlock
-import turtoise.rect.RectBlockEdges
-import turtoise.rect.RectBlockParent
-import vectors.Vec2
 
 @Composable
-fun ToolbarForRect(vm: RectToolsData) {
+fun ToolbarForReka(vm: RectToolsData) {
 
     val text = remember { mutableStateOf<String>("20, 20") }
     val paddingText = remember { mutableStateOf<String>("0") }
@@ -141,6 +127,13 @@ fun ToolbarForRect(vm: RectToolsData) {
                         modifier = Modifier.defaultMinSize(24.dp),
                         onClick = {
                             vm.selectPosition(STORONA_CL)
+                        }
+                    )
+                    CharButton(
+                        text = "C",
+                        modifier = Modifier.defaultMinSize(24.dp),
+                        onClick = {
+                            vm.selectPosition(STORONA_C)
                         }
                     )
                     CharButton(

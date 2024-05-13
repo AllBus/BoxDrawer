@@ -4,17 +4,12 @@ import com.kos.boxdrawe.presentation.RectBlockPosition
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
-import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.DegreesMemoryKey
 import turtoise.memory.keys.MemoryKey
 import turtoise.memory.keys.TriangleAngleMemoryKey
-import turtoise.rect.Kubik.Companion.STORONA_CL
-import turtoise.rect.Kubik.Companion.STORONA_CR
-import turtoise.rect.Kubik.Companion.STORONA_L
-import turtoise.rect.Kubik.Companion.STORONA_R
 import vectors.Vec2
 import kotlin.math.PI
 
@@ -128,11 +123,11 @@ object RekaCad {
         val pv = memory.value(top.podoshva, 0.0)
 
         /* Вспомогательные фигуры */
-        val av = -angle*180/ PI
+        val av = -angle * 180 / PI
         val cn = listOf(
             FigureColor(
                 if (tek) 0xff00ff else 0xffff00,
-                FigureCircle(center, 2.5, segmentStart = av-180f,  segmentEnd = av ),
+                FigureCircle(center, 2.5, segmentStart = av - 180f, segmentEnd = av),
             ),
         )
 
@@ -145,41 +140,79 @@ object RekaCad {
             val ps = memory.value(storona.length, 0.0)
 
             val pk = storona.kubiki.flatMap { kubik ->
+                val fullLength = kubik.group.sumOf { block ->
+                    val pod = memory.value(block.reka.podoshva, 0.0)
+                    val pad = memory.value(block.padding, 0.0)
+                    pod + pad
+                }
 
-                val np = when (kubik.napravlenie) {
-                    STORONA_L -> Vec2(0.0, 0.0)
-                    STORONA_CL -> Vec2(ps / 2, 0.0)
-                    STORONA_CR -> Vec2(ps / 2, 0.0)
-                    STORONA_R -> Vec2(ps, 0.0)
-                    else -> Vec2(0.0, 0.0)
-                }.rotate(a)
+                val np = (ps * kubik.napravlenie.offset +
+                        when (kubik.napravlenie.napravlenie) {
+                            EBiasNapravlenie.LEFT -> 0.0
+                            EBiasNapravlenie.RIGHT -> 0.0
+                            EBiasNapravlenie.CENTER -> -fullLength / 2
+                        })
 
-                val nap = when (kubik.napravlenie) {
-                    STORONA_L, STORONA_CL -> Vec2(1.0, 0.0)
-                    STORONA_CR, STORONA_R -> Vec2(-1.0, 0.0)
-                    else -> Vec2(1.0, 0.0)
-                }.rotate(a)
 
-                var kubikStart = current + np
+                val nap = when (kubik.napravlenie.napravlenie) {
+                    EBiasNapravlenie.LEFT -> -1.0
+                    EBiasNapravlenie.RIGHT -> 1.0
+                    EBiasNapravlenie.CENTER -> 1.0
+                }
 
-                val pg = kubik.group.map { block ->
-                    val pod2 = memory.value(block.reka.podoshva, 0.0) / 2
-                    kubikStart += nap * (memory.value(block.padding, 0.0) + pod2)
-                    val f = createFigure(block.reka, kubikStart, PI + a, cur, memory, points)
-                    kubikStart += nap * pod2
-                    f
+                var kubikStart = np
+
+                val drawAngle = PI + a
+                kubik.group.mapIndexed { index, block ->
+                    val pod = memory.value(block.reka.podoshva, 0.0)
+                    val pad = memory.value(block.padding, 0.0)
+                    val p = KubikDrawPosition(
+                        position = kubikStart + nap * (pod / 2 + pad),
+                        positionAngle = a,
+                        angle = drawAngle,
+                        kubik = block,
+                        index = index,
+                        bias = kubik.napravlenie,
+                    )
+                    kubikStart += nap * (pod + pad)
+                    p
                 } // end block
+                // end kubik
+            }.sortedBy {
+                it.position
+            }.flatMap { kdp ->
+                val kubikStart = current + kdp.vec
+                listOfNotNull(
+                    if (kdp.index == cur.position.block && kdp.bias == cur.position.storona) {
+                        FigureColor(
+                            0xff00ff,
+                            FigureLine(
+                                kubikStart + Vec2(-5.0, 0.0).rotate(kdp.angle),
+                                kubikStart + Vec2(5.0, 0.0).rotate(kdp.angle)
+                            )
+                        )
+                    } else null,
 
-                pg
-            } // end kubik
-
+                    createFigure(
+                        top = kdp.kubik.reka,
+                        center = kubikStart,
+                        angle = kdp.angle,
+                        cur = cur,
+                        memory = memory,
+                        points = points
+                    )
+                )
+            }
 
             /* Вспомогательные фигуры */
             val pt = if (tek && cur.position.edge == i + 1) {
                 listOf(
                     FigureColor(
                         0xff00ff,
-                        FigureLine(current+Vec2(0.0, 1.0).rotate(a), current + Vec2(ps, 1.0).rotate(a))
+                        FigureLine(
+                            current + Vec2(0.0, 1.0).rotate(a),
+                            current + Vec2(ps, 1.0).rotate(a)
+                        )
                     )
                 )
             } else emptyList()
@@ -190,6 +223,17 @@ object RekaCad {
             pk + pt
         } //end storona
 
-        return FigureList( ps + cn)
+        return FigureList(ps + cn)
+    }
+
+    class KubikDrawPosition(
+        val position: Double,
+        val positionAngle: Double,
+        val angle: Double,
+        val kubik: Kubik,
+        val index: Int,
+        val bias: KubikBias,
+    ) {
+        val vec: Vec2 get() = Vec2(position, 0.0).rotate(positionAngle)
     }
 }

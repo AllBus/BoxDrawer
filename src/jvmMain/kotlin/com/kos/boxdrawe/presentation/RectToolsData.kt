@@ -10,10 +10,12 @@ import turtoise.memory.SimpleTortoiseMemory
 import turtoise.memory.keys.DoubleMemoryKey
 import turtoise.memory.keys.MemoryKey
 import turtoise.rect.Kubik
+import turtoise.rect.Kubik.Companion.STORONA_C
 import turtoise.rect.Kubik.Companion.STORONA_CL
 import turtoise.rect.Kubik.Companion.STORONA_CR
 import turtoise.rect.Kubik.Companion.STORONA_L
 import turtoise.rect.Kubik.Companion.STORONA_R
+import turtoise.rect.KubikBias
 import turtoise.rect.KubikGroup
 import turtoise.rect.Reka
 import turtoise.rect.RekaCad
@@ -39,7 +41,7 @@ class RectToolsData(val tools: ITools) {
             parent = null,
             position = RekaStoronaPosition(
                 edge = 1,
-                storona = STORONA_L,
+                storona = Kubik.biasLeft,
                 block = 0,
             ),
         )
@@ -89,7 +91,7 @@ class RectToolsData(val tools: ITools) {
                         parent = cv,
                         position = RekaStoronaPosition(
                             edge = 1,
-                            storona = STORONA_L,
+                            storona = Kubik.biasLeft,
                             block = 0,
                         )
                     )
@@ -117,9 +119,10 @@ class RectToolsData(val tools: ITools) {
             STORONA_L,
             STORONA_CL,
             STORONA_CR,
+            STORONA_C,
             STORONA_R -> {
                 current.value = cv.copy(
-                    position = cv.position.copy(block = 0, storona = napravlenie)
+                    position = cv.position.copy(block = 0, storona = Kubik.toBias(napravlenie))
                 )
             }
 
@@ -201,6 +204,7 @@ class RectToolsData(val tools: ITools) {
         val pt = points.value
         if (pt.isNotEmpty()) {
             RekaCad.updateReka(cv.reka, pt, memory)
+            redraw()
         }
     }
 
@@ -240,6 +244,6 @@ data class RectBlockPosition(
 
 data class RekaStoronaPosition(
     val edge: Int,
-    val storona: Int,
+    val storona: KubikBias,
     val block: Int,
 )
