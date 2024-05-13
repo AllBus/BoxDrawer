@@ -4,6 +4,9 @@ import com.kos.figure.Figure
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
+import com.kos.figure.composition.FigureColor
+import com.kos.figure.composition.FigureRotate
+import com.kos.figure.composition.FigureTranslate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import turtoise.memory.SimpleTortoiseMemory
@@ -22,6 +25,7 @@ import turtoise.rect.RekaCad
 import turtoise.rect.RekaCad.newReka
 import turtoise.rect.RekaCad.rekaPoints
 import vectors.Vec2
+import kotlin.math.PI
 
 class RectToolsData(val tools: ITools) {
 
@@ -47,18 +51,30 @@ class RectToolsData(val tools: ITools) {
         )
     )
 
-    val figures = combine(redrawEvent, topReka, current, rekaFigure) { e, reka, cur, f ->
-        val p = mutableListOf(
-            Vec2(-memory.value(reka.podoshva, 0.0) / 2.0, 0.0)
+    private val rekaDrawResult = combine(redrawEvent, topReka) { e, reka ->
+        val result = RekaCad.RekaDrawResult()
+        RekaCad.createFigure(
+            reka, Vec2.Zero, 0.0, memory, result
         )
-        val c = RekaCad.createFigure(
-            reka, Vec2.Zero, 0.0, cur, memory, p
-        )
+        result
+    }
+
+    val figures = combine(rekaDrawResult, current, rekaFigure) { result, cur, f ->
+
+        val rfp = RekaCad.findPosition(result, cur)
         FigureList(
             listOf(
-                FigurePolyline(p),
-                c,
-                f
+                FigurePolyline(result.points, close = true),
+                FigureTranslate(
+                    FigureRotate(
+                        FigureColor(0xffff00, f),
+                        (rfp?.angle ?: 0.0) * 180 / PI,
+                        Vec2.Zero
+                    ),
+                    rfp?.coord ?: Vec2(0.0, 0.0),
+                ),
+                FigureColor(0xffff00, RekaCad.centerFigures(result)),
+                FigureColor(0xff00ff, RekaCad.selectPositionFigure(result, cur, memory)),
             )
         )
     }
@@ -209,7 +225,7 @@ class RectToolsData(val tools: ITools) {
     }
 
     fun setPoints(text: String) {
-        val tv = text.split(",").map { it.trim() }
+        val tv = text.split(",", " ").map { it.trim() }.filter { it.isNotEmpty() }
         points.value = tv
 
         if (tv.isNotEmpty()) {

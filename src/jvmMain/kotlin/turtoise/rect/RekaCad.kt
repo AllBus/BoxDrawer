@@ -6,6 +6,7 @@ import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor
+import turtoise.memory.SimpleTortoiseMemory
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.DegreesMemoryKey
 import turtoise.memory.keys.MemoryKey
@@ -112,34 +113,21 @@ object RekaCad {
         top: Reka,
         center: Vec2,
         angle: Double,
-        cur: RectBlockPosition,
         memory: TortoiseMemory,
-        points: MutableList<Vec2>
-    ): IFigure {
-
-        val tek = top === cur.reka
+        result: RekaDrawResult
+    ) {
         var a = angle
 
         val pv = memory.value(top.podoshva, 0.0)
 
-        /* Вспомогательные фигуры */
-        val av = -angle * 180 / PI
-        val cn = listOf(
-            FigureColor(
-                if (tek) 0xff00ff else 0xffff00,
-                FigureCircle(center, 2.5, segmentStart = av - 180f, segmentEnd = av),
-            ),
-        )
-
-
         var current = center + Vec2(pv / 2, 0.0).rotate(a)
-        //   var points = mutableListOf(current)
-        points.add(current)
-        val ps = top.storoni.flatMapIndexed { i, storona ->
+        result.points.add(current)
+
+        top.storoni.forEachIndexed { i, storona ->
             a += (PI - memory.value(storona.angle, 0.0))
             val ps = memory.value(storona.length, 0.0)
 
-            val pk = storona.kubiki.flatMap { kubik ->
+            storona.kubiki.flatMap { kubik ->
                 val fullLength = kubik.group.sumOf { block ->
                     val pod = memory.value(block.reka.podoshva, 0.0)
                     val pad = memory.value(block.padding, 0.0)
@@ -167,12 +155,14 @@ object RekaCad {
                     val pod = memory.value(block.reka.podoshva, 0.0)
                     val pad = memory.value(block.padding, 0.0)
                     val p = KubikDrawPosition(
+                        center = current,
                         position = kubikStart + nap * (pod / 2 + pad),
                         positionAngle = a,
                         angle = drawAngle,
-                        kubik = block,
+                        reka = block.reka,
                         index = index,
                         bias = kubik.napravlenie,
+                        parent = top,
                     )
                     kubikStart += nap * (pod + pad)
                     p
@@ -180,60 +170,107 @@ object RekaCad {
                 // end kubik
             }.sortedBy {
                 it.position
-            }.flatMap { kdp ->
-                val kubikStart = current + kdp.vec
-                listOfNotNull(
-                    if (kdp.index == cur.position.block && kdp.bias == cur.position.storona) {
-                        FigureColor(
-                            0xff00ff,
-                            FigureLine(
-                                kubikStart + Vec2(-5.0, 0.0).rotate(kdp.angle),
-                                kubikStart + Vec2(5.0, 0.0).rotate(kdp.angle)
-                            )
-                        )
-                    } else null,
+            }.forEach { kdp ->
+                result.positions+=kdp
 
-                    createFigure(
-                        top = kdp.kubik.reka,
-                        center = kubikStart,
-                        angle = kdp.angle,
-                        cur = cur,
-                        memory = memory,
-                        points = points
-                    )
+                createFigure(
+                    top = kdp.reka,
+                    center = kdp.coord,
+                    angle = kdp.angle,
+                    memory = memory,
+                    result = result,
                 )
             }
 
-            /* Вспомогательные фигуры */
-            val pt = if (tek && cur.position.edge == i + 1) {
-                listOf(
-                    FigureColor(
-                        0xff00ff,
-                        FigureLine(
-                            current + Vec2(0.0, 1.0).rotate(a),
-                            current + Vec2(ps, 1.0).rotate(a)
-                        )
-                    )
-                )
-            } else emptyList()
-
             current += Vec2(ps, 0.0).rotate(a)
 
-            points += current
-            pk + pt
+            result.points += current
         } //end storona
+    }
 
-        return FigureList(ps + cn)
+    fun centerFigures(rekaDraw: RekaDrawResult): IFigure {
+        return FigureList(
+            rekaDraw.positions.map { kubik ->
+                val av = -kubik.angle * 180 / PI
+                FigureCircle(kubik.coord, 2.5, segmentStart = av - 180f, segmentEnd = av)
+            }
+        )
+    }
+
+    fun selectPositionFigure(
+        rekaDraw: RekaDrawResult,
+        cur: RectBlockPosition,
+        memory: TortoiseMemory
+    ): IFigure {
+        val resList = mutableListOf<IFigure>()
+        rekaDraw.positions.forEach { kubik ->
+            if (kubik.reka === cur.reka) {
+                val av = -kubik.angle * 180 / PI
+                resList.add(
+                    FigureCircle(kubik.coord, 2.6, segmentStart = av - 180f, segmentEnd = av)
+                )
+
+                val pv = memory.value(kubik.reka.podoshva, 0.0)
+                var current = kubik.coord + Vec2(pv / 2, 0.0).rotate(kubik.angle)
+                var a = kubik.angle
+                kubik.reka.storoni.forEachIndexed { i, storona ->
+                    a += (PI - memory.value(storona.angle, 0.0))
+                    val ps = memory.value(storona.length, 0.0)
+                    if (cur.position.edge == i + 1) {
+                        resList.add(
+                            FigureLine(
+                                current + Vec2(0.0, 1.0).rotate(a),
+                                current + Vec2(ps, 1.0).rotate(a)
+                            )
+                        )
+                    }
+                    current += Vec2(ps, 0.0).rotate(a)
+                }
+            }// end if reka
+
+            val kubikStart = kubik.coord
+
+            if (kubik.parent == cur.reka && kubik.index == cur.position.block && kubik.bias == cur.position.storona) {
+                FigureColor(
+                    0xff00ff,
+                    FigureLine(
+                        kubikStart + Vec2(-5.0, 0.0).rotate(kubik.angle),
+                        kubikStart + Vec2(5.0, 0.0).rotate(kubik.angle)
+                    )
+                )
+            }
+        }
+        return FigureList(
+            resList.toList()
+        )
+    }
+
+    fun findPosition(
+        rekaDraw: RekaDrawResult,
+        cur: RectBlockPosition,
+    ): KubikDrawPosition? {
+        return rekaDraw.positions.find {kubik ->
+            kubik.parent == cur.reka && kubik.index == cur.position.block && kubik.bias == cur.position.storona
+        }?: rekaDraw.positions.find { kubik -> kubik.reka === cur.reka }
     }
 
     class KubikDrawPosition(
+        val center: Vec2,
         val position: Double,
         val positionAngle: Double,
         val angle: Double,
-        val kubik: Kubik,
+        val reka: Reka,
         val index: Int,
         val bias: KubikBias,
+        val parent: Reka,
     ) {
         val vec: Vec2 get() = Vec2(position, 0.0).rotate(positionAngle)
+        val coord: Vec2 get() = center + vec
     }
+
+    class RekaDrawResult() {
+        val points = mutableListOf<Vec2>()
+        val positions = mutableListOf<KubikDrawPosition>()
+    }
+
 }

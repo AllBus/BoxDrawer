@@ -56,7 +56,7 @@ fun DisplayBox(
             DisplayBezier(displayScale, vm.value.bezier)
         }
 
-        BoxDrawerToolBar.TAB_RECT,
+        BoxDrawerToolBar.TAB_RECA,
         BoxDrawerToolBar.TAB_SOFT,
         BoxDrawerToolBar.TAB_BUBLIK -> {
             DisplayTortoise(

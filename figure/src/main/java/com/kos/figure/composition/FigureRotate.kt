@@ -7,6 +7,9 @@ import com.kos.figure.IFigure
 import vectors.BoundingRectangle
 import vectors.Vec2
 
+/**
+ * @param angle degrees
+ */
 class FigureRotate(
     override val figure: IFigure,
     val angle: Double,

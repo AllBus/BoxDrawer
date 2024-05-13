@@ -2,7 +2,6 @@ package com.kos.boxdrawe.presentation
 
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.figure.FigureEmpty
-import com.kos.figure.IFigure
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,7 +29,7 @@ class DrawerViewModel {
             BoxDrawerToolBar.TAB_SOFT -> softRez.figures
             BoxDrawerToolBar.TAB_BOX -> box.figures
             BoxDrawerToolBar.TAB_BUBLIK -> bublik.figures
-            BoxDrawerToolBar.TAB_RECT -> rectData.figures
+            BoxDrawerToolBar.TAB_RECA -> rectData.figures
             BoxDrawerToolBar.TAB_TOOLS -> template.currentFigure
             else -> noneFigure
         }
