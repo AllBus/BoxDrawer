@@ -16,18 +16,6 @@ abstract class FunctionMemoryKey(
     override fun drop(): MemoryKey = this
 }
 
-class ACosMemoryKey(
-    val key: MemoryKey
-) : FunctionMemoryKey() {
-
-    override fun calculate(value: (MemoryKey) -> Double): Double {
-        return acos(value(key))
-    }
-
-    override val name: String
-        get() = "==arccos"
-}
-
 class SqrMemoryKey(
     val keys: List<MemoryKey>
 ) : FunctionMemoryKey() {
@@ -112,6 +100,7 @@ class NegativeMemoryKey(
         get() = "==-"
 }
 
+/** Задание в градусах значения*/
 class DegreesMemoryKey(
     val key: MemoryKey,
 ) : FunctionMemoryKey() {
@@ -121,4 +110,52 @@ class DegreesMemoryKey(
 
     override val name: String
         get() = "==-"
+}
+
+class RadiansToDegreesMemoryKey(
+    val key: MemoryKey,
+) : FunctionMemoryKey() {
+    override fun calculate(value: (MemoryKey) -> Double): Double {
+        return value(key) * 180.0 / PI
+    }
+
+    override val name: String
+        get() = "==-"
+}
+
+
+class MulMemoryKey(
+    val a: MemoryKey,
+    val b: MemoryKey,
+) : FunctionMemoryKey() {
+    override fun calculate(value: (MemoryKey) -> Double): Double {
+        return value(a) * value(b)
+    }
+
+    override val name: String
+        get() = "==*()"
+}
+
+class DivMemoryKey(
+    val a: MemoryKey,
+    val b: MemoryKey,
+) : FunctionMemoryKey() {
+    override fun calculate(value: (MemoryKey) -> Double): Double {
+        return value(a) / value(b)
+    }
+
+    override val name: String
+        get() = "==/()"
+}
+
+class MinusMemoryKey(
+    val a: MemoryKey,
+    val b: MemoryKey,
+) : FunctionMemoryKey() {
+    override fun calculate(value: (MemoryKey) -> Double): Double {
+        return value(a) - value(b)
+    }
+
+    override val name: String
+        get() = "==-()"
 }

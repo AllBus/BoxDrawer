@@ -263,6 +263,7 @@ class SmallTortoiseCommand(
     }
 
     override fun assign(memory: TortoiseMemory) {
+        // Первый аргумент название переменной, втрого аргумента нет, поэтому стерём значение
         memory.clear(value)
     }
 

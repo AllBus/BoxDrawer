@@ -16,6 +16,7 @@ interface MemoryKey {
         val EMPTY = SpecialMemoryKey("")
         val BLOCK = SpecialMemoryKey("%%")
         val ZERO = DoubleMemoryKey(0.0)
+        val ONE = DoubleMemoryKey(1.0)
         val PI2 = DoubleMemoryKey(PI / 2.0)
 
         fun create(name: String): MemoryKey {

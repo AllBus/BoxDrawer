@@ -1,18 +1,19 @@
 package turtoise
 
+import turtoise.memory.MemoryKeyBuilder
 import turtoise.memory.TortoiseMemory
 
 class BlockTortoiseCommand(
     override val command: Char,
-    val block : TurtoiseParserStackBlock,
-): TortoiseCommand  {
+    val block: TurtoiseParserStackBlock,
+) : TortoiseCommand {
     override val size: Int
         get() = block.inner.size
 
     override fun take(index: Int, defaultValue: Double, memory: TortoiseMemory): Double {
         return block.get(index)?.let { b ->
             memory.value(b, defaultValue)
-        }?: 0.0
+        } ?: 0.0
     }
 
     override fun takeBlock(index: Int): TurtoiseParserStackItem? {
@@ -20,15 +21,25 @@ class BlockTortoiseCommand(
     }
 
     override fun assign(memory: TortoiseMemory) {
-        val values = block.arguments()
+        val values = block.inner
         if (values.isNotEmpty()) {
             if (values.size == 1) {
-                memory.clear(values.first())
+                memory.clear(block.name)
             } else {
-                memory.assign(values.first(), values.drop(1).sumOf { memory.value(it, 0.0) })
+                memory.assign(block.name, values.drop(1).sumOf {
+                    calculateValue(it, memory)
+                })
             }
         }
     }
+
+    private fun calculateValue(item: TurtoiseParserStackItem, memory: TortoiseMemory): Double {
+        return memory.value(
+            variable = MemoryKeyBuilder.createMemoryKey(item),
+            defaultValue = 0.0,
+        )
+    }
+
 
     override fun print(): String {
         return "BlockTortoiseCommand(${TortoiseCommand.commandToName(command)}, ${block.line})"
