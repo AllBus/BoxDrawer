@@ -119,6 +119,10 @@ data class KubikBias(
     val napravlenie:EBiasNapravlenie,
 ){
     val offset:Double get() = biasT*1.0/biasB
+
+    override fun toString(): String {
+        return "$biasT/$biasB~$napravlenie"
+    }
 }
 
 enum class EBiasNapravlenie(val value:Int){

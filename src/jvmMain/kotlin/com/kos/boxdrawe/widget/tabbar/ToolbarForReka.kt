@@ -45,7 +45,7 @@ import turtoise.rect.Kubik.Companion.STORONA_R
 @Composable
 fun ToolbarForReka(vm: RectToolsData) {
 
-    val text = remember { mutableStateOf<String>("20, 20") }
+    val text = remember { mutableStateOf<String>("") }
     val paddingText = remember { mutableStateOf<String>("0") }
     val position = vm.current.collectAsState()
 
@@ -67,7 +67,7 @@ fun ToolbarForReka(vm: RectToolsData) {
                 vm.updateBox()
             }
             Label(
-                text = "${position.value.position.edge}:${position.value.position.storona}:${position.value.position.block}",
+                text = "${position.value.position.edge} : ${position.value.position.storona} : ${position.value.position.block}",
                 modifier = Modifier.align(Alignment.End)
             )
         }
