@@ -6,6 +6,7 @@ import kotlin.math.*
 class TortoiseState {
     var x = 0.0
     var y = 0.0
+    /** degrees */
     var a = 0.0
     var zigDelta = 30.0
     var zigWidth = 15.0
@@ -30,6 +31,7 @@ class TortoiseState {
 
     public val xy : Vec2 get() = Vec2(x, y)
 
+    /** radians */
     public val angle : Double get() = PI * a / 180
 
     fun move(delta: Double) {

@@ -9,6 +9,7 @@ import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import turtoise.memory.SimpleTortoiseMemory
 import turtoise.memory.keys.DoubleMemoryKey
 import turtoise.memory.keys.MemoryKey
@@ -74,7 +75,7 @@ class RectToolsData(val tools: ITools) {
                     rfp?.coord ?: Vec2(0.0, 0.0),
                 ),
                 FigureColor(0xffff00, RekaCad.centerFigures(result)),
-                FigureColor(0xff00ff, RekaCad.selectPositionFigure(result, cur, memory)),
+                FigureColor(0xff00ff, RekaCad.selectPositionFigure(result, cur)),
             )
         )
     }
@@ -107,7 +108,7 @@ class RectToolsData(val tools: ITools) {
                         parent = cv,
                         position = RekaStoronaPosition(
                             edge = 1,
-                            storona = Kubik.biasLeft,
+                            storona = cv.position.storona,
                             block = 0,
                         )
                     )
@@ -178,10 +179,12 @@ class RectToolsData(val tools: ITools) {
     }
 
     private fun insertKubik(reka: Reka, position: RekaStoronaPosition, newKubik: Kubik): Boolean {
-        val k = findKubiki(reka, position) ?: return false
-        k.add(position.block, newKubik)
-
-
+        val p = reka.storoni.getOrNull(position.edge - 1) ?: return false
+        p.add(
+            position.storona,
+            position.block,
+            newKubik
+        )
         return true
     }
 
@@ -239,6 +242,47 @@ class RectToolsData(val tools: ITools) {
 
     fun setPadding(text: String) {
         paddingNext.value = text
+    }
+
+    suspend fun onPress(point: Vec2, button: Int, scale: Float) {
+        val result = rekaDrawResult.first()
+        val cv = current.value
+        val kubik = result.positions.find {
+            Vec2.distance(it.coord, point) < 5.0
+        }
+
+        if (kubik == null) {
+            val pt = cv.reka.points
+            for (i in 1 until pt.size) {
+                if (Vec2.distance(pt[i - 1], pt[i], point) < (5.0 / scale)) {
+                    current.value = cv.copy(
+                        position = cv.position.copy(edge = i)
+                    )
+                }
+            }
+        } else {
+            current.value = RectBlockPosition(
+                kubik.reka,
+                parent = cv,
+                position = RekaStoronaPosition(
+                    edge = 1,
+                    storona = cv.position.storona,
+                    block = 0,
+                )
+            )
+
+        }
+    }
+
+    suspend fun save(fileName: String) {
+        redraw()
+        val result = rekaDrawResult.first()
+        tools.saveFigures(fileName, FigurePolyline(result.points, close = true))
+        tools.updateChooserDir(fileName)
+    }
+
+    suspend fun print(): String {
+        return "reka@ " + RekaCad.print(topReka.value).line
     }
 
     companion object {

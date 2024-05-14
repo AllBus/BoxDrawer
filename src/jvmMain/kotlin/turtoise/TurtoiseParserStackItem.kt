@@ -16,6 +16,7 @@ abstract class TurtoiseParserStackItem(
     open val argument: MemoryKey = MemoryKey.EMPTY
     abstract val name: MemoryKey
     abstract val line: String
+    abstract val innerLine: String
 
     abstract val inner: List<TurtoiseParserStackItem>
     abstract val blocks: List<TurtoiseParserStackItem>
@@ -38,7 +39,7 @@ abstract class TurtoiseParserStackItem(
         return text?.toDoubleOrNull() ?: defaultValue
     }
 
-    abstract fun getInnerAtName(name:String): TurtoiseParserStackItem?
+    abstract fun getInnerAtName(name: String): TurtoiseParserStackItem?
 
     abstract fun arguments(): List<MemoryKey>
 
@@ -84,24 +85,50 @@ class TurtoiseParserStackArgument(
         get() = 1
 
     override val line: String get() = argument.name
+    override val innerLine: String get() = argument.name
 }
 
 class TurtoiseParserStackBlock(
     /** Тип скобок '(','[','{'*/
-    val skobka: Char = ' ',
+    val skobka: Char = '(',
 ) : TurtoiseParserStackItem() {
+
+    constructor(skobka: Char, items: List<TurtoiseParserStackItem>) : this(skobka) {
+        addItems(items)
+    }
+
+    constructor(name: MemoryKey, argument: MemoryKey) : this('(') {
+        addItems(
+            listOf(
+                TurtoiseParserStackArgument(name),
+                TurtoiseParserStackArgument(argument),
+            )
+        )
+    }
+
+    constructor(skobka:Char, name: MemoryKey) : this(skobka) {
+        add(name)
+    }
+
+    constructor(skobka:Char, name: String) : this(skobka) {
+        add(name)
+    }
+
     override fun isArgument(): Boolean = false
 
     override val inner = mutableListOf<TurtoiseParserStackItem>()
     override val blocks = mutableListOf<TurtoiseParserStackBlock>()
 
     override val argument: MemoryKey
-        get() = arguments().getOrNull(1)?: MemoryKey.EMPTY
+        get() = arguments().getOrNull(1) ?: MemoryKey.EMPTY
 
     override val name
         get() = inner.firstOrNull()?.argument ?: MemoryKey.BLOCK
     override val line: String
         get() = inner.joinToString(" ", "$skobka", "${closeBrace()}") { it.line }
+
+    override val innerLine: String
+        get() = inner.joinToString(" ", ) { it.line }
 
     fun closeBrace(): Char {
         return TortoiseParser.closeBrace(skobka)
@@ -115,8 +142,35 @@ class TurtoiseParserStackBlock(
         )
     }
 
+    fun add(argument: MemoryKey) {
+        inner.add(
+            TurtoiseParserStackArgument(
+                argument = argument
+            )
+        )
+    }
+
+    fun add(name: String, argument: String) {
+        add(TurtoiseParserStackBlock(MemoryKey(name), MemoryKey(argument)))
+    }
+
+    fun add(name: String, argument: MemoryKey) {
+        add(TurtoiseParserStackBlock(MemoryKey(name), argument))
+    }
+
     fun add(arguments: List<String>) {
         arguments.forEach { add(it) }
+    }
+
+    fun add(name: String, argument: TurtoiseParserStackItem) {
+        add(
+            TurtoiseParserStackBlock(
+                '(', listOf(
+                    TurtoiseParserStackArgument(MemoryKey(name)),
+                    argument
+                )
+            )
+        )
     }
 
     fun add(argument: TurtoiseParserStackBlock) {
@@ -141,14 +195,15 @@ class TurtoiseParserStackBlock(
     }
 
     override fun get(index: String): MemoryKey? {
-        return if (index.startsWith(".")){
+        return if (index.startsWith(".")) {
             val i = index.indexOf('.', 1)
-            if (i>0){
+            if (i > 0) {
                 val n = index.take(i).drop(1)
                 val next = index.drop(i)
-                when (val a = getInnerAtName(n)){
+                when (val a = getInnerAtName(n)) {
                     is TurtoiseParserStackBlock ->
                         a.get(next)
+
                     else ->
                         null
                 }
@@ -172,14 +227,14 @@ class TurtoiseParserStackBlock(
         return null
     }
 
-    fun getBlockAtName(name:String): TurtoiseParserStackBlock?{
+    fun getBlockAtName(name: String): TurtoiseParserStackBlock? {
         val nm = MemoryKey(name)
         return blocks.find {
             it.name == nm
         }
     }
 
-    override fun getInnerAtName(name:String): TurtoiseParserStackItem?{
+    override fun getInnerAtName(name: String): TurtoiseParserStackItem? {
         val i = name.toIntOrNull()
         return if (i != null)
             inner.getOrNull(i)

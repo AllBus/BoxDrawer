@@ -25,7 +25,9 @@ class SqrMemoryKey(
     }
 
     override val name: String
-        get() = "==sqr"
+        get() = keys.joinToString(" ", "(sqr ", ")") { it.name }
+
+
 }
 
 class TriangleAngleMemoryKey(
@@ -48,7 +50,7 @@ class TriangleAngleMemoryKey(
     }
 
     override val name: String
-        get() = "==triangle"
+        get() = "(tri ${a.name} ${b.name} ${c.name})"
 }
 
 class DividerMemoryKey(
@@ -63,7 +65,7 @@ class DividerMemoryKey(
     }
 
     override val name: String
-        get() = "==/($divide)"
+        get() = "(/ ${a.name} $divide)"
 }
 
 class MultiplicationMemoryKey(
@@ -75,7 +77,7 @@ class MultiplicationMemoryKey(
     }
 
     override val name: String
-        get() = "==*($mult)"
+        get() = "(* ${a.name} $mult)"
 }
 
 class SumMemoryKey(
@@ -86,7 +88,7 @@ class SumMemoryKey(
     }
 
     override val name: String
-        get() = "==+()"
+        get() = keys.joinToString(" ", "(+ ", ")") { it.name }
 }
 
 class NegativeMemoryKey(
@@ -97,7 +99,7 @@ class NegativeMemoryKey(
     }
 
     override val name: String
-        get() = "==-"
+        get() = "(- ${key.name})"
 }
 
 /** Задание в градусах значения*/
@@ -109,7 +111,7 @@ class DegreesMemoryKey(
     }
 
     override val name: String
-        get() = "==-"
+        get() = "(deg ${key.name})"
 }
 
 class RadiansToDegreesMemoryKey(
@@ -120,7 +122,7 @@ class RadiansToDegreesMemoryKey(
     }
 
     override val name: String
-        get() = "==-"
+        get() = "(rad ${key.name})"
 }
 
 
@@ -133,7 +135,7 @@ class MulMemoryKey(
     }
 
     override val name: String
-        get() = "==*()"
+        get() = "(* ${a.name} ${b.name})"
 }
 
 class DivMemoryKey(
@@ -145,7 +147,7 @@ class DivMemoryKey(
     }
 
     override val name: String
-        get() = "==/()"
+        get() = "(/${a.name} ${b.name})"
 }
 
 class MinusMemoryKey(
@@ -157,5 +159,5 @@ class MinusMemoryKey(
     }
 
     override val name: String
-        get() = "==-()"
+        get() = "(- ${a.name} ${b.name})"
 }

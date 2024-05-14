@@ -21,7 +21,7 @@ object TemplateCreator {
 
     private fun createForm(block: TurtoiseParserStackBlock): TemplateForm {
         val title =
-            block.getBlockAtName("title")?.blocks?.firstOrNull()?.line.orEmpty().dropSkobki()
+            block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
         val argument = block.getBlockAtName("arg")?.argument.orEmpty().name
 
         val items = block.getBlockAtName("items")?.blocks?.mapNotNull { b ->
@@ -31,7 +31,7 @@ object TemplateCreator {
     }
 
     private fun createItem(block: TurtoiseParserStackBlock): TemplateItem? {
-        val title = block.inner.getOrNull(2)?.line.orEmpty().dropSkobki()
+        val title = block.inner.getOrNull(2)?.innerLine.orEmpty()
         val argument = block.inner.getOrNull(1)?.argument.orEmpty().name
         val name = block.name.name.lowercase()
 
@@ -40,7 +40,7 @@ object TemplateCreator {
 
     fun createMulti(block: TurtoiseParserStackBlock): TemplateItemMulti? {
         val title =
-            block.getBlockAtName("title")?.blocks?.firstOrNull()?.line.orEmpty().dropSkobki()
+            block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
         val argument = block.getBlockAtName("arg")?.argument.orEmpty().name
 
         return block.getBlockAtName("item")?.blocks?.firstOrNull()?.let { b ->
@@ -52,10 +52,6 @@ object TemplateCreator {
                 item
             )
         }
-    }
-
-    fun String.dropSkobki(): String {
-        return this.drop(1).dropLast(1)
     }
 
     fun createItem(
@@ -97,7 +93,7 @@ object TemplateCreator {
                 argumentName = argument,
             )
 
-            "string" -> TemplateItemString(
+            "string" , "text" -> TemplateItemString(
                 title = title,
                 argumentName = argument,
             )

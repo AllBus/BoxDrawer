@@ -156,15 +156,20 @@ class TemplateData(val tools: ITools) {
     }
 
     suspend fun print(): String {
-        val name = algorithmName.value
+        if (checkboxEditor.value){
+            return templateEditor.value.form.print().line
+        }else {
 
-        val top = TurtoiseParserStackBlock()
+            val name = algorithmName.value
 
-        memory.union(menu.first().memoryValues()).memoryBlock(top)
+            val top = TurtoiseParserStackBlock()
 
-        val memoryarguments = top.line
+            memory.union(menu.first().memoryValues()).memoryBlock(top)
 
-        return "f (@${name} ${memoryarguments})"
+            val memoryarguments = top.innerLine
+
+            return "f (@${name} ${memoryarguments})"
+        }
     }
 
     fun loadDxf(fileName: String) {

@@ -16,8 +16,10 @@ import turtoise.memory.keys.MulMemoryKey
 import turtoise.memory.keys.NegativeMemoryKey
 import turtoise.memory.keys.RadiansToDegreesMemoryKey
 import turtoise.memory.keys.SinMemoryKey
+import turtoise.memory.keys.SqrMemoryKey
 import turtoise.memory.keys.SumMemoryKey
 import turtoise.memory.keys.TanMemoryKey
+import turtoise.memory.keys.TriangleAngleMemoryKey
 
 object MemoryKeyBuilder {
 
@@ -33,6 +35,18 @@ object MemoryKeyBuilder {
                 "atan" -> ATanMemoryKey(createMemoryKey(item.inner[1]))
                 "deg" -> DegreesMemoryKey(createMemoryKey(item.inner[1]))
                 "rad" -> RadiansToDegreesMemoryKey(createMemoryKey(item.inner[1]))
+                "sqr" -> SqrMemoryKey(item.inner.drop(1).map(::createMemoryKey))
+                "tri" -> {
+                    if (item.inner.size >= 4) {
+                        val a = createMemoryKey(item.inner[1])
+                        val b = createMemoryKey(item.inner[2])
+                        val c = createMemoryKey(item.inner[3])
+                        TriangleAngleMemoryKey(a, b, c)
+                    } else {
+                        val a = createMemoryKey(item.inner[1])
+                        TriangleAngleMemoryKey(a, a, a)
+                    }
+                }
                 "-" -> if (item.inner.size <= 2)
                     NegativeMemoryKey(createMemoryKey(item.inner[1])) else
                     MinusMemoryKey(createMemoryKey(item.inner[1]), createMemoryKey(item.inner[2]))

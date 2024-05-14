@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Matrix
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
@@ -11,6 +12,8 @@ import com.kos.boxdrawe.widget.display.DisplayBezier
 import com.kos.boxdrawe.widget.display.DisplayGrid
 import com.kos.boxdrawe.widget.display.DisplayTortoise
 import com.kos.figure.IFigure
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun DisplayBox(
@@ -23,6 +26,7 @@ fun DisplayBox(
     vm: State<DrawerViewModel>,
     selectedItem: State<IFigure>,
 ) {
+    val coroutineScope = rememberCoroutineScope()
     when (tabIndex.value) {
         BoxDrawerToolBar.TAB_TORTOISE -> {
             DisplayTortoise(
@@ -30,10 +34,16 @@ fun DisplayBox(
                 matrix = matrix,
                 enableMatrix = true,
                 figures = figures.value,
-                selectedItem = selectedItem
-            ) { text ->
-                stateText.value = text
-            }
+                selectedItem = selectedItem,
+                onStateChange =  { text ->
+                    stateText.value = text
+                },
+                onPress = { point, button , scale ->
+                    coroutineScope.launch {
+                        vm.value.onPress(point, button, scale)
+                    }
+                }
+            )
         }
 
         BoxDrawerToolBar.TAB_BOX -> {
@@ -42,10 +52,16 @@ fun DisplayBox(
                 matrix = matrix,
                 enableMatrix = !alternative.value,
                 figures = figures.value,
-                selectedItem = selectedItem
-            ) { text ->
-                stateText.value = text
-            }
+                selectedItem = selectedItem,
+                onStateChange =  { text ->
+                    stateText.value = text
+                },
+                onPress = { point, button , scale ->
+                    coroutineScope.launch {
+                        vm.value.onPress(point, button, scale)
+                    }
+                }
+            )
         }
 
         BoxDrawerToolBar.TAB_GRID -> {
@@ -56,7 +72,7 @@ fun DisplayBox(
             DisplayBezier(displayScale, vm.value.bezier)
         }
 
-        BoxDrawerToolBar.TAB_RECA,
+        BoxDrawerToolBar.TAB_REKA,
         BoxDrawerToolBar.TAB_SOFT,
         BoxDrawerToolBar.TAB_BUBLIK -> {
             DisplayTortoise(
@@ -64,10 +80,16 @@ fun DisplayBox(
                 matrix = matrix,
                 enableMatrix = false,
                 figures = figures.value,
-                selectedItem = selectedItem
-            ) { text ->
-                stateText.value = text
-            }
+                selectedItem = selectedItem,
+                onStateChange =  { text ->
+                    stateText.value = text
+                },
+                onPress = { point, button , scale ->
+                    coroutineScope.launch {
+                        vm.value.onPress(point, button, scale)
+                    }
+                }
+            )
         }
 
         BoxDrawerToolBar.TAB_TOOLS -> {
@@ -76,10 +98,16 @@ fun DisplayBox(
                 matrix = matrix,
                 enableMatrix = false,
                 figures = figures.value,
-                selectedItem = selectedItem
-            ) { text ->
-                stateText.value = text
-            }
+                selectedItem = selectedItem,
+                onStateChange =  { text ->
+                    stateText.value = text
+                },
+                onPress = { point, button , scale ->
+                    coroutineScope.launch {
+                        vm.value.onPress(point, button, scale)
+                    }
+                }
+            )
         }
 
         else -> {

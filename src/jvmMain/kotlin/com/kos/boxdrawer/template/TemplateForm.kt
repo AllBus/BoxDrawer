@@ -1,6 +1,13 @@
 package com.kos.boxdrawer.template
 
+import turtoise.TurtoiseParserStackArgument
+import turtoise.TurtoiseParserStackBlock
+import turtoise.TurtoiseParserStackItem
+import turtoise.memory.keys.MemoryKey
+
 interface TemplateItem {
+    fun print(): TurtoiseParserStackItem
+
     val title: String
     val argumentName: String
     val argumentCount: Int
@@ -13,6 +20,16 @@ data class TemplateForm(
 ) : TemplateItem {
     fun isEmpty(): Boolean = list.isEmpty()
 
+    override fun print(): TurtoiseParserStackItem {
+        val inner = TurtoiseParserStackBlock('(', list.map { it.print() })
+        val tp = TurtoiseParserStackBlock()
+        tp.add("form")
+        tp.add("title", title)
+        tp.add("arg", argumentName)
+        tp.add("items", inner)
+        return tp
+    }
+
     fun remove(arg: String): TemplateForm {
         val a = arg.split(".")
 
@@ -22,10 +39,8 @@ data class TemplateForm(
 
             val ar = b.first()
             val next = b.drop(1)
-            println("remove $ar from ${form.argumentName}")
             return form.copy(
                 list = form.list.mapNotNull { f ->
-                    println("check $ar with ${f.argumentName}")
                     if (f.argumentName == ar) {
                         if (f is TemplateForm) {
                             if (next.isEmpty()) {
@@ -49,12 +64,12 @@ data class TemplateForm(
 
     fun replace(arg: String, item: TemplateItem): TemplateForm {
         val a = arg.split(".").drop(1)
-        println("Start insert $a from ${this.argumentName} and ${item.argumentName}")
+  //      println("Start insert $a from ${this.argumentName} and ${item.argumentName}")
 
         var inserted = false
 
         fun insertItem(b: List<String>, item: TemplateItem): TemplateItem? {
-            println("insert $inserted $b")
+        //    println("insert $inserted $b")
             if (inserted)
                 return null
 
@@ -78,10 +93,10 @@ data class TemplateForm(
 
             val ar = b.first()
             val next = b.drop(1)
-            println("remove $ar from ${form.argumentName}")
+          //  println("remove $ar from ${form.argumentName}")
             return form.copy(
                 list = form.list.mapNotNull { f ->
-                    println("check $ar with ${f.argumentName}")
+               //     println("check $ar with ${f.argumentName}")
                     if (f.argumentName == ar) {
                         if (f is TemplateForm) {
                             if (next.isEmpty()) {
@@ -114,6 +129,16 @@ data class TemplateItemMulti(
 
     override val argumentCount: Int
         get() = 1
+
+    override fun print(): TurtoiseParserStackItem {
+        val inner = TurtoiseParserStackBlock('(', listOf(data.print()))
+        val tp = TurtoiseParserStackBlock()
+        tp.add("multi")
+        tp.add("title", title)
+        tp.add("arg", argumentName)
+        tp.add("item", inner)
+        return tp
+    }
 }
 
 data class TemplateItemInt(
@@ -122,6 +147,14 @@ data class TemplateItemInt(
 ) : TemplateItem {
     override val argumentCount: Int
         get() = 1
+
+    override fun print(): TurtoiseParserStackItem {
+        val tp = TurtoiseParserStackBlock()
+        tp.add("int")
+        tp.add(argumentName)
+        tp.add(title)
+        return tp
+    }
 }
 
 data class TemplateItemNumeric(
@@ -131,6 +164,14 @@ data class TemplateItemNumeric(
 ) : TemplateItem {
     override val argumentCount: Int
         get() = 1
+
+    override fun print(): TurtoiseParserStackItem {
+        val tp = TurtoiseParserStackBlock()
+        tp.add("1")
+        tp.add(argumentName)
+        tp.add(title)
+        return tp
+    }
 }
 
 data class TemplateItemSize(
@@ -140,6 +181,14 @@ data class TemplateItemSize(
 ) : TemplateItem {
     override val argumentCount: Int
         get() = 2
+
+    override fun print(): TurtoiseParserStackItem {
+        val tp = TurtoiseParserStackBlock()
+        tp.add("2")
+        tp.add(argumentName)
+        tp.add(title)
+        return tp
+    }
 }
 
 data class TemplateItemTriple(
@@ -149,6 +198,14 @@ data class TemplateItemTriple(
 ) : TemplateItem {
     override val argumentCount: Int
         get() = 3
+
+    override fun print(): TurtoiseParserStackItem {
+        val tp = TurtoiseParserStackBlock()
+        tp.add("3")
+        tp.add(argumentName)
+        tp.add(title)
+        return tp
+    }
 }
 
 data class TemplateItemRect(
@@ -158,6 +215,14 @@ data class TemplateItemRect(
 ) : TemplateItem {
     override val argumentCount: Int
         get() = 4
+
+    override fun print(): TurtoiseParserStackItem {
+        val tp = TurtoiseParserStackBlock()
+        tp.add("4")
+        tp.add(argumentName)
+        tp.add(title)
+        return tp
+    }
 }
 
 data class TemplateItemCheck(
@@ -167,6 +232,14 @@ data class TemplateItemCheck(
 ) : TemplateItem {
     override val argumentCount: Int
         get() = 1
+
+    override fun print(): TurtoiseParserStackItem {
+        val tp = TurtoiseParserStackBlock()
+        tp.add("check")
+        tp.add(argumentName)
+        tp.add(title)
+        return tp
+    }
 }
 
 data class TemplateItemString(
@@ -176,6 +249,14 @@ data class TemplateItemString(
 ) : TemplateItem {
     override val argumentCount: Int
         get() = 1
+
+    override fun print(): TurtoiseParserStackItem {
+        val tp = TurtoiseParserStackBlock()
+        tp.add("text")
+        tp.add(argumentName)
+        tp.add(title)
+        return tp
+    }
 }
 
 data class TemplateItemLabel(
@@ -185,4 +266,12 @@ data class TemplateItemLabel(
 ) : TemplateItem {
     override val argumentCount: Int
         get() = 0
+
+    override fun print(): TurtoiseParserStackItem {
+        val tp = TurtoiseParserStackBlock()
+        tp.add("label")
+        tp.add(argumentName)
+        tp.add(title)
+        return tp
+    }
 }

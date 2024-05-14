@@ -2,7 +2,9 @@ package com.kos.boxdrawe.widget.tabbar
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,8 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.RectToolsData
@@ -36,6 +41,8 @@ import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SimpleEditText
 import com.kos.boxdrawe.widget.TabContentModifier
+import com.kos.boxdrawe.widget.showFileChooser
+import kotlinx.coroutines.launch
 import turtoise.rect.Kubik.Companion.STORONA_C
 import turtoise.rect.Kubik.Companion.STORONA_CL
 import turtoise.rect.Kubik.Companion.STORONA_CR
@@ -44,7 +51,8 @@ import turtoise.rect.Kubik.Companion.STORONA_R
 
 @Composable
 fun ToolbarForReka(vm: RectToolsData) {
-
+    val coroutineScope = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
     val text = remember { mutableStateOf<String>("") }
     val paddingText = remember { mutableStateOf<String>("0") }
     val position = vm.current.collectAsState()
@@ -191,6 +199,27 @@ fun ToolbarForReka(vm: RectToolsData) {
                 )
 
 
+            }
+        }
+        Column(
+            modifier = Modifier.weight(weight = 0.5f, fill = true)
+        ) {
+
+            RunButton("Нарисовать деталь") {
+                coroutineScope.launch {
+                    showFileChooser(vm.tools.chooserDir()) { f ->
+                        coroutineScope.launch {
+                            vm.save(f)
+                        }
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(4.dp))
+            RunButton("Скопировать код") {
+                coroutineScope.launch {
+                    clipboardManager.setText(AnnotatedString(vm.print()))
+                }
             }
         }
     }

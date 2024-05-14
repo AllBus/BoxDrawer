@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isAltPressed
@@ -135,41 +136,43 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
         val c = size / 2f
         val razm = c / 20f
 
-        translate(pos.x, pos.y) {
-            this.scale(scale = displayScale.value) {
-                this.translate(c.width, c.height) {
-                    val gm =
-                        20f * (if (scale > 100) 0.01f else if (scale > 10) 0.1f else if (scale < 0.5) 10f else 1f)
-                    for (j in -razm.width.toInt()..razm.width.toInt()) {
-                        for (k in -razm.height.toInt()..razm.height.toInt()) {
-                            this.drawCircle(
-                                color = Color.Yellow,
-                                radius = 0.5f / scale,
-                                center = Offset(j * gm, k * gm)
-                            )
-                        }
-                    }
+        this.withTransform(
+            {
+                translate(pos.x, pos.y)
+                scale(scale = displayScale.value)
+                translate(c.width, c.height)
+            }){
 
-                    c1.value.let { bezier ->
-
-                        bezier.forEachIndexed { i, c ->
-                            val color = if (selectIndex.value == i) Color.Green else Color.LightGray
-                            this.drawCircle(color, radius = 5f / scale, center = c.toOffset())
-                        }
-
-                        this.drawCircle(Color.Yellow, 5f / scale, cst.value.toOffset())
-                        this.drawCircle(Color.Yellow, 5f / scale, cen.value.toOffset())
-
-                        this.drawPoints(
-                            bezier.map { it.toOffset() },
-                            PointMode.Polygon,
-                            Color.DarkGray
-                        )
-                    }
-
-                    this.drawFigures(figure.value, FigureEmpty)
+            val gm =
+                20f * (if (scale > 100) 0.01f else if (scale > 10) 0.1f else if (scale < 0.5) 10f else 1f)
+            for (j in -razm.width.toInt()..razm.width.toInt()) {
+                for (k in -razm.height.toInt()..razm.height.toInt()) {
+                    this.drawCircle(
+                        color = Color.Yellow,
+                        radius = 0.5f / scale,
+                        center = Offset(j * gm, k * gm)
+                    )
                 }
             }
+
+            c1.value.let { bezier ->
+
+                bezier.forEachIndexed { i, c ->
+                    val color = if (selectIndex.value == i) Color.Green else Color.LightGray
+                    this.drawCircle(color, radius = 5f / scale, center = c.toOffset())
+                }
+
+                this.drawCircle(Color.Yellow, 5f / scale, cst.value.toOffset())
+                this.drawCircle(Color.Yellow, 5f / scale, cen.value.toOffset())
+
+                this.drawPoints(
+                    bezier.map { it.toOffset() },
+                    PointMode.Polygon,
+                    Color.DarkGray
+                )
+            }
+
+            this.drawFigures(figure.value, FigureEmpty)
         }
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -23,12 +24,15 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isAltPressed
+import androidx.compose.ui.input.pointer.isCtrlPressed
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import com.kos.boxdrawe.drawer.drawFigures
 import com.kos.boxdrawe.widget.toVec2
 import com.kos.figure.IFigure
+import vectors.Vec2
 import kotlin.math.exp
 import kotlin.math.sign
 
@@ -39,20 +43,15 @@ fun DisplayTortoise(displayScale: MutableFloatState,
                     enableMatrix: Boolean,
                     figures: IFigure,
                     selectedItem: State<IFigure>,
-                    onStateChange: (String)-> Unit) {
-//    val posX = rememberSaveable("DisplayTortoiseX") { mutableStateOf(0f) }
-//    val posY = rememberSaveable("DisplayTortoiseY") { mutableStateOf(0f) }
+                    onStateChange: (String)-> Unit,
+                    onPress: (Vec2, Int, Float) -> Unit) {
 
-    var rotation by rememberSaveable("DisplayTortoiseRotation") { mutableStateOf(0f) }
     var pos by rememberSaveable("DisplayTortoiseOffset") { mutableStateOf(Offset.Zero) }
     val displaySize = remember { mutableStateOf(IntSize(0,0)) }
 
-//    val state = rememberTransformableState {
-//            zoomChange, offsetChange, rotationChange ->
-//            scale *= zoomChange
-//            rotation += rotationChange
-//            pos += offsetChange
-//    }
+
+    val selectedType = remember { mutableIntStateOf(0) }
+
     val m = Matrix()
     m.rotateY(45f)
     m.rotateX(30f)
@@ -63,7 +62,27 @@ fun DisplayTortoise(displayScale: MutableFloatState,
         onStateChange(String.format("(%.4f : %.4f) x (%.4f : %.4f)", pos.x/ds, pos.y/ds , dz.x, dz.y))
     }
 
-    Canvas(modifier = Modifier.fillMaxSize().clipToBounds().onPointerEvent(PointerEventType.Scroll) {
+    val scale = displayScale.value
+
+    Canvas(modifier = Modifier.fillMaxSize().clipToBounds()
+        .onPointerEvent(PointerEventType.Press) {
+            val sp =
+                (it.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.toVec2() / scale.toDouble()
+
+           val pt = when (it.button) {
+                PointerButton.Primary -> 1
+                PointerButton.Secondary -> 2
+                PointerButton.Tertiary -> 3
+               else -> 0
+            }
+            selectedType.value = pt
+            onPress(sp, pt, scale)
+
+
+        }.onPointerEvent(PointerEventType.Release) {
+            selectedType.value = 0
+        }
+        .onPointerEvent(PointerEventType.Scroll) {
 
         val change = it.changes.first()
         val delta = change.scrollDelta.y.toInt().sign

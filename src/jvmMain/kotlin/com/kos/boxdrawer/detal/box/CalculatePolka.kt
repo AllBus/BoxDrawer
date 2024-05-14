@@ -222,7 +222,7 @@ object CalculatePolka {
             val side  = (bargs.take(1)+bargs.drop(2)).map { v -> v.name }.map(::parseSide)
             val cell = bargs.getOrNull(1)?.name?.toIntOrNull()?:0
             PolkaProgram(
-                algorithm = it.blocks.firstOrNull()?.line.orEmpty().drop(1).dropLast(1),
+                algorithm = it.blocks.firstOrNull()?.innerLine.orEmpty(),
                 startCell = cell,
                 sideIndex = side
             )

@@ -16,7 +16,7 @@ class ACosMemoryKey(
     }
 
     override val name: String
-        get() = "==arccos"
+        get() = "(acos ${key.name})"
 }
 
 class ASinMemoryKey(
@@ -28,7 +28,7 @@ class ASinMemoryKey(
     }
 
     override val name: String
-        get() = "==arcsin"
+        get() = "(asin ${key.name})"
 }
 
 class ATanMemoryKey(
@@ -40,7 +40,7 @@ class ATanMemoryKey(
     }
 
     override val name: String
-        get() = "==arctg"
+        get() = "(atg ${key.name})"
 }
 
 
@@ -53,7 +53,7 @@ class CosMemoryKey(
     }
 
     override val name: String
-        get() = "==cos"
+        get() = "(cos ${key.name})"
 }
 
 class SinMemoryKey(
@@ -65,7 +65,7 @@ class SinMemoryKey(
     }
 
     override val name: String
-        get() = "==sin"
+        get() = "(sin ${key.name})"
 }
 
 class TanMemoryKey(
@@ -80,7 +80,7 @@ class TanMemoryKey(
     }
 
     override val name: String
-        get() = "==tg"
+        get() = "(tg ${key.name})"
 }
 
 class CoTanMemoryKey(
@@ -95,5 +95,5 @@ class CoTanMemoryKey(
     }
 
     override val name: String
-        get() = "==ctg"
+        get() = "(ctg ${key.name})"
 }

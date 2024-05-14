@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import com.kos.boxdrawer.template.TemplateCreator.dropSkobki
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateItemString
 import turtoise.TurtoiseParserStackItem
@@ -24,7 +23,7 @@ fun TemplateStringBox(
 ) {
     val text = remember("$prefix") {
         mutableStateOf(
-            templateGenerator.get(prefix).firstOrNull() ?: (block?.line.orEmpty().dropSkobki())
+            templateGenerator.get(prefix).firstOrNull() ?: (block?.innerLine.orEmpty())
         )
     }
     OutlinedTextField(

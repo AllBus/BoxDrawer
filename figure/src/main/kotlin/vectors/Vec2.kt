@@ -68,6 +68,15 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             return hypot((a.x - b.x), (a.y - b.y))
         }
 
+        fun distance(a: Vec2, b: Vec2, p: Vec2): Double {
+            return twoTriangleSquare(a, b, p) /
+                    hypot((a.x - b.x), (a.y - b.y))
+        }
+
+        fun twoTriangleSquare(a: Vec2, b: Vec2, p: Vec2): Double {
+            return abs((b.y -a.y) * p.x - (b.x - a.x) * p.y + b.x * a.y - b.y*a.x )
+        }
+
         fun normalize(a: Vec2, b: Vec2): Vec2 {
             val d = distance(a, b)
             return if (d == 0.0) {
@@ -253,25 +262,30 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             }
         }
 
-        fun bezierPosition(points: List<Vec2>, k: Double, steps:Int, length:Double): PointWithNormal {
+        fun bezierPosition(
+            points: List<Vec2>,
+            k: Double,
+            steps: Int,
+            length: Double
+        ): PointWithNormal {
             var pred = points[0]
             var sum = 0.0
-            val tr = k*length
-            if (k>=1.0)
-                return  PointWithNormal.fromPreviousPoint(points.last(), points[points.size-2])
-            if (k<=0.0)
-                return  PointWithNormal.from(points.first(), points[1])
-            var predt= 0.0
-            for (i in 0..<steps){
+            val tr = k * length
+            if (k >= 1.0)
+                return PointWithNormal.fromPreviousPoint(points.last(), points[points.size - 2])
+            if (k <= 0.0)
+                return PointWithNormal.from(points.first(), points[1])
+            var predt = 0.0
+            for (i in 0..<steps) {
                 val t = i.toDouble() / (steps - 1)
                 val current = bezierLerp(points, t)
                 val dist = distance(current, pred)
-                val ns = sum+dist
+                val ns = sum + dist
 
                 if (ns == tr)
                     return PointWithNormal.fromPreviousPoint(current, pred)
 
-                if (ns > tr){
+                if (ns > tr) {
 //                    var predtj = predt
 //                    for (j in 0..<10){
 //                        val tj = predt+ j.toDouble() / (10 *  (steps - 1))
@@ -292,7 +306,7 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
 //                    }
 
                     return PointWithNormal.fromPreviousPoint(
-                        bezierLerp(points, predt+ (tr-sum)/length),
+                        bezierLerp(points, predt + (tr - sum) / length),
                         pred
                     )
                 }
@@ -300,9 +314,8 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
                 pred = current
                 predt = t
             }
-            return PointWithNormal.fromPreviousPoint(points.last(), points[points.size-2])
+            return PointWithNormal.fromPreviousPoint(points.last(), points[points.size - 2])
         }
-
 
 
         fun bezierLerp(points: List<Vec2>, t: Double): Vec2 {

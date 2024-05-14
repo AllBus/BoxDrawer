@@ -8,6 +8,7 @@ import com.kos.boxdrawer.detal.box.BoxAlgorithm
 import com.kos.boxdrawer.detal.polka.PolkaLine
 import com.kos.boxdrawer.detal.robot.RobotLine
 import turtoise.memory.keys.MemoryKey
+import turtoise.rect.RekaAlgorithm
 import java.util.Stack
 
 
@@ -46,13 +47,16 @@ object TortoiseParser {
                 "robot" -> RobotLine.parseRobot(items, f.drop(1).dropLast(1).toTypedArray())
                 "box" -> BoxAlgorithm.parseBox(items, f.drop(1).dropLast(1).toTypedArray())
                 "dxf" -> DxfFileAlgorithm(
-                    items.blocks.firstOrNull()?.line.orEmpty().drop(1).dropLast(1)
+                    items.blocks.firstOrNull()?.innerLine.orEmpty()
                 )
                 "template" -> TemplateAlgorithm(
                     name = f.getOrElse(1) { "figure" },
                     line = items.getBlockAtName("figure") ?: TurtoiseParserStackBlock(),
                     default = items.getBlockAtName("default") ?: TurtoiseParserStackBlock(),
                     template = items.getBlockAtName("form") ?: TurtoiseParserStackBlock(),
+                )
+                "reka" -> RekaAlgorithm(
+                    items, f.drop(1).dropLast(1).toTypedArray()
                 )
 
                 "" -> TortoiseFigureAlgorithm(f.getOrElse(1) { "figure" }, items)

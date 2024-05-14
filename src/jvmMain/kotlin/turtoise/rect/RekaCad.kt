@@ -6,7 +6,8 @@ import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor
-import turtoise.memory.SimpleTortoiseMemory
+import turtoise.TurtoiseParserStackBlock
+import turtoise.TurtoiseParserStackItem
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.DegreesMemoryKey
 import turtoise.memory.keys.MemoryKey
@@ -26,6 +27,66 @@ object RekaCad {
         reka.recalculate(memory)
         return reka
     }
+
+    fun newReka(items: TurtoiseParserStackBlock): Reka? {
+        return items.getBlockAtName("reka")?.let { rekaBlock ->
+            rekaBlock.getBlockAtName("e")?.arguments()?.let { args ->
+                //Todo: получить все блоки как MemoryKey
+                val reka = Reka(
+                    podoshva = args.getOrElse(0) { MemoryKey.ZERO }
+                )
+
+                args.drop(1).windowed(2, 2) { v ->
+                    RekaStorona(
+                        length = v[0],
+                        angle = v[1],
+                    )
+                }
+
+                rekaBlock.getBlockAtName("s")?.let { st ->
+                    val index = memoryToInt(st.get(1), 1)
+                    if (index >= 0 && index <= reka.storoni.size) {
+                        st.getBlockAtName("k")?.blocks?.forEach { kub ->
+                            kub.getBlockAtName("b")?.let { b ->
+                                val kg = KubikGroup(
+                                    napravlenie = biasFrom(b)
+                                )
+                                kg.group.addAll(
+                                    kub.getBlockAtName("v")?.blocks?.mapNotNull { vb ->
+                                        newReka(vb)?.let { r ->
+                                            Kubik(
+                                                padding = vb.get("p") ?: MemoryKey.ZERO,
+                                                reka = r
+                                            )
+                                        }
+                                    }.orEmpty()
+                                )
+                                reka.storoni[index - 1].add(kg)
+                            }
+                        }// blocks
+                    }
+                }// storona
+                reka
+            }
+        }
+    }
+
+    fun memoryToInt(key: MemoryKey?, defaultValue: Int): Int {
+        return key?.toDoubleOrNull()?.toInt() ?: defaultValue
+    }
+
+    fun biasFrom(block: TurtoiseParserStackBlock): KubikBias {
+        val n = memoryToInt(block.get(0), 1)
+        val b = memoryToInt(block.get(2), 1)
+        val t = memoryToInt(block.get(1), 0)
+
+        return KubikBias(
+            biasT = t,
+            biasB = if (b >= 1) b else 1,
+            napravlenie = if (n < 0) EBiasNapravlenie.LEFT else if (n > 0) EBiasNapravlenie.RIGHT else EBiasNapravlenie.CENTER
+        )
+    }
+
 
     fun newReka(tv: List<String>, memory: TortoiseMemory): Reka {
         val reka = if (tv.isNotEmpty()) {
@@ -123,6 +184,7 @@ object RekaCad {
         var current = center + Vec2(pv / 2, 0.0).rotate(a)
         result.points.add(current)
 
+        val topPoints = mutableListOf(current)
         top.storoni.forEachIndexed { i, storona ->
             a += (PI - memory.value(storona.angle, 0.0))
             val ps = memory.value(storona.length, 0.0)
@@ -171,7 +233,7 @@ object RekaCad {
             }.sortedBy {
                 it.position
             }.forEach { kdp ->
-                result.positions+=kdp
+                result.positions += kdp
 
                 createFigure(
                     top = kdp.reka,
@@ -185,7 +247,10 @@ object RekaCad {
             current += Vec2(ps, 0.0).rotate(a)
 
             result.points += current
+            topPoints += current
         } //end storona
+
+        top.recalculate(topPoints)
     }
 
     fun centerFigures(rekaDraw: RekaDrawResult): IFigure {
@@ -200,7 +265,6 @@ object RekaCad {
     fun selectPositionFigure(
         rekaDraw: RekaDrawResult,
         cur: RectBlockPosition,
-        memory: TortoiseMemory
     ): IFigure {
         val resList = mutableListOf<IFigure>()
         rekaDraw.positions.forEach { kubik ->
@@ -210,21 +274,13 @@ object RekaCad {
                     FigureCircle(kubik.coord, 2.6, segmentStart = av - 180f, segmentEnd = av)
                 )
 
-                val pv = memory.value(kubik.reka.podoshva, 0.0)
-                var current = kubik.coord + Vec2(pv / 2, 0.0).rotate(kubik.angle)
-                var a = kubik.angle
-                kubik.reka.storoni.forEachIndexed { i, storona ->
-                    a += (PI - memory.value(storona.angle, 0.0))
-                    val ps = memory.value(storona.length, 0.0)
-                    if (cur.position.edge == i + 1) {
-                        resList.add(
-                            FigureLine(
-                                current + Vec2(0.0, 1.0).rotate(a),
-                                current + Vec2(ps, 1.0).rotate(a)
-                            )
+                findEdgePoints(kubik.reka, cur.position.edge)?.let { rep ->
+                    resList.add(
+                        FigureLine(
+                            rep.start,
+                            rep.end,
                         )
-                    }
-                    current += Vec2(ps, 0.0).rotate(a)
+                    )
                 }
             }// end if reka
 
@@ -245,14 +301,73 @@ object RekaCad {
         )
     }
 
+    private fun findEdgePoints(reka: Reka, edge: Int): RekaEdgePoints? {
+        val pt = reka.points
+        if (edge >= 1 && edge < pt.size)
+            return RekaEdgePoints(
+                pt[edge - 1],
+                pt[edge]
+            )
+        else
+            return null
+    }
+
     fun findPosition(
         rekaDraw: RekaDrawResult,
         cur: RectBlockPosition,
     ): KubikDrawPosition? {
-        return rekaDraw.positions.find {kubik ->
+        return rekaDraw.positions.find { kubik ->
             kubik.parent == cur.reka && kubik.index == cur.position.block && kubik.bias == cur.position.storona
-        }?: rekaDraw.positions.find { kubik -> kubik.reka === cur.reka }
+        } ?: rekaDraw.positions.find { kubik -> kubik.reka === cur.reka }
     }
+
+    fun print(top: Reka): TurtoiseParserStackItem {
+
+        val tp = TurtoiseParserStackBlock('(', "reka")
+
+        val te = TurtoiseParserStackBlock('(', "e")
+        tp.add(te)
+
+        te.add(top.podoshva)
+
+        top.storoni.forEach { storona ->
+            te.add(storona.length)
+            te.add(storona.angle)
+        }
+
+        val ts = TurtoiseParserStackBlock('(', "s")
+        tp.add(ts)
+
+        top.storoni.forEachIndexed { index, storona ->
+            if (storona.kubkikiSize > 0) {
+                val tsi = TurtoiseParserStackBlock('(', "$index")
+
+                val tsk = TurtoiseParserStackBlock('(', "k")
+                storona.kubiki.forEach { kubik ->
+                    if (kubik.size > 0) {
+                        val tkubik = TurtoiseParserStackBlock()
+                        tkubik.add("b", kubik.napravlenie.print())
+                        val tg = TurtoiseParserStackBlock('(', "v")
+                        tkubik.add(tg)
+
+                        kubik.group.map {
+                            val tf = TurtoiseParserStackBlock()
+                            tf.add("p", it.padding)
+                            tf.addItems(listOf(print(it.reka)))
+                            tf
+                        }.forEach {
+                            tg.add(it)
+                        }
+                        tsk.add(tkubik)
+                    }
+                }
+                tsi.add(tsk)
+                ts.add(tsi)
+            }
+        }
+        return tp
+    }
+
 
     class KubikDrawPosition(
         val center: Vec2,
@@ -272,5 +387,10 @@ object RekaCad {
         val points = mutableListOf<Vec2>()
         val positions = mutableListOf<KubikDrawPosition>()
     }
+
+    class RekaEdgePoints(
+        val start: Vec2,
+        val end: Vec2,
+    )
 
 }

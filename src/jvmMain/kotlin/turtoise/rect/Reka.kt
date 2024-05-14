@@ -1,16 +1,8 @@
 package turtoise.rect
 
+import turtoise.TurtoiseParserStackBlock
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.MemoryKey
-import turtoise.rect.Kubik.Companion.STORONA_CL
-import turtoise.rect.Kubik.Companion.STORONA_CR
-import turtoise.rect.Kubik.Companion.STORONA_L
-import turtoise.rect.Kubik.Companion.STORONA_R
-import turtoise.rect.Kubik.Companion.biasCenter
-import turtoise.rect.Kubik.Companion.biasCenterLeft
-import turtoise.rect.Kubik.Companion.biasCenterRight
-import turtoise.rect.Kubik.Companion.biasLeft
-import turtoise.rect.Kubik.Companion.biasRight
 import vectors.Vec2
 import kotlin.math.PI
 
@@ -38,6 +30,10 @@ class Reka(
         this.points = points
     }
 
+    fun recalculate(newPoints: List<Vec2>) {
+        points = newPoints
+    }
+
     fun remove(reka: Reka) {
         storoni.forEach { s ->
             s.kubiki.forEach { k ->
@@ -60,12 +56,29 @@ class RekaStorona(
     var angle: MemoryKey,
     var visible: Boolean = true,
 ) {
-    private val kubikiL = KubikGroup(biasLeft)
-    private val kubikiR = KubikGroup(biasRight)
-    private val kubikiCL = KubikGroup(biasCenterLeft)
-    private val kubikiCR = KubikGroup(biasCenterRight)
-    private val kubikiC = KubikGroup(biasCenter)
-    val kubiki = listOf(kubikiL, kubikiCL,kubikiC, kubikiCR, kubikiR)
+    val kubiki = mutableListOf<KubikGroup>()
+
+    val kubkikiSize: Int get() = kubiki.sumOf { it.size }
+
+    fun add(kg: KubikGroup) {
+        val group = kubiki.find { it.napravlenie == kg.napravlenie }
+        if (group == null) {
+            kubiki.add(kg)
+        } else {
+            group.group.addAll(kg.group)
+        }
+    }
+
+    fun add(napravlenie: KubikBias, index:Int,  value: Kubik) {
+        val group = kubiki.find { it.napravlenie == napravlenie }
+        if (group == null) {
+            val kg = KubikGroup(napravlenie)
+            kg.add(index, value)
+            kubiki.add(kg)
+        } else {
+            group.add(index, value)
+        }
+    }
 }
 
 class Kubik(
@@ -79,14 +92,14 @@ class Kubik(
         const val STORONA_R = 4
         const val STORONA_C = 5
 
-        val biasLeft = KubikBias(0,1, EBiasNapravlenie.RIGHT)
-        val biasRight = KubikBias(1,1, EBiasNapravlenie.LEFT)
-        val biasCenter = KubikBias(1,2, EBiasNapravlenie.CENTER)
-        val biasCenterLeft = KubikBias(1,2, EBiasNapravlenie.LEFT)
-        val biasCenterRight = KubikBias(1,2, EBiasNapravlenie.RIGHT)
+        val biasLeft = KubikBias(0, 1, EBiasNapravlenie.RIGHT)
+        val biasRight = KubikBias(1, 1, EBiasNapravlenie.LEFT)
+        val biasCenter = KubikBias(1, 2, EBiasNapravlenie.CENTER)
+        val biasCenterLeft = KubikBias(1, 2, EBiasNapravlenie.LEFT)
+        val biasCenterRight = KubikBias(1, 2, EBiasNapravlenie.RIGHT)
 
-        fun toBias(storona:Int): KubikBias{
-            return when(storona){
+        fun toBias(storona: Int): KubikBias {
+            return when (storona) {
                 STORONA_L -> biasLeft
                 STORONA_CL -> biasCenterLeft
                 STORONA_CR -> biasCenterRight
@@ -114,17 +127,26 @@ class KubikGroup(
 }
 
 data class KubikBias(
-    val biasT:Int,
-    val biasB:Int,
-    val napravlenie:EBiasNapravlenie,
-){
-    val offset:Double get() = biasT*1.0/biasB
+    val biasT: Int,
+    val biasB: Int,
+    val napravlenie: EBiasNapravlenie,
+) {
+    val offset: Double get() = biasT * 1.0 / biasB
 
     override fun toString(): String {
         return "$biasT/$biasB~$napravlenie"
     }
+
+    fun print(): TurtoiseParserStackBlock {
+        val tp = TurtoiseParserStackBlock()
+        tp.add("${napravlenie.value}")
+        tp.add("${biasT}")
+        tp.add("${biasB}")
+
+        return tp
+    }
 }
 
-enum class EBiasNapravlenie(val value:Int){
+enum class EBiasNapravlenie(val value: Int) {
     LEFT(-1), RIGHT(1), CENTER(0)
 }
