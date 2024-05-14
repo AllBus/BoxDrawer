@@ -19,7 +19,7 @@ class DrawerViewModel {
     val options = ToolsData(tools, template)
     val bezier = BezierData(tools)
     val bublik = BublikData(tools)
-    val rectData = RectToolsData(tools)
+    val rectData = RekaToolsData(tools)
     val tabIndex = MutableStateFlow(BoxDrawerToolBar.TAB_TORTOISE)
 
     private val noneFigure = MutableStateFlow(FigureEmpty).asStateFlow()

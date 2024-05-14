@@ -28,7 +28,7 @@ import turtoise.rect.RekaCad.rekaPoints
 import vectors.Vec2
 import kotlin.math.PI
 
-class RectToolsData(val tools: ITools) {
+class RekaToolsData(val tools: ITools) {
 
     private val memory = SimpleTortoiseMemory()
 
@@ -82,7 +82,6 @@ class RectToolsData(val tools: ITools) {
 
     fun createRekaFigure() {
         currentReka.recalculate(memory = memory)
-        // println(currentReka.points)
         rekaFigure.value = FigurePolyline(currentReka.points)
 
     }

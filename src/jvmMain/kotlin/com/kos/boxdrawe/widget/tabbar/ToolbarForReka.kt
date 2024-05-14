@@ -28,13 +28,13 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kos.boxdrawe.presentation.RectToolsData
-import com.kos.boxdrawe.presentation.RectToolsData.Companion.BACK_BLOCK
-import com.kos.boxdrawe.presentation.RectToolsData.Companion.BACK_EDGE
-import com.kos.boxdrawe.presentation.RectToolsData.Companion.DOWN_BLOCK
-import com.kos.boxdrawe.presentation.RectToolsData.Companion.NEXT_BLOCK
-import com.kos.boxdrawe.presentation.RectToolsData.Companion.NEXT_EDGE
-import com.kos.boxdrawe.presentation.RectToolsData.Companion.UP_BLOCK
+import com.kos.boxdrawe.presentation.RekaToolsData
+import com.kos.boxdrawe.presentation.RekaToolsData.Companion.BACK_BLOCK
+import com.kos.boxdrawe.presentation.RekaToolsData.Companion.BACK_EDGE
+import com.kos.boxdrawe.presentation.RekaToolsData.Companion.DOWN_BLOCK
+import com.kos.boxdrawe.presentation.RekaToolsData.Companion.NEXT_BLOCK
+import com.kos.boxdrawe.presentation.RekaToolsData.Companion.NEXT_EDGE
+import com.kos.boxdrawe.presentation.RekaToolsData.Companion.UP_BLOCK
 import com.kos.boxdrawe.widget.CharButton
 import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.Label
@@ -50,7 +50,7 @@ import turtoise.rect.Kubik.Companion.STORONA_L
 import turtoise.rect.Kubik.Companion.STORONA_R
 
 @Composable
-fun ToolbarForReka(vm: RectToolsData) {
+fun ToolbarForReka(vm: RekaToolsData) {
     val coroutineScope = rememberCoroutineScope()
     val clipboardManager = LocalClipboardManager.current
     val text = remember { mutableStateOf<String>("") }
@@ -202,7 +202,7 @@ fun ToolbarForReka(vm: RectToolsData) {
             }
         }
         Column(
-            modifier = Modifier.weight(weight = 0.5f, fill = true)
+            modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
 
             RunButton("Нарисовать деталь") {
