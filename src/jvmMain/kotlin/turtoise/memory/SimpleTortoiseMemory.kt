@@ -81,10 +81,15 @@ open class SimpleTortoiseMemory : TortoiseMemory {
     }
 
     private fun calculateCalculator(variable: MemoryKey, defaultValue: Double): Double {
-        if (variable is ICalculatorMemoryKey) {
-            return variable.calculate { v -> value(v, defaultValue) }
+        return if (variable is ICalculatorMemoryKey) {
+            val v = variable.calculate { v -> value(v, defaultValue) }
+            if (v.isFinite())
+                v
+            else {
+                defaultValue
+            }
         } else
-            return defaultValue
+            defaultValue
     }
 
     override fun assign(variable: MemoryKey, value: Double) {

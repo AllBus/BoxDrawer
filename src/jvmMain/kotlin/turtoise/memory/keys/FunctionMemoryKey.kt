@@ -88,7 +88,7 @@ class SumMemoryKey(
     }
 
     override val name: String
-        get() = keys.joinToString(" ", "(+ ", ")") { it.name }
+    get() = keys.joinToString(" ", "(+ ", ")") { it.name }
 }
 
 class NegativeMemoryKey(
@@ -148,6 +148,18 @@ class DivMemoryKey(
 
     override val name: String
         get() = "(/${a.name} ${b.name})"
+}
+
+class SummaMemoryKey(
+    val a: MemoryKey,
+    val b: Double
+) : FunctionMemoryKey() {
+    override fun calculate(value: (MemoryKey) -> Double): Double {
+        return value(a) + b
+    }
+
+    override val name: String
+        get() = "(+${a.name} ${b})"
 }
 
 class MinusMemoryKey(

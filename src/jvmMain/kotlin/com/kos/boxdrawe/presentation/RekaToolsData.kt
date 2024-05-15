@@ -12,7 +12,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import turtoise.memory.SimpleTortoiseMemory
 import turtoise.memory.keys.DoubleMemoryKey
+import turtoise.memory.keys.EditMemoryKey
 import turtoise.memory.keys.MemoryKey
+import turtoise.memory.keys.SummaMemoryKey
 import turtoise.rect.Kubik
 import turtoise.rect.Kubik.Companion.STORONA_C
 import turtoise.rect.Kubik.Companion.STORONA_CL
@@ -44,7 +46,6 @@ class RekaToolsData(val tools: ITools) {
     var current: MutableStateFlow<RectBlockPosition> = MutableStateFlow(
         RectBlockPosition(
             reka = topReka.value,
-            parent = null,
             position = RekaStoronaPosition(
                 edge = 1,
                 storona = Kubik.biasLeft,
@@ -94,12 +95,13 @@ class RekaToolsData(val tools: ITools) {
         redrawEvent.value += 1
     }
 
-    fun selectPosition(napravlenie: Int) {
+    suspend fun selectPosition(napravlenie: Int) {
         val cv = current.value
         when (napravlenie) {
             DOWN_BLOCK -> {
-                if (cv.parent != null) {
-                    current.value = cv.parent
+                val f = rekaDrawResult.first()
+                RekaCad.findPosition(f,  cv)?.parent?.let{parent ->
+                    current.value = cv.copy(reka = parent)
                 }
             }
 
@@ -108,7 +110,6 @@ class RekaToolsData(val tools: ITools) {
                 if (b != null) {
                     current.value = RectBlockPosition(
                         b,
-                        parent = cv,
                         position = RekaStoronaPosition(
                             edge = 1,
                             storona = cv.position.storona,
@@ -210,14 +211,13 @@ class RekaToolsData(val tools: ITools) {
 
     suspend fun removeBox() {
         val cv = current.value
-        if (cv.parent != null) {
-            val cp = cv.parent
 
-            rekaDrawResult.first().positions.find {
-                        it.reka == cv.reka
-            }?.parent?.remove(cv.reka)
+        rekaDrawResult.first().positions.find {
+                    it.reka == cv.reka
+        }?.parent?.let { parent ->
+            parent.remove(cv.reka)
 
-            current.value = cp
+            current.value = cv.copy(reka = parent)
             redraw()
         }
     }
@@ -267,7 +267,6 @@ class RekaToolsData(val tools: ITools) {
         } else {
             current.value = RectBlockPosition(
                 kubik.reka,
-                parent = cv,
                 position = RekaStoronaPosition(
                     edge = 1,
                     storona = cv.position.storona,
@@ -289,6 +288,23 @@ class RekaToolsData(val tools: ITools) {
         return "reka@ " + RekaCad.print(topReka.value).line
     }
 
+    fun rotateCurrentReka(degrees: Double) {
+        val reka = current.value.reka
+        println("rotate $degrees")
+        reka.storoni.getOrNull(0)?.let { storona ->
+            val a = storona.angle
+            val change = -degrees*PI/180
+            val k = if (a is EditMemoryKey) {
+                println("sum ${a.value+change}")
+                EditMemoryKey(a.mainKey, a.value+change, SummaMemoryKey(a.mainKey, a.value+change))
+            } else {
+                EditMemoryKey(a, change, SummaMemoryKey(a, change))
+            }
+            storona.angle = k
+            redraw()
+        }
+    }
+
     companion object {
 
         const val NEXT_EDGE = 10
@@ -302,7 +318,6 @@ class RekaToolsData(val tools: ITools) {
 
 data class RectBlockPosition(
     val reka: Reka,
-    val parent: RectBlockPosition?,
     val position: RekaStoronaPosition,
 )
 

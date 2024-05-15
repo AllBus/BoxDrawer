@@ -42,6 +42,7 @@ import com.kos.boxdrawe.presentation.RekaToolsData.Companion.NEXT_BLOCK
 import com.kos.boxdrawe.presentation.RekaToolsData.Companion.NEXT_EDGE
 import com.kos.boxdrawe.presentation.RekaToolsData.Companion.UP_BLOCK
 import com.kos.boxdrawe.widget.CharButton
+import com.kos.boxdrawe.widget.CircleBox
 import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.RunButton
@@ -83,16 +84,14 @@ fun ToolbarForReka(vm: RekaToolsData) {
             )
         }
         Column(
-            modifier = Modifier.weight(weight = 1f, fill = true).padding(end = 2.dp).verticalScroll(
-                rememberScrollState()
-            )
+            modifier = Modifier.weight(weight = 1f, fill = true).padding(end = 2.dp)
         ) {
-
+            CircleBox({current, change, start ->
+                vm.rotateCurrentReka(change)
+            })
         }
         Column(
-            modifier = Modifier.weight(weight = 2f, fill = true).padding(end = 2.dp).verticalScroll(
-                rememberScrollState()
-            )
+            modifier = Modifier.weight(weight = 2f, fill = true).padding(end = 2.dp)
         ) {
 
             Column (
@@ -125,7 +124,9 @@ fun ToolbarForReka(vm: RekaToolsData) {
                 ImageButton(
                     icon = Icons.Rounded.KeyboardArrowUp,
                     onClick = {
-                        vm.selectPosition(DOWN_BLOCK)
+                        scope.launch {
+                            vm.selectPosition(DOWN_BLOCK)
+                        }
                     }
                 )
                 Row{
@@ -133,7 +134,9 @@ fun ToolbarForReka(vm: RekaToolsData) {
                         text = "L",
                         modifier = Modifier.defaultMinSize(24.dp),
                         onClick = {
-                            vm.selectPosition(STORONA_L)
+                            scope.launch {
+                                vm.selectPosition(STORONA_L)
+                            }
                         }
 
                     )
@@ -141,28 +144,36 @@ fun ToolbarForReka(vm: RekaToolsData) {
                         text = "CL",
                         modifier = Modifier.defaultMinSize(24.dp),
                         onClick = {
-                            vm.selectPosition(STORONA_CL)
+                            scope.launch {
+                                vm.selectPosition(STORONA_CL)
+                            }
                         }
                     )
                     CharButton(
                         text = "C",
                         modifier = Modifier.defaultMinSize(24.dp),
                         onClick = {
-                            vm.selectPosition(STORONA_C)
+                            scope.launch {
+                                vm.selectPosition(STORONA_C)
+                            }
                         }
                     )
                     CharButton(
                         text = "CR",
                         modifier = Modifier.defaultMinSize(24.dp),
                         onClick = {
-                            vm.selectPosition(STORONA_CR)
+                            scope.launch {
+                                vm.selectPosition(STORONA_CR)
+                            }
                         }
                     )
                     CharButton(
                         text = "R",
                         modifier = Modifier.defaultMinSize(24.dp),
                         onClick = {
-                            vm.selectPosition(STORONA_R)
+                            scope.launch {
+                                vm.selectPosition(STORONA_R)
+                            }
                         }
                     )
                 }
@@ -172,13 +183,17 @@ fun ToolbarForReka(vm: RekaToolsData) {
                     ImageButton(
                     icon = Icons.AutoMirrored.Rounded.ArrowBack,
                     onClick = {
-                        vm.selectPosition(BACK_EDGE)
+                        scope.launch {
+                            vm.selectPosition(BACK_EDGE)
+                        }
                     }
                 )
                     ImageButton(
                         icon = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
                         onClick = {
-                            vm.selectPosition(BACK_BLOCK)
+                            scope.launch {
+                                vm.selectPosition(BACK_BLOCK)
+                            }
                         }
                     )
 
@@ -186,13 +201,17 @@ fun ToolbarForReka(vm: RekaToolsData) {
                         icon = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
 
                         onClick = {
-                            vm.selectPosition(NEXT_BLOCK)
+                            scope.launch {
+                                vm.selectPosition(NEXT_BLOCK)
+                            }
                         }
                     )
                     ImageButton(
                         icon = Icons.AutoMirrored.Rounded.ArrowForward,
                         onClick = {
-                            vm.selectPosition(NEXT_EDGE)
+                            scope.launch {
+                                vm.selectPosition(NEXT_EDGE)
+                            }
                         }
                     )
                 }
@@ -201,7 +220,9 @@ fun ToolbarForReka(vm: RekaToolsData) {
                     icon = Icons.Rounded.KeyboardArrowDown,
                     modifier = Modifier,
                     onClick = {
-                        vm.selectPosition( UP_BLOCK)
+                        scope.launch {
+                            vm.selectPosition(UP_BLOCK)
+                        }
                     }
                 )
                 ImageButton(
