@@ -79,7 +79,8 @@ class BoxData(val tools: ITools) {
         figures.value =fig
     }
 
-    fun saveBox(fileName: String, line: String) {
+    fun save(fileName: String) {
+        val line = text.value
         val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.COLUMN)
         val ds = tools.ds()
         val fig = FigureColor(
@@ -91,7 +92,8 @@ class BoxData(val tools: ITools) {
         tools.updateChooserDir(fileName)
     }
 
-    suspend fun printBox(line: String):String{
+    suspend fun print():String{
+        val line = text.value
         val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.COLUMN)
 
         return alg.commandLine()

@@ -23,7 +23,7 @@ class RobotLine(
 
     companion object {
 
-        private val factories = listOf(
+        val factories = listOf(
             RobotRect.Factory,
             RobotCircle.Factory,
             RobotHole.Factory,
@@ -38,15 +38,6 @@ class RobotLine(
 
         private val simpleFactories = factories.asSequence().filter { it.isSimple }.flatMap { f -> f.names.map { n -> n to f } }.toMap()
         private val mediumFactories = factories.asSequence().filter { !it.isSimple }.flatMap { f -> f.names.map { n -> n to f } }.toMap()
-
-        fun help(): AnnotatedString {
-            val sb = AnnotatedString.Builder()
-            sb.append(TortoiseParser.helpTitle("Команды рисования робота. Каждая команда окружается скобками ()"))
-            sb.appendLine()
-            factories.forEach { sb.append(it.help()) }
-            sb.appendLine()
-            return sb.toAnnotatedString()
-        }
 
         fun parseRobot(items: TurtoiseParserStackItem, useAlgorithms: Array<String>?): TortoiseAlgorithm {
 

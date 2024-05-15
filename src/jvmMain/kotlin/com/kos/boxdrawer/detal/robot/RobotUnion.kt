@@ -1,7 +1,7 @@
 package com.kos.boxdrawer.detal.robot
 
-import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
 
 class RobotUnion(
@@ -50,7 +50,7 @@ class RobotUnion(
         override val names: List<String>
             get() = listOf("u", "union")
 
-        override fun help(): AnnotatedString {
+        override fun help(): HelpInfoCommand {
             return TortoiseParser.helpName("u", "w h zw zh zs", "")
         }
 

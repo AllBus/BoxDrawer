@@ -1,7 +1,7 @@
 package com.kos.boxdrawer.detal.robot
 
-import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
 
 interface IRobotCommand {
@@ -15,7 +15,7 @@ interface IRobotCommandFactory{
     val names : List<String>
 
     val isSimple: Boolean get() = true
-    fun help() : AnnotatedString
+    fun help() : HelpInfoCommand
 }
 
 abstract class RobotCommandWithParams(val params: List<MemoryKey>): IRobotCommand{

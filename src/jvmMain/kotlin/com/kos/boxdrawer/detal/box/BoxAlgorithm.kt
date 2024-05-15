@@ -71,22 +71,6 @@ class BoxAlgorithm(
 
     companion object {
 
-        fun help(): AnnotatedString {
-            val sb = AnnotatedString.Builder()
-            sb.append(TortoiseParser.helpTitle("Рисование коробки"))
-            sb.appendLine()
-            sb.append(
-                TortoiseParser.helpName(
-                    "",
-                    "w h we (polka (( d o s e (h*) (as ac (a*))*)*) (zig (w d h e)*5)",
-                    ""
-                )
-            )
-            sb.appendLine()
-
-            return sb.toAnnotatedString()
-        }
-
         fun parseBox(
             items: TurtoiseParserStackItem,
             useAlgorithms: Array<String>?

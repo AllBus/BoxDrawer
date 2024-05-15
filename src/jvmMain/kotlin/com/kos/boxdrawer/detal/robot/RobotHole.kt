@@ -1,7 +1,7 @@
 package com.kos.boxdrawer.detal.robot
 
-import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.DoubleMemoryKey
 import turtoise.memory.keys.MemoryKey
 import turtoise.memory.keys.MemoryKey.Companion.ifEmpty
@@ -29,7 +29,7 @@ class RobotHole(
         override val names: List<String>
             get() = listOf("h", "hole")
 
-        override fun help(): AnnotatedString {
+        override fun help(): HelpInfoCommand {
             return TortoiseParser.helpName("h", "hw hh", "прямоугольник отверстия шириной hw  высотой hh")
         }
     }

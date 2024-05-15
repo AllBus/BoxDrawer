@@ -69,27 +69,32 @@ fun ToolbarForGrid(vm: GridData) {
         Column(
             modifier = Modifier.weight(weight = 2f, fill = true)
         ){
-            EditText("", "", gridText, true, Modifier){
+            EditText(title = "", value = gridText, enabled = true, modifier = Modifier){
 
             }
         }
-        Column(
-            modifier = Modifier.weight(weight = 0.5f, fill = true)
-        ) {
-            RunButton("Нарисовать деталь") {
-                coroutineScope.launch {
-                    showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
-                }
 
+    }
+}
+
+@Composable
+fun ToolbarActionForGrid(vm: GridData) {
+    val coroutineScope = rememberCoroutineScope()
+    Column(
+    ) {
+        RunButton("Нарисовать деталь") {
+            coroutineScope.launch {
+                showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
             }
-            Spacer(Modifier.height(4.dp))
-            RunButton("Посторить по тексту") {
-                vm.createFromText()
-            }
-            Spacer(Modifier.height(4.dp))
-            RunButton("Получить текст") {
-                vm.saveToText()
-            }
+
+        }
+        Spacer(Modifier.height(4.dp))
+        RunButton("Посторить по тексту") {
+            vm.createFromText()
+        }
+        Spacer(Modifier.height(4.dp))
+        RunButton("Получить текст") {
+            vm.saveToText()
         }
     }
 }

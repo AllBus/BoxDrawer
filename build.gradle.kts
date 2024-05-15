@@ -9,7 +9,8 @@ plugins {
 
     //  alias(libs.plugins.androidApplication) apply false
     //  alias(libs.plugins.androidLibrary) apply false
-    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.jetbrainsCompose) // apply false
+    alias(libs.plugins.compose.compiler) //apply false
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.org.jetbrains.kotlin.jvm) apply false
 }
@@ -44,7 +45,7 @@ val target = "${targetOs}-${targetArch}"
 
 kotlin {
     jvm {
-        jvmToolchain(17)
+        //jvmToolchain(17)
         withJava()
     }
 
@@ -112,13 +113,17 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "boxdrawer"
-            packageVersion = "2.0.0"
+            packageVersion = "2.2.0"
             windows {
                 iconFile.set(project.file("robot.ico"))
             }
         }
     }
 }
+
+//composeCompiler {
+//    enableStrongSkippingMode = true
+//}
 
 //compose.experimental {
 //    web.application {}

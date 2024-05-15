@@ -174,26 +174,6 @@ class PolkaLine(
     companion object {
 
         private val names_ = listOf("figure", "side")
-        fun help(): AnnotatedString {
-            val sb = AnnotatedString.Builder()
-            sb.append(TortoiseParser.helpTitle("Команды для рисования полки."))
-            sb.appendLine()
-            sb.append(TortoiseParser.helpArgument("sH bOff? tOff? (w a ay? (hw hp hh ha)* )*"))
-
-            sb.append(TortoiseParser.helpName("", "sH", "Высота в начале полки"))
-            sb.append(TortoiseParser.helpName("", "bOff", "отступ от нижнего края для стенки"))
-            sb.append(TortoiseParser.helpName("", "tOff", "отступ от верхнего края для стенки"))
-            sb.append(TortoiseParser.helpName("", "w", "длина сегмента"))
-            sb.append(TortoiseParser.helpName("", "a", "Угол наклона семента"))
-            sb.append(TortoiseParser.helpName("", "ay", "угол наклона сегмента для стенки"))
-            sb.append(TortoiseParser.helpName("", "hw", "ширина паза"))
-            sb.append(TortoiseParser.helpName("", "hp", "позиция центра паза относительно начала сегмента"))
-            sb.append(TortoiseParser.helpName("", "hh", "высота паза"))
-            sb.append(TortoiseParser.helpName("", "ha", "угол наклона паза относительно сегмента"))
-
-            sb.appendLine()
-            return sb.toAnnotatedString()
-        }
 
         fun parsePolka(items: TurtoiseParserStackItem, useAlgorithms: Array<String>?): TortoiseAlgorithm {
             val polka = PolkaLine(

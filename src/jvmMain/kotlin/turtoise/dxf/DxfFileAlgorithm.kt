@@ -1,4 +1,4 @@
-package turtoise
+package turtoise.dxf
 
 import androidx.compose.ui.text.AnnotatedString
 import com.kos.boxdrawer.figure.FigureExtractor
@@ -9,6 +9,12 @@ import com.kos.figure.composition.FigureTranslate
 import org.kabeja.dxf.DXFDocument
 import org.kabeja.parser.DXFParser
 import org.kabeja.parser.ParserBuilder
+import turtoise.DrawerSettings
+import turtoise.TortoiseAlgorithm
+import turtoise.TortoiseBlock
+import turtoise.TortoiseParser
+import turtoise.TortoiseRunner
+import turtoise.TortoiseState
 import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 import java.io.File
@@ -61,24 +67,5 @@ class DxfFileAlgorithm(
             ),
             state.xy
         )
-    }
-
-    companion object {
-
-        fun help(): AnnotatedString {
-            val sb = AnnotatedString.Builder()
-            sb.append(TortoiseParser.helpTitle("Рисование содержимое dxf файла"))
-            sb.appendLine()
-            sb.append(
-                TortoiseParser.helpName(
-                    "dxf@",
-                    "(path/file.dxf)",
-                    "Название файла внути скобок"
-                )
-            )
-            sb.appendLine()
-
-            return sb.toAnnotatedString()
-        }
     }
 }

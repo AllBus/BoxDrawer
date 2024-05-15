@@ -4,6 +4,7 @@ import androidx.compose.ui.text.AnnotatedString
 import turtoise.DrawerSettings
 import turtoise.TortoiseBlock
 import turtoise.TurtoiseParserStackItem
+import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
 
 class RobotEmpty(): IRobotCommand {
@@ -19,8 +20,8 @@ class RobotEmpty(): IRobotCommand {
         override val names: List<String>
             get() = listOf("")
 
-        override fun help(): AnnotatedString {
-            return AnnotatedString("")
+        override fun help(): HelpInfoCommand {
+            return HelpInfoCommand("", AnnotatedString(""))
         }
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,8 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.themes.ThemeColors
@@ -30,6 +34,14 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_REKA
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TOOLS
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
+import com.kos.boxdrawe.widget.tabbar.ToolbarActionForBezier
+import com.kos.boxdrawe.widget.tabbar.ToolbarActionForBox
+import com.kos.boxdrawe.widget.tabbar.ToolbarActionForGrid
+import com.kos.boxdrawe.widget.tabbar.ToolbarActionForReka
+import com.kos.boxdrawe.widget.tabbar.ToolbarActionForSoft
+import com.kos.boxdrawe.widget.tabbar.ToolbarActionForTools
+import com.kos.boxdrawe.widget.tabbar.ToolbarActionForTortoise
+import com.kos.boxdrawe.widget.tabbar.ToolbarContainer
 import com.kos.boxdrawe.widget.tabbar.ToolbarForBezier
 import com.kos.boxdrawe.widget.tabbar.ToolbarForBox
 import com.kos.boxdrawe.widget.tabbar.ToolbarForGrid
@@ -38,6 +50,7 @@ import com.kos.boxdrawe.widget.tabbar.ToolbarForSoft
 import com.kos.boxdrawe.widget.tabbar.ToolbarForTools
 import com.kos.boxdrawe.widget.tabbar.ToolbarForTortoise
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
@@ -49,6 +62,8 @@ val TabContentModifier =
 @Composable
 fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
     val tabIndex = vm.value.tabIndex.collectAsState()
+    val coroutineScope = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
 
     Column(
         Modifier.fillMaxWidth().wrapContentHeight().background(Color.White)
@@ -69,16 +84,37 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
         Box(
             Modifier.fillMaxWidth().height(220.dp).background(ThemeColors.tabBackground)
         ) {
-            when (tabIndex.value) {
-                TAB_BOX -> ToolbarForBox(vm.value.box)
-                TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
-                TAB_GRID -> ToolbarForGrid(vm.value.grid)
-                TAB_SOFT -> ToolbarForSoft(vm.value.softRez, { vm.value.tortoise.figures.value })
-                TAB_BEZIER -> ToolbarForBezier(vm.value.bezier)
-                TAB_BUBLIK -> ToolbarForBublik(vm.value.bublik)
-                TAB_REKA -> ToolbarForReka(vm.value.rectData)
-                TAB_TOOLS -> ToolbarForTools(vm.value.options)
-            }
+            ToolbarContainer(
+                content = {
+                    when (tabIndex.value) {
+                        TAB_BOX -> ToolbarForBox(vm.value.box)
+                        TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
+                        TAB_GRID -> ToolbarForGrid(vm.value.grid)
+                        TAB_SOFT -> ToolbarForSoft(
+                            vm.value.softRez)
+
+                        TAB_BEZIER -> ToolbarForBezier(vm.value.bezier)
+                        TAB_BUBLIK -> ToolbarForBublik(vm.value.bublik)
+                        TAB_REKA -> ToolbarForReka(vm.value.rectData)
+                        TAB_TOOLS -> ToolbarForTools(vm.value.options)
+                    }
+                },
+                actionsBlock = {
+                    when (tabIndex.value) {
+                        TAB_BOX -> ToolbarActionForBox(vm.value.box)
+                        TAB_TORTOISE -> ToolbarActionForTortoise(vm.value.tortoise)
+                        TAB_GRID -> ToolbarActionForGrid(vm.value.grid)
+                        TAB_SOFT -> ToolbarActionForSoft(
+                            vm.value.softRez,
+                            { vm.value.tortoise.figures.value })
+
+                        TAB_BEZIER -> ToolbarActionForBezier(vm.value.bezier)
+                        TAB_BUBLIK -> ToolbarActionForBublik(vm.value.bublik)
+                        TAB_REKA -> ToolbarActionForReka(vm.value.rectData)
+                        TAB_TOOLS -> ToolbarActionForTools(vm.value.options)
+                    }
+                }
+            )
         }
         Box(
             Modifier.fillMaxWidth().height(1.dp).background(Color.DarkGray)

@@ -13,8 +13,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun ToolbarForBublik(vm: BublikData) {
-    val coroutineScope = rememberCoroutineScope()
-
     var pazPositionLeftTop by remember { vm.pazPositionLeftTop }
     var pazPositionCenter by remember { vm.pazPositionCenter }
     var pazPositionLeftBottom by remember { vm.pazPositionLeftBottom }
@@ -84,13 +82,19 @@ fun ToolbarForBublik(vm: BublikData) {
                 },
             )
         }
-        Column(
-            modifier = Modifier.weight(weight = 0.5f, fill = true)
-        ) {
-            RunButton("Нарисовать деталь") {
-                coroutineScope.launch {
-                    showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
-                }
+
+    }
+}
+
+
+@Composable
+fun ToolbarActionForBublik(vm: BublikData) {
+    val coroutineScope = rememberCoroutineScope()
+    Column(
+    ) {
+        RunButton("Нарисовать деталь") {
+            coroutineScope.launch {
+                showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
             }
         }
     }

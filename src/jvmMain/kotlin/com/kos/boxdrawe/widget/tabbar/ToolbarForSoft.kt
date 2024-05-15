@@ -19,7 +19,7 @@ import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
 
 @Composable
-fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
+fun ToolbarForSoft(vm: SoftRezData) {
     var innerChecked by remember { vm.innerChecked }
 
     val width = remember { vm.width }
@@ -28,7 +28,6 @@ fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
     val cellHeightCount = remember { vm.cellHeightCount }
     val cellWidthDistance = remember { vm.cellWidthDistance }
     val cellHeightDistance = remember { vm.cellHeightDistance }
-    val coroutineScope = rememberCoroutineScope()
 
     Row(
         modifier = TabContentModifier
@@ -75,13 +74,18 @@ fun ToolbarForSoft(vm: SoftRezData, figures: () -> IFigure) {
             NumericUpDown("X", "мм", cellWidthDistance)
             NumericUpDown("Y", "мм", cellHeightDistance)
         }
-        Column(
-            modifier = Modifier.weight(weight = 0.5f, fill = true)
-        ) {
-            RunButton("Нарисовать деталь") {
-                coroutineScope.launch {
-                    showFileChooser(vm.tools.chooserDir()) { f -> vm.saveRez(f, figures()) }
-                }
+
+    }
+}
+
+@Composable
+fun ToolbarActionForSoft(vm: SoftRezData, figures: () -> IFigure){
+    val coroutineScope = rememberCoroutineScope()
+    Column(
+    ) {
+        RunButton("Нарисовать деталь") {
+            coroutineScope.launch {
+                showFileChooser(vm.tools.chooserDir()) { f -> vm.saveRez(f, figures()) }
             }
         }
     }

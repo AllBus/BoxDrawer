@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun ToolbarForBox(vm: BoxData) {
 
-    val clipboardManager = LocalClipboardManager.current
     var insideChecked by remember { vm.insideChecked }
     var polkiInChecked by remember { vm.polkiInChecked }
     var alternative by remember { vm.alternative }
@@ -29,7 +28,7 @@ fun ToolbarForBox(vm: BoxData) {
     val height = remember { vm.height }
     val weight = remember { vm.weight }
     val text = rememberSaveable(key = "ToolbarForBox.Text") { vm.text }
-    val coroutineScope = rememberCoroutineScope()
+
 
     val edgeFL = remember { vm.edgeFL }
     val edgeBL = remember { vm.edgeBL }
@@ -141,22 +140,7 @@ fun ToolbarForBox(vm: BoxData) {
                     vm.redrawBox()
                 },
             )
-            EditText("Полки", "", text, true) { vm.createBox(it) }
-        }
-        Column(
-            modifier = Modifier.weight(weight = 0.5f, fill = true)
-        ) {
-            RunButton("Нарисовать коробку") {
-                coroutineScope.launch {
-                    showFileChooser(vm.tools.chooserDir()) { f -> vm.saveBox(f, text.value) }
-                }
-            }
-            Spacer(Modifier.height(4.dp))
-            RunButton("Скопировать код") {
-                coroutineScope.launch {
-                    clipboardManager.setText(AnnotatedString(vm.printBox(text.value)))
-                }
-            }
+            EditText(title = "Полки", value = text, enabled = true) { vm.createBox(it) }
         }
     }
 }
@@ -294,3 +278,22 @@ private fun ColumnScope.BoxAdvancedProperties(
 }
 
 
+@Composable
+fun ToolbarActionForBox(vm: BoxData) {
+    val coroutineScope = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
+    Column(
+    ) {
+        RunButton("Нарисовать коробку") {
+            coroutineScope.launch {
+                showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
+            }
+        }
+        Spacer(Modifier.height(4.dp))
+        RunButton("Скопировать код") {
+            coroutineScope.launch {
+                clipboardManager.setText(AnnotatedString(vm.print()))
+            }
+        }
+    }
+}

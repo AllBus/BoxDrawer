@@ -5,8 +5,17 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.kos.boxdrawer.detal.box.BoxAlgorithm
+import com.kos.boxdrawer.detal.box.BoxHelpInfo
+import com.kos.boxdrawer.detal.polka.PolkaHelpInfo
 import com.kos.boxdrawer.detal.polka.PolkaLine
+import com.kos.boxdrawer.detal.robot.RobotHelpInfo
 import com.kos.boxdrawer.detal.robot.RobotLine
+import turtoise.dxf.DxfFileAlgorithm
+import turtoise.dxf.DxfHelpInfo
+import turtoise.help.HelpInfoCommand
+import turtoise.help.HideHelpInfo
+import turtoise.help.IHelpInfo
+import turtoise.help.TortoiseHelpInfo
 import turtoise.memory.keys.MemoryKey
 import turtoise.rect.RekaAlgorithm
 import java.util.Stack
@@ -31,6 +40,18 @@ object TortoiseParser {
             else -> ' '
         }
     }
+
+    val th = TortoiseHelpInfo()
+    val helpers = listOf<IHelpInfo>(
+        th,
+        RobotHelpInfo(),
+        BoxHelpInfo(),
+        PolkaHelpInfo(),
+        DxfHelpInfo(),
+        //RekaHelpInfo(),
+        //TemplateHelpInfo(),
+       HideHelpInfo(),
+    ).map { it.name to it }.toMap()
 
     private fun isDigit(c: Char): Boolean {
         return c >= '0' && c <= '9' || c == '-' || c == '+'
@@ -182,130 +203,15 @@ object TortoiseParser {
         return text?.toDoubleOrNull() ?: defaultValue
     }
 
-    fun helpFor(subStr: String): AnnotatedString {
+    fun helpFor(subStr: String, command:String): AnnotatedString {
         return when (subStr) {
             "" -> helpFigures()
-            "robot" -> RobotLine.help()
-            "polka" -> PolkaLine.help()
-            "box" -> BoxAlgorithm.help()
-            "dxf" -> DxfFileAlgorithm.help()
-            "hide" -> AnnotatedString("")
-            else -> helpCommands()
+            else -> {
+                val helper = helpers.get(subStr)?:th
+                helper.help(command)+AnnotatedString("\n\n\n")+
+                        helper.help()
+            }
         }
-    }
-
-    private fun helpCommands(): AnnotatedString {
-        val sb = AnnotatedString.Builder()
-        sb.append(helpTitle("Команды черепашки"))
-        sb.appendLine()
-        sb.append(helpName(TortoiseCommand.TURTOISE_MOVE, "x y", "переместить позицию"))
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_ANGLE,
-                "a",
-                "повернуть направление движение на угол a"
-            )
-        )
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_ANGLE_ADD,
-                "a",
-                "повернуть направление движение на угол a относительно текущего угла"
-            )
-        )
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_CLEAR,
-                "",
-                "Сбросить позицию на начало координат и поворот на 0"
-            )
-        )
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_LINE,
-                "d+",
-                "нарисовать длиной d. Последующие значения ресуют перпендикулярно"
-            )
-        )
-        sb.append(helpName(TortoiseCommand.TURTOISE_CLOSE, "", "закрыть многоугольник"))
-        sb.append(helpName(TortoiseCommand.TURTOISE_CIRCLE, "r (sa ea)*", "круг радиуса r."))
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_ELLIPSE,
-                "rx ry (sa ea)*",
-                "эллипс с радиусами rx и ry.\n" +
-                        "     sa se необязательны задают начальный и конечный угол дуги"
-            )
-        )
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_RECTANGLE,
-                "w h?",
-                "прямоугольник шириной w и высотой h. Если h не задан, то квадрат"
-            )
-        )
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_ROUND_RECTANGLE,
-                "w h r",
-                "прямоугольник шириной w и высотой h cо скруглённми углами радиуса r"
-            )
-        )
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_REGULAR_POLYGON,
-                "n r",
-                "многоугольник радиуса с числом сторон n r"
-            )
-        )
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_ZIGZAG, "w delta zigWidth board", "Рисовать зигзаги:\n" +
-                        "     w - общая длина,\n" +
-                        "     delta - расстояние между началами двух зигзагов,\n" +
-                        "     zigWidth- длина одноо зигзага,\n" +
-                        "     board - толщина доски"
-            )
-        )
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_ZIGZAG_FIGURE,
-                "w delta zigWidth board (@program (args)?)",
-                "Рисовать зигзаги формы описаной в строке @program"
-            )
-        )
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_BEZIER,
-                "(tx1 ty1 tx2 ty2 ex ey)*",
-                "Рисовать линию безье из текущей позиции"
-            )
-        )
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_FIGURE,
-                "(@program (args)?)",
-                "Рисовать фигуру которая записана в строке начинающейся с @program "
-            )
-        )
-
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_LOOP,
-                "c commands* <",
-                "выполнить c раз команды между > <"
-            )
-        )
-        sb.append(
-            helpName(
-                TortoiseCommand.TURTOISE_MEMORY_ASSIGN,
-                "var arg*",
-                "присвоить переменной var сумму значений arg"
-            )
-        )
-        sb.append(helpName("", "@var", "подставить значение переменной var"))
-        sb.appendLine()
-        return sb.toAnnotatedString()
     }
 
     private fun helpFigures(): AnnotatedString {
@@ -341,7 +247,7 @@ object TortoiseParser {
         sb.appendLine()
         sb.appendLine()
 
-        sb.append(helpCommands())
+        sb.append(th.help())
 
         return sb.toAnnotatedString()
     }
@@ -364,11 +270,12 @@ object TortoiseParser {
         )
     }
 
-    fun helpName(text: Char, arguments: String, description: String): AnnotatedString {
+    fun helpName(text: Char, arguments: String, description: String): HelpInfoCommand {
         return helpName(text.toString(), arguments, description)
     }
 
-    fun helpName(text: String, arguments: String, description: String): AnnotatedString {
+    fun helpName(text: String, arguments: String, description: String): HelpInfoCommand {
+
         val sb = AnnotatedString.Builder()
         sb.append(helpName(text))
         sb.append(" ")
@@ -376,7 +283,11 @@ object TortoiseParser {
         //sb.append(" ")
         sb.append(helpDescr(" - " + description))
         sb.appendLine()
-        return sb.toAnnotatedString()
+
+        return HelpInfoCommand(
+            name = text,
+            text = sb.toAnnotatedString()
+        )
     }
 
     fun helpArgument(text: String): AnnotatedString {

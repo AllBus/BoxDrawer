@@ -1,11 +1,11 @@
 package com.kos.boxdrawer.detal.robot
 
-import androidx.compose.ui.text.AnnotatedString
 import turtoise.DrawerSettings
 import turtoise.TortoiseBlock
 import turtoise.TortoiseCommand
 import turtoise.TortoiseParser
 import turtoise.TurtoiseParserStackItem
+import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
 import turtoise.memory.keys.MemoryKey.Companion.EMPTY
 import turtoise.memory.keys.MemoryKey.Companion.div
@@ -67,7 +67,7 @@ class RobotCube(
         override val names: List<String>
             get() = listOf("cube")
 
-        override fun help(): AnnotatedString {
+        override fun help(): HelpInfoCommand {
             return TortoiseParser.helpName("cube", "", "кубик")
         }
     }

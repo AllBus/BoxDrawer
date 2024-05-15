@@ -30,7 +30,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun ToolbarForBezier(vm: BezierData) {
     val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
 
     val buttons = remember {
         listOf(
@@ -71,7 +70,7 @@ fun ToolbarForBezier(vm: BezierData) {
             Row(
                 modifier = Modifier.weight(weight = 1f)
             ) {
-                EditText("", "", bezierText, true, Modifier) { t ->
+                EditText(title = "", value = bezierText, enabled = true, modifier = Modifier) { t ->
                     bezierText.value = t
 
                 }
@@ -96,24 +95,30 @@ fun ToolbarForBezier(vm: BezierData) {
             NumericUpDown("Расстояние", "%", pathRast)
             NumericUpDown("Отсуп", "%", pathOffset)
             NumericUpDown("Количество", "шт", pathCount)
-            EditText("Фигура", "", pathFigure, true) { vm.createFigure(it) }
+            EditText(title = "Фигура", value = pathFigure, enabled = true) { vm.createFigure(it) }
         }
 
-        Column(
-            modifier = Modifier.weight(weight = 0.5f, fill = true)
-        ) {
 
-            RunButton("Нарисовать деталь") {
-                coroutineScope.launch {
-                    showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
-                }
+    }
+}
+
+@Composable
+fun ToolbarActionForBezier(vm: BezierData) {
+    val coroutineScope = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
+    Column(
+    ) {
+
+        RunButton("Нарисовать деталь") {
+            coroutineScope.launch {
+                showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
             }
+        }
 
-            Spacer(Modifier.height(4.dp))
-            RunButton("Скопировать код") {
-                coroutineScope.launch {
-                    clipboardManager.setText(AnnotatedString(vm.print()))
-                }
+        Spacer(Modifier.height(4.dp))
+        RunButton("Скопировать код") {
+            coroutineScope.launch {
+                clipboardManager.setText(AnnotatedString(vm.print()))
             }
         }
     }

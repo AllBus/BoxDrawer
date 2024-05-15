@@ -1,7 +1,7 @@
 package com.kos.boxdrawer.detal.robot
 
-import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
 
 class RobotRect(
@@ -51,7 +51,7 @@ class RobotRect(
         override val names: List<String>
             get() = listOf("x",)
 
-        override fun help(): AnnotatedString {
+        override fun help(): HelpInfoCommand {
             return TortoiseParser.helpName("x", "w h zw zh", "")
         }
     }
@@ -136,7 +136,7 @@ class RobotHardRect(
         override val names: List<String>
             get() = listOf("r", "rect")
 
-        override fun help(): AnnotatedString {
+        override fun help(): HelpInfoCommand {
             return TortoiseParser.helpName("r", "w h zw zh zwga zhga zwgb zhgb", "")
         }
     }

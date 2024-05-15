@@ -1,7 +1,7 @@
 package com.kos.boxdrawer.detal.robot
 
-import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
 
 class RobotMove(
@@ -27,8 +27,8 @@ class RobotMove(
         override val names: List<String>
             get() = listOf("m")
 
-        override fun help(): AnnotatedString {
-            return TortoiseParser.helpName("m", "x y", "переместить позицию")
+        override fun help(): HelpInfoCommand {
+            return  TortoiseParser.helpName("m", "x y", "переместить позицию")
         }
     }
 }

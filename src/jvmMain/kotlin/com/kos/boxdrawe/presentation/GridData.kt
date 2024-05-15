@@ -64,8 +64,7 @@ class GridData(val tools: ITools) {
         }
     }
 
-    fun saveToText() {
-
+    fun print():String {
         val sb = StringBuilder()
         for (y in 0 until cad.height) {
             for (x in 0 until cad.width) {
@@ -73,7 +72,11 @@ class GridData(val tools: ITools) {
             }
             sb.appendLine()
         }
-        gridText.value = sb.toString()
+        return sb.toString()
+    }
+
+    fun saveToText() {
+        gridText.value = print()
     }
 
     fun save(fileName: String) {

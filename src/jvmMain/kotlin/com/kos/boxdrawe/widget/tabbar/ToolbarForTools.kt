@@ -51,8 +51,7 @@ fun ToolbarForTools(vm: ToolsData) {
     val holeOffset = remember { vm.holeOffset }
     val algs = remember { vm.tools.figureList }
     val checkboxEditor = vm.templateData.checkboxEditor.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
+
 
     Row(
         modifier = TabContentModifier
@@ -82,29 +81,6 @@ fun ToolbarForTools(vm: ToolsData) {
                     ) {
                         Text(name)
                     }
-                }
-            }
-        }
-        Column(
-            modifier = Modifier.weight(weight = 0.5f, fill = true)
-        ) {
-
-            RunButton("Открыть файл") {
-                coroutineScope.launch {
-                    showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.templateData.loadDxf(f) }
-                }
-            }
-            Spacer(Modifier.height(4.dp))
-            RunButton("Нарисовать деталь") {
-                coroutineScope.launch {
-                    showFileChooser(vm.tools.chooserDir()) { f -> vm.templateData.save(f) }
-                }
-            }
-
-            Spacer(Modifier.height(4.dp))
-            RunButton("Скопировать код") {
-                coroutineScope.launch {
-                    clipboardManager.setText(AnnotatedString(vm.templateData.print()))
                 }
             }
         }
@@ -205,6 +181,33 @@ fun ComboBox(
                 ) {
                     Text(item.name)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun ToolbarActionForTools(vm: ToolsData) {
+    val coroutineScope = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
+    Column(
+    ) {
+        RunButton("Нарисовать деталь") {
+            coroutineScope.launch {
+                showFileChooser(vm.tools.chooserDir()) { f -> vm.templateData.save(f) }
+            }
+        }
+
+        Spacer(Modifier.height(4.dp))
+        RunButton("Скопировать код") {
+            coroutineScope.launch {
+                clipboardManager.setText(AnnotatedString(vm.templateData.print()))
+            }
+        }
+        Spacer(Modifier.height(4.dp))
+        RunButton("Открыть файл") {
+            coroutineScope.launch {
+                showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.templateData.loadDxf(f) }
             }
         }
     }

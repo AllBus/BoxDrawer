@@ -1,7 +1,7 @@
 package com.kos.boxdrawer.detal.robot
 
-import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
 
 class RobotHand(
@@ -84,7 +84,7 @@ class RobotHand(
         override val names: List<String>
             get() = listOf("line", "l", "connect")
 
-        override fun help(): AnnotatedString {
+        override fun help(): HelpInfoCommand {
             return TortoiseParser.helpName("l", "w h zw zh c1w c1h c1d (lcom*) c2w c2h c2d (rcom*)", "")
         }
 

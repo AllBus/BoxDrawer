@@ -36,6 +36,39 @@ class DrawerViewModel {
         }
     }
 
+
+    suspend fun save(fileName:String){
+        val tab = tabIndex.value
+        tools.updateChooserDir(fileName)
+        when (tab) {
+            BoxDrawerToolBar.TAB_TORTOISE ->  tortoise.save(fileName)
+            BoxDrawerToolBar.TAB_SOFT -> softRez.saveRez(fileName,tortoise.fig.value)
+            BoxDrawerToolBar.TAB_BOX -> box.save(fileName)
+            BoxDrawerToolBar.TAB_BUBLIK -> bublik.save(fileName)
+            BoxDrawerToolBar.TAB_REKA -> rectData.save(fileName)
+            BoxDrawerToolBar.TAB_TOOLS -> template.save(fileName)
+            BoxDrawerToolBar.TAB_BEZIER -> bezier.save(fileName)
+            BoxDrawerToolBar.TAB_GRID -> grid.save(fileName)
+            else -> {}
+        }
+    }
+
+    suspend fun print():String{
+        val tab = tabIndex.value
+
+        return when (tab) {
+            BoxDrawerToolBar.TAB_TORTOISE ->  tortoise.printCommand()
+            BoxDrawerToolBar.TAB_SOFT -> ""
+            BoxDrawerToolBar.TAB_BOX -> box.print()
+            BoxDrawerToolBar.TAB_BUBLIK -> ""
+            BoxDrawerToolBar.TAB_REKA -> rectData.print()
+            BoxDrawerToolBar.TAB_TOOLS -> template.print()
+            BoxDrawerToolBar.TAB_BEZIER -> bezier.print()
+            BoxDrawerToolBar.TAB_GRID -> grid.print()
+            else -> ""
+        }
+    }
+
     init {
         println("DrawerViewModel")
     }

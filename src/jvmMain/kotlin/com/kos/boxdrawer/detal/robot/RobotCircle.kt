@@ -1,7 +1,7 @@
 package com.kos.boxdrawer.detal.robot
 
-import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.DoubleMemoryKey
 import turtoise.memory.keys.MemoryKey
 import turtoise.memory.keys.MemoryKey.Companion.ifEmpty
@@ -32,8 +32,8 @@ class RobotCircle(
         override val names: List<String>
             get() = listOf("c")
 
-        override fun help(): AnnotatedString {
-            return TortoiseParser.helpName("c", "r hw hh", "нарисовать окружность радиусу r")
+        override fun help(): HelpInfoCommand {
+            return  TortoiseParser.helpName("c", "r hw hh", "нарисовать окружность радиусу r")
         }
     }
 }

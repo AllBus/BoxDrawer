@@ -51,8 +51,7 @@ import turtoise.rect.Kubik.Companion.STORONA_R
 
 @Composable
 fun ToolbarForReka(vm: RekaToolsData) {
-    val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
+
     val text = remember { mutableStateOf<String>("") }
     val paddingText = remember { mutableStateOf<String>("0") }
     val position = vm.current.collectAsState()
@@ -201,29 +200,33 @@ fun ToolbarForReka(vm: RekaToolsData) {
 
             }
         }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
 
-            RunButton("Нарисовать деталь") {
-                coroutineScope.launch {
-                    showFileChooser(vm.tools.chooserDir()) { f ->
-                        coroutineScope.launch {
-                            vm.save(f)
-                        }
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(4.dp))
-            RunButton("Скопировать код") {
-                coroutineScope.launch {
-                    clipboardManager.setText(AnnotatedString(vm.print()))
-                }
-            }
-        }
     }
 
 }
 
+@Composable
+fun ToolbarActionForReka(vm: RekaToolsData) {
+    val coroutineScope = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
+    Column(
+    ) {
 
+        RunButton("Нарисовать деталь") {
+            coroutineScope.launch {
+                showFileChooser(vm.tools.chooserDir()) { f ->
+                    coroutineScope.launch {
+                        vm.save(f)
+                    }
+                }
+            }
+        }
+
+        Spacer(Modifier.height(4.dp))
+        RunButton("Скопировать код") {
+            coroutineScope.launch {
+                clipboardManager.setText(AnnotatedString(vm.print()))
+            }
+        }
+    }
+}

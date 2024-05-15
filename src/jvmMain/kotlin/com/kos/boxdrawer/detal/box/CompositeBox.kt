@@ -1,9 +1,9 @@
 package com.kos.boxdrawer.detal.box
 
-import androidx.compose.ui.text.AnnotatedString
 import com.kos.boxdrawer.detal.robot.IRobotCommand
 import com.kos.boxdrawer.detal.robot.IRobotCommandFactory
 import turtoise.*
+import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
 
 /**
@@ -44,7 +44,7 @@ class CompositeBox(
         override val names: List<String>
             get() = listOf("box",)
 
-        override fun help(): AnnotatedString {
+        override fun help(): HelpInfoCommand {
             return TortoiseParser.helpName("h", "hw hh", "многоугольная коробка")
         }
     }

@@ -1,7 +1,7 @@
 package com.kos.boxdrawer.detal.robot
 
-import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
 
 class RobotAngle(
@@ -23,7 +23,7 @@ class RobotAngle(
         override val names: List<String>
             get() = listOf("a")
 
-        override fun help(): AnnotatedString {
+        override fun help(): HelpInfoCommand {
             return TortoiseParser.helpName("a", "a", "повернуть направление движение на угол a ")
         }
     }
