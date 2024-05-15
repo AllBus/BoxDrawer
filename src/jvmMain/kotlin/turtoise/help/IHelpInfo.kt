@@ -1,15 +1,14 @@
 package turtoise.help
 
 import androidx.compose.ui.text.AnnotatedString
-import turtoise.TortoiseParser
 
 interface IHelpInfo {
-    fun help():AnnotatedString
-    val name:String
-    fun help(command:String):AnnotatedString
+    fun help(): AnnotatedString
+    val name: String
+    fun help(command: String): AnnotatedString
 }
 
-abstract class SimpleHelpInfo: IHelpInfo {
+abstract class SimpleHelpInfo : IHelpInfo {
     abstract val title: AnnotatedString
     abstract val commandList: List<HelpInfoCommand>
 
@@ -22,8 +21,12 @@ abstract class SimpleHelpInfo: IHelpInfo {
     }
 
     override fun help(command: String): AnnotatedString {
+        val coms = commandList.filter { it.name.contains(command) }
+        if (coms.isEmpty()) {
+            return help()
+        }
         val sb = AnnotatedString.Builder()
-        commandList.filter { it.name.contains(command) }.joinTo(sb,"\n\n") { it.text }
+        coms.joinTo(sb, "\n\n") { it.text }
         return sb.toAnnotatedString()
     }
 }

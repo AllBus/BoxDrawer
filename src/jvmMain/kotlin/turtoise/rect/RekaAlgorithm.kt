@@ -33,8 +33,7 @@ class RekaAlgorithm(
         maxStackSize: Int
     ): IFigure {
         return reka?.let{ r ->
-            val result = RekaCad.RekaDrawResult()
-            RekaCad.createFigure(r, state.xy, state.angle, memory, result)
+            val result = RekaCad.createFigure(r, state.xy, state.angle, memory)
             FigurePolyline(result.points, close = true)
         } ?: Figure.Empty
     }

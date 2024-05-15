@@ -9,6 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Create
@@ -52,6 +58,7 @@ import turtoise.rect.Kubik.Companion.STORONA_R
 @Composable
 fun ToolbarForReka(vm: RekaToolsData) {
 
+    val scope = rememberCoroutineScope()
     val text = remember { mutableStateOf<String>("") }
     val paddingText = remember { mutableStateOf<String>("0") }
     val position = vm.current.collectAsState()
@@ -70,9 +77,6 @@ fun ToolbarForReka(vm: RekaToolsData) {
                 fieldMaxWidth = Dp.Unspecified) {t ->
                 paddingText.value = t
                 vm.setPadding(t) }
-            RunButton("Обновить текущий", modifier = Modifier.align(Alignment.End)){
-                vm.updateBox()
-            }
             Label(
                 text = "${position.value.position.edge} : ${position.value.position.storona} : ${position.value.position.block}",
                 modifier = Modifier.align(Alignment.End)
@@ -102,13 +106,17 @@ fun ToolbarForReka(vm: RekaToolsData) {
                         ImageButton(
                             icon = Icons.Rounded.Create,
                             onClick = {
-                                vm.createBox()
+                                scope.launch {
+                                    vm.updateBox()
+                                }
                             }
                         )
                         ImageButton(
                             icon = Icons.Rounded.Delete,
                             onClick = {
-                                vm.removeBox()
+                                scope.launch {
+                                    vm.removeBox()
+                                }
                             }
                         )
                     }
@@ -162,27 +170,27 @@ fun ToolbarForReka(vm: RekaToolsData) {
                     modifier = Modifier,
                 ) {
                     ImageButton(
-                    icon = Icons.Rounded.ArrowBack,
+                    icon = Icons.AutoMirrored.Rounded.ArrowBack,
                     onClick = {
                         vm.selectPosition(BACK_EDGE)
                     }
                 )
                     ImageButton(
-                        icon = Icons.Rounded.KeyboardArrowLeft,
+                        icon = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
                         onClick = {
                             vm.selectPosition(BACK_BLOCK)
                         }
                     )
 
                     ImageButton(
-                        icon = Icons.Rounded.KeyboardArrowRight,
+                        icon = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
 
                         onClick = {
                             vm.selectPosition(NEXT_BLOCK)
                         }
                     )
                     ImageButton(
-                        icon = Icons.Rounded.ArrowForward,
+                        icon = Icons.AutoMirrored.Rounded.ArrowForward,
                         onClick = {
                             vm.selectPosition(NEXT_EDGE)
                         }
@@ -196,8 +204,12 @@ fun ToolbarForReka(vm: RekaToolsData) {
                         vm.selectPosition( UP_BLOCK)
                     }
                 )
-
-
+                ImageButton(
+                    icon = Icons.Rounded.AddCircle,
+                    onClick = {
+                        vm.createBox()
+                    }
+                )
             }
         }
 

@@ -50,7 +50,7 @@ object TortoiseParser {
         DxfHelpInfo(),
         //RekaHelpInfo(),
         //TemplateHelpInfo(),
-       HideHelpInfo(),
+        HideHelpInfo(),
     ).map { it.name to it }.toMap()
 
     private fun isDigit(c: Char): Boolean {
@@ -70,12 +70,14 @@ object TortoiseParser {
                 "dxf" -> DxfFileAlgorithm(
                     items.blocks.firstOrNull()?.innerLine.orEmpty()
                 )
+
                 "template" -> TemplateAlgorithm(
                     name = f.getOrElse(1) { "figure" },
                     line = items.getBlockAtName("figure") ?: TurtoiseParserStackBlock(),
                     default = items.getBlockAtName("default") ?: TurtoiseParserStackBlock(),
                     template = items.getBlockAtName("form") ?: TurtoiseParserStackBlock(),
                 )
+
                 "reka" -> RekaAlgorithm(
                     items, f.drop(1).dropLast(1).toTypedArray()
                 )
@@ -203,13 +205,16 @@ object TortoiseParser {
         return text?.toDoubleOrNull() ?: defaultValue
     }
 
-    fun helpFor(subStr: String, command:String): AnnotatedString {
+    fun helpFor(subStr: String, command: String): AnnotatedString {
         return when (subStr) {
             "" -> helpFigures()
             else -> {
-                val helper = helpers.get(subStr)?:th
-                helper.help(command)+AnnotatedString("\n\n\n")+
-                        helper.help()
+                val helper = helpers[subStr] ?: th
+                if (command.isEmpty()) {
+                    helper.help()
+                } else {
+                    helper.help(command)
+                }
             }
         }
     }

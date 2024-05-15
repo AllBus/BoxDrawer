@@ -1,5 +1,6 @@
 package turtoise.rect
 
+import com.kos.boxdrawe.presentation.RectBlockPosition
 import turtoise.TurtoiseParserStackBlock
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.MemoryKey
@@ -20,10 +21,12 @@ class Reka(
         var current = Vec2(pv / 2, 0.0)
         val points = mutableListOf(current)
         storoni.forEach { storona ->
-            alpha += (PI - memory.value(storona.angle, 0.0))
-            val ps = memory.value(storona.length, 0.0)
-            current += Vec2(ps, 0.0).rotate(alpha)
-            points.add(current)
+            if (!storona.isEnd()) {
+                alpha += (PI - memory.value(storona.angle, 0.0))
+                val ps = memory.value(storona.length, 0.0)
+                current += Vec2(ps, 0.0).rotate(alpha)
+                points.add(current)
+            }
         }
 
         points.add(Vec2(-pv / 2, 0.0))
@@ -51,10 +54,9 @@ class Reka(
  * @param length mm
  * @param angle radians
  */
-class RekaStorona(
+open class RekaStorona(
     var length: MemoryKey,
     var angle: MemoryKey,
-    var visible: Boolean = true,
 ) {
     val kubiki = mutableListOf<KubikGroup>()
 
@@ -69,7 +71,7 @@ class RekaStorona(
         }
     }
 
-    fun add(napravlenie: KubikBias, index:Int,  value: Kubik) {
+    fun add(napravlenie: KubikBias, index: Int, value: Kubik) {
         val group = kubiki.find { it.napravlenie == napravlenie }
         if (group == null) {
             val kg = KubikGroup(napravlenie)
@@ -79,6 +81,12 @@ class RekaStorona(
             group.add(index, value)
         }
     }
+
+    open fun isEnd(): Boolean = false
+}
+
+class RekaEndStorona() : RekaStorona(MemoryKey.ZERO, MemoryKey.ZERO) {
+    override fun isEnd(): Boolean = true
 }
 
 class Kubik(
@@ -138,10 +146,10 @@ data class KubikBias(
     }
 
     fun print(): TurtoiseParserStackBlock {
-        val tp = TurtoiseParserStackBlock()
+        val tp = TurtoiseParserStackBlock('(', RekaCad.BLOCK_KUBIK_BIAS)
         tp.add("${napravlenie.value}")
-        tp.add("${biasT}")
-        tp.add("${biasB}")
+        tp.add("$biasT")
+        tp.add("$biasB")
 
         return tp
     }

@@ -77,7 +77,6 @@ class TortoiseData(val tools: ITools) {
     private val helpSeparator = charArrayOf('\n', '\r')
     private val helpSpaceSeparator = charArrayOf('\n', '\r', ' ', '\t', ';', '@')
     fun findHelp(text: String, selection: TextRange) {
-        println(selection)
         val s = selection.min
         val p = text.lastIndexOfAny(helpSeparator, s) + 1
         val e = Math.min(text.length - 1, text.indexOfAny(helpSpaceSeparator, p + 1))

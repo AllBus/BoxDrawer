@@ -40,6 +40,7 @@ class RekaToolsData(val tools: ITools) {
 
     private val topReka = MutableStateFlow(Reka(DoubleMemoryKey(10.0)))
     private val rekaFigure = MutableStateFlow<IFigure>(Figure.Empty)
+    private val rekaPodoshva = MutableStateFlow<IFigure>(Figure.Empty)
     var current: MutableStateFlow<RectBlockPosition> = MutableStateFlow(
         RectBlockPosition(
             reka = topReka.value,
@@ -53,16 +54,19 @@ class RekaToolsData(val tools: ITools) {
     )
 
     private val rekaDrawResult = combine(redrawEvent, topReka) { e, reka ->
-        val result = RekaCad.RekaDrawResult()
-        RekaCad.createFigure(
-            reka, Vec2.Zero, 0.0, memory, result
+        val result = RekaCad.createFigure(
+            reka, Vec2.Zero, 0.0, memory
         )
         result
     }
 
     val figures = combine(rekaDrawResult, current, rekaFigure) { result, cur, f ->
 
-        val rfp = RekaCad.findPosition(result, cur)
+        val rfp = RekaCad.findPosition(result, cur)?.let {rp ->
+            val kub = Kubik(MemoryKey(paddingNext.value), currentReka)
+            RekaCad.insertPosition(rp, cur, kub, memory)
+        }
+
         FigureList(
             listOf(
                 FigurePolyline(result.points, close = true),
@@ -190,8 +194,7 @@ class RekaToolsData(val tools: ITools) {
     fun createBox() {
         val pt = points.value
         if (pt.isNotEmpty()) {
-
-            val b = newReka(pt, memory)
+            val b = newReka(pt)
             val cv = current.value
             if (insertKubik(
                     reka = cv.reka, position = cv.position, newKubik = Kubik(
@@ -200,19 +203,21 @@ class RekaToolsData(val tools: ITools) {
                     )
                 )
             ) {
-                cv.reka.recalculate(memory = memory)
                 redraw()
             }
         }
     }
 
-    fun removeBox() {
+    suspend fun removeBox() {
         val cv = current.value
         if (cv.parent != null) {
             val cp = cv.parent
-            cp.reka.remove(cv.reka)
-            cv.reka.recalculate(memory = memory)
-            current.value = cv.parent
+
+            rekaDrawResult.first().positions.find {
+                        it.reka == cv.reka
+            }?.parent?.remove(cv.reka)
+
+            current.value = cp
             redraw()
         }
     }
@@ -221,7 +226,7 @@ class RekaToolsData(val tools: ITools) {
         val cv = current.value
         val pt = points.value
         if (pt.isNotEmpty()) {
-            RekaCad.updateReka(cv.reka, pt, memory)
+            RekaCad.updateReka(cv.reka, pt)
             redraw()
         }
     }
