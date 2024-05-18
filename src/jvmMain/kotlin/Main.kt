@@ -6,9 +6,12 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.google.gson.GsonBuilder
 import com.kos.boxdrawe.presentation.DrawerViewModel
+import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.app_name
 import com.kos.boxdrawer.presentation.App
 import okhttp3.MediaType
 import okhttp3.ResponseBody
+import org.jetbrains.compose.resources.stringResource
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
@@ -78,8 +81,8 @@ fun main(args: Array<String>) {
 
         Window(
             onCloseRequest = ::exitApplication,
-            icon = painterResource("drawable/robot.ico"),
-            title = "Рисовалка коробок",
+            icon = painterResource( "drawable/robot.ico"),
+            title = stringResource(Res.string.app_name),
         ) {
 
 

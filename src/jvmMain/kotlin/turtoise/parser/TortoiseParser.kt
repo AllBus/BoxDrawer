@@ -145,6 +145,54 @@ object TortoiseParser {
     }
 
     fun parseSkobki(a: String): TortoiseParserStackBlock {
+
+        val le = a.length
+
+        fun appendValues(top: TortoiseParserStackBlock, start: Int, end:Int){
+            val d = if (start >= end) "" else a.substring(start, end)
+            top.add(d.split(' ').filter { v -> v.isNotEmpty() })
+        }
+
+        fun parseLine(position:Int, top: TortoiseParserStackBlock): Int{
+            var i = position
+            var startPos = position
+            while(i< le){
+                val c = a[i]
+                when (c) {
+                    '(',
+                    '[',
+                    '{' -> {
+                        appendValues(top, startPos, i)
+
+                        val next = TortoiseParserStackBlock(
+                            skobka = c
+                        )
+                        top.add(next)
+                        startPos = parseLine(i+1, next)
+                        i = startPos
+                        continue
+                    }
+                    ')',
+                    ']',
+                    '}' -> {
+                        appendValues(top, startPos, i)
+                        return i+1
+                    }
+                }
+                i++
+            }
+            appendValues(top, startPos, le)
+            return le
+        }
+
+
+        val top = TortoiseParserStackBlock();
+
+        parseLine(0, top)
+        return top
+    }
+
+    fun parseSkobkiOld(a: String): TortoiseParserStackBlock {
         val stack = Stack<TortoiseParserStackBlock>();
         val top = TortoiseParserStackBlock();
         var item = top;
@@ -181,6 +229,9 @@ object TortoiseParser {
 
                     val clo = closeBrace(c);
                     var pi: TortoiseParserStackBlock?
+                    if (stack.isNotEmpty()) {
+                        println("$i $c $clo ${stack.peek().skobka}")
+                    }
                     do {
                         if (stack.isEmpty()) {
                             pi = null;

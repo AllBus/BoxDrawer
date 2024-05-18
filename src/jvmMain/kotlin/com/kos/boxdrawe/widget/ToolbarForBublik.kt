@@ -89,17 +89,8 @@ fun ToolbarForBublik(vm: BublikData) {
 
 @Composable
 fun ToolbarActionForBublik(vm: BublikData) {
-    val coroutineScope = rememberCoroutineScope()
     Column(
     ) {
-        RunButton("Нарисовать деталь") {
-            coroutineScope.launch {
-                showFileChooser(vm.tools.chooserDir()) { f ->
-                    coroutineScope.launch {
-                        vm.save(f)
-                    }
-                }
-            }
-        }
+        SaveToFileButton(vm)
     }
 }

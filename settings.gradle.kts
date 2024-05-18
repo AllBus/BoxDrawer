@@ -29,3 +29,4 @@ dependencyResolutionManagement {
 
 include(":dxfprinter")
 include(":figure")
+include(":commonMain")

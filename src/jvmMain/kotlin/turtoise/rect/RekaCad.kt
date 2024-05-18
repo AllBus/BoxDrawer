@@ -39,6 +39,20 @@ object RekaCad {
         return reka
     }
 
+    fun updateReka(reka: Reka, tv: Reka): Reka {
+        reka.podoshva = tv.podoshva
+        val newStoroni = tv.storoni
+        newStoroni.zip(reka.storoni){ newStorona, old ->
+            newStorona.kubiki.clear()
+            newStorona.kubiki.addAll(old.kubiki)
+        }
+        reka.storoni.clear()
+        reka.storoni.addAll(newStoroni)
+
+
+        return reka
+    }
+
     fun newReka(items: TortoiseParserStackBlock): Reka? {
 
         return items.getBlockAtName(BLOCK_REKA)?.let { rekaBlock ->
@@ -47,7 +61,7 @@ object RekaCad {
                     podoshva = args.getOrElse(1) { MemoryKey.ZERO }
                 )
 
-                reka.storoni.addAll( args.drop(2).windowed(2, 2) { v ->
+                reka.storoni.addAll(args.drop(2).windowed(2, 2) { v ->
                     RekaStorona(
                         angle = v[0],
                         length = v[1],
@@ -55,12 +69,13 @@ object RekaCad {
                 })
                 reka.storoni.add(RekaEndStorona())
 
-                println("newReka ${reka.storoni.size} $$ ${reka.podoshva.name}")
+//                println("newReka ${reka.storoni.size} $$ ${reka.podoshva.name}")
+//                println("tut ${rekaBlock.blocks.map { it.name }.joinToString()}")
 
                 rekaBlock.getBlockAtName(BLOCK_REKA_EDGE_INFO)?.let { storoni ->
+//                    println("storoni ${storoni.line}")
                     storoni.blocks.forEach { st ->
                         val index = memoryToInt(st.get(0), 1)
-                        println("index ${index} ${st.get(0)}")
                         if (index > 0 && index <= reka.storoni.size) {
                             st.getBlockAtName(BLOCK_KUBIK_LIST)?.blocks?.forEach { kub ->
                                 kub.getBlockAtName(BLOCK_KUBIK_BIAS)?.let { b ->
@@ -71,7 +86,7 @@ object RekaCad {
                                         kub.getBlockAtName(BLOCK_KUBIK)?.blocks?.mapNotNull { vb ->
                                             newReka(vb)?.let { r ->
                                                 Kubik(
-                                                    padding = vb.getInnerAtName(BLOCK_PADDING)?.argument
+                                                    padding = vb.getBlockAtName(BLOCK_PADDING)?.get(1)
                                                         ?: MemoryKey.ZERO,
                                                     reka = r
                                                 )
@@ -428,9 +443,9 @@ object RekaCad {
 
     fun print(top: Reka): TortoiseParserStackItem {
 
-        val tp = TortoiseParserStackBlock('(', BLOCK_REKA)
+        val tp = TortoiseParserStackBlock('{', BLOCK_REKA)
 
-        val te = TortoiseParserStackBlock('(', BLOCK_REKA_EDGE)
+        val te = TortoiseParserStackBlock('[', BLOCK_REKA_EDGE)
         tp.add(te)
 
         te.add(top.podoshva)

@@ -4,7 +4,6 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,11 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.themes.ThemeColors
@@ -50,7 +46,6 @@ import com.kos.boxdrawe.widget.tabbar.ToolbarForSoft
 import com.kos.boxdrawe.widget.tabbar.ToolbarForTools
 import com.kos.boxdrawe.widget.tabbar.ToolbarForTortoise
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.io.File
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
@@ -88,9 +83,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                         TAB_BOX -> ToolbarForBox(vm.value.box)
                         TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
                         TAB_GRID -> ToolbarForGrid(vm.value.grid)
-                        TAB_SOFT -> ToolbarForSoft(
-                            vm.value.softRez)
-
+                        TAB_SOFT -> ToolbarForSoft(vm.value.softRez)
                         TAB_BEZIER -> ToolbarForBezier(vm.value.bezier)
                         TAB_BUBLIK -> ToolbarForBublik(vm.value.bublik)
                         TAB_REKA -> ToolbarForReka(vm.value.rectData)
@@ -102,7 +95,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                         TAB_BOX -> ToolbarActionForBox(vm.value.box)
                         TAB_TORTOISE -> ToolbarActionForTortoise(vm.value.tortoise)
                         TAB_GRID -> ToolbarActionForGrid(vm.value.grid)
-                        TAB_SOFT -> ToolbarActionForSoft( vm.value.softRez)
+                        TAB_SOFT -> ToolbarActionForSoft(vm.value.softRez)
 
                         TAB_BEZIER -> ToolbarActionForBezier(vm.value.bezier)
                         TAB_BUBLIK -> ToolbarActionForBublik(vm.value.bublik)

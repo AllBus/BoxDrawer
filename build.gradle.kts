@@ -69,6 +69,10 @@ kotlin {
 
         val lwjglVersion = "3.3.1"
 
+        commonMain.dependencies {
+            implementation(compose.components.resources)
+        }
+
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3")
@@ -86,8 +90,10 @@ kotlin {
             implementation("org.jetbrains.skiko:skiko-awt-runtime-$target:0.7.90")
             implementation("com.darkrockstudios:mpfilepicker:3.1.0")
             implementation("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}")
+
             implementation(project(":figure"))
             implementation(project(":dxfprinter"))
+            implementation(project(":commonMain"))
 
 
             // implementation("com.groupdocs:groupdocs-comparison:22.3")

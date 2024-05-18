@@ -15,6 +15,7 @@ import turtoise.memory.keys.DoubleMemoryKey
 import turtoise.memory.keys.EditMemoryKey
 import turtoise.memory.keys.MemoryKey
 import turtoise.memory.keys.SummaMemoryKey
+import turtoise.parser.TortoiseParser
 import turtoise.rect.Kubik
 import turtoise.rect.Kubik.Companion.STORONA_C
 import turtoise.rect.Kubik.Companion.STORONA_CL
@@ -35,10 +36,10 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
     private val memory = SimpleTortoiseMemory()
 
     private val redrawEvent = MutableStateFlow(0)
-    private val points = MutableStateFlow<List<String>>(emptyList())
+    private val points = MutableStateFlow<String>("")
     private val paddingNext = MutableStateFlow<String>("0.0")
 
-    private val currentReka = Reka(DoubleMemoryKey(10.0))
+    private var currentReka = Reka(DoubleMemoryKey(10.0))
 
     private val topReka = MutableStateFlow(Reka(DoubleMemoryKey(10.0)))
     private val rekaFigure = MutableStateFlow<IFigure>(Figure.Empty)
@@ -86,7 +87,9 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
     }
 
     fun createRekaFigure() {
-        currentReka.recalculate(memory = memory)
+        RekaCad.createFigure(
+            currentReka, Vec2.Zero, 0.0, memory
+        )
         rekaFigure.value = FigurePolyline(currentReka.points)
 
     }
@@ -195,16 +198,18 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
     fun createBox() {
         val pt = points.value
         if (pt.isNotEmpty()) {
-            val b = newReka(pt)
-            val cv = current.value
-            if (insertKubik(
-                    reka = cv.reka, position = cv.position, newKubik = Kubik(
-                        padding = MemoryKey(paddingNext.value),
-                        reka = b
+
+            parseReka(pt)?.let { b ->
+                val cv = current.value
+                if (insertKubik(
+                        reka = cv.reka, position = cv.position, newKubik = Kubik(
+                            padding = MemoryKey(paddingNext.value),
+                            reka = b
+                        )
                     )
-                )
-            ) {
-                redraw()
+                ) {
+                    redraw()
+                }
             }
         }
     }
@@ -226,20 +231,27 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
         val cv = current.value
         val pt = points.value
         if (pt.isNotEmpty()) {
-            RekaCad.updateReka(cv.reka, pt)
+            parseReka(pt)?.let { f ->
+                RekaCad.updateReka(cv.reka, f)
+            }
             redraw()
         }
     }
 
-    fun setPoints(text: String) {
-        val tv = text.split(",", " ").map { it.trim() }.filter { it.isNotEmpty() }
-        points.value = tv
+    private fun parseReka(text:String): Reka?{
+        return if (text.drop(1).startsWith("reka")) {
+            RekaCad.newReka(TortoiseParser.parseSkobki(text))
+        } else {
+            val tv = text.split(",", " ").map { it.trim() }.filter { it.isNotEmpty() }
+            newReka(tv)
+        }
+    }
 
-        if (tv.isNotEmpty()) {
-            currentReka.podoshva = MemoryKey(tv.first())
-            currentReka.storoni.clear()
-            val st = rekaPoints(tv)
-            currentReka.storoni.addAll(st)
+    fun setPoints(text: String) {
+        points.value = text
+        parseReka(points.value)?.let{
+            f ->
+            currentReka = f
             createRekaFigure()
         }
     }

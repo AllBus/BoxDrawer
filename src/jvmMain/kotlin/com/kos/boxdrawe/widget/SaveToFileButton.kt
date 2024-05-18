@@ -7,15 +7,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.SaveFigure
-import com.kos.boxdrawe.widget.RunButton
-import com.kos.boxdrawe.widget.showFileChooser
+import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.copyFileButton
+import com.kos.boxdrawer.generated.resources.createFileButton
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import java.awt.Toolkit
 
 @Composable
-fun SaveToFileButton(vm: SaveFigure){
+fun SaveToFileButton(vm: SaveFigure) {
     val coroutineScope = rememberCoroutineScope()
-    RunButton("Нарисовать деталь") {
+    RunButton(stringResource(Res.string.createFileButton)) {
         coroutineScope.launch {
             showFileChooser(vm.tools.chooserDir()) { f ->
                 coroutineScope.launch {
@@ -25,7 +27,7 @@ fun SaveToFileButton(vm: SaveFigure){
         }
     }
     Spacer(Modifier.height(4.dp))
-    RunButton("Скопировать деталь") {
+    RunButton(stringResource(Res.string.copyFileButton)) {
         coroutineScope.launch {
             val dxf = vm.copy()
 

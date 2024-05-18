@@ -8,14 +8,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.res.painterResource
+
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.BoxData
 import com.kos.boxdrawe.widget.*
 import com.kos.boxdrawe.widget.model.ButtonData
 import com.kos.boxdrawer.detal.box.PazExt
+import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.act_hole
+import com.kos.boxdrawer.generated.resources.act_line
+import com.kos.boxdrawer.generated.resources.act_outside
+import com.kos.boxdrawer.generated.resources.act_paz
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun ToolbarForBox(vm: BoxData) {
@@ -164,10 +170,10 @@ private fun ColumnScope.BoxAdvancedProperties(
 
 
     val zigVariants = listOf(
-        ButtonData(PazExt.PAZ_NONE, painterResource("drawable/act_line.png")),
-        ButtonData(PazExt.PAZ_HOLE, painterResource("drawable/act_hole.png")),
-        ButtonData(PazExt.PAZ_PAZ, painterResource("drawable/act_paz.png")),
-        ButtonData(PazExt.PAZ_OUT, painterResource("drawable/act_outside.png")),
+        ButtonData(PazExt.PAZ_NONE, painterResource(Res.drawable.act_line)),
+        ButtonData(PazExt.PAZ_HOLE, painterResource(Res.drawable.act_hole)),
+        ButtonData(PazExt.PAZ_PAZ, painterResource(Res.drawable.act_paz)),
+        ButtonData(PazExt.PAZ_OUT, painterResource(Res.drawable.act_outside)),
         //   ButtonData(PazExt.PAZ_PAPER, painterResource( "drawable/act_paper.png")),
         //   ButtonData(PazExt.PAZ_BACK, painterResource("drawable/act_paz_in.png")),
     )

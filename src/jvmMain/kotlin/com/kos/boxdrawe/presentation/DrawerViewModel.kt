@@ -50,7 +50,7 @@ class DrawerViewModel {
         tf?.save(fileName)
     }
 
-    private fun modelAtTab(tab: Int): SaveFigure? {
+    fun modelAtTab(tab: Int): SaveFigure? {
         val tf: SaveFigure? = when (tab) {
             BoxDrawerToolBar.TAB_TORTOISE -> tortoise
             BoxDrawerToolBar.TAB_SOFT -> softRez

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string name="app_name">Рисовалка коробок</string>
+    <string name="createFileButton">Нарисовать деталь</string>
+    <string name="copyFileButton">Скопировать деталь</string>
+</resources>
