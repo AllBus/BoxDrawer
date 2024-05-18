@@ -62,8 +62,6 @@ val TabContentModifier =
 @Composable
 fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
     val tabIndex = vm.value.tabIndex.collectAsState()
-    val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
 
     Column(
         Modifier.fillMaxWidth().wrapContentHeight().background(Color.White)
@@ -104,9 +102,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                         TAB_BOX -> ToolbarActionForBox(vm.value.box)
                         TAB_TORTOISE -> ToolbarActionForTortoise(vm.value.tortoise)
                         TAB_GRID -> ToolbarActionForGrid(vm.value.grid)
-                        TAB_SOFT -> ToolbarActionForSoft(
-                            vm.value.softRez,
-                            { vm.value.tortoise.figures.value })
+                        TAB_SOFT -> ToolbarActionForSoft( vm.value.softRez)
 
                         TAB_BEZIER -> ToolbarActionForBezier(vm.value.bezier)
                         TAB_BUBLIK -> ToolbarActionForBublik(vm.value.bublik)

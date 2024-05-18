@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.TortoiseData
 import com.kos.boxdrawe.widget.EditTextField
 import com.kos.boxdrawe.widget.RunButton
+import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.TabContentModifier
-import com.kos.boxdrawe.widget.showFileChooser
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -47,11 +47,7 @@ fun ToolbarActionForTortoise(vm: TortoiseData) {
 
     Column(
     ) {
-        RunButton("Нарисовать деталь") {
-            coroutineScope.launch {
-                showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
-            }
-        }
+        SaveToFileButton(vm)
         Spacer(Modifier.height(4.dp))
         RunButton("Скопировать как программу") {
             coroutineScope.launch {

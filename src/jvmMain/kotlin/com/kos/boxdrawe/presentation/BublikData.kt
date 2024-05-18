@@ -6,11 +6,10 @@ import com.kos.boxdrawer.detal.bublik.BublikCad
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import java.io.File
 
-class BublikData(val tools: ITools) {
-
-    val figures = MutableStateFlow<IFigure>(Figure.Empty)
+class BublikData(override val tools: ITools): SaveFigure {
 
     val radiusBublik = NumericTextFieldState(120.0) { redrawBox() }
     val radius = NumericTextFieldState(40.0) { redrawBox() }
@@ -24,12 +23,15 @@ class BublikData(val tools: ITools) {
 
     private val cad = BublikCad()
 
-    fun redrawBox(){
-        figures.value = createFigure()
+    val redrawIndex = MutableStateFlow<Int>(0)
 
+    val figures = redrawIndex.map { createFigure() }
+
+    fun redrawBox(){
+        redrawIndex.value+=1
     }
 
-    private fun createFigure():IFigure {
+    override suspend fun createFigure():IFigure {
         val w = radiusBublik.decimal;
         val h = radius.decimal;
         val se1 = segmentCount.decimal.toInt();
@@ -45,10 +47,5 @@ class BublikData(val tools: ITools) {
         return cad.torus(w, h, se1, se2, bublikPaz, tools.ds())
     }
 
-    fun save(fileName: String) {
-        tools.saveFigures(fileName, createFigure())
-
-        tools.updateChooserDir(fileName)
-    }
 }
 

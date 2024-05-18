@@ -30,7 +30,7 @@ import turtoise.rect.RekaCad.rekaPoints
 import vectors.Vec2
 import kotlin.math.PI
 
-class RekaToolsData(val tools: ITools) {
+class RekaToolsData(override val tools: ITools) : SaveFigure {
 
     private val memory = SimpleTortoiseMemory()
 
@@ -63,7 +63,7 @@ class RekaToolsData(val tools: ITools) {
 
     val figures = combine(rekaDrawResult, current, rekaFigure) { result, cur, f ->
 
-        val rfp = RekaCad.findPosition(result, cur)?.let {rp ->
+        val rfp = RekaCad.findPosition(result, cur)?.let { rp ->
             val kub = Kubik(MemoryKey(paddingNext.value), currentReka)
             RekaCad.insertPosition(rp, cur, kub, memory)
         }
@@ -100,7 +100,7 @@ class RekaToolsData(val tools: ITools) {
         when (napravlenie) {
             DOWN_BLOCK -> {
                 val f = rekaDrawResult.first()
-                RekaCad.findPosition(f,  cv)?.parent?.let{parent ->
+                RekaCad.findPosition(f, cv)?.parent?.let { parent ->
                     current.value = cv.copy(reka = parent)
                 }
             }
@@ -213,7 +213,7 @@ class RekaToolsData(val tools: ITools) {
         val cv = current.value
 
         rekaDrawResult.first().positions.find {
-                    it.reka == cv.reka
+            it.reka == cv.reka
         }?.parent?.let { parent ->
             parent.remove(cv.reka)
 
@@ -277,11 +277,10 @@ class RekaToolsData(val tools: ITools) {
         }
     }
 
-    suspend fun save(fileName: String) {
+    override suspend fun createFigure(): IFigure {
         redraw()
         val result = rekaDrawResult.first()
-        tools.saveFigures(fileName, FigurePolyline(result.points, close = true))
-        tools.updateChooserDir(fileName)
+        return FigurePolyline(result.points, close = true)
     }
 
     suspend fun print(): String {
@@ -290,13 +289,15 @@ class RekaToolsData(val tools: ITools) {
 
     fun rotateCurrentReka(degrees: Double) {
         val reka = current.value.reka
-        println("rotate $degrees")
         reka.storoni.getOrNull(0)?.let { storona ->
             val a = storona.angle
-            val change = -degrees*PI/180
+            val change = -degrees * PI / 180
             val k = if (a is EditMemoryKey) {
-                println("sum ${a.value+change}")
-                EditMemoryKey(a.mainKey, a.value+change, SummaMemoryKey(a.mainKey, a.value+change))
+                EditMemoryKey(
+                    a.mainKey,
+                    a.value + change,
+                    SummaMemoryKey(a.mainKey, a.value + change)
+                )
             } else {
                 EditMemoryKey(a, change, SummaMemoryKey(a, change))
             }

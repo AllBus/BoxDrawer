@@ -284,11 +284,8 @@ fun ToolbarActionForBox(vm: BoxData) {
     val clipboardManager = LocalClipboardManager.current
     Column(
     ) {
-        RunButton("Нарисовать коробку") {
-            coroutineScope.launch {
-                showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
-            }
-        }
+        SaveToFileButton(vm)
+
         Spacer(Modifier.height(4.dp))
         RunButton("Скопировать код") {
             coroutineScope.launch {

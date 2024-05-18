@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import vectors.Vec2
+import java.awt.datatransfer.Transferable
 
 class DrawerViewModel {
 
@@ -36,21 +37,32 @@ class DrawerViewModel {
         }
     }
 
+    suspend fun copy(): Transferable? {
+        val tab = tabIndex.value
+        val tf: SaveFigure? = modelAtTab(tab)
+        return tf?.copy()
+    }
 
     suspend fun save(fileName:String){
         val tab = tabIndex.value
         tools.updateChooserDir(fileName)
-        when (tab) {
-            BoxDrawerToolBar.TAB_TORTOISE ->  tortoise.save(fileName)
-            BoxDrawerToolBar.TAB_SOFT -> softRez.saveRez(fileName,tortoise.fig.value)
-            BoxDrawerToolBar.TAB_BOX -> box.save(fileName)
-            BoxDrawerToolBar.TAB_BUBLIK -> bublik.save(fileName)
-            BoxDrawerToolBar.TAB_REKA -> rectData.save(fileName)
-            BoxDrawerToolBar.TAB_TOOLS -> template.save(fileName)
-            BoxDrawerToolBar.TAB_BEZIER -> bezier.save(fileName)
-            BoxDrawerToolBar.TAB_GRID -> grid.save(fileName)
-            else -> {}
+        val tf: SaveFigure? = modelAtTab(tab)
+        tf?.save(fileName)
+    }
+
+    private fun modelAtTab(tab: Int): SaveFigure? {
+        val tf: SaveFigure? = when (tab) {
+            BoxDrawerToolBar.TAB_TORTOISE -> tortoise
+            BoxDrawerToolBar.TAB_SOFT -> softRez
+            BoxDrawerToolBar.TAB_BOX -> box
+            BoxDrawerToolBar.TAB_BUBLIK -> bublik
+            BoxDrawerToolBar.TAB_REKA -> rectData
+            BoxDrawerToolBar.TAB_TOOLS -> template
+            BoxDrawerToolBar.TAB_BEZIER -> bezier
+            BoxDrawerToolBar.TAB_GRID -> grid
+            else -> null
         }
+        return tf
     }
 
     suspend fun print():String{

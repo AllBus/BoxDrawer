@@ -94,7 +94,11 @@ fun ToolbarActionForBublik(vm: BublikData) {
     ) {
         RunButton("Нарисовать деталь") {
             coroutineScope.launch {
-                showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
+                showFileChooser(vm.tools.chooserDir()) { f ->
+                    coroutineScope.launch {
+                        vm.save(f)
+                    }
+                }
             }
         }
     }

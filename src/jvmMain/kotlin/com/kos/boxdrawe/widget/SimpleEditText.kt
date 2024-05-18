@@ -26,7 +26,8 @@ import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.themes.ThemeColors
 
 @Composable
-fun SimpleEditText(title:String, postfix:String, value: State<String>,
+fun SimpleEditText(title:String, postfix:String,
+                   value: State<String>,
                    fieldMaxWidth: Dp = 160.dp,
                    modifier: Modifier = Modifier,
                    enabled : Boolean = true,

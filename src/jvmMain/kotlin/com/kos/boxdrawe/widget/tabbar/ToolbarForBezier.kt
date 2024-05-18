@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,16 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import com.darkrockstudios.libraries.mpfilepicker.FilePicker
 import com.kos.boxdrawe.presentation.BezierData
 import com.kos.boxdrawe.widget.EditText
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.RunButton
+import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.SegmentDoubleButton
+import com.kos.boxdrawe.widget.SimpleEditText
 import com.kos.boxdrawe.widget.TabContentModifier
 import com.kos.boxdrawe.widget.model.ButtonDoubleData
-import com.kos.boxdrawe.widget.showFileChooser
 import kotlinx.coroutines.launch
 
 @Composable
@@ -70,9 +69,14 @@ fun ToolbarForBezier(vm: BezierData) {
             Row(
                 modifier = Modifier.weight(weight = 1f)
             ) {
-                EditText(title = "", value = bezierText, enabled = true, modifier = Modifier) { t ->
+                SimpleEditText(
+                    title = "",
+                    postfix = "",
+                    modifier = Modifier,
+                    value = bezierText,
+                    enabled = true
+                ) { t ->
                     bezierText.value = t
-
                 }
             }
             Spacer(
@@ -108,12 +112,7 @@ fun ToolbarActionForBezier(vm: BezierData) {
     val clipboardManager = LocalClipboardManager.current
     Column(
     ) {
-
-        RunButton("Нарисовать деталь") {
-            coroutineScope.launch {
-                showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
-            }
-        }
+        SaveToFileButton(vm)
 
         Spacer(Modifier.height(4.dp))
         RunButton("Скопировать код") {

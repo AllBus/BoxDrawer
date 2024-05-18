@@ -12,32 +12,30 @@ import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import turtoise.*
 import turtoise.parser.TortoiseParser
+import java.awt.datatransfer.Transferable
 
-class TortoiseData(val tools: ITools) {
+class TortoiseData(override val tools: ITools) : SaveFigure {
     val figures = MutableStateFlow<IFigure>(Figure.Empty)
     val fig = mutableStateOf<IFigure>(Figure.Empty)
     val helpText = mutableStateOf(AnnotatedString(""))
 
     val matrix = mutableStateOf(Matrix())
 
-    @OptIn(ExperimentalFoundationApi::class)
-    fun save(fileName: String) {
+    override suspend fun createFigure(): IFigure {
         val lines = text.value.text
-        val fig = create(lines)
-        tools.saveFigures(fileName, fig)
-        tools.updateChooserDir(fileName)
+        return create(lines)
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
-    suspend fun printCommand():String{
+    suspend fun printCommand(): String {
         val lines = text.value.text
         val program = tortoiseProgram(lines)
         return program.commands.flatMap { a ->
-                a.names.flatMap { name -> a.commands(name,tools.ds()).flatMap {
+            a.names.flatMap { name ->
+                a.commands(name, tools.ds()).flatMap {
                     it.commands
                 }
             }
-        }.map { c -> c.print()}.joinToString("\n")
+        }.map { c -> c.print() }.joinToString("\n")
     }
 
     private fun tortoiseProgram(lines: String): TortoiseProgram {
@@ -49,7 +47,7 @@ class TortoiseData(val tools: ITools) {
         val k = tools.algorithms()
         return TortoiseProgram(
             commands = c.map { it.second },
-            algorithms = (k+a).toMap()
+            algorithms = (k + a).toMap()
         )
     }
 
@@ -71,7 +69,8 @@ class TortoiseData(val tools: ITools) {
 
     fun drop(dropValueX: Float, dropValueY: Float) {
         figures.value =
-            fig.value.crop(dropValueX.toDouble(), CropSide.BOTTOM).crop(dropValueY.toDouble(), CropSide.LEFT)
+            fig.value.crop(dropValueX.toDouble(), CropSide.BOTTOM)
+                .crop(dropValueY.toDouble(), CropSide.LEFT)
     }
 
 
@@ -82,17 +81,17 @@ class TortoiseData(val tools: ITools) {
         val p = text.lastIndexOfAny(helpSeparator, s) + 1
         val e = Math.min(text.length - 1, text.indexOfAny(helpSpaceSeparator, p + 1))
 
-        var comEnd = s-1
-        while (comEnd>= 0  && comEnd< text.length){
-            if (text[comEnd] in helpSpaceSeparator){
+        var comEnd = s - 1
+        while (comEnd >= 0 && comEnd < text.length) {
+            if (text[comEnd] in helpSpaceSeparator) {
                 break
             }
             comEnd -= 1
         }
 
-        var comStart = comEnd-1
-        while (comStart>= 0  && comStart< text.length){
-            if (text[comStart] !in helpSpaceSeparator){
+        var comStart = comEnd - 1
+        while (comStart >= 0 && comStart < text.length) {
+            if (text[comStart] !in helpSpaceSeparator) {
                 break
             }
             comStart -= 1

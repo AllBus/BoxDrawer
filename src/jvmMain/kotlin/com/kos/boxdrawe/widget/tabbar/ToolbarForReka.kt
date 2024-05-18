@@ -46,6 +46,7 @@ import com.kos.boxdrawe.widget.CircleBox
 import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.RunButton
+import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.SimpleEditText
 import com.kos.boxdrawe.widget.TabContentModifier
 import com.kos.boxdrawe.widget.showFileChooser
@@ -244,16 +245,7 @@ fun ToolbarActionForReka(vm: RekaToolsData) {
     val clipboardManager = LocalClipboardManager.current
     Column(
     ) {
-
-        RunButton("Нарисовать деталь") {
-            coroutineScope.launch {
-                showFileChooser(vm.tools.chooserDir()) { f ->
-                    coroutineScope.launch {
-                        vm.save(f)
-                    }
-                }
-            }
-        }
+        SaveToFileButton(vm)
 
         Spacer(Modifier.height(4.dp))
         RunButton("Скопировать код") {

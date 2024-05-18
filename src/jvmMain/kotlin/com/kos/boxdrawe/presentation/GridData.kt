@@ -6,15 +6,13 @@ import com.kos.boxdrawer.detal.grid.CadGrid
 import com.kos.boxdrawer.detal.grid.GridOption
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
-import com.kos.figure.composition.FigureRotate
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.map
-import vectors.Vec2
+import java.io.File
 
-class GridData(val tools: ITools) {
+class GridData(override val tools: ITools):SaveFigure {
 
     var roundChecked = mutableStateOf(false)
     var innerChecked = mutableStateOf(false)
@@ -36,7 +34,7 @@ class GridData(val tools: ITools) {
     @OptIn(FlowPreview::class)
     val figure = redrawEvent.debounce(500L).combine(figurePreview){ r, p ->
         if (p) {
-            createFigure()
+            createFigureOff()
         }else
             FigureEmpty
     }
@@ -79,10 +77,15 @@ class GridData(val tools: ITools) {
         gridText.value = print()
     }
 
-    fun save(fileName: String) {
-        val fig =cad.createEntities(
-           // cellWidthCount = cellWidthCount .decimal,
-           // cellHeightCount = cellHeightCount .decimal,
+    fun redraw() {
+        redrawEvent.value+=1
+
+    }
+
+    override suspend fun createFigure(): IFigure {
+        return cad.createEntities(
+            // cellWidthCount = cellWidthCount .decimal,
+            // cellHeightCount = cellHeightCount .decimal,
             frameSize = widthFrame.decimal,
             gridSize = GridOption(
                 size = widthCell.decimal,
@@ -97,17 +100,9 @@ class GridData(val tools: ITools) {
             ),
             drawerSettings = tools.ds()
         )
-
-        tools.saveFigures(fileName, fig)
-        tools.updateChooserDir(fileName)
     }
 
-    fun redraw() {
-        redrawEvent.value+=1
-
-    }
-
-    private fun createFigure(): IFigure {
+    fun createFigureOff(): IFigure {
         return cad.createEntities(
             frameSize = widthFrame.decimal,
             gridSize = GridOption(

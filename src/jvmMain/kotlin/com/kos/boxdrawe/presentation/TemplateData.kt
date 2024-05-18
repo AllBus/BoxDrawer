@@ -23,10 +23,11 @@ import turtoise.TortoiseRunner
 import turtoise.TortoiseState
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.memory.TwoBlockTortoiseMemory
+import java.awt.datatransfer.Transferable
 import java.io.File
 import java.io.FileInputStream
 
-class TemplateData(val tools: ITools) {
+class TemplateData(override val tools: ITools): SaveFigure {
     private val templater = TemplateCreator
     private val emptyAlgorithm = TemplateAlgorithm(
         "",
@@ -151,10 +152,7 @@ class TemplateData(val tools: ITools) {
         redraw()
     }
 
-    fun save(fileName: String) {
-        tools.saveFigures(fileName, currentFigure.value)
-        tools.updateChooserDir(fileName)
-    }
+    override suspend fun createFigure(): IFigure = currentFigure.value
 
     suspend fun print(): String {
         if (checkboxEditor.value){

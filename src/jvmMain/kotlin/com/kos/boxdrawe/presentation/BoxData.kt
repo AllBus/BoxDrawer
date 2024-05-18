@@ -13,8 +13,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import turtoise.DrawerSettings
 import turtoise.ZigzagInfo
 import vectors.Vec2
+import java.io.File
 
-class BoxData(val tools: ITools) {
+class BoxData(override val tools: ITools): SaveFigure {
 
     val figures = MutableStateFlow<IFigure>(Figure.Empty)
 
@@ -79,17 +80,14 @@ class BoxData(val tools: ITools) {
         figures.value =fig
     }
 
-    fun save(fileName: String) {
+    override suspend fun createFigure(): IFigure {
         val line = text.value
         val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.COLUMN)
         val ds = tools.ds()
-        val fig = FigureColor(
+        return FigureColor(
             Color.DarkGray.toArgb(),
             boxFigures(alg, ds)
         )
-
-        tools.saveFigures(fileName, fig)
-        tools.updateChooserDir(fileName)
     }
 
     suspend fun print():String{

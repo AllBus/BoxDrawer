@@ -16,9 +16,10 @@ import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
 import vectors.Vec2
+import java.io.File
 import kotlin.math.atan2
 
-class BezierData(val tools: Tools) {
+class BezierData(override val tools: Tools): SaveFigure {
 
     private val cList = MutableStateFlow(
         listOf(
@@ -97,11 +98,7 @@ class BezierData(val tools: Tools) {
         figure.value = FigureList( listOf( fb, fp ))
     }
 
-    fun save(fileName: String) {
-        redraw()
-        tools.saveFigures(fileName, figure.value)
-        tools.updateChooserDir(fileName)
-    }
+    override suspend fun createFigure(): IFigure= figure.value
 
     fun print(): String {
         var st = c1.value.first()

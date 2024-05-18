@@ -8,18 +8,20 @@ import com.kos.figure.FigureLine
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import vectors.Vec2
+import java.io.File
 
-class SoftRezData(val tools: ITools, val tortoise: TortoiseData) {
+class SoftRezData(override val tools: ITools, val tortoise: TortoiseData):SaveFigure {
     val sr = SoftRez()
 
-    fun saveRez(fileName: String, figure: IFigure) {
-        tools.saveFigures(fileName, drawRez(figure))
-        tools.updateChooserDir(fileName)
-    }
+    var baseFigure: IFigure = Figure.Empty
+
+    override suspend fun createFigure(): IFigure = drawRez(baseFigure)
 
     val figures = MutableStateFlow<IFigure>(Figure.Empty)
 
     fun drawRez(figure: IFigure): IFigure {
+        baseFigure = figure
+
         val f = if (figure.count == 0) {
             FigureLine(Vec2(0.0, 0.0), Vec2(2.0, 0.0))
         } else

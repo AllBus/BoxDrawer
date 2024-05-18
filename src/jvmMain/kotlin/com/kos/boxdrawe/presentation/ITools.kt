@@ -22,29 +22,31 @@ import java.io.FileWriter
 interface ITools {
     fun ds(): DrawerSettings
 
-    fun saveFigures(fileName: String, figures: IFigure)
+    fun saveFigures(fileName: File, figures: IFigure)
+
+    fun dxfText(figures: IFigure): String
 
     fun algorithms(): List<Pair<String, TortoiseAlgorithm>>
 
-    fun chooserDir():File
+    fun chooserDir(): File
 
-    fun updateChooserDir(fileName:String)
+    fun updateChooserDir(fileName: String)
 }
 
 class Tools() : ITools {
 
     private val drawingSettings = mutableStateOf(DrawerSettings())
 
-    val settings : State<DrawerSettings> = drawingSettings
+    val settings: State<DrawerSettings> = drawingSettings
 
     val settingsList = mutableStateOf<DrawerSettingsList>(DrawerSettingsList(emptyList()))
 
-    val figureList = mutableStateOf<List<Pair<String, TortoiseAlgorithm>>>( emptyList() )
+    val figureList = mutableStateOf<List<Pair<String, TortoiseAlgorithm>>>(emptyList())
 
     val lastSelectDir = MutableStateFlow<File>(File(""))
 
-    override fun updateChooserDir(fileName:String){
-        File(fileName).parentFile?.let{ p ->
+    override fun updateChooserDir(fileName: String) {
+        File(fileName).parentFile?.let { p ->
             lastSelectDir.value = p
         }
     }
@@ -62,38 +64,47 @@ class Tools() : ITools {
         return figureList.value
     }
 
-    fun loadSettings(){
+    fun loadSettings() {
         println("loadSettings")
-        val settingsFile = useResource("settings/properties.xml"){ input ->
-           // InputStreamReader(input).use { r -> r.readLines().forEach(::println) }
+        val settingsFile = useResource("settings/properties.xml") { input ->
+            // InputStreamReader(input).use { r -> r.readLines().forEach(::println) }
             val settings = XML.decodeFromReader<FullSettings>(StAXReader(input, "UTF-8"))
             settingsList.value = settings.properties
-            selectSettings(settingsList.value.group.firstOrNull()?: DrawerSettings())
+            selectSettings(settingsList.value.group.firstOrNull() ?: DrawerSettings())
         }
 
         val algorithms = File("./settings/figures.txt")
         println(algorithms.absolutePath)
-        if (algorithms.exists()){
-            try{
+        if (algorithms.exists()) {
+            try {
                 figureList.value =
                     algorithms
                         .readLines(Charsets.UTF_8)
                         .map { TortoiseParser.extractTortoiseCommands(it) }
-            }catch (
-                e : Throwable
-            ){
+            } catch (
+                e: Throwable
+            ) {
 
             }
         }
     }
 
-    fun selectSettings(newDs: DrawerSettings){
+    fun selectSettings(newDs: DrawerSettings) {
         drawingSettings.value = newDs
         println(drawingSettings.value)
     }
 
 
-    override fun saveFigures(fileName: String, figures: IFigure) {
+    override fun saveFigures(fileName: File, figures: IFigure) {
+        val dxfText = dxfText(figures)
+
+        FileWriter(fileName).use { fileWriter ->
+            fileWriter.write(dxfText);
+            fileWriter.flush();
+        };
+    }
+
+    override fun dxfText(figures: IFigure): String {
         val dxfDocument = DXFDocument("Figure")
 
         val graphics = dxfDocument.getGraphics()
@@ -106,17 +117,11 @@ class Tools() : ITools {
         figures.draw(g)
 
         /* Get the DXF output as a string - it's just text - and  save  in a file for use with a CAD package */
-        val dxfText = dxfDocument.toDXFString();
-
-        FileWriter(fileName).use { fileWriter ->
-            fileWriter.write(dxfText);
-            fileWriter.flush();
-        };
-
+        return dxfDocument.toDXFString();
     }
 
-    fun selectFigure(index:Int){
-      //  currentFigure.value = figureList.value.getOrNull(index)?.second.?:FigureEmpty
+    fun selectFigure(index: Int) {
+        //  currentFigure.value = figureList.value.getOrNull(index)?.second.?:FigureEmpty
     }
 
 }

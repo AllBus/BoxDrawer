@@ -79,15 +79,10 @@ fun ToolbarForGrid(vm: GridData) {
 
 @Composable
 fun ToolbarActionForGrid(vm: GridData) {
-    val coroutineScope = rememberCoroutineScope()
     Column(
     ) {
-        RunButton("Нарисовать деталь") {
-            coroutineScope.launch {
-                showFileChooser(vm.tools.chooserDir()) { f -> vm.save(f) }
-            }
+        SaveToFileButton(vm)
 
-        }
         Spacer(Modifier.height(4.dp))
         RunButton("Посторить по тексту") {
             vm.createFromText()

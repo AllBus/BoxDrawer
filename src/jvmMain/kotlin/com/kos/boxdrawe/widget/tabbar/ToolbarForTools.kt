@@ -33,6 +33,7 @@ import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.RunCheckBox
+import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.TabContentModifier
 import com.kos.boxdrawe.widget.showFileChooser
 import com.kos.boxdrawe.widget.showLoadFileChooser
@@ -192,11 +193,7 @@ fun ToolbarActionForTools(vm: ToolsData) {
     val clipboardManager = LocalClipboardManager.current
     Column(
     ) {
-        RunButton("Нарисовать деталь") {
-            coroutineScope.launch {
-                showFileChooser(vm.tools.chooserDir()) { f -> vm.templateData.save(f) }
-            }
-        }
+        SaveToFileButton(vm.templateData)
 
         Spacer(Modifier.height(4.dp))
         RunButton("Скопировать код") {

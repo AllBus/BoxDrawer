@@ -13,6 +13,7 @@ import com.kos.boxdrawe.presentation.SoftRezData
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.RunCheckBox
+import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.TabContentModifier
 import com.kos.boxdrawe.widget.showFileChooser
 import com.kos.figure.IFigure
@@ -79,14 +80,9 @@ fun ToolbarForSoft(vm: SoftRezData) {
 }
 
 @Composable
-fun ToolbarActionForSoft(vm: SoftRezData, figures: () -> IFigure){
-    val coroutineScope = rememberCoroutineScope()
+fun ToolbarActionForSoft(vm: SoftRezData){
     Column(
     ) {
-        RunButton("Нарисовать деталь") {
-            coroutineScope.launch {
-                showFileChooser(vm.tools.chooserDir()) { f -> vm.saveRez(f, figures()) }
-            }
-        }
+        SaveToFileButton(vm)
     }
 }
