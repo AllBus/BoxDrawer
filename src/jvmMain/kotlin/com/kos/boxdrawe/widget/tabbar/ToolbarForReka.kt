@@ -1,27 +1,30 @@
 package com.kos.boxdrawe.widget.tabbar
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AddCircle
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material.icons.rounded.Clear
 import androidx.compose.material.icons.rounded.Create
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.KeyboardArrowLeft
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -49,7 +53,6 @@ import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.SimpleEditText
 import com.kos.boxdrawe.widget.TabContentModifier
-import com.kos.boxdrawe.widget.showFileChooser
 import kotlinx.coroutines.launch
 import turtoise.rect.Kubik.Companion.STORONA_C
 import turtoise.rect.Kubik.Companion.STORONA_CL
@@ -61,9 +64,45 @@ import turtoise.rect.Kubik.Companion.STORONA_R
 fun ToolbarForReka(vm: RekaToolsData) {
 
     val scope = rememberCoroutineScope()
-    val text = remember { mutableStateOf<String>("") }
-    val paddingText = remember { mutableStateOf<String>("0") }
+    val text = remember { vm.points }
+    val paddingText = remember { vm.paddingNext }
+
+    val shiftValue = remember { vm.shiftValue }
+    val angleValue = remember { vm.angleValue }
+
     val position = vm.current.collectAsState()
+
+    val visibleClearAlert = remember { mutableStateOf<Boolean>(false) }
+    if( visibleClearAlert.value) {
+        AlertDialog(
+            onDismissRequest = {
+                visibleClearAlert.value = false
+            },
+            confirmButton = {
+                TextButton( onClick = {
+                    scope.launch {
+                        vm.clearBox()
+                    }
+                    visibleClearAlert.value = false
+                }){
+                    Text("Очистить")
+                }
+            },
+            dismissButton = {
+                TextButton( onClick = {
+                    visibleClearAlert.value = false
+                }){
+                    Text("Отмена")
+                }
+            },
+            title = {
+                Text("Очистить текущую фигуру?")
+            },
+            text=  {
+                Text("Текущая фигура будет утеряна. Продолжить?")
+            }
+        )
+    }
 
     Row(
         modifier = TabContentModifier
@@ -71,14 +110,18 @@ fun ToolbarForReka(vm: RekaToolsData) {
         Column(
             modifier = Modifier.weight(weight = 4f, fill = true).padding(end = 8.dp)
         ) {
-            SimpleEditText("Точки", "", text,
-                fieldMaxWidth = Dp.Unspecified) { t ->
-                text.value = t
-                vm.setPoints(t) }
-            SimpleEditText("Отступ", "", paddingText,
-                fieldMaxWidth = Dp.Unspecified) {t ->
-                paddingText.value = t
-                vm.setPadding(t) }
+            SimpleEditText(
+                "Точки", "", text,
+                fieldMaxWidth = Dp.Unspecified
+            ) { t ->
+                vm.setPoints(t)
+            }
+            SimpleEditText(
+                "Отступ", "", paddingText,
+                fieldMaxWidth = Dp.Unspecified
+            ) { t ->
+                vm.setPadding(t)
+            }
             Label(
                 text = "${position.value.position.edge} : ${position.value.position.storona} : ${position.value.position.block}",
                 modifier = Modifier.align(Alignment.End)
@@ -91,6 +134,7 @@ fun ToolbarForReka(vm: RekaToolsData) {
             CircleBox { current, change, start ->
                 vm.moveCurrentReka(change)
             }
+            SimpleEditText("", "", shiftValue){}
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true).padding(end = 2.dp)
@@ -99,12 +143,13 @@ fun ToolbarForReka(vm: RekaToolsData) {
             CircleBox { current, change, start ->
                 vm.rotateCurrentReka(change)
             }
+            SimpleEditText("", "", angleValue){}
         }
         Column(
             modifier = Modifier.weight(weight = 2f, fill = true).padding(end = 2.dp)
         ) {
 
-            Column (
+            Column(
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -123,9 +168,16 @@ fun ToolbarForReka(vm: RekaToolsData) {
                         ImageButton(
                             icon = Icons.Rounded.Delete,
                             onClick = {
+
                                 scope.launch {
                                     vm.removeBox()
                                 }
+                            }
+                        )
+                        ImageButton(
+                            icon = Icons.Rounded.Clear,
+                            onClick = {
+                                visibleClearAlert.value = true
                             }
                         )
                     }
@@ -139,7 +191,7 @@ fun ToolbarForReka(vm: RekaToolsData) {
                         }
                     }
                 )
-                Row{
+                Row {
                     CharButton(
                         text = "L",
                         modifier = Modifier.defaultMinSize(24.dp),
@@ -191,13 +243,13 @@ fun ToolbarForReka(vm: RekaToolsData) {
                     modifier = Modifier,
                 ) {
                     ImageButton(
-                    icon = Icons.AutoMirrored.Rounded.ArrowBack,
-                    onClick = {
-                        scope.launch {
-                            vm.selectPosition(BACK_EDGE)
+                        icon = Icons.AutoMirrored.Rounded.ArrowBack,
+                        onClick = {
+                            scope.launch {
+                                vm.selectPosition(BACK_EDGE)
+                            }
                         }
-                    }
-                )
+                    )
                     ImageButton(
                         icon = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
                         onClick = {

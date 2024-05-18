@@ -1,5 +1,7 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.kos.figure.Figure
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
@@ -11,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import turtoise.memory.SimpleTortoiseMemory
+import turtoise.memory.keys.DegreesMemoryKey
 import turtoise.memory.keys.DoubleMemoryKey
 import turtoise.memory.keys.EditMemoryKey
 import turtoise.memory.keys.MemoryKey
@@ -27,6 +30,8 @@ import turtoise.rect.KubikGroup
 import turtoise.rect.Reka
 import turtoise.rect.RekaCad
 import turtoise.rect.RekaCad.newReka
+import turtoise.rect.RekaEndStorona
+import turtoise.rect.RekaStorona
 import vectors.Vec2
 import kotlin.math.PI
 
@@ -35,12 +40,21 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
     private val memory = SimpleTortoiseMemory()
 
     private val redrawEvent = MutableStateFlow(0)
-    private val points = MutableStateFlow<String>("")
-    private val paddingNext = MutableStateFlow<String>("0.0")
+    val points = mutableStateOf<String>("")
+    val paddingNext = mutableStateOf<String>("0.0")
+
+    val shiftValue = mutableStateOf<String>("0.0")
+    val angleValue = mutableStateOf<String>("0.0")
 
     private var currentReka = Reka(DoubleMemoryKey(10.0), MemoryKey.ZERO)
 
-    private val topReka = MutableStateFlow(Reka(DoubleMemoryKey(10.0), MemoryKey.ZERO))
+    private val topReka = MutableStateFlow(Reka(DoubleMemoryKey(10.0), MemoryKey.ZERO).apply {
+        this.storoni.addAll(listOf(
+            RekaStorona(DoubleMemoryKey(10.0), DegreesMemoryKey(DoubleMemoryKey(90.0))),
+            RekaStorona(DoubleMemoryKey(10.0), DegreesMemoryKey(DoubleMemoryKey(90.0))),
+            RekaEndStorona(DegreesMemoryKey(DoubleMemoryKey(90.0))),
+        ))
+    })
     private val rekaFigure = MutableStateFlow<IFigure>(Figure.Empty)
     private val rekaPodoshva = MutableStateFlow<IFigure>(Figure.Empty)
     var current: MutableStateFlow<RectBlockPosition> = MutableStateFlow(
@@ -169,6 +183,8 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
                 )
             }
         }
+
+        resetShiftValue()
     }
 
     private fun findKubiki(reka: Reka, position: RekaStoronaPosition): KubikGroup? {
@@ -209,6 +225,21 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
         }
     }
 
+    suspend fun clearBox() {
+        val cv = current.value
+
+        topReka.value = Reka(DoubleMemoryKey(10.0), MemoryKey.ZERO).apply {
+            this.storoni.addAll(listOf(
+                RekaStorona(DoubleMemoryKey(10.0), DegreesMemoryKey(DoubleMemoryKey(90.0))),
+                RekaStorona(DoubleMemoryKey(10.0), DegreesMemoryKey(DoubleMemoryKey(90.0))),
+                RekaEndStorona(DegreesMemoryKey(DoubleMemoryKey(90.0))),
+            ))
+        }
+        current.value = cv.copy(reka =topReka.value)
+        resetShiftValue()
+        redraw()
+    }
+
     suspend fun removeBox() {
         val cv = current.value
 
@@ -218,6 +249,7 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
             parent.remove(cv.reka)
 
             current.value = cv.copy(reka = parent)
+            resetShiftValue()
             redraw()
         }
     }
@@ -229,6 +261,7 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
             parseReka(pt, MemoryKey(paddingNext.value))?.let { f ->
                 RekaCad.updateReka(cv.reka, f)
             }
+            resetShiftValue()
             redraw()
         }
     }
@@ -270,6 +303,7 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
                     current.value = cv.copy(
                         position = cv.position.copy(edge = i)
                     )
+                    resetShiftValue()
                 }
             }
         } else {
@@ -281,7 +315,7 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
                     block = 0,
                 )
             )
-
+            resetShiftValue()
         }
     }
 
@@ -315,13 +349,14 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
                     EditMemoryKey(a, change, SummaMemoryKey(a, change))
                 }
                 storona.angle = k
+                angleValue.value = k.name
                 redraw()
             }
         }
     }
 
-    fun moveCurrentReka(change: Double) {
-        val v = change / 15.0
+    fun moveCurrentReka(value: Double) {
+        val change = value / 15.0
         val reka = current.value.reka
         val e = current.value.position.edge
         if (e == 1) {
@@ -335,6 +370,7 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
             } else {
                 EditMemoryKey(a, change, SummaMemoryKey(a, change))
             }
+            shiftValue.value = k.name
             reka.padding = k
             redraw()
         } else {
@@ -351,9 +387,30 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
                     EditMemoryKey(a, change, SummaMemoryKey(a, change))
                 }
                 storona.length = k
+                shiftValue.value = k.name
                 redraw()
             }
         }
+    }
+
+    private fun resetShiftValue(){
+        val reka = current.value.reka
+        val e = current.value.position.edge
+        shiftValue.value = ""
+        angleValue.value = ""
+        if (e == 1) {
+            val a = reka.padding
+            shiftValue.value = a.name
+        } else {
+            reka.storoni.getOrNull(e - 2)?.let { storona ->
+                shiftValue.value = storona.length.name
+
+            }
+        }
+        reka.storoni.getOrNull(e - 1)?.let { storona ->
+            angleValue.value = storona.angle.name
+        }
+
     }
 
     companion object {
