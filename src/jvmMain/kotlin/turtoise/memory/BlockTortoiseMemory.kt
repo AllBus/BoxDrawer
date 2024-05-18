@@ -1,10 +1,10 @@
 package turtoise.memory
 
-import turtoise.TurtoiseParserStackItem
+import turtoise.parser.TortoiseParserStackItem
 import turtoise.memory.keys.MemoryKey
 
 class BlockTortoiseMemory(
-    val block: TurtoiseParserStackItem
+    val block: TortoiseParserStackItem
 ) : SimpleTortoiseMemory() {
 
     override fun value(variable: MemoryKey, defaultValue: Double): Double {
@@ -16,8 +16,8 @@ class BlockTortoiseMemory(
 }
 
 class TwoBlockTortoiseMemory(
-    val block: TurtoiseParserStackItem,
-    val defaultBlock: TurtoiseParserStackItem,
+    val block: TortoiseParserStackItem,
+    val defaultBlock: TortoiseParserStackItem,
 ) : SimpleTortoiseMemory() {
 
     override fun value(variable: MemoryKey, defaultValue: Double): Double {

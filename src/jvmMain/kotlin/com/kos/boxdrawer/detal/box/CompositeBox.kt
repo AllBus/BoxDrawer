@@ -5,6 +5,8 @@ import com.kos.boxdrawer.detal.robot.IRobotCommandFactory
 import turtoise.*
 import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
+import turtoise.parser.TortoiseParser
+import turtoise.parser.TortoiseParserStackItem
 
 /**
  * TODO:
@@ -37,7 +39,7 @@ class CompositeBox(
     }
 
     object Factory: IRobotCommandFactory {
-        override fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand {
+        override fun create(args: List<MemoryKey>, item: TortoiseParserStackItem): IRobotCommand {
             return CompositeBox(item.blocks.map { it.arguments() })
         }
 

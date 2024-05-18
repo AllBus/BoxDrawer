@@ -2,7 +2,7 @@ package turtoise.help
 
 import androidx.compose.ui.text.AnnotatedString
 import turtoise.TortoiseCommand
-import turtoise.TortoiseParser
+import turtoise.parser.TortoiseParser
 
 class TortoiseHelpInfo : SimpleHelpInfo() {
 

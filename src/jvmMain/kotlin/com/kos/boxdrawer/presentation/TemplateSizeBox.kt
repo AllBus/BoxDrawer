@@ -10,12 +10,12 @@ import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateItemSize
-import turtoise.TurtoiseParserStackItem
+import turtoise.parser.TortoiseParserStackItem
 
 @Composable
 fun TemplateSizeBox(
     form: TemplateItemSize,
-    block: TurtoiseParserStackItem?,
+    block: TortoiseParserStackItem?,
     prefix: String,
     templateGenerator: TemplateGeneratorListener
 ) {

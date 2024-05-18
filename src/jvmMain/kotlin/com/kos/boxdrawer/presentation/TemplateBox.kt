@@ -33,7 +33,7 @@ import com.kos.boxdrawer.template.TemplateItemRect
 import com.kos.boxdrawer.template.TemplateItemSize
 import com.kos.boxdrawer.template.TemplateItemString
 import com.kos.boxdrawer.template.TemplateItemTriple
-import turtoise.TurtoiseParserStackItem
+import turtoise.parser.TortoiseParserStackItem
 
 @Composable
 fun TemplateBox(
@@ -69,7 +69,7 @@ fun TemplateBox(
 fun TemplateFormBox(
     modifier: Modifier = Modifier,
     form: TemplateForm,
-    block: TurtoiseParserStackItem?,
+    block: TortoiseParserStackItem?,
     prefix: String,
     templateGenerator: TemplateGeneratorListener,
     isEdit : Boolean,
@@ -101,7 +101,7 @@ fun TemplateFormBox(
 @Composable
 fun TemplateItemBox(
     item: TemplateItem,
-    block: TurtoiseParserStackItem?,
+    block: TortoiseParserStackItem?,
     prefix: String,
     templateGenerator: TemplateGeneratorListener,
     isEdit : Boolean,

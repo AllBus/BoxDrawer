@@ -3,8 +3,8 @@ package com.kos.boxdrawer.detal.box
 import com.kos.boxdrawer.detal.box.BoxAlgorithm.Companion.pazName
 import turtoise.TortoiseAlgorithm
 import turtoise.TortoiseFigureAlgorithm
-import turtoise.TortoiseParser
-import turtoise.TurtoiseParserStackBlock
+import turtoise.parser.TortoiseParser
+import turtoise.parser.TortoiseParserStackBlock
 
 data class WaldParam(
     val topOffset: Double,
@@ -54,11 +54,11 @@ data class WaldParam(
     }
 
     companion object {
-        fun from(block: TurtoiseParserStackBlock): WaldParam {
-            val bottom = block.getBlockAtName("b")?:TurtoiseParserStackBlock()
-            val top = block.getBlockAtName("t")?:TurtoiseParserStackBlock()
-            val edge = block.getBlockAtName("e")?:TurtoiseParserStackBlock()
-            val hole = block.getBlockAtName("h")?:TurtoiseParserStackBlock()
+        fun from(block: TortoiseParserStackBlock): WaldParam {
+            val bottom = block.getBlockAtName("b")?: TortoiseParserStackBlock()
+            val top = block.getBlockAtName("t")?: TortoiseParserStackBlock()
+            val edge = block.getBlockAtName("e")?: TortoiseParserStackBlock()
+            val hole = block.getBlockAtName("h")?: TortoiseParserStackBlock()
             val figure = block.getBlockAtName("z")
             val zagFigure = block.getBlockAtName("Z")
 

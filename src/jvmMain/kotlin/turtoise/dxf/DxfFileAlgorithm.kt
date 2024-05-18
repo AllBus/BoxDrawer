@@ -1,6 +1,5 @@
 package turtoise.dxf
 
-import androidx.compose.ui.text.AnnotatedString
 import com.kos.boxdrawer.figure.FigureExtractor
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
@@ -12,7 +11,6 @@ import org.kabeja.parser.ParserBuilder
 import turtoise.DrawerSettings
 import turtoise.TortoiseAlgorithm
 import turtoise.TortoiseBlock
-import turtoise.TortoiseParser
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
 import turtoise.memory.TortoiseMemory

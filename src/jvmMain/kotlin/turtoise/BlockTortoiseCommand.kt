@@ -2,10 +2,12 @@ package turtoise
 
 import turtoise.memory.MemoryKeyBuilder
 import turtoise.memory.TortoiseMemory
+import turtoise.parser.TortoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackItem
 
 class BlockTortoiseCommand(
     override val command: Char,
-    val block: TurtoiseParserStackBlock,
+    val block: TortoiseParserStackBlock,
 ) : TortoiseCommand {
     override val size: Int
         get() = block.inner.size
@@ -16,7 +18,7 @@ class BlockTortoiseCommand(
         } ?: 0.0
     }
 
-    override fun takeBlock(index: Int): TurtoiseParserStackItem? {
+    override fun takeBlock(index: Int): TortoiseParserStackItem? {
         return block.blocks.getOrNull(index)
     }
 
@@ -33,7 +35,7 @@ class BlockTortoiseCommand(
         }
     }
 
-    private fun calculateValue(item: TurtoiseParserStackItem, memory: TortoiseMemory): Double {
+    private fun calculateValue(item: TortoiseParserStackItem, memory: TortoiseMemory): Double {
         return memory.value(
             variable = MemoryKeyBuilder.createMemoryKey(item),
             defaultValue = 0.0,

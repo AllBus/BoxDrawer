@@ -3,6 +3,8 @@ package com.kos.boxdrawer.detal.robot
 import turtoise.*
 import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
+import turtoise.parser.TortoiseParser
+import turtoise.parser.TortoiseParserStackItem
 
 class RobotRect(
     params: List<MemoryKey>
@@ -44,7 +46,7 @@ class RobotRect(
     }
 
     object Factory: IRobotCommandFactory{
-        override fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand {
+        override fun create(args: List<MemoryKey>, item: TortoiseParserStackItem): IRobotCommand {
             return RobotRect(args)
         }
 
@@ -129,7 +131,7 @@ class RobotHardRect(
     }
 
     object Factory: IRobotCommandFactory{
-        override fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand {
+        override fun create(args: List<MemoryKey>, item: TortoiseParserStackItem): IRobotCommand {
             return RobotHardRect(args)
         }
 

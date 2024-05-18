@@ -1,6 +1,8 @@
 package com.kos.boxdrawer.detal.box
 
 import turtoise.*
+import turtoise.parser.TortoiseParser
+import turtoise.parser.TortoiseParserStackItem
 
 object CalculatePolka {
 
@@ -178,7 +180,7 @@ object CalculatePolka {
         }
     }
 
-    fun polka(item: TurtoiseParserStackItem): Polka {
+    fun polka(item: TortoiseParserStackItem): Polka {
 
         var cs = 0;
         var ce = 0;

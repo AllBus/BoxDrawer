@@ -3,6 +3,8 @@ package com.kos.boxdrawer.detal.robot
 import turtoise.*
 import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
+import turtoise.parser.TortoiseParser
+import turtoise.parser.TortoiseParserStackItem
 
 class RobotMove(
     val x: MemoryKey,
@@ -17,7 +19,7 @@ class RobotMove(
     }
 
     object Factory: IRobotCommandFactory {
-        override fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand {
+        override fun create(args: List<MemoryKey>, item: TortoiseParserStackItem): IRobotCommand {
             return RobotMove(
                 args.getOrElse(0) { MemoryKey.EMPTY },
                 args.getOrElse(1) { MemoryKey.EMPTY }

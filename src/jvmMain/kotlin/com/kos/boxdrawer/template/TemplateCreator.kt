@@ -1,8 +1,8 @@
 package com.kos.boxdrawer.template
 
-import turtoise.TortoiseParser
-import turtoise.TurtoiseParserStackBlock
-import turtoise.TurtoiseParserStackItem
+import turtoise.parser.TortoiseParser
+import turtoise.parser.TortoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackItem
 import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 
 object TemplateCreator {
@@ -11,15 +11,15 @@ object TemplateCreator {
         return parse(TortoiseParser.parseSkobki(line))
     }
 
-    fun parse(skobki: TurtoiseParserStackItem): TemplateForm {
-        if (skobki is TurtoiseParserStackBlock) {
+    fun parse(skobki: TortoiseParserStackItem): TemplateForm {
+        if (skobki is TortoiseParserStackBlock) {
             return createForm(skobki)
         } else {
             return TemplateForm("", "", emptyList())
         }
     }
 
-    private fun createForm(block: TurtoiseParserStackBlock): TemplateForm {
+    private fun createForm(block: TortoiseParserStackBlock): TemplateForm {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
         val argument = block.getBlockAtName("arg")?.argument.orEmpty().name
@@ -30,7 +30,7 @@ object TemplateCreator {
         return TemplateForm(title, argument, items)
     }
 
-    private fun createItem(block: TurtoiseParserStackBlock): TemplateItem? {
+    private fun createItem(block: TortoiseParserStackBlock): TemplateItem? {
         val title = block.inner.getOrNull(2)?.innerLine.orEmpty()
         val argument = block.inner.getOrNull(1)?.argument.orEmpty().name
         val name = block.name.name.lowercase()
@@ -38,7 +38,7 @@ object TemplateCreator {
         return createItem(name = name, title = title, argument = argument, block = block)
     }
 
-    fun createMulti(block: TurtoiseParserStackBlock): TemplateItemMulti? {
+    fun createMulti(block: TortoiseParserStackBlock): TemplateItemMulti? {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
         val argument = block.getBlockAtName("arg")?.argument.orEmpty().name
@@ -58,7 +58,7 @@ object TemplateCreator {
         name: String,
         title: String,
         argument: String,
-        block: TurtoiseParserStackBlock? = null
+        block: TortoiseParserStackBlock? = null
     ): TemplateItem? {
         if (argument.isEmpty())
             return null

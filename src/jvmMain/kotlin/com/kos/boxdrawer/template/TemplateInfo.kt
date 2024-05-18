@@ -1,12 +1,12 @@
 package com.kos.boxdrawer.template
 
-import turtoise.TurtoiseParserStackBlock
-import turtoise.TurtoiseParserStackItem
+import turtoise.parser.TortoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackItem
 import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 
 class TemplateInfo(
     val form: TemplateForm,
-    val values: TurtoiseParserStackItem,
+    val values: TortoiseParserStackItem,
     val edit: Boolean,
 ) {
     fun memoryValues(): TemplateMemory {
@@ -28,7 +28,7 @@ class TemplateInfo(
 
     fun memoryFormValues(
         form: TemplateForm,
-        block: TurtoiseParserStackItem,
+        block: TortoiseParserStackItem,
         prefix: String
     ): Map<String, TemplateMemoryItem> {
 
@@ -41,7 +41,7 @@ class TemplateInfo(
 
     fun memoryValues(
         item: TemplateItem,
-        block: TurtoiseParserStackItem,
+        block: TortoiseParserStackItem,
         prefix: String
     ): Map<String, TemplateMemoryItem> {
         val newPrefix = prefix + "." + item.argumentName
@@ -77,6 +77,6 @@ class TemplateInfo(
     }
 
     companion object {
-        val EMPTY = TemplateInfo(TemplateForm("", "", emptyList()), TurtoiseParserStackBlock(), false)
+        val EMPTY = TemplateInfo(TemplateForm("", "", emptyList()), TortoiseParserStackBlock(), false)
     }
 }

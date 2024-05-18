@@ -1,6 +1,6 @@
 package com.kos.boxdrawer.template
 
-import turtoise.TurtoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackBlock
 
 class TemplateMemory(){
     private val memory = mutableMapOf<String, TemplateMemoryItem>()
@@ -12,8 +12,8 @@ class TemplateMemory(){
     }
 
     fun memoryBlock(
-        top: TurtoiseParserStackBlock,
-    ): TurtoiseParserStackBlock {
+        top: TortoiseParserStackBlock,
+    ): TortoiseParserStackBlock {
 
         memory.forEach { (k, value) ->
             val sp = k.split('.').drop(1)
@@ -21,7 +21,7 @@ class TemplateMemory(){
             for (c in sp) {
                 val b = p.getBlockAtName(c)
                 if (b == null) {
-                    val nb = TurtoiseParserStackBlock('(')
+                    val nb = TortoiseParserStackBlock('(')
                     nb.add(c)
                     p.add(nb)
                     p = nb

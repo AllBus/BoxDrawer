@@ -1,7 +1,6 @@
 package turtoise.rect
 
-import com.kos.boxdrawe.presentation.RectBlockPosition
-import turtoise.TurtoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackBlock
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.MemoryKey
 import vectors.Vec2
@@ -145,8 +144,8 @@ data class KubikBias(
         return "$biasT/$biasB~$napravlenie"
     }
 
-    fun print(): TurtoiseParserStackBlock {
-        val tp = TurtoiseParserStackBlock('(', RekaCad.BLOCK_KUBIK_BIAS)
+    fun print(): TortoiseParserStackBlock {
+        val tp = TortoiseParserStackBlock('(', RekaCad.BLOCK_KUBIK_BIAS)
         tp.add("${napravlenie.value}")
         tp.add("$biasT")
         tp.add("$biasB")

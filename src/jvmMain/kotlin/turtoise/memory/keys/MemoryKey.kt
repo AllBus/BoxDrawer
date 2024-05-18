@@ -1,5 +1,6 @@
 package turtoise.memory.keys
 
+import turtoise.parser.TortoiseParserStackBlock
 import kotlin.math.PI
 
 //@JvmInline
@@ -25,6 +26,10 @@ interface MemoryKey {
 
         operator fun invoke(name: String): MemoryKey {
             return StringMemoryKey(name)
+        }
+
+        operator fun invoke(value: TortoiseParserStackBlock): MemoryKey {
+            return StackBlockMemoryKey(value)
         }
 
         inline fun MemoryKey.ifEmpty(action: () -> MemoryKey): MemoryKey =

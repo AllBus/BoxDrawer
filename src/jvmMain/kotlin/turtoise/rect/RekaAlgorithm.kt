@@ -8,11 +8,11 @@ import turtoise.TortoiseAlgorithm
 import turtoise.TortoiseBlock
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
-import turtoise.TurtoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackBlock
 import turtoise.memory.TortoiseMemory
 
 class RekaAlgorithm(
-    val rekaBlock: TurtoiseParserStackBlock,
+    val rekaBlock: TortoiseParserStackBlock,
     useAlgorithms: Array<String>?
 ) : TortoiseAlgorithm {
 

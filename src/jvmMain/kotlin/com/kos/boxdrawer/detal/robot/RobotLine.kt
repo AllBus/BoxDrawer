@@ -1,8 +1,8 @@
 package com.kos.boxdrawer.detal.robot
 
-import androidx.compose.ui.text.AnnotatedString
 import com.kos.boxdrawer.detal.box.CompositeBox
 import turtoise.*
+import turtoise.parser.TortoiseParserStackItem
 
 class RobotLine(
     val line: List<IRobotCommand>
@@ -39,13 +39,13 @@ class RobotLine(
         private val simpleFactories = factories.asSequence().filter { it.isSimple }.flatMap { f -> f.names.map { n -> n to f } }.toMap()
         private val mediumFactories = factories.asSequence().filter { !it.isSimple }.flatMap { f -> f.names.map { n -> n to f } }.toMap()
 
-        fun parseRobot(items: TurtoiseParserStackItem, useAlgorithms: Array<String>?): TortoiseAlgorithm {
+        fun parseRobot(items: TortoiseParserStackItem, useAlgorithms: Array<String>?): TortoiseAlgorithm {
 
             val result = parseRobot(items, false)
             return RobotLine(result.toList())
         }
 
-        fun parseRobot(v: TurtoiseParserStackItem, onlySimple: Boolean): List<IRobotCommand> {
+        fun parseRobot(v: TortoiseParserStackItem, onlySimple: Boolean): List<IRobotCommand> {
             val result = mutableListOf<IRobotCommand>()
             var addBlocks = true
             if (v.isArgument()) {

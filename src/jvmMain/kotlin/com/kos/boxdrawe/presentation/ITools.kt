@@ -13,7 +13,7 @@ import turtoise.DrawerSettings
 import turtoise.DrawerSettingsList
 import turtoise.FullSettings
 import turtoise.TortoiseAlgorithm
-import turtoise.TortoiseParser
+import turtoise.parser.TortoiseParser
 import java.awt.BasicStroke
 import java.awt.Color
 import java.io.File

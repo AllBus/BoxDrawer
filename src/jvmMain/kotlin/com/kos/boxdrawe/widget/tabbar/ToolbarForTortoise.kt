@@ -33,7 +33,7 @@ fun ToolbarForTortoise(vm: TortoiseData) {
         ) {
             EditTextField("Фигуры", text, true) {
                 vm.findHelp(vm.text.value.text, vm.text.value.selection)
-                vm.createTortoise(it.toString())
+                vm.createTortoise()
             }
         }
 

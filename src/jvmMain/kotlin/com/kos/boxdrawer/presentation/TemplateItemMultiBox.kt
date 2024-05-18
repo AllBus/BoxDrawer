@@ -23,12 +23,12 @@ import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateItemMulti
-import turtoise.TurtoiseParserStackItem
+import turtoise.parser.TortoiseParserStackItem
 
 @Composable
 fun TemplateItemMultiBox(
     form: TemplateItemMulti,
-    block: TurtoiseParserStackItem?,
+    block: TortoiseParserStackItem?,
     prefix: String,
     templateGenerator: TemplateGeneratorListener
 ) {

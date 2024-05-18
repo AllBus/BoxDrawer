@@ -21,7 +21,7 @@ import turtoise.TemplateAlgorithm
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
-import turtoise.TurtoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackBlock
 import turtoise.memory.TwoBlockTortoiseMemory
 import java.io.File
 import java.io.FileInputStream
@@ -30,9 +30,9 @@ class TemplateData(val tools: ITools) {
     private val templater = TemplateCreator
     private val emptyAlgorithm = TemplateAlgorithm(
         "",
-        TurtoiseParserStackBlock(),
-        TurtoiseParserStackBlock(),
-        TurtoiseParserStackBlock()
+        TortoiseParserStackBlock(),
+        TortoiseParserStackBlock(),
+        TortoiseParserStackBlock()
     )
 
     val checkboxEditor = MutableStateFlow(false)
@@ -58,13 +58,13 @@ class TemplateData(val tools: ITools) {
         MutableStateFlow(TemplateEditorForm(TemplateForm("", "", emptyList())))
 
     val menu = combine(menu2, templateEditor, checkboxEditor) { n, e, check ->
-        if (check) TemplateInfo(e.form, TurtoiseParserStackBlock(), true) else n
+        if (check) TemplateInfo(e.form, TortoiseParserStackBlock(), true) else n
     }
 
     fun redraw() {
         val runner = TortoiseRunner(TortoiseProgram(emptyList(), tools.algorithms().toMap()))
 
-        val top = TurtoiseParserStackBlock()
+        val top = TortoiseParserStackBlock()
         memory.memoryBlock(top)
 
         val m = TwoBlockTortoiseMemory(top, algorithm.value.default)
@@ -112,14 +112,15 @@ class TemplateData(val tools: ITools) {
         override fun editorAddItem(name: String, title: String, argument: String) {
             val arg = argument.split(".").last()
             templater.createItem(name, title, arg,
-                TurtoiseParserStackBlock(
+                TortoiseParserStackBlock(
 
                 ).apply {
                     addItems(
-                        listOf(TurtoiseParserStackBlock().apply {
+                        listOf(
+                            TortoiseParserStackBlock().apply {
                             add(listOf("title", title))
                         },
-                            TurtoiseParserStackBlock().apply {
+                            TortoiseParserStackBlock().apply {
                                 add(listOf("arg", arg))
                             }
                         )
@@ -162,7 +163,7 @@ class TemplateData(val tools: ITools) {
 
             val name = algorithmName.value
 
-            val top = TurtoiseParserStackBlock()
+            val top = TortoiseParserStackBlock()
 
             memory.union(menu.first().memoryValues()).memoryBlock(top)
 

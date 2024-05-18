@@ -3,12 +3,15 @@ package turtoise
 import turtoise.TortoiseCommand.Companion.commandToName
 import turtoise.memory.keys.MemoryKey
 import turtoise.memory.TortoiseMemory
+import turtoise.parser.TortoiseParserStackArgument
+import turtoise.parser.TortoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackItem
 
 interface TortoiseCommand {
     val command: Char
     val size: Int
     fun take(index: Int, defaultValue: Double, memory: TortoiseMemory): Double
-    fun takeBlock(index: Int): TurtoiseParserStackItem? = null
+    fun takeBlock(index: Int): TortoiseParserStackItem? = null
 
     fun assign(memory: TortoiseMemory) {}
 
@@ -24,18 +27,18 @@ interface TortoiseCommand {
     companion object {
         fun createFromItem(
             currentCommand: Char,
-            currentValues: List<TurtoiseParserStackItem>
+            currentValues: List<TortoiseParserStackItem>
         ): TortoiseCommand {
             if (currentValues.size == 0) {
                 return ZeroTortoiseCommand(currentCommand)
             }
             if (currentValues.size == 1) {
                 val v = currentValues[0]
-                if (v is TurtoiseParserStackArgument) {
+                if (v is TortoiseParserStackArgument) {
                     return SmallTortoiseCommand(currentCommand, v.argument)
                 }
             }
-            val b = TurtoiseParserStackBlock(' ')
+            val b = TortoiseParserStackBlock(' ')
             b.addItems(currentValues)
             return BlockTortoiseCommand(currentCommand, b)
         }

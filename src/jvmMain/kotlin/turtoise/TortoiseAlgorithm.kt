@@ -3,6 +3,8 @@ package turtoise
 import com.kos.figure.FigureList
 import com.kos.figure.IFigure
 import turtoise.memory.TortoiseMemory
+import turtoise.parser.TortoiseParser
+import turtoise.parser.TortoiseParserStackItem
 
 
 data class TortoiseBlock(val commands: List<TortoiseCommand>) {
@@ -55,7 +57,7 @@ class TortoiseSimpleAlgorithm(
 
 open class TortoiseFigureAlgorithm(
     val name: String,
-    val line: TurtoiseParserStackItem,
+    val line: TortoiseParserStackItem,
 ) : TortoiseAlgorithm {
     private val _names = listOf(name)
 

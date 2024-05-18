@@ -1,16 +1,14 @@
 package com.kos.boxdrawer.detal.box
 
-import androidx.compose.ui.text.AnnotatedString
 import com.kos.figure.IFigure
 import turtoise.DrawerSettings
 import turtoise.TortoiseAlgorithm
 import turtoise.TortoiseBlock
-import turtoise.TortoiseParser
-import turtoise.TortoiseParser.asDouble
+import turtoise.parser.TortoiseParser.asDouble
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
-import turtoise.TurtoiseParserStackBlock
-import turtoise.TurtoiseParserStackItem
+import turtoise.parser.TortoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackItem
 import turtoise.ZigzagInfo
 import turtoise.memory.keys.MemoryKey
 import turtoise.memory.TortoiseMemory
@@ -72,7 +70,7 @@ class BoxAlgorithm(
     companion object {
 
         fun parseBox(
-            items: TurtoiseParserStackItem,
+            items: TortoiseParserStackItem,
             useAlgorithms: Array<String>?
         ): TortoiseAlgorithm {
 
@@ -110,7 +108,7 @@ class BoxAlgorithm(
         }
 
         fun zigInfo(
-            block: TurtoiseParserStackItem?
+            block: TortoiseParserStackItem?
         ): ZigzagInfo {
             return if (block == null)
                 ZigzagInfo(width = 15.0, delta = 35.0)
@@ -169,8 +167,8 @@ class BoxAlgorithm(
             }
         }
 
-        fun waldInfo(block: TurtoiseParserStackItem?): WaldParam {
-            if (block is TurtoiseParserStackBlock)
+        fun waldInfo(block: TortoiseParserStackItem?): WaldParam {
+            if (block is TortoiseParserStackBlock)
                 return WaldParam.from(block)
             else
                 return WaldParam(

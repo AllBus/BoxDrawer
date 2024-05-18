@@ -1,7 +1,7 @@
 package com.kos.boxdrawer.detal.polka
 
-import androidx.compose.ui.text.AnnotatedString
 import turtoise.*
+import turtoise.parser.TortoiseParserStackItem
 
 class PolkaLine(
     val startHeight: Double,
@@ -175,7 +175,7 @@ class PolkaLine(
 
         private val names_ = listOf("figure", "side")
 
-        fun parsePolka(items: TurtoiseParserStackItem, useAlgorithms: Array<String>?): TortoiseAlgorithm {
+        fun parsePolka(items: TortoiseParserStackItem, useAlgorithms: Array<String>?): TortoiseAlgorithm {
             val polka = PolkaLine(
                 useAlgorithms = useAlgorithms,
                 startHeight = items.doubleValue(0, 0.0),

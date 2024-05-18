@@ -5,8 +5,7 @@ import com.kos.figure.FigureList
 import com.kos.figure.IFigure
 import turtoise.memory.BlockTortoiseMemory
 import turtoise.memory.SimpleTortoiseMemory
-import turtoise.memory.TortoiseMemory
-import vectors.Vec2
+import turtoise.parser.TortoiseParserStackItem
 
 class TortoiseRunner(
     var program : TortoiseProgram,
@@ -41,7 +40,7 @@ class TortoiseRunner(
         ds: DrawerSettings,
         state: TortoiseState,
         maxStackSize: Int,
-        arguments: TurtoiseParserStackItem? = null
+        arguments: TortoiseParserStackItem? = null
     ): IFigure {
         return findAlgorithm(algName)?.let { alg ->
             alg.names.firstOrNull()?.let { n ->

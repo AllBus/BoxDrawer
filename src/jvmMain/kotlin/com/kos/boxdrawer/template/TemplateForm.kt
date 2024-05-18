@@ -1,12 +1,10 @@
 package com.kos.boxdrawer.template
 
-import turtoise.TurtoiseParserStackArgument
-import turtoise.TurtoiseParserStackBlock
-import turtoise.TurtoiseParserStackItem
-import turtoise.memory.keys.MemoryKey
+import turtoise.parser.TortoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackItem
 
 interface TemplateItem {
-    fun print(): TurtoiseParserStackItem
+    fun print(): TortoiseParserStackItem
 
     val title: String
     val argumentName: String
@@ -20,9 +18,9 @@ data class TemplateForm(
 ) : TemplateItem {
     fun isEmpty(): Boolean = list.isEmpty()
 
-    override fun print(): TurtoiseParserStackItem {
-        val inner = TurtoiseParserStackBlock('(', list.map { it.print() })
-        val tp = TurtoiseParserStackBlock()
+    override fun print(): TortoiseParserStackItem {
+        val inner = TortoiseParserStackBlock('(', list.map { it.print() })
+        val tp = TortoiseParserStackBlock()
         tp.add("form")
         tp.add("title", title)
         tp.add("arg", argumentName)
@@ -130,9 +128,9 @@ data class TemplateItemMulti(
     override val argumentCount: Int
         get() = 1
 
-    override fun print(): TurtoiseParserStackItem {
-        val inner = TurtoiseParserStackBlock('(', listOf(data.print()))
-        val tp = TurtoiseParserStackBlock()
+    override fun print(): TortoiseParserStackItem {
+        val inner = TortoiseParserStackBlock('(', listOf(data.print()))
+        val tp = TortoiseParserStackBlock()
         tp.add("multi")
         tp.add("title", title)
         tp.add("arg", argumentName)
@@ -148,8 +146,8 @@ data class TemplateItemInt(
     override val argumentCount: Int
         get() = 1
 
-    override fun print(): TurtoiseParserStackItem {
-        val tp = TurtoiseParserStackBlock()
+    override fun print(): TortoiseParserStackItem {
+        val tp = TortoiseParserStackBlock()
         tp.add("int")
         tp.add(argumentName)
         tp.add(title)
@@ -165,8 +163,8 @@ data class TemplateItemNumeric(
     override val argumentCount: Int
         get() = 1
 
-    override fun print(): TurtoiseParserStackItem {
-        val tp = TurtoiseParserStackBlock()
+    override fun print(): TortoiseParserStackItem {
+        val tp = TortoiseParserStackBlock()
         tp.add("1")
         tp.add(argumentName)
         tp.add(title)
@@ -182,8 +180,8 @@ data class TemplateItemSize(
     override val argumentCount: Int
         get() = 2
 
-    override fun print(): TurtoiseParserStackItem {
-        val tp = TurtoiseParserStackBlock()
+    override fun print(): TortoiseParserStackItem {
+        val tp = TortoiseParserStackBlock()
         tp.add("2")
         tp.add(argumentName)
         tp.add(title)
@@ -199,8 +197,8 @@ data class TemplateItemTriple(
     override val argumentCount: Int
         get() = 3
 
-    override fun print(): TurtoiseParserStackItem {
-        val tp = TurtoiseParserStackBlock()
+    override fun print(): TortoiseParserStackItem {
+        val tp = TortoiseParserStackBlock()
         tp.add("3")
         tp.add(argumentName)
         tp.add(title)
@@ -216,8 +214,8 @@ data class TemplateItemRect(
     override val argumentCount: Int
         get() = 4
 
-    override fun print(): TurtoiseParserStackItem {
-        val tp = TurtoiseParserStackBlock()
+    override fun print(): TortoiseParserStackItem {
+        val tp = TortoiseParserStackBlock()
         tp.add("4")
         tp.add(argumentName)
         tp.add(title)
@@ -233,8 +231,8 @@ data class TemplateItemCheck(
     override val argumentCount: Int
         get() = 1
 
-    override fun print(): TurtoiseParserStackItem {
-        val tp = TurtoiseParserStackBlock()
+    override fun print(): TortoiseParserStackItem {
+        val tp = TortoiseParserStackBlock()
         tp.add("check")
         tp.add(argumentName)
         tp.add(title)
@@ -250,8 +248,8 @@ data class TemplateItemString(
     override val argumentCount: Int
         get() = 1
 
-    override fun print(): TurtoiseParserStackItem {
-        val tp = TurtoiseParserStackBlock()
+    override fun print(): TortoiseParserStackItem {
+        val tp = TortoiseParserStackBlock()
         tp.add("text")
         tp.add(argumentName)
         tp.add(title)
@@ -267,8 +265,8 @@ data class TemplateItemLabel(
     override val argumentCount: Int
         get() = 0
 
-    override fun print(): TurtoiseParserStackItem {
-        val tp = TurtoiseParserStackBlock()
+    override fun print(): TortoiseParserStackItem {
+        val tp = TortoiseParserStackBlock()
         tp.add("label")
         tp.add(argumentName)
         tp.add(title)

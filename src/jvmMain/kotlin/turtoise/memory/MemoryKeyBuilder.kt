@@ -1,8 +1,8 @@
 package turtoise.memory
 
-import turtoise.TurtoiseParserStackArgument
-import turtoise.TurtoiseParserStackBlock
-import turtoise.TurtoiseParserStackItem
+import turtoise.parser.TortoiseParserStackArgument
+import turtoise.parser.TortoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackItem
 import turtoise.memory.keys.ACosMemoryKey
 import turtoise.memory.keys.ASinMemoryKey
 import turtoise.memory.keys.ATanMemoryKey
@@ -23,7 +23,7 @@ import turtoise.memory.keys.TriangleAngleMemoryKey
 
 object MemoryKeyBuilder {
 
-    fun constructFunction(item: TurtoiseParserStackBlock): MemoryKey {
+    fun constructFunction(item: TortoiseParserStackBlock): MemoryKey {
         return if (item.inner.size>=2) {
             when (item.name.name) {
                 "cos" -> CosMemoryKey(createMemoryKey(item.inner[1]))
@@ -62,10 +62,10 @@ object MemoryKeyBuilder {
             item.name
     }
 
-    fun createMemoryKey(item: TurtoiseParserStackItem?): MemoryKey {
+    fun createMemoryKey(item: TortoiseParserStackItem?): MemoryKey {
         return when (item) {
-            is TurtoiseParserStackBlock -> constructFunction(item)
-            is TurtoiseParserStackArgument -> item.argument
+            is TortoiseParserStackBlock -> constructFunction(item)
+            is TortoiseParserStackArgument -> item.argument
             else -> MemoryKey.ZERO
         }
     }

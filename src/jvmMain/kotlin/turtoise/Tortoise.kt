@@ -19,6 +19,9 @@ import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
 import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 import turtoise.memory.TortoiseMemory
+import turtoise.parser.TortoiseParser
+import turtoise.parser.TortoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackItem
 import vectors.Vec2
 import java.util.Stack
 import kotlin.math.PI
@@ -457,7 +460,7 @@ class Tortoise() {
             g
         )
 
-        val ft = com.takeBlock(1)?.let { a -> a as? TurtoiseParserStackBlock }
+        val ft = com.takeBlock(1)?.let { a -> a as? TortoiseParserStackBlock }
             ?.let { a ->
 
                 val c = a.getBlockAtName("c")
@@ -620,7 +623,7 @@ class Tortoise() {
     }
 
     private fun figureList(
-        block: TurtoiseParserStackItem?,
+        block: TortoiseParserStackItem?,
         ds: DrawerSettings,
         state: TortoiseState,
         maxStackSize: Int,

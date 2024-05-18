@@ -1,7 +1,6 @@
 package com.kos.boxdrawe.presentation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.text.AnnotatedString
@@ -12,6 +11,7 @@ import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import turtoise.*
+import turtoise.parser.TortoiseParser
 
 class TortoiseData(val tools: ITools) {
     val figures = MutableStateFlow<IFigure>(Figure.Empty)
@@ -40,7 +40,7 @@ class TortoiseData(val tools: ITools) {
         }.map { c -> c.print()}.joinToString("\n")
     }
 
-    private fun tortoiseProgram(lines: CharSequence): TortoiseProgram {
+    private fun tortoiseProgram(lines: String): TortoiseProgram {
         val f = lines.split("\n").map { line ->
             TortoiseParser.extractTortoiseCommands(line)
         }
@@ -53,14 +53,15 @@ class TortoiseData(val tools: ITools) {
         )
     }
 
-    fun createTortoise(lines: String) {
+    fun createTortoise() {
+        val lines = text.value.text
         val dr = create(lines)
 
         fig.value = dr
         figures.value = dr
     }
 
-    private fun create(lines: CharSequence): IFigure {
+    private fun create(lines: String): IFigure {
         val program = tortoiseProgram(lines)
         val t = TortoiseRunner(program)
         val state = TortoiseState()

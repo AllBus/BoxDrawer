@@ -3,6 +3,7 @@ package com.kos.boxdrawer.detal.robot
 import turtoise.*
 import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
+import turtoise.parser.TortoiseParserStackItem
 
 interface IRobotCommand {
     fun draw(ds: DrawerSettings):TortoiseBlock
@@ -10,7 +11,7 @@ interface IRobotCommand {
 }
 
 interface IRobotCommandFactory{
-    fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand
+    fun create(args: List<MemoryKey>, item: TortoiseParserStackItem): IRobotCommand
 
     val names : List<String>
 

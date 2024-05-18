@@ -3,6 +3,8 @@ package com.kos.boxdrawer.detal.robot
 import turtoise.*
 import turtoise.help.HelpInfoCommand
 import turtoise.memory.keys.MemoryKey
+import turtoise.parser.TortoiseParser
+import turtoise.parser.TortoiseParserStackItem
 
 class RobotAngle(
     val angle: MemoryKey,
@@ -16,7 +18,7 @@ class RobotAngle(
     }
 
     object Factory: IRobotCommandFactory {
-        override fun create(args: List<MemoryKey>, item: TurtoiseParserStackItem): IRobotCommand {
+        override fun create(args: List<MemoryKey>, item: TortoiseParserStackItem): IRobotCommand {
             return RobotAngle(args.getOrElse(0) { MemoryKey.EMPTY })
         }
 

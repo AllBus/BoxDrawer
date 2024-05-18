@@ -10,12 +10,12 @@ import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateItemInt
-import turtoise.TurtoiseParserStackItem
+import turtoise.parser.TortoiseParserStackItem
 
 @Composable
 fun TemplateIntBox(
     form: TemplateItemInt,
-    block: TurtoiseParserStackItem?,
+    block: TortoiseParserStackItem?,
     prefix: String,
     templateGenerator: TemplateGeneratorListener
 ) {

@@ -1,9 +1,8 @@
 package com.kos.boxdrawer.detal.robot
 
 import androidx.compose.ui.text.AnnotatedString
-import turtoise.TortoiseParser
+import turtoise.parser.TortoiseParser
 import turtoise.help.HelpInfoCommand
-import turtoise.help.IHelpInfo
 import turtoise.help.SimpleHelpInfo
 
 class RobotHelpInfo(): SimpleHelpInfo() {

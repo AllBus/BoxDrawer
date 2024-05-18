@@ -1,4 +1,4 @@
-package turtoise
+package turtoise.parser
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
@@ -10,6 +10,11 @@ import com.kos.boxdrawer.detal.polka.PolkaHelpInfo
 import com.kos.boxdrawer.detal.polka.PolkaLine
 import com.kos.boxdrawer.detal.robot.RobotHelpInfo
 import com.kos.boxdrawer.detal.robot.RobotLine
+import turtoise.TemplateAlgorithm
+import turtoise.TortoiseAlgorithm
+import turtoise.TortoiseCommand
+import turtoise.TortoiseFigureAlgorithm
+import turtoise.TortoiseSimpleAlgorithm
 import turtoise.dxf.DxfFileAlgorithm
 import turtoise.dxf.DxfHelpInfo
 import turtoise.help.HelpInfoCommand
@@ -58,7 +63,7 @@ object TortoiseParser {
     }
 
     public fun extractTortoiseCommands(line: String): Pair<String, TortoiseAlgorithm> {
-        val items: TurtoiseParserStackBlock = TortoiseParser.parseSkobki(line)
+        val items: TortoiseParserStackBlock = parseSkobki(line)
 
         val n = items.name
         return if (n.name.contains("@")) {
@@ -73,9 +78,9 @@ object TortoiseParser {
 
                 "template" -> TemplateAlgorithm(
                     name = f.getOrElse(1) { "figure" },
-                    line = items.getBlockAtName("figure") ?: TurtoiseParserStackBlock(),
-                    default = items.getBlockAtName("default") ?: TurtoiseParserStackBlock(),
-                    template = items.getBlockAtName("form") ?: TurtoiseParserStackBlock(),
+                    line = items.getBlockAtName("figure") ?: TortoiseParserStackBlock(),
+                    default = items.getBlockAtName("default") ?: TortoiseParserStackBlock(),
+                    template = items.getBlockAtName("form") ?: TortoiseParserStackBlock(),
                 )
 
                 "reka" -> RekaAlgorithm(
@@ -90,15 +95,15 @@ object TortoiseParser {
         }
     }
 
-    fun parseSimpleLine(items: TurtoiseParserStackItem): TortoiseAlgorithm {
+    fun parseSimpleLine(items: TortoiseParserStackItem): TortoiseAlgorithm {
         val result = mutableListOf<TortoiseCommand>()
 
         var currentCommand = TortoiseCommand.TURTOISE_MOVE
-        var currentValues = mutableListOf<TurtoiseParserStackItem>()
+        var currentValues = mutableListOf<TortoiseParserStackItem>()
 
         items.inner.forEach { item ->
             when (item) {
-                is TurtoiseParserStackArgument -> {
+                is TortoiseParserStackArgument -> {
                     val d = item.argument
                     if (d.isNotEmpty()) {
                         val c = d.prefix()
@@ -107,7 +112,7 @@ object TortoiseParser {
                             currentValues.add(item)
                         } else
                             if (c == '@') {
-                                currentValues.add(TurtoiseParserStackArgument(d.drop()))
+                                currentValues.add(TortoiseParserStackArgument(d.drop()))
                             } else {
                                 result.add(
                                     TortoiseCommand.createFromItem(
@@ -115,17 +120,17 @@ object TortoiseParser {
                                         currentValues
                                     )
                                 )
-                                currentValues = mutableListOf<TurtoiseParserStackItem>()
+                                currentValues = mutableListOf<TortoiseParserStackItem>()
                                 val b = d.drop()
                                 if (b.isNotEmpty()) {
-                                    currentValues.add(TurtoiseParserStackArgument(b))
+                                    currentValues.add(TortoiseParserStackArgument(b))
                                 }
                                 currentCommand = c
                             }
                     }
                 }
 
-                is TurtoiseParserStackBlock -> {
+                is TortoiseParserStackBlock -> {
                     currentValues.add(item)
                 }
 
@@ -139,9 +144,9 @@ object TortoiseParser {
 
     }
 
-    fun parseSkobki(a: String): TurtoiseParserStackBlock {
-        val stack = Stack<TurtoiseParserStackBlock>();
-        val top = TurtoiseParserStackBlock();
+    fun parseSkobki(a: String): TortoiseParserStackBlock {
+        val stack = Stack<TortoiseParserStackBlock>();
+        val top = TortoiseParserStackBlock();
         var item = top;
 
         var predIndex = 0;
@@ -155,7 +160,7 @@ object TortoiseParser {
                     val d = if (predIndex >= i) "" else a.substring(predIndex, i)
                     predIndex = i + 1;
 
-                    val next = TurtoiseParserStackBlock(
+                    val next = TortoiseParserStackBlock(
                         skobka = c
                     )
 
@@ -175,7 +180,7 @@ object TortoiseParser {
                     item.add(d.split(' ').filter { v -> v.isNotEmpty() })
 
                     val clo = closeBrace(c);
-                    var pi: TurtoiseParserStackBlock?
+                    var pi: TortoiseParserStackBlock?
                     do {
                         if (stack.isEmpty()) {
                             pi = null;

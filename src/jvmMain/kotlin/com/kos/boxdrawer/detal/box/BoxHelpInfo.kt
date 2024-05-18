@@ -1,7 +1,7 @@
 package com.kos.boxdrawer.detal.box
 
 import androidx.compose.ui.text.AnnotatedString
-import turtoise.TortoiseParser
+import turtoise.parser.TortoiseParser
 import turtoise.help.HelpInfoCommand
 import turtoise.help.SimpleHelpInfo
 

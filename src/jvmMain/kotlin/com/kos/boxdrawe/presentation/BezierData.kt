@@ -5,16 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
-import com.kos.figure.FigureCircle
-import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureList
-import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureOnPath
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
-import turtoise.TortoiseParser
+import turtoise.parser.TortoiseParser
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState

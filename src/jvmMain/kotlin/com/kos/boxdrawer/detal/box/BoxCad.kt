@@ -21,6 +21,7 @@ import turtoise.Tortoise.Companion.holes
 import turtoise.Tortoise.Companion.rectangle
 import turtoise.Tortoise.Companion.zigzag
 import turtoise.memory.SimpleTortoiseMemory
+import turtoise.parser.TortoiseParser
 import vectors.Vec2
 import kotlin.math.min
 
