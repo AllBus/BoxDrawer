@@ -27,7 +27,6 @@ import turtoise.rect.KubikGroup
 import turtoise.rect.Reka
 import turtoise.rect.RekaCad
 import turtoise.rect.RekaCad.newReka
-import turtoise.rect.RekaCad.rekaPoints
 import vectors.Vec2
 import kotlin.math.PI
 
@@ -39,9 +38,9 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
     private val points = MutableStateFlow<String>("")
     private val paddingNext = MutableStateFlow<String>("0.0")
 
-    private var currentReka = Reka(DoubleMemoryKey(10.0))
+    private var currentReka = Reka(DoubleMemoryKey(10.0), MemoryKey.ZERO)
 
-    private val topReka = MutableStateFlow(Reka(DoubleMemoryKey(10.0)))
+    private val topReka = MutableStateFlow(Reka(DoubleMemoryKey(10.0), MemoryKey.ZERO))
     private val rekaFigure = MutableStateFlow<IFigure>(Figure.Empty)
     private val rekaPodoshva = MutableStateFlow<IFigure>(Figure.Empty)
     var current: MutableStateFlow<RectBlockPosition> = MutableStateFlow(
@@ -65,8 +64,7 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
     val figures = combine(rekaDrawResult, current, rekaFigure) { result, cur, f ->
 
         val rfp = RekaCad.findPosition(result, cur)?.let { rp ->
-            val kub = Kubik(MemoryKey(paddingNext.value), currentReka)
-            RekaCad.insertPosition(rp, cur, kub, memory)
+            RekaCad.insertPosition(rp, cur, currentReka, memory)
         }
 
         FigureList(
@@ -182,10 +180,10 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
 
     private fun findBlock(reka: Reka, position: RekaStoronaPosition): Reka? {
         val k = findKubiki(reka, position) ?: return null
-        return k.group.getOrNull(position.block)?.reka
+        return k.group.getOrNull(position.block)
     }
 
-    private fun insertKubik(reka: Reka, position: RekaStoronaPosition, newKubik: Kubik): Boolean {
+    private fun insertKubik(reka: Reka, position: RekaStoronaPosition, newKubik: Reka): Boolean {
         val p = reka.storoni.getOrNull(position.edge - 1) ?: return false
         p.add(
             position.storona,
@@ -199,13 +197,10 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
         val pt = points.value
         if (pt.isNotEmpty()) {
 
-            parseReka(pt)?.let { b ->
+            parseReka(pt, MemoryKey(paddingNext.value))?.let { b ->
                 val cv = current.value
                 if (insertKubik(
-                        reka = cv.reka, position = cv.position, newKubik = Kubik(
-                            padding = MemoryKey(paddingNext.value),
-                            reka = b
-                        )
+                        reka = cv.reka, position = cv.position, newKubik = b
                     )
                 ) {
                     redraw()
@@ -231,26 +226,27 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
         val cv = current.value
         val pt = points.value
         if (pt.isNotEmpty()) {
-            parseReka(pt)?.let { f ->
+            parseReka(pt, MemoryKey(paddingNext.value))?.let { f ->
                 RekaCad.updateReka(cv.reka, f)
             }
             redraw()
         }
     }
 
-    private fun parseReka(text:String): Reka?{
+    private fun parseReka(text: String, padding: MemoryKey): Reka? {
         return if (text.drop(1).startsWith("reka")) {
-            RekaCad.newReka(TortoiseParser.parseSkobki(text))
+            RekaCad.newReka(TortoiseParser.parseSkobki(text))?.apply {
+                this.padding = padding
+            }
         } else {
             val tv = text.split(",", " ").map { it.trim() }.filter { it.isNotEmpty() }
-            newReka(tv)
+            newReka(tv, padding)
         }
     }
 
     fun setPoints(text: String) {
         points.value = text
-        parseReka(points.value)?.let{
-            f ->
+        parseReka(points.value, MemoryKey(paddingNext.value))?.let { f ->
             currentReka = f
             createRekaFigure()
         }
@@ -301,9 +297,35 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
 
     fun rotateCurrentReka(degrees: Double) {
         val reka = current.value.reka
-        reka.storoni.getOrNull(0)?.let { storona ->
-            val a = storona.angle
-            val change = -degrees * PI / 180
+
+        val e = current.value.position.edge
+        if (e == 0) {
+
+        } else {
+            reka.storoni.getOrNull(e - 1)?.let { storona ->
+                val a = storona.angle
+                val change = -degrees * PI / 180
+                val k = if (a is EditMemoryKey) {
+                    EditMemoryKey(
+                        a.mainKey,
+                        a.value + change,
+                        SummaMemoryKey(a.mainKey, a.value + change)
+                    )
+                } else {
+                    EditMemoryKey(a, change, SummaMemoryKey(a, change))
+                }
+                storona.angle = k
+                redraw()
+            }
+        }
+    }
+
+    fun moveCurrentReka(change: Double) {
+        val v = change / 15.0
+        val reka = current.value.reka
+        val e = current.value.position.edge
+        if (e == 1) {
+            val a = reka.padding
             val k = if (a is EditMemoryKey) {
                 EditMemoryKey(
                     a.mainKey,
@@ -313,8 +335,24 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
             } else {
                 EditMemoryKey(a, change, SummaMemoryKey(a, change))
             }
-            storona.angle = k
+            reka.padding = k
             redraw()
+        } else {
+            reka.storoni.getOrNull(e - 2)?.let { storona ->
+                val a = storona.length
+
+                val k = if (a is EditMemoryKey) {
+                    EditMemoryKey(
+                        a.mainKey,
+                        a.value + change,
+                        SummaMemoryKey(a.mainKey, a.value + change)
+                    )
+                } else {
+                    EditMemoryKey(a, change, SummaMemoryKey(a, change))
+                }
+                storona.length = k
+                redraw()
+            }
         }
     }
 

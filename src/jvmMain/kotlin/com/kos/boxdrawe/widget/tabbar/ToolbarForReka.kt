@@ -87,9 +87,18 @@ fun ToolbarForReka(vm: RekaToolsData) {
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true).padding(end = 2.dp)
         ) {
-            CircleBox({current, change, start ->
+            Label("Сдвиг")
+            CircleBox { current, change, start ->
+                vm.moveCurrentReka(change)
+            }
+        }
+        Column(
+            modifier = Modifier.weight(weight = 1f, fill = true).padding(end = 2.dp)
+        ) {
+            Label("Поворот")
+            CircleBox { current, change, start ->
                 vm.rotateCurrentReka(change)
-            })
+            }
         }
         Column(
             modifier = Modifier.weight(weight = 2f, fill = true).padding(end = 2.dp)

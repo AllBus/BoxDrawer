@@ -147,7 +147,7 @@ class DivMemoryKey(
     }
 
     override val name: String
-        get() = "(/${a.name} ${b.name})"
+        get() = "(/ ${a.name} ${b.name})"
 }
 
 class SummaMemoryKey(
@@ -159,7 +159,7 @@ class SummaMemoryKey(
     }
 
     override val name: String
-        get() = "(+${a.name} ${b})"
+        get() = "(+ ${a.name} ${b})"
 }
 
 class MinusMemoryKey(

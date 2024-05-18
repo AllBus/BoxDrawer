@@ -11,6 +11,7 @@ import kotlin.math.PI
  */
 class Reka(
     var podoshva: MemoryKey,
+    var padding: MemoryKey,
 ) {
     val storoni = mutableListOf<RekaStorona>()
 
@@ -39,7 +40,7 @@ class Reka(
     fun remove(reka: Reka) {
         storoni.forEach { s ->
             s.kubiki.forEach { k ->
-                k.group.removeIf { v -> v.reka === reka }
+                k.group.removeIf { v -> v === reka }
             }
         }
     }
@@ -70,7 +71,7 @@ open class RekaStorona(
         }
     }
 
-    fun add(napravlenie: KubikBias, index: Int, value: Kubik) {
+    fun add(napravlenie: KubikBias, index: Int, value: Reka) {
         val group = kubiki.find { it.napravlenie == napravlenie }
         if (group == null) {
             val kg = KubikGroup(napravlenie)
@@ -84,7 +85,7 @@ open class RekaStorona(
     open fun isEnd(): Boolean = false
 }
 
-class RekaEndStorona() : RekaStorona(MemoryKey.ZERO, MemoryKey.ZERO) {
+class RekaEndStorona(angle: MemoryKey) : RekaStorona(length = MemoryKey.ZERO, angle = angle) {
     override fun isEnd(): Boolean = true
 }
 
@@ -121,14 +122,14 @@ class Kubik(
 class KubikGroup(
     val napravlenie: KubikBias,
 ) {
-    fun add(index: Int, newKubik: Kubik) {
+    fun add(index: Int, newKubik: Reka) {
         if (index >= 0 && index < group.size)
             group.add(index, newKubik)
         else
             group.add(newKubik)
     }
 
-    val group: MutableList<Kubik> = mutableListOf<Kubik>()
+    val group: MutableList<Reka> = mutableListOf<Reka>()
 
     val size: Int get() = group.size
 }

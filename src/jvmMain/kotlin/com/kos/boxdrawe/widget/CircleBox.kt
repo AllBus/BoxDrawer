@@ -18,8 +18,6 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.withTransform
-import androidx.compose.ui.input.pointer.AwaitPointerEventScope
-import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.dp
@@ -44,14 +42,14 @@ fun CircleBox(
 
                     val p = it.changes.first().position.toVec2()
                     val s = size.toVec2() / 2.0
-                    calculateRotor(p, s, thumbPosition, thumbStartPosition, onRotate )
+                    calculateRotor(p, s, thumbPosition, thumbStartPosition, onRotate, false)
 
                 }
                 .onPointerEvent(PointerEventType.Move) {
                     if (pressedState.value) {
                         val p = it.changes.first().position.toVec2()
                         val s = size.toVec2() / 2.0
-                        calculateRotor(p, s, thumbPosition, thumbStartPosition, onRotate )
+                        calculateRotor(p, s, thumbPosition, thumbStartPosition, onRotate, true)
                     }
                 }
                 .onPointerEvent(PointerEventType.Release) {
@@ -96,11 +94,11 @@ fun CircleBox(
 
 private fun calculateRotor(
     p: Vec2,
-    s:Vec2,
+    s: Vec2,
     thumbPosition: MutableState<Int>,
     thumbStartPosition: MutableState<Int>,
     onRotate: (current: Double, change: Double, start: Double) -> Unit,
-
+    isMove: Boolean,
 ) {
     val ps = (p - s)
 
@@ -113,14 +111,20 @@ private fun calculateRotor(
             (a / 15).toInt() * 15
         }
 
-        val c2 = d - thumbPosition.value
-        val c = if (c2 > 180f)
-            c2 - 360f
-        else
-            if (c2 < -180f)
-                c2 + 360f
+        val c = if (isMove) {
+            val c2 = d - thumbPosition.value
+            if (c2 > 180f)
+                c2 - 360f
             else
-                c2
+                if (c2 < -180f)
+                    c2 + 360f
+                else
+                    c2
+        } else {
+            thumbStartPosition.value = d
+            0f
+        }
+
         thumbPosition.value = d
         onRotate(
             thumbPosition.value.toDouble(),
