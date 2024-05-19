@@ -38,8 +38,8 @@ class TurtoiseParserStackBlockTest {
         assertEquals("d", a.get(".d.0")?.name)
         assertEquals("8", a.get(".d.g")?.name)
         assertEquals("", a.get(".d.f")?.name)
-        assertEquals("90", a.get(".d.g.ro")?.name)
-        assertEquals("45", a.get(".d.g.ro.bo")?.name)
+        assertEquals("(bo (to 234) 45)", a.get(".d.g.ro")?.name)
+        assertEquals("(to 234)", a.get(".d.g.ro.bo")?.name)
         assertEquals("234", a.get(".d.g.ro.bo.to")?.name)
     }
 

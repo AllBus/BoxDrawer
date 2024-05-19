@@ -28,6 +28,7 @@ import turtoise.parser.TortoiseParserStackItem
 import vectors.Vec2
 import java.util.Stack
 import kotlin.math.PI
+import kotlin.math.acos
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.min
@@ -167,6 +168,9 @@ class Tortoise() {
 
                 TortoiseCommand.TURTOISE_ROUND_RECTANGLE -> {
                     roundrectangle(com, memory, state, res)
+                }
+                TortoiseCommand.TURTOISE_TRIANGLE -> {
+                    triangle(com, memory, state, res)
                 }
 
                 TortoiseCommand.TURTOISE_REGULAR_POLYGON -> {
@@ -636,6 +640,32 @@ class Tortoise() {
                 smoothSize = smoothSize,
             ).rotate(angle)
         )
+    }
+
+    private fun triangle(
+        com: TortoiseCommand,
+        memory: TortoiseMemory,
+        state: TortoiseState,
+        res: MutableList<IFigure>
+    ) {
+        val aa = com.value(memory)
+        val bb = com[1, aa, memory]
+        val cc = com[2, aa, memory]
+        val angle = state.angle
+        val c2 = state.xy
+
+        val v = acos(
+            (bb * bb + cc * cc - aa * aa) / (2 * bb * cc)
+        )
+        val vv = PI - if (v.isFinite()) v else 0.0
+
+        val points = listOf<Vec2>(
+            c2,
+            c2 + Vec2(aa, 0.0).rotate(angle),
+            c2 + Vec2(aa+ bb*cos(vv),bb*sin(vv) ).rotate(angle),
+        )
+
+        res.add(FigurePolyline(points, true ))
     }
 
     private fun rectangle(

@@ -8,6 +8,7 @@ class BlockTortoiseMemory(
 ) : SimpleTortoiseMemory() {
 
     override fun value(variable: MemoryKey, defaultValue: Double): Double {
+        println("Memory $variable "+ block.get(variable.name)?.name)
         return super.value(
             variable = block.get(variable.name)?: variable,
             defaultValue = defaultValue

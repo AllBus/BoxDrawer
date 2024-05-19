@@ -20,11 +20,11 @@ class TortoiseParserStackBlock(
         )
     }
 
-    constructor(skobka:Char, name: MemoryKey) : this(skobka) {
+    constructor(skobka: Char, name: MemoryKey) : this(skobka) {
         add(name)
     }
 
-    constructor(skobka:Char, name: String) : this(skobka) {
+    constructor(skobka: Char, name: String) : this(skobka) {
         add(name)
     }
 
@@ -36,13 +36,17 @@ class TortoiseParserStackBlock(
     override val argument: MemoryKey
         get() = MemoryKey(this)
 
+    override val value: MemoryKey
+        get() = inner.getOrNull(1)?.argument ?: MemoryKey.EMPTY
+
     override val name
         get() = inner.firstOrNull()?.argument ?: MemoryKey.BLOCK
+
     override val line: String
         get() = inner.joinToString(" ", "$skobka", "${closeBrace()}") { it.line }
 
     override val innerLine: String
-        get() = inner.joinToString(" ", ) { it.line }
+        get() = inner.joinToString(" ") { it.line }
 
     fun closeBrace(): Char {
         return TortoiseParser.closeBrace(skobka)
@@ -124,7 +128,7 @@ class TortoiseParserStackBlock(
             } else {
                 val n = index.drop(1)
 
-                getInnerAtName(n)?.argument
+                getInnerAtName(n)?.value
             }
         } else null
     }

@@ -7,8 +7,8 @@ class TortoiseParserStackArgument(
 ) : TortoiseParserStackItem() {
     override fun isArgument(): Boolean = true
 
-
-    override val name: MemoryKey = argument
+    override val value: MemoryKey get() = argument
+    override val name: MemoryKey get() = argument
 
     override val inner: List<TortoiseParserStackItem>
         get() = emptyList()

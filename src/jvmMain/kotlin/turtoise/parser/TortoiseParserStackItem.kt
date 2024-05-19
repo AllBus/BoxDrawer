@@ -13,7 +13,8 @@ abstract class TortoiseParserStackItem(
     }
 
     abstract fun isArgument(): Boolean
-    open val argument: MemoryKey = MemoryKey.EMPTY
+    abstract val argument: MemoryKey
+    abstract val value: MemoryKey
     abstract val name: MemoryKey
     abstract val line: String
     abstract val innerLine: String
