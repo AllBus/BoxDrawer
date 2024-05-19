@@ -63,7 +63,7 @@ class TemplateInfo(
 
             else -> {
                 if (item.argumentCount == 1) {
-                    mapOf(newPrefix to TemplateMemoryItem(listOf(inner.argument.name)))
+                    mapOf(newPrefix to TemplateMemoryItem(listOf(inner.value.name)))
                 } else {
                     mapOf(
                         newPrefix to TemplateMemoryItem((1..item.argumentCount).map { i ->
