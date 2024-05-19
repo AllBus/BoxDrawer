@@ -7,8 +7,6 @@ import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
-import org.jetbrains.skia.Matrix33
-import org.jetbrains.skia.Matrix44
 import turtoise.DrawerSettings
 import vectors.Vec2
 import kotlin.math.cos

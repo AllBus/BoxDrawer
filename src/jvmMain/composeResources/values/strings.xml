@@ -3,4 +3,12 @@
     <string name="app_name">Рисовалка коробок</string>
     <string name="createFileButton">Нарисовать деталь</string>
     <string name="copyFileButton">Скопировать деталь</string>
+    <string name="rekaAlertClearSuccess">"Очистить"</string>
+    <string name="rekaAlertClearCancel">"Отмена"</string>
+    <string name="rekaAlertClearTitle">"Очистить текущую фигуру?"</string>
+    <string name="rekaAlertClearText">"Текущая фигура будет утеряна. Продолжить?"</string>
+    <string name="rekaPoints">Точки</string>
+    <string name="rekaPadding">Отступ</string>
+    <string name="rekaGroupShift">Сдвиг</string>
+    <string name="rekaGroupAngle">Поворот</string>
 </resources>

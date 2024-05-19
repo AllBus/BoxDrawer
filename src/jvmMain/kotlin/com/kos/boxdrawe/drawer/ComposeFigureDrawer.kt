@@ -5,7 +5,6 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
-import com.jsevy.jdxf.DXFColor
 import com.kos.drawer.IFigureGraphics
 import vectors.Vec2
 

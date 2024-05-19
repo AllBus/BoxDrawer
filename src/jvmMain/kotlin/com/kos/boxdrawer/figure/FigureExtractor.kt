@@ -10,7 +10,6 @@ import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureArray
 import com.kos.figure.composition.FigureColor
-import org.jetbrains.skia.Color
 import org.kabeja.dxf.DXFArc
 import org.kabeja.dxf.DXFCircle
 import org.kabeja.dxf.DXFDocument

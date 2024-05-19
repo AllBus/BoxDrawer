@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -27,7 +25,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -36,16 +33,17 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import calcZoom
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
@@ -63,6 +61,7 @@ fun App(vm: State<DrawerViewModel>) {
     val figures = vm.value.figures.collectAsState(FigureEmpty)
 
     val displayScale = remember { mutableFloatStateOf(2.0f) }
+    var pos  = rememberSaveable("DisplayTortoiseOffset") { mutableStateOf(Offset.Zero) }
 
     var dropValueX by remember { mutableStateOf(0f) }
     var dropValueY by remember { mutableStateOf(0f) }
@@ -78,7 +77,7 @@ fun App(vm: State<DrawerViewModel>) {
         derivedStateOf { IFigure.list(figures.value) }
     }
 
-    val selectedItem = remember(figures) { mutableStateOf<IFigure> (FigureEmpty) }
+    val selectedItem = remember(figures) { mutableStateOf<IFigure>(FigureEmpty) }
     val checkboxEditor = vm.value.template.checkboxEditor.collectAsState()
 
     MaterialTheme {
@@ -89,6 +88,7 @@ fun App(vm: State<DrawerViewModel>) {
                 DisplayBox(
                     tabIndex = tabIndex,
                     displayScale = displayScale,
+                    pos = pos,
                     matrix = matrix,
                     figures = figures,
                     stateText = stateText,
@@ -180,37 +180,9 @@ fun App(vm: State<DrawerViewModel>) {
                             }
                         }
                     }
-                    StatusBar(displayScale)
+                    StatusBar(displayScale, pos, stateText)
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun StatusBar(displayScale: MutableFloatState) {
-    Row {
-        Spacer(
-            modifier = Modifier.weight(1f)
-        )
-        Column(
-            modifier = Modifier.width(300.dp).wrapContentHeight(),
-        ) {
-            Text(
-                "%.3f".format(displayScale.value),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-                color = ThemeColors.displayLabelColor
-            )
-            Slider(
-                modifier = Modifier.wrapContentHeight(),
-                onValueChange = {
-                    displayScale.value =
-                        Math.pow(1.2, (it - 20).toDouble()).toFloat()
-                },
-                value = calcZoom(displayScale.value) + 20, ///log(displayScale.value.toDouble()).toFloat(),
-                valueRange = 1f..100f
-            )
         }
     }
 }
@@ -240,15 +212,20 @@ fun FigureListBox(figure: List<IFigure>, selectedItem: State<IFigure>, onClick: 
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-private fun LazyListScope.FigureItems(figures: List<IFigure>, selectedItem: State<IFigure>, onClick: (IFigure) -> Unit) {
+private fun LazyListScope.FigureItems(
+    figures: List<IFigure>,
+    selectedItem: State<IFigure>,
+    onClick: (IFigure) -> Unit
+) {
     items(figures) { figure ->
         Column(
             modifier = Modifier
                 .border(1.dp, ThemeColors.figureListBorder, ThemeColors.figureListItemShape)
-                .background(if (figure === selectedItem.value)
-                    MaterialTheme.colors.primary else
-                    ThemeColors.figureListBackground
-                    , ThemeColors.figureListItemShape)
+                .background(
+                    if (figure === selectedItem.value)
+                        MaterialTheme.colors.primary else
+                        ThemeColors.figureListBackground, ThemeColors.figureListItemShape
+                )
                 .width(300.dp).onClick {
                     onClick(figure)
                 }

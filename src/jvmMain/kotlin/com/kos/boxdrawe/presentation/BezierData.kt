@@ -16,7 +16,6 @@ import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
 import vectors.Vec2
-import java.io.File
 import kotlin.math.atan2
 
 class BezierData(override val tools: Tools): SaveFigure {

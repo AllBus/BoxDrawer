@@ -1,6 +1,5 @@
 package com.kos.boxdrawe.presentation
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.kos.figure.Figure
 import com.kos.figure.FigureList

@@ -1,10 +1,5 @@
 package com.kos.boxdrawe.widget.tabbar
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +7,6 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
@@ -34,7 +28,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -53,7 +46,17 @@ import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.SimpleEditText
 import com.kos.boxdrawe.widget.TabContentModifier
+import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.rekaAlertClearCancel
+import com.kos.boxdrawer.generated.resources.rekaAlertClearSuccess
+import com.kos.boxdrawer.generated.resources.rekaAlertClearText
+import com.kos.boxdrawer.generated.resources.rekaAlertClearTitle
+import com.kos.boxdrawer.generated.resources.rekaGroupAngle
+import com.kos.boxdrawer.generated.resources.rekaGroupShift
+import com.kos.boxdrawer.generated.resources.rekaPadding
+import com.kos.boxdrawer.generated.resources.rekaPoints
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import turtoise.rect.Kubik.Companion.STORONA_C
 import turtoise.rect.Kubik.Companion.STORONA_CL
 import turtoise.rect.Kubik.Companion.STORONA_CR
@@ -73,33 +76,33 @@ fun ToolbarForReka(vm: RekaToolsData) {
     val position = vm.current.collectAsState()
 
     val visibleClearAlert = remember { mutableStateOf<Boolean>(false) }
-    if( visibleClearAlert.value) {
+    if (visibleClearAlert.value) {
         AlertDialog(
             onDismissRequest = {
                 visibleClearAlert.value = false
             },
             confirmButton = {
-                TextButton( onClick = {
+                TextButton(onClick = {
                     scope.launch {
                         vm.clearBox()
                     }
                     visibleClearAlert.value = false
-                }){
-                    Text("Очистить")
+                }) {
+                    stringResource(Res.string.rekaAlertClearSuccess)
                 }
             },
             dismissButton = {
-                TextButton( onClick = {
+                TextButton(onClick = {
                     visibleClearAlert.value = false
-                }){
-                    Text("Отмена")
+                }) {
+                    stringResource(Res.string.rekaAlertClearCancel)
                 }
             },
             title = {
-                Text("Очистить текущую фигуру?")
+                Text(stringResource(Res.string.rekaAlertClearTitle))
             },
-            text=  {
-                Text("Текущая фигура будет утеряна. Продолжить?")
+            text = {
+                Text(stringResource(Res.string.rekaAlertClearText))
             }
         )
     }
@@ -111,13 +114,13 @@ fun ToolbarForReka(vm: RekaToolsData) {
             modifier = Modifier.weight(weight = 4f, fill = true).padding(end = 8.dp)
         ) {
             SimpleEditText(
-                "Точки", "", text,
+                stringResource(Res.string.rekaPoints), "", text,
                 fieldMaxWidth = Dp.Unspecified
             ) { t ->
                 vm.setPoints(t)
             }
             SimpleEditText(
-                "Отступ", "", paddingText,
+                stringResource(Res.string.rekaPadding), "", paddingText,
                 fieldMaxWidth = Dp.Unspecified
             ) { t ->
                 vm.setPadding(t)
@@ -130,20 +133,20 @@ fun ToolbarForReka(vm: RekaToolsData) {
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true).padding(end = 2.dp)
         ) {
-            Label("Сдвиг")
+            Label(   stringResource(Res.string.rekaGroupShift))
             CircleBox { current, change, start ->
                 vm.moveCurrentReka(change)
             }
-            SimpleEditText("", "", shiftValue){}
+            SimpleEditText("", "", shiftValue) {}
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true).padding(end = 2.dp)
         ) {
-            Label("Поворот")
+            Label(   stringResource(Res.string.rekaGroupAngle))
             CircleBox { current, change, start ->
                 vm.rotateCurrentReka(change)
             }
-            SimpleEditText("", "", angleValue){}
+            SimpleEditText("", "", angleValue) {}
         }
         Column(
             modifier = Modifier.weight(weight = 2f, fill = true).padding(end = 2.dp)

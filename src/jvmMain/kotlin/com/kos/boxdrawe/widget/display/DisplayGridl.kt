@@ -67,7 +67,6 @@ fun DisplayGrid(gridData: GridData) {
     val widthCell = remember { gridData.widthCell }
     val figurePreview = remember { gridData.figurePreview }
 
-
     Box(
         modifier = Modifier.fillMaxSize()
             .pointerInput(key1 = true) {

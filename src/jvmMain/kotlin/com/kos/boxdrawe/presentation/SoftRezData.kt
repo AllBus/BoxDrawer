@@ -8,7 +8,6 @@ import com.kos.figure.FigureLine
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import vectors.Vec2
-import java.io.File
 
 class SoftRezData(override val tools: ITools, val tortoise: TortoiseData):SaveFigure {
     val sr = SoftRez()

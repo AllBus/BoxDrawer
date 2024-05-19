@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import turtoise.DrawerSettings
 import turtoise.ZigzagInfo
 import vectors.Vec2
-import java.io.File
 
 class BoxData(override val tools: ITools): SaveFigure {
 
