@@ -88,48 +88,59 @@ interface TortoiseCommand {
                 TURTOISE_MEMORY_ASSIGN -> "TURTOISE_MEMORY_ASSIGN"
                 TURTOISE_COLOR -> "TURTOISE_COLOR"
                 TURTOISE_REGULAR_POLYGON -> "TURTOISE_REGULAR_POLYGON"
+                TURTOISE_UNION -> "TURTOISE_UNION"
+                TURTOISE_INTERSECT -> "TURTOISE_INTERSECT"
+                TURTOISE_DIFF -> "TURTOISE_DIFF"
+                TURTOISE_SYMDIFF -> "TURTOISE_SYMDIFF"
+                TURTOISE_FIGURE -> "TURTOISE_FIGURE"
+                TURTOISE_IF_FIGURE -> "TURTOISE_IF_FIGURE"
                 else -> c.toString()
             }
         }
 
         const val TURTOISE_ZIGZAG = 'z'
         const val TURTOISE_ZIGZAG_FIGURE = 'Z'
-        const val TURTOISE_FIGURE = 'f';
-        const val TURTOISE_3D = 'd';
-        const val TURTOISE_VERTICAL = 'v';
-        const val TURTOISE_SPLINE = 's';
-        const val TURTOISE_RECTANGLE = 'x';
-        const val TURTOISE_ROUND_RECTANGLE = 'r';
-        const val TURTOISE_POLYLINE = 'L';
-        const val TURTOISE_REGULAR_POLYGON = 'n';
-        const val TURTOISE_MOVE = 'm';
-        const val TURTOISE_LINE = 'l';
-        const val TURTOISE_LINE_WITH_ANGLE = 'л';
-        const val TURTOISE_LINE_PERPENDICULAR = 'p';
-        const val TURTOISE_HORIZONTAL = 'h';
-        const val TURTOISE_ELLIPSE = 'e';
-        const val TURTOISE_CIRCLE = 'c';
-        const val TURTOISE_BEZIER = 'b';
-        const val TURTOISE_PATH = 'P';
-        const val TURTOISE_ANGLE = 'a';
-        const val TURTOISE_ANGLE_ADD = 'q';
-        const val TURTOISE_SPLIT = '|';
-        const val TURTOISE_CLEAR = '!';
-        const val TURTOISE_CLOSE = '`';
-        const val TURTOISE_SAVE = 'Q';
-        const val TURTOISE_LOAD = 'W';
-        const val TURTOISE_PEEK = 'E';
-        const val TURTOISE_METHOD_NAME = '@';
+        const val TURTOISE_FIGURE = 'f'
+        const val TURTOISE_IF_FIGURE = 'F'
+        const val TURTOISE_3D = 'd'
+        const val TURTOISE_VERTICAL = 'v'
+        const val TURTOISE_SPLINE = 's'
+        const val TURTOISE_RECTANGLE = 'x'
+        const val TURTOISE_ROUND_RECTANGLE = 'r'
+        const val TURTOISE_POLYLINE = 'L'
+        const val TURTOISE_REGULAR_POLYGON = 'n'
+        const val TURTOISE_MOVE = 'm'
+        const val TURTOISE_LINE = 'l'
+        const val TURTOISE_LINE_WITH_ANGLE = 'л'
+        const val TURTOISE_LINE_PERPENDICULAR = 'p'
+        const val TURTOISE_HORIZONTAL = 'h'
+        const val TURTOISE_ELLIPSE = 'e'
+        const val TURTOISE_CIRCLE = 'c'
+        const val TURTOISE_BEZIER = 'b'
+        const val TURTOISE_PATH = 'P'
+        const val TURTOISE_ANGLE = 'a'
+        const val TURTOISE_ANGLE_ADD = 'q'
+        const val TURTOISE_SPLIT = '|'
+        const val TURTOISE_CLEAR = '!'
+        const val TURTOISE_CLOSE = '`'
+        const val TURTOISE_SAVE = 'Q'
+        const val TURTOISE_LOAD = 'W'
+        const val TURTOISE_PEEK = 'E'
+        const val TURTOISE_METHOD_NAME = '@'
 
-        //  const val TURTOISE_METHOD_RUN = '=';
-        const val TURTOISE_LOOP = '>';
-        const val TURTOISE_END_LOOP = '<';
-        const val TURTOISE_MOVE_TO = 'M';
-        const val TURTOISE_MATRIX_ROTATE = 'R';
-        const val TURTOISE_MATRIX_TRANSLATE = 'T';
-        const val TURTOISE_MATRIX_SCALE = 'S';
+        //  const val TURTOISE_METHOD_RUN = '='
+        const val TURTOISE_LOOP = '>'
+        const val TURTOISE_END_LOOP = '<'
+        const val TURTOISE_MOVE_TO = 'M'
+        const val TURTOISE_MATRIX_ROTATE = 'R'
+        const val TURTOISE_MATRIX_TRANSLATE = 'T'
+        const val TURTOISE_MATRIX_SCALE = 'S'
         const val TURTOISE_MEMORY_ASSIGN = '='
-        const val TURTOISE_COLOR = 'C';
+        const val TURTOISE_COLOR = 'C'
+        const val TURTOISE_UNION = 'U'
+        const val TURTOISE_INTERSECT = 'I';
+        const val TURTOISE_DIFF = 'D';
+        const val TURTOISE_SYMDIFF = 'S';
 
         fun Move(x: Double) = DoubleTortoiseCommand(TURTOISE_MOVE, x)
         fun Move(x: String) = SmallTortoiseCommand(TURTOISE_MOVE, x)

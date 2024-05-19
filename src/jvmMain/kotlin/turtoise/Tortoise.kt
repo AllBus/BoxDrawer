@@ -1,6 +1,8 @@
 package turtoise
 
 import androidx.compose.ui.graphics.Matrix
+import com.kos.boxdrawer.figure.UnionFigure
+import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureBezierList
 import com.kos.figure.FigureCircle
@@ -17,8 +19,9 @@ import com.kos.figure.composition.FigureOnPath
 import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
-import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 import turtoise.memory.TortoiseMemory
+import turtoise.memory.keys.MemoryKey.Companion.ZERO
+import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 import turtoise.parser.TortoiseParser
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
@@ -170,12 +173,14 @@ class Tortoise() {
                     val r = com.take(1, 0.0, memory)
                     val count = min(com.take(0, 3.0, memory).toInt(), MAX_REGULAR_POLYGON_EDGES)
 
-                    res.add(regularPolygon(
-                        center = state.xy,
-                        count = count,
-                        angle = state.angle,
-                        radius = r
-                    ))
+                    res.add(
+                        regularPolygon(
+                            center = state.xy,
+                            count = count,
+                            angle = state.angle,
+                            radius = r
+                        )
+                    )
                 }
 
                 TortoiseCommand.TURTOISE_FIGURE -> {
@@ -187,38 +192,19 @@ class Tortoise() {
                     }
                 }
 
-                TortoiseCommand.TURTOISE_PATH -> {
-                    val block = com.takeBlock(0)
-                    val blockFigure = com.takeBlock(1)
-                    val blockProperties = com.takeBlock(2)
-                    val count = com.take(0, 2.0, memory).toInt()
-                    if (count>0) {
-                        figureList(block, ds, state, maxStackSize, memory, runner)?.let { f ->
-                            f.list().filterIsInstance(IFigurePath::class.java).firstOrNull()?.let { path ->
-
-                                figureList(
-                                    blockFigure,
-                                    ds,
-                                    state,
-                                    maxStackSize,
-                                    memory,
-                                    runner
-                                )?.let { figure ->
-                                    res += FigureOnPath(
-                                        figure = figure,
-                                        path = path,
-                                        count = count,
-                                        distanceInPercent = com.take(1, 1.0/count, memory),
-                                        startOffsetInPercent = com.take(2, 0.0, memory),
-                                        reverse = com.take(7, 0.0, memory)>=1.0,
-                                        useNormal = com.take(4, 1.0, memory)>=1.0,
-                                        angle = com.take(3, 0.0, memory),
-                                        pivot = Vec2(com.take(5, 0.0, memory), com.take(6, 0.0, memory)),
-                                    )
-                                }
-                            }
+                TortoiseCommand.TURTOISE_IF_FIGURE ->{
+                    if (com.value(memory)>0.5){
+                        val block = com.takeBlock(1)
+                        figureList(block, ds, state, maxStackSize, memory, runner)?.let { g ->
+                            res.add(
+                                g
+                            )
                         }
                     }
+                }
+
+                TortoiseCommand.TURTOISE_PATH -> {
+                    res.add(figuresOnPath(com, ds, state, maxStackSize, memory, runner))
                 }
 
                 TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {
@@ -352,6 +338,38 @@ class Tortoise() {
                     }
                 }
 
+                TortoiseCommand.TURTOISE_UNION -> {
+                    val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
+                    res.add(UnionFigure.union(s.flatten()))
+                }
+
+                TortoiseCommand.TURTOISE_INTERSECT -> {
+                    val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
+                    if (s.size >= 2) {
+                        res.add(UnionFigure.intersect(s[0], s[1]))
+                    } else {
+                        res.add(FigureList(s.flatten()))
+                    }
+                }
+                TortoiseCommand.TURTOISE_DIFF -> {
+                    val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
+                    if (s.size >= 2) {
+                        res.add(UnionFigure.diff(s[0], s[1]))
+                    } else {
+                        res.add(FigureList(s.flatten()))
+                    }
+                }
+
+                TortoiseCommand.TURTOISE_SYMDIFF -> {
+                    val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
+                    if (s.size >= 2) {
+                        res.add(UnionFigure.symDiff(s[0], s[1]))
+                    } else {
+                        res.add(FigureList(s.flatten()))
+                    }
+                }
+
+
                 TortoiseCommand.TURTOISE_LOOP -> {
                     stack = TortoiseStack(
                         top = stack,
@@ -435,6 +453,101 @@ class Tortoise() {
         return res
 
     }
+
+    private fun figuresOnPath(
+        com: TortoiseCommand,
+        ds: DrawerSettings,
+        state: TortoiseState,
+        maxStackSize: Int,
+        memory: TortoiseMemory,
+        runner: TortoiseRunner,
+    ):IFigure {
+        val block = com.takeBlock(0)
+        val blockFigure = com.takeBlock(1)
+        val blockProperties = com.takeBlock(2)
+        val count = (blockProperties?.get(0) ?: ZERO).toDoubleOrNull()?.toInt()
+            ?: 0 //com.take(0, 2.0, memory).toInt()
+        if (count > 0) {
+            return figureList(block, ds, state, maxStackSize, memory, runner)?.let { f ->
+                f.list().filterIsInstance(IFigurePath::class.java).firstOrNull()
+                    ?.let { path ->
+                        figureList(
+                            blockFigure,
+                            ds,
+                            state,
+                            maxStackSize,
+                            memory,
+                            runner
+                        )?.let { figure ->
+                            FigureOnPath(
+                                figure = figure,
+                                path = path,
+                                count = count,
+                                distanceInPercent = valueAt(
+                                    blockProperties,
+                                    1,
+                                    1.0 / count,
+                                    memory
+                                ),
+                                startOffsetInPercent = valueAt(
+                                    blockProperties,
+                                    2,
+                                    0.0,
+                                    memory
+                                ),
+                                reverse = valueAt(
+                                    blockProperties,
+                                    7,
+                                    0.0,
+                                    memory
+                                ) >= 1.0,
+                                useNormal = valueAt(
+                                    blockProperties,
+                                    4,
+                                    1.0,
+                                    memory
+                                ) >= 1.0,
+                                angle = valueAt(blockProperties, 3, 0.0, memory),
+                                pivot = Vec2(
+                                    valueAt(blockProperties, 5, 0.0, memory),
+                                    valueAt(blockProperties, 6, 0.0, memory)
+                                ),
+                            )
+                        }
+                    }
+            } ?: Figure.Empty
+        } else
+            return Figure.Empty
+    }
+
+    private fun polylineFromCommand(
+        com: TortoiseCommand,
+        ds: DrawerSettings,
+        state: TortoiseState,
+        maxStackSize: Int,
+        memory: TortoiseMemory,
+        runner: TortoiseRunner
+    ): List<List<FigurePolyline>> {
+        val s = (0 until com.size).mapNotNull { index ->
+            com.takeBlock(index)
+        }.map { block ->
+            figureList(block, ds, state, maxStackSize, memory, runner)
+                ?.list()
+                ?.filterIsInstance(FigurePolyline::class.java)
+                .orEmpty()
+        }
+        return s
+    }
+
+    private fun valueAt(
+        blockProperties: TortoiseParserStackItem?,
+        index: Int,
+        defaultValue: Double,
+        memory: TortoiseMemory
+    ): Double {
+        return memory.value(blockProperties?.get(index) ?: ZERO, defaultValue)
+    }
+
     private fun figure3d(
         com: TortoiseCommand,
         memory: TortoiseMemory,
@@ -669,16 +782,16 @@ class Tortoise() {
     companion object {
 
         fun regularPolygon(
-            center:Vec2,
+            center: Vec2,
             count: Int,
             angle: Double,
             radius: Double,
-        ):IFigure {
+        ): IFigure {
             val p = (1..count).map { ind ->
                 val ang = angle + 2 * Math.PI * ind / count
                 center + Vec2(sin(ang), cos(ang)) * radius
             }
-            return  FigurePolyline(p, true)
+            return FigurePolyline(p, true)
         }
 
         fun zigzag(
@@ -692,7 +805,7 @@ class Tortoise() {
         ) {
             val bot = if (param.back) -1 else 1
             val z = 0.0
-            val angleV =  angle
+            val angleV = angle
 
             if (!zig.enable) {
                 points.add(Vec2(width * bot, z).rotate(angleV) + origin)
@@ -935,11 +1048,11 @@ class Tortoise() {
             )
         }
 
-        fun rectangle(center: Vec2, width: Double, height: Double) :IFigure{
+        fun rectangle(center: Vec2, width: Double, height: Double): IFigure {
             val c2 = center
             val angle = 0.0
-            val width2 = width/2.0
-            val height2 = height/2.0
+            val width2 = width / 2.0
+            val height2 = height / 2.0
             val points = listOf<Vec2>(
                 c2 + Vec2(-width2, -height2).rotate(angle),
                 c2 + Vec2(-width2, height2).rotate(angle),

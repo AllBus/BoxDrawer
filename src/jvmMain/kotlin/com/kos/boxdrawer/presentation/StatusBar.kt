@@ -30,7 +30,8 @@ import com.kos.boxdrawe.themes.ThemeColors
 fun StatusBar(
     displayScale: MutableFloatState,
     pos: MutableState<Offset>,
-    stateText: State<String>
+    stateText: State<String>,
+    onHomeClick: () -> Unit
 ) {
     Row(
         modifier = Modifier,
@@ -72,9 +73,7 @@ fun StatusBar(
                     valueRange = 1f..60f
                 )
             }
-            TextButton(onClick = {
-                pos.value = Offset.Zero
-            }) {
+            TextButton(onClick = onHomeClick) {
                 Icon(
                     Icons.Rounded.Home,
                     null

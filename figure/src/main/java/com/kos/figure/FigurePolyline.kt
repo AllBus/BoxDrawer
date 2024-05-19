@@ -154,4 +154,8 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points) {
         else
             "Полилиния ${points.size}"
     }
+
+    fun isClose(): Boolean {
+        return if (points.size>3) points.first() == points.last() else false
+    }
 }

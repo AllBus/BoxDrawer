@@ -19,7 +19,7 @@ class BlockTortoiseCommand(
     }
 
     override fun takeBlock(index: Int): TortoiseParserStackItem? {
-        return block.blocks.getOrNull(index)
+        return block.inner.getOrNull(index)
     }
 
     override fun assign(memory: TortoiseMemory) {

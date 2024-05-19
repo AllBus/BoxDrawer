@@ -52,6 +52,7 @@ import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
+import vectors.Vec2
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -180,7 +181,17 @@ fun App(vm: State<DrawerViewModel>) {
                             }
                         }
                     }
-                    StatusBar(displayScale, pos, stateText)
+                    StatusBar(displayScale, pos, stateText, onHomeClick = {
+                        dropValueX = 0f
+                        dropValueY = 0f
+                        dropValueZ = 0f
+                        pos.value = Offset.Zero
+                        vm.value.tortoise.rotate(
+                            dropValueX,
+                            dropValueY,
+                            dropValueZ
+                        )
+                    })
                 }
             }
         }
