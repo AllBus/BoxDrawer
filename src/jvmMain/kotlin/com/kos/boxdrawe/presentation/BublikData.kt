@@ -13,6 +13,7 @@ class BublikData(override val tools: ITools): SaveFigure {
 
     val radiusBublik = NumericTextFieldState(120.0) { redrawBox() }
     val radius = NumericTextFieldState(40.0) { redrawBox() }
+    val holeRadius = NumericTextFieldState(30.0) { redrawBox() }
     val segmentCount = NumericTextFieldState(12.0, 0, 1000.0) { redrawBox() }
     val sideCount = NumericTextFieldState(8.0, 0,1000.0) { redrawBox() }
     var pazPositionLeftTop = mutableStateOf(true)
@@ -42,9 +43,17 @@ class BublikData(override val tools: ITools): SaveFigure {
             leftTop =pazPositionLeftTop.value,
             leftBottom = pazPositionLeftBottom.value,
             rightTop = pazPositionRightTop.value,
-            rightBottom = pazPositionRightBottom.value
+            rightBottom = pazPositionRightBottom.value,
         )
-        return cad.torus(w, h, se1, se2, bublikPaz, tools.ds())
+        return cad.torus(
+            radius = w,
+            torRadius = h,
+            ringPart = se1,
+            stenaPart = se2,
+            bublikPaz = bublikPaz,
+            holeRadius = holeRadius.decimal,
+            drawerSettings = tools.ds(),
+        )
     }
 
 }

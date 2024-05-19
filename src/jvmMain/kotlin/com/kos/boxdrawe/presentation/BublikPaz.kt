@@ -5,7 +5,7 @@ data class BublikPaz(
     val leftTop: Boolean,
     val leftBottom: Boolean,
     val rightTop: Boolean,
-    val rightBottom: Boolean
+    val rightBottom: Boolean,
 ) {
 
 }

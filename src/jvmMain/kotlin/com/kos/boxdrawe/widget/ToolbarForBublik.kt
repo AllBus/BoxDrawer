@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.kos.boxdrawe.presentation.BublikData
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ fun ToolbarForBublik(vm: BublikData) {
 
     val radiusBublik = remember { vm.radiusBublik }
     val radius = remember { vm.radius }
+    val holeRadius = remember { vm.holeRadius }
     val segmentCount = remember { vm.segmentCount }
     val sideCount = remember { vm.sideCount }
 
@@ -32,6 +34,7 @@ fun ToolbarForBublik(vm: BublikData) {
         ) {
             NumericUpDown("Радиус бублика", "мм", radiusBublik)
             NumericUpDown("Радиус", "мм", radius)
+            NumericUpDown("Радиус отверстия", "мм", holeRadius)
             NumericUpDown("Число сегментов", "мм", segmentCount)
             NumericUpDown("Число сторон", "мм", sideCount)
         }

@@ -10,6 +10,7 @@ import com.kos.figure.IFigure
 import turtoise.DrawerSettings
 import vectors.Vec2
 import kotlin.math.cos
+import kotlin.math.min
 import kotlin.math.sin
 
 
@@ -17,9 +18,10 @@ class BublikCad {
     fun torus(
         radius: Double, torRadius: Double, ringPart: Int, stenaPart: Int,
         bublikPaz: BublikPaz,
+        holeRadius: Double,
         drawerSettings: DrawerSettings,
     ): IFigure {
-        if (radius<0.001 || torRadius<0.001 || ringPart<3 || stenaPart<3){
+        if (radius < 0.001 || torRadius < 0.001 || ringPart < 3 || stenaPart < 3) {
             return FigureEmpty
         }
 
@@ -35,6 +37,8 @@ class BublikCad {
         var predB = 0.0;
         var b = 0.0;
 
+        var maxTrapecijaEdge = 0.0
+
         for (i in 0..xcount) {
 
             val ca = torRadius * cos(teta * i)
@@ -42,15 +46,38 @@ class BublikCad {
 
             predB = b
             b = 2 * ua * sin(alpha / 2)
+
+            if (b> maxTrapecijaEdge)
+                maxTrapecijaEdge = b
+
             if (i > 0) {
-                list.addAll(trapecija(Vec2(0.0, -i * a), b, predB, a, bublikPaz, drawerSettings))
+                list.addAll(trapecija(
+                    offset = Vec2(0.0, i * a),
+                    top = predB,
+                    bottom = b,
+                    edge = a,
+                    bublikPaz = bublikPaz,
+                    drawerSettings = drawerSettings
+                ))
             }
         }
 
+        val zihe = drawerSettings.holeWeight;
+        val otstup = torRadius + zihe + drawerSettings.holeOffset
+
         if (bublikPaz.center) {
-            list.add(polygon(Vec2(torRadius + predB, 3 * torRadius + 1), stenaPart, torRadius))
+            list.add(polygon(Vec2(maxTrapecijaEdge+otstup, otstup*3), stenaPart, torRadius))
         }
-        list.addAll(torusCircle(Vec2(torRadius + predB, torRadius), torRadius, stenaPart, a, drawerSettings))
+        list.addAll(
+            torusCircle(
+                offset = Vec2(maxTrapecijaEdge+otstup, otstup),
+                radius = torRadius,
+                ringPart = stenaPart,
+                edge = a,
+                holeRadius = holeRadius,
+                drawerSettings = drawerSettings
+            )
+        )
 
 
         return FigureList(list.toList())
@@ -63,7 +90,7 @@ class BublikCad {
 
         val r2 = radius * cos(Math.PI / sideCount)
         val list = mutableListOf<Vec2>()
-        for (i in 0..< sideCount) {
+        for (i in 0..<sideCount) {
             val alpha = Math.PI * 2 * i / sideCount
             val delta = Math.PI * 2 * (i + 0.5) / sideCount
             val sy = sin(alpha)
@@ -72,7 +99,7 @@ class BublikCad {
             list.add(Vec2(sx * radius, sy * radius) + offset);
 
             val m3 = Matrix()
-                m3.rotateZ(((delta - Math.PI / 2)*180/ Math.PI).toFloat());
+            m3.rotateZ(((delta - Math.PI / 2) * 180 / Math.PI).toFloat());
 
             list.addAll(
                 listOf(
@@ -91,6 +118,7 @@ class BublikCad {
         radius: Double,
         ringPart: Int,
         edge: Double,
+        holeRadius: Double,
         drawerSettings: DrawerSettings,
     ): Collection<IFigure> {
         val list = mutableListOf<IFigure>()
@@ -120,14 +148,16 @@ class BublikCad {
             var oxy: Vec2 = (exy - cxy) * (dist + zig2).toDouble() / edge + offset + cxy
 
             val m3 = Matrix()
-                m3.rotateZ(((delta + Math.PI / 2)*180/ Math.PI).toFloat());
+            m3.rotateZ(((delta + Math.PI / 2) * 180 / Math.PI).toFloat());
 
             list.add(FigurePolyline(listOf(
                 m3 * Vec3(-zig2, 0.0, 1.0),
                 m3 * Vec3(-zig2, -zihe, 1.0),
                 m3 * Vec3(zig2, -zihe, 1.0),
                 m3 * Vec3(zig2, 0.0, 1.0),
-            ).map{v3 -> Vec2(-v3.x, v3.y) + oxy}, true))
+            ).map { v3 -> Vec2(-v3.x, v3.y) + oxy }, true
+            )
+            )
 
             oxy = (cxy - exy) * (dist + zig2) / edge + offset + exy;
 
@@ -136,10 +166,12 @@ class BublikCad {
                 m3 * Vec3(-zig2, -zihe, 1.0),
                 m3 * Vec3(zig2, -zihe, 1.0),
                 m3 * Vec3(zig2, 0.0, 1.0),
-            ).map{v3 -> Vec2(-v3.x, v3.y) + oxy}, true))
+            ).map { v3 -> Vec2(-v3.x, v3.y) + oxy }, true
+            )
+            )
         }
 
-        list.add(FigureCircle(offset, radius - zihe - drawerSettings.holeOffset))
+        list.add(FigureCircle(offset, min(holeRadius, radius - zihe - drawerSettings.holeOffset)))
         return list
     }
 

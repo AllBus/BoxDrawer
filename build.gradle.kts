@@ -90,6 +90,7 @@ kotlin {
             implementation("org.jetbrains.skiko:skiko-awt-runtime-$target:0.7.90")
             implementation("com.darkrockstudios:mpfilepicker:3.1.0")
             implementation("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}")
+            implementation("org.locationtech.jts:jts-core:1.19.0")
 
             implementation(project(":figure"))
             implementation(project(":dxfprinter"))
