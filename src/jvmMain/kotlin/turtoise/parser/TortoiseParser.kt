@@ -17,6 +17,7 @@ import turtoise.TortoiseFigureAlgorithm
 import turtoise.TortoiseSimpleAlgorithm
 import turtoise.dxf.DxfFileAlgorithm
 import turtoise.dxf.DxfHelpInfo
+import turtoise.help.HelpData
 import turtoise.help.HelpInfoCommand
 import turtoise.help.HideHelpInfo
 import turtoise.help.IHelpInfo
@@ -351,6 +352,29 @@ object TortoiseParser {
         )
     }
 
+    fun helpName(text: String, args: List<HelpData>):HelpInfoCommand {
+        val sb = AnnotatedString.Builder()
+        args.forEach { argument ->
+            sb.append(helpName(text))
+            sb.append(" ")
+            sb.append(helpArgument(argument.argument))
+            sb.append(helpDescr(" - " + argument.description))
+            sb.appendLine()
+            argument.params.forEach { param ->
+                sb.append("    ")
+                sb.append(helpParam(param.name))
+                sb.append(" - ")
+                sb.append(helpDescr(param.description))
+                sb.appendLine()
+            }
+        }
+
+        return HelpInfoCommand(
+            name = text,
+            text = sb.toAnnotatedString()
+        )
+    }
+
     fun helpArgument(text: String): AnnotatedString {
         return AnnotatedString(
             text, SpanStyle(
@@ -363,6 +387,14 @@ object TortoiseParser {
         return AnnotatedString(
             text, SpanStyle(
                 color = Color(0x60A1FF00),
+            )
+        )
+    }
+
+    fun helpParam(text: String): AnnotatedString {
+        return AnnotatedString(
+            text, SpanStyle(
+                color = Color(0x6026A530),
             )
         )
     }
