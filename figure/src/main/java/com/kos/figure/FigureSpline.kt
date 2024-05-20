@@ -3,6 +3,9 @@ package com.kos.figure
 import com.kos.drawer.IFigureGraphics
 import vectors.Vec2
 
+/**
+ * Сплайны не реализованы. Так как RDWorks не умеет с ними работать
+ */
 class FigureSpline(points: List<Vec2>) : FigurePolygon(points) {
 
     override fun create(points: List<Vec2>): FigurePolygon {

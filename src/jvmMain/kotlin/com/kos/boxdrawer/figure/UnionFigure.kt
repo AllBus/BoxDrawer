@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.figure
 
+import com.kos.figure.Approximation
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
@@ -14,21 +15,21 @@ import vectors.Vec2
 object UnionFigure {
     val factory = GeometryFactory()
 
-    fun diff(a: List<FigurePolyline>, b: List<FigurePolyline>): IFigure {
+    fun diff(a: List<Approximation>, b: List<Approximation>): IFigure {
         return try {
             val pp = multiPolygon(a).union()
             val pb = multiPolygon(b).union()
 
             val union = pp.difference(pb)
 
-            figures(union)
+            return figures(union)
 
         } catch (e: Exception) {
             FigureEmpty
         }
     }
 
-    fun symDiff(a: List<FigurePolyline>, b: List<FigurePolyline>): IFigure {
+    fun symDiff(a: List<Approximation>, b: List<Approximation>): IFigure {
         return try {
             val pp = multiPolygon(a).union()
             val pb = multiPolygon(b).union()
@@ -42,7 +43,7 @@ object UnionFigure {
         }
     }
 
-    fun intersect(a: List<FigurePolyline>, b: List<FigurePolyline>): IFigure {
+    fun intersect(a: List<Approximation>, b: List<Approximation>): IFigure {
         return try {
             val pp = multiPolygon(a).union()
             val pb = multiPolygon(b).union()
@@ -56,7 +57,7 @@ object UnionFigure {
         }
     }
 
-    fun union(a: List<FigurePolyline>): IFigure {
+    fun union(a: List<Approximation>): IFigure {
         return try {
             val pp = multiPolygon(a)
 
@@ -69,16 +70,18 @@ object UnionFigure {
         }
     }
 
-    private fun multiPolygon(a: List<FigurePolyline>): MultiPolygon {
+    private fun multiPolygon(a: List<Approximation>): MultiPolygon {
         val pp = factory.createMultiPolygon(
-            a.mapNotNull {
-                if (it.points.size >= 3) {
-                    if (!it.isClose())
-                        (it.points + it.points.first())
+            a.flatMap {
+
+                it.approximate(30).filter {
+                    it.size >= 3
+                }.map {
+                    if (it.last() != it.first())
+                        (it + it.first())
                     else
-                        it.points
-                } else
-                    null
+                        it
+                }
             }.map { f ->
                 factory.createPolygon(
                     f.map { Coordinate(it.x, it.y) }.toTypedArray()

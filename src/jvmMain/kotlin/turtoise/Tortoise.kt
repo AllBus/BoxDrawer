@@ -2,6 +2,7 @@ package turtoise
 
 import androidx.compose.ui.graphics.Matrix
 import com.kos.boxdrawer.figure.UnionFigure
+import com.kos.figure.Approximation
 import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureBezierList
@@ -352,7 +353,7 @@ class Tortoise() {
                     if (s.size >= 2) {
                         res.add(UnionFigure.intersect(s[0], s[1]))
                     } else {
-                        res.add(FigureList(s.flatten()))
+                        res.add(FigureList(s.flatten().filterIsInstance(IFigure::class.java)))
                     }
                 }
                 TortoiseCommand.TURTOISE_DIFF -> {
@@ -360,7 +361,7 @@ class Tortoise() {
                     if (s.size >= 2) {
                         res.add(UnionFigure.diff(s[0], s[1]))
                     } else {
-                        res.add(FigureList(s.flatten()))
+                        res.add(FigureList(s.flatten().filterIsInstance(IFigure::class.java)))
                     }
                 }
 
@@ -369,7 +370,7 @@ class Tortoise() {
                     if (s.size >= 2) {
                         res.add(UnionFigure.symDiff(s[0], s[1]))
                     } else {
-                        res.add(FigureList(s.flatten()))
+                        res.add(FigureList(s.flatten().filterIsInstance(IFigure::class.java)))
                     }
                 }
 
@@ -531,13 +532,13 @@ class Tortoise() {
         maxStackSize: Int,
         memory: TortoiseMemory,
         runner: TortoiseRunner
-    ): List<List<FigurePolyline>> {
+    ): List<List<Approximation>> {
         val s = (0 until com.size).mapNotNull { index ->
             com.takeBlock(index)
         }.map { block ->
             figureList(block, ds, state, maxStackSize, memory, runner)
                 ?.list()
-                ?.filterIsInstance(FigurePolyline::class.java)
+                ?.filterIsInstance(Approximation::class.java)
                 .orEmpty()
         }
         return s

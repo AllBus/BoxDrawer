@@ -4,7 +4,7 @@ import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
 import vectors.Vec2
 
-class FigureBezierList(val points: List<List<Vec2>>) : Figure() {
+class FigureBezierList(val points: List<List<Vec2>>) : Figure(), Approximation {
 
     constructor(
         a: Vec2, b: Vec2, c: Vec2, d: Vec2
@@ -87,6 +87,21 @@ class FigureBezierList(val points: List<List<Vec2>>) : Figure() {
         return "Кривые ${this.points.size}"
     }
 
+    override fun approximate(pointCount: Int): List<List<Vec2>> {
+
+        return points.filter { it.size>=4 }.map { pointGroup ->
+            val result = ArrayList<Vec2>()
+            result.add(pointGroup.first())
+
+            pointGroup.windowed(4, 3).forEach { curve ->
+                (1..pointCount).mapTo(result) { p ->
+                    Vec2.bezierLerp(curve, p.toDouble() / pointCount)
+                }
+            }
+            result
+        }
+    }
+
     companion object {
         fun simple(beziers: List<FigureBezierList>): FigureBezierList {
             val b = beziers.flatMap { it.points }.filter { it.isNotEmpty() }
@@ -111,5 +126,6 @@ class FigureBezierList(val points: List<List<Vec2>>) : Figure() {
             return FigureBezierList(list)
         }
     }
+
 
 }

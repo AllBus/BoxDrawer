@@ -5,7 +5,7 @@ import vectors.Vec2
 import vectors.Vec2.Companion.casteljauLine
 import vectors.Vec2.Companion.getCubicRoots
 
-class FigureBezier(points: List<Vec2>) : FigurePolygon(points) {
+class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
     override fun create(points: List<Vec2>): FigurePolygon {
         return FigureBezier(points)
     }
@@ -119,6 +119,20 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points) {
 
     override fun name(): String {
         return "Кривая ${this.points.size/3}"
+    }
+
+    override fun approximate(pointCount: Int): List<List<Vec2>> {
+        return if (points.size>=4) {
+            val result = ArrayList<Vec2>()
+            result.add(points[0])
+
+            points.windowed(4, 3).forEach { curve ->
+                (1..pointCount).mapTo(result) { p ->
+                    Vec2.bezierLerp(curve, p.toDouble() / pointCount)
+                }
+            }
+            listOf(result)
+        } else emptyList()
     }
 }
 

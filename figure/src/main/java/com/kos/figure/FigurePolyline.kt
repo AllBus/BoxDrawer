@@ -5,7 +5,7 @@ import vectors.Vec2
 import vectors.Vec2.Companion.coordForX
 import vectors.Vec2.Companion.coordForY
 
-class FigurePolyline(points: List<Vec2>) : FigurePolygon(points) {
+class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation {
 
     constructor(points: List<Vec2>, close: Boolean) : this(
         if (close) (points + listOfNotNull(points.firstOrNull()))
@@ -156,6 +156,10 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points) {
     }
 
     fun isClose(): Boolean {
-        return if (points.size>3) points.first() == points.last() else false
+        return if (points.size > 3) points.first() == points.last() else false
+    }
+
+    override fun approximate(pointCount: Int): List<List<Vec2>> {
+        return listOf(points)
     }
 }

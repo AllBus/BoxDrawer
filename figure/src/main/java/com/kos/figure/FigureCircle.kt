@@ -6,6 +6,8 @@ import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.acos
 import kotlin.math.asin
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  *  @param segmentStart degrees
@@ -114,5 +116,20 @@ class FigureCircle(
 
     override fun name(): String {
         return "Круг"
+    }
+
+    override fun approximate(pointCount: Int): List<List<Vec2>> {
+        val d = if (segmentStart == segmentEnd) {
+            360.0
+        } else
+            segmentEnd
+
+        val startAngle = segmentStart * Math.PI / 180;
+        val endAngle = d * Math.PI / 180;
+
+        return listOf((0..pointCount).map { p ->
+            val t = startAngle + (endAngle - startAngle) * p.toDouble()/pointCount
+            center + Vec2(radius * cos(t), radius * sin(t))
+        })
     }
 }

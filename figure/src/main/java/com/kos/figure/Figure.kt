@@ -55,6 +55,9 @@ abstract class Figure : IFigure {
     }
 }
 
+interface Approximation {
+    fun approximate(pointCount: Int): List<List<Vec2>>
+}
 
 object FigureEmpty: IFigure {
     override val count: Int
