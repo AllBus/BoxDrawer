@@ -8,3 +8,7 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
+
+dependencies {
+    implementation("org.locationtech.jts:jts-core:1.19.0")
+}

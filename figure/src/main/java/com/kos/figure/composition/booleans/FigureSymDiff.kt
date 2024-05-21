@@ -1,0 +1,30 @@
+package com.kos.figure.composition.booleans
+
+import com.kos.figure.Approximation
+import com.kos.figure.Figure
+import com.kos.figure.IFigure
+import com.kos.figure.algorithms.UnionFigure
+
+class FigureSymDiff(
+    figure1: IFigure,
+    figure2: IFigure,
+    approximationSize: Int,
+) : FigureUnion(figure1, figure2, approximationSize) {
+
+    override fun recalculate(): IFigure {
+        val newFigure: IFigure = when {
+            figure1 == figure2 -> figure1
+            figure1 == Figure.Empty -> Figure.Empty
+            figure2 == Figure.Empty -> Figure.Empty
+            else -> {
+                return UnionFigure.symDiff(
+                    approximations(figure1) ,
+                    approximations(figure2) ,
+                    approximationSize
+                )
+            }
+
+        }
+        return newFigure
+    }
+}

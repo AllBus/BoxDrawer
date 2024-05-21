@@ -1,6 +1,7 @@
 package com.kos.figure.composition
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.Approximation
 import com.kos.figure.IFigure
 import vectors.Vec2
 import vectors.BoundingRectangle as BoundingRectangle1
@@ -8,7 +9,7 @@ import vectors.BoundingRectangle as BoundingRectangle1
 class FigureTranslate(
     override val figure: IFigure,
     val offset: Vec2,
-): FigureComposition() {
+) : FigureComposition(), Approximation {
 
     override fun create(figure: IFigure): FigureComposition {
         return FigureTranslate(figure, offset)
@@ -21,7 +22,7 @@ class FigureTranslate(
     override fun translate(translateX: Double, translateY: Double): IFigure {
         return FigureTranslate(
             figure,
-            offset+ Vec2(translateX, translateY)
+            offset + Vec2(translateX, translateY)
         )
     }
 
@@ -52,5 +53,12 @@ class FigureTranslate(
 
     override fun name(): String {
         return "Сдвиг $offset"
+    }
+
+    override fun approximate(pointCount: Int): List<List<Vec2>> {
+        return if (figure is Approximation)
+            figure.approximate(pointCount).map { v -> v.map { it + offset } }
+        else
+            emptyList()
     }
 }

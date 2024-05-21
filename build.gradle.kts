@@ -66,12 +66,17 @@ kotlin {
       //  val desktopMain by getting
    //     val jvmTest by getting
         val jvmMain by getting
+  //     val figure by getting
 
         val lwjglVersion = "3.3.1"
 
         commonMain.dependencies {
             implementation(compose.components.resources)
         }
+
+//        figure.dependencies {
+//            implementation("org.locationtech.jts:jts-core:1.19.0")
+//        }
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)

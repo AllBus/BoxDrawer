@@ -1,6 +1,7 @@
 package com.kos.figure.composition
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.Approximation
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
 import vectors.Vec2
@@ -12,7 +13,7 @@ class FigureRotate(
     override val figure: IFigure,
     val angle: Double,
     val pivot: Vec2,
-): FigureComposition() {
+): FigureComposition(), Approximation {
 
     override fun create(figure: IFigure): FigureComposition {
         return FigureRotate(figure, angle, pivot)
@@ -57,5 +58,12 @@ class FigureRotate(
 
     override fun name(): String {
         return "Поворот(${angle})"
+    }
+
+    override fun approximate(pointCount: Int): List<List<Vec2>> {
+        return if (figure is Approximation)
+            figure.approximate(pointCount).map { v -> v.map { it.rotate( angle, pivot) } }
+        else
+            emptyList()
     }
 }

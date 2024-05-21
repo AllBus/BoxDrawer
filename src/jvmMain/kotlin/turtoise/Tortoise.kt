@@ -1,7 +1,7 @@
 package turtoise
 
 import androidx.compose.ui.graphics.Matrix
-import com.kos.boxdrawer.figure.UnionFigure
+import com.kos.figure.algorithms.UnionFigure
 import com.kos.figure.Approximation
 import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
@@ -17,6 +17,10 @@ import com.kos.figure.IFigurePath
 import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.composition.FigureArray
 import com.kos.figure.composition.FigureOnPath
+import com.kos.figure.composition.booleans.FigureDiff
+import com.kos.figure.composition.booleans.FigureIntersect
+import com.kos.figure.composition.booleans.FigureSymDiff
+import com.kos.figure.composition.booleans.FigureUnion
 import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
@@ -55,6 +59,7 @@ class Tortoise() {
         var result = mutableListOf<Vec2>()
         val le = commands.size
         var i = 0
+        val appoximationSize = 30
 
         /** стак вызовов циклов */
         var stack: TortoiseStack? = null
@@ -67,6 +72,9 @@ class Tortoise() {
             }
             result = mutableListOf()
         }
+
+
+
 
         while (i < le && !cancel) {
             val com = commands[i]
@@ -189,12 +197,12 @@ class Tortoise() {
                 }
 
                 TortoiseCommand.TURTOISE_FIGURE -> {
-                    val block = com.takeBlock(0)
-                    figureList(block, ds, state, maxStackSize, memory, runner)?.let { g ->
-                        res.add(
-                            g
-                        )
+                    val s = (0 until com.size).mapNotNull { index ->
+                        com.takeBlock(index)
+                    }.mapNotNull { block ->
+                        figureList(block, ds, state, maxStackSize, memory, runner)
                     }
+                    res.addAll(s)
                 }
 
                 TortoiseCommand.TURTOISE_IF_FIGURE ->{
@@ -345,33 +353,64 @@ class Tortoise() {
 
                 TortoiseCommand.TURTOISE_UNION -> {
                     val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
-                    res.add(UnionFigure.union(s.flatten()))
+                    res.add(  FigureUnion(
+                        s.firstOrNull()?:Figure.Empty,
+                        s.getOrNull(1)?:Figure.Empty,
+                        appoximationSize
+                    )
+                    )
+                  //  res.add(UnionFigure.union(s.flatten()))
                 }
 
                 TortoiseCommand.TURTOISE_INTERSECT -> {
                     val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
-                    if (s.size >= 2) {
-                        res.add(UnionFigure.intersect(s[0], s[1]))
-                    } else {
-                        res.add(FigureList(s.flatten().filterIsInstance(IFigure::class.java)))
-                    }
+                    res.add(
+                        FigureIntersect(
+                            s.firstOrNull() ?: Figure.Empty,
+                            s.getOrNull(1) ?: Figure.Empty,
+                            appoximationSize
+                        )
+                    )
+
+//                    val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
+//                    if (s.size >= 2) {
+//                        res.add(UnionFigure.intersect(s[0], s[1]))
+//                    } else {
+//                        res.add(FigureList(s.flatten().filterIsInstance(IFigure::class.java)))
+//                    }
                 }
                 TortoiseCommand.TURTOISE_DIFF -> {
                     val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
-                    if (s.size >= 2) {
-                        res.add(UnionFigure.diff(s[0], s[1]))
-                    } else {
-                        res.add(FigureList(s.flatten().filterIsInstance(IFigure::class.java)))
-                    }
+                    res.add(
+                        FigureDiff(
+                            s.firstOrNull() ?: Figure.Empty,
+                            s.getOrNull(1) ?: Figure.Empty,
+                            appoximationSize
+                        )
+                    )
+//                    val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
+//                    if (s.size >= 2) {
+//                        res.add(UnionFigure.diff(s[0], s[1]))
+//                    } else {
+//                        res.add(FigureList(s.flatten().filterIsInstance(IFigure::class.java)))
+//                    }
                 }
 
                 TortoiseCommand.TURTOISE_SYMDIFF -> {
                     val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
-                    if (s.size >= 2) {
-                        res.add(UnionFigure.symDiff(s[0], s[1]))
-                    } else {
-                        res.add(FigureList(s.flatten().filterIsInstance(IFigure::class.java)))
-                    }
+                    res.add(
+                        FigureSymDiff(
+                            s.firstOrNull() ?: Figure.Empty,
+                            s.getOrNull(1) ?: Figure.Empty,
+                            appoximationSize
+                        )
+                    )
+//                    val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
+//                    if (s.size >= 2) {
+//                        res.add(UnionFigure.symDiff(s[0], s[1]))
+//                    } else {
+//                        res.add(FigureList(s.flatten().filterIsInstance(IFigure::class.java)))
+//                    }
                 }
 
 
@@ -532,14 +571,14 @@ class Tortoise() {
         maxStackSize: Int,
         memory: TortoiseMemory,
         runner: TortoiseRunner
-    ): List<List<Approximation>> {
+    ): List<IFigure> {
         val s = (0 until com.size).mapNotNull { index ->
             com.takeBlock(index)
         }.map { block ->
-            figureList(block, ds, state, maxStackSize, memory, runner)
-                ?.list()
-                ?.filterIsInstance(Approximation::class.java)
-                .orEmpty()
+            figureList(block, ds, state, maxStackSize, memory, runner)?:Figure.Empty
+                //?.list()
+                //?.filterIsInstance(Approximation::class.java)
+               // .orEmpty()
         }
         return s
     }

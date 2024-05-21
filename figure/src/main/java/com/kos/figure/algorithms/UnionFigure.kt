@@ -1,4 +1,4 @@
-package com.kos.boxdrawer.figure
+package com.kos.figure.algorithms
 
 import com.kos.figure.Approximation
 import com.kos.figure.FigureEmpty
@@ -15,10 +15,10 @@ import vectors.Vec2
 object UnionFigure {
     val factory = GeometryFactory()
 
-    fun diff(a: List<Approximation>, b: List<Approximation>): IFigure {
+    fun diff(a: List<Approximation>, b: List<Approximation>, approximationSize:Int): IFigure {
         return try {
-            val pp = multiPolygon(a).union()
-            val pb = multiPolygon(b).union()
+            val pp = multiPolygon(a, approximationSize).union()
+            val pb = multiPolygon(b, approximationSize).union()
 
             val union = pp.difference(pb)
 
@@ -29,10 +29,10 @@ object UnionFigure {
         }
     }
 
-    fun symDiff(a: List<Approximation>, b: List<Approximation>): IFigure {
+    fun symDiff(a: List<Approximation>, b: List<Approximation>, approximationSize:Int): IFigure {
         return try {
-            val pp = multiPolygon(a).union()
-            val pb = multiPolygon(b).union()
+            val pp = multiPolygon(a, approximationSize).union()
+            val pb = multiPolygon(b, approximationSize).union()
 
             val union = pp.symDifference(pb)
 
@@ -43,10 +43,10 @@ object UnionFigure {
         }
     }
 
-    fun intersect(a: List<Approximation>, b: List<Approximation>): IFigure {
+    fun intersect(a: List<Approximation>, b: List<Approximation>, approximationSize:Int): IFigure {
         return try {
-            val pp = multiPolygon(a).union()
-            val pb = multiPolygon(b).union()
+            val pp = multiPolygon(a,approximationSize).union()
+            val pb = multiPolygon(b,approximationSize).union()
 
             val union = pp.intersection(pb)
 
@@ -57,9 +57,9 @@ object UnionFigure {
         }
     }
 
-    fun union(a: List<Approximation>): IFigure {
+    fun union(a: List<Approximation>, approximationSize:Int): IFigure {
         return try {
-            val pp = multiPolygon(a)
+            val pp = multiPolygon(a, approximationSize)
 
             val union = pp.union()
 
@@ -70,11 +70,11 @@ object UnionFigure {
         }
     }
 
-    private fun multiPolygon(a: List<Approximation>): MultiPolygon {
+    private fun multiPolygon(a: List<Approximation>, approximationSize:Int): MultiPolygon {
         val pp = factory.createMultiPolygon(
             a.flatMap {
 
-                it.approximate(30).filter {
+                it.approximate(approximationSize).filter {
                     it.size >= 3
                 }.map {
                     if (it.last() != it.first())

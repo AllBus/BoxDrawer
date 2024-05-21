@@ -45,6 +45,14 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
         cos(angle) * y + sin(angle) * x
     )
 
+    /**
+     * @param angle radians
+     */
+    fun rotate(angle: Double, pivot:Vec2): Vec2 = Vec2(
+        cos(angle) * (x+pivot.x) - sin(angle) * (y+pivot.y)-pivot.x,
+        cos(angle) * (y+pivot.y) + sin(angle) * (x+pivot.x)-pivot.y
+    )
+
     fun t(): Vec2 {
         return Vec2(y, x)
     }
