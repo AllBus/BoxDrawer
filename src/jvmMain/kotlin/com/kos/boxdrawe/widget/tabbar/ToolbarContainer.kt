@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -15,7 +16,7 @@ fun ToolbarContainer(
     actionsBlock: @Composable BoxScope.() -> Unit
 ) {
     Row {
-        Box(modifier = Modifier.weight(1f), content = content)
+        Box(modifier = Modifier.weight(1f).clipToBounds(), content = content)
         Box(modifier = Modifier.width(160.dp).padding(4.dp), content = actionsBlock)
     }
 }

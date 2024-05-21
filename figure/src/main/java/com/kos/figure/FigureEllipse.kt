@@ -4,6 +4,7 @@ import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
 import vectors.Vec2
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.asin
 import kotlin.math.cos
@@ -18,7 +19,7 @@ open class FigureEllipse(
     val radiusMinor: Double,
     val rotation: Double,
     val segmentStart: Double = 0.0,
-    val segmentEnd: Double = 0.0,
+    val segmentSweep: Double = 360.0,
 ) : Figure(), IFigurePath, Approximation {
 
     override fun crop(k: Double, cropSide: CropSide): IFigure {
@@ -72,9 +73,9 @@ open class FigureEllipse(
         radiusMinor: Double,
         rotation: Double,
         segmentStart: Double,
-        segmentEnd: Double
+        segmentSweep: Double
     ): FigureEllipse {
-        return FigureEllipse(center, radius, radiusMinor, rotation, segmentStart, segmentEnd)
+        return FigureEllipse(center, radius, radiusMinor, rotation, segmentStart, segmentSweep)
     }
 
     override fun translate(translateX: Double, translateY: Double): IFigure {
@@ -84,7 +85,7 @@ open class FigureEllipse(
             radiusMinor = radiusMinor,
             rotation = rotation,
             segmentStart = segmentStart,
-            segmentEnd = segmentEnd
+            segmentSweep = segmentSweep
         )
     }
 
@@ -95,7 +96,7 @@ open class FigureEllipse(
             radiusMinor = radiusMinor,
             rotation = (rotation + angle) % (2 * PI),
             segmentStart = segmentStart,
-            segmentEnd = segmentEnd
+            segmentSweep = segmentSweep
         )
     }
 
@@ -106,19 +107,20 @@ open class FigureEllipse(
             radiusMinor = radiusMinor,
             rotation = (rotation + angle) % (2 * PI),
             segmentStart = segmentStart,
-            segmentEnd = segmentEnd
+            segmentSweep = segmentSweep
         )
     }
 
     override fun draw(g: IFigureGraphics) {
         g.save()
         g.rotate(rotation * 180 / PI, center)
-        g.drawArc(center, radius, radiusMinor, segmentStart, segmentEnd)
+        g.drawArc(center, radius, radiusMinor, segmentStart, segmentSweep)
         g.restore()
     }
 
     protected fun calculateSegments(s1: Double, e1: Double): IFigure {
-        var ls = segmentEnd - segmentStart
+        //Todo:
+        var ls = segmentSweep
         if (ls < 0) ls += 360.0
         var le = e1 - s1
         if (le < 0) le += 360.0
@@ -134,7 +136,7 @@ open class FigureEllipse(
                 radiusMinor = radiusMinor,
                 rotation = rotation,
                 segmentStart = atS,
-                segmentEnd = atE,
+                segmentSweep = atE,
             )
         } else {
             if (atS == atE)
@@ -149,7 +151,7 @@ open class FigureEllipse(
                 radiusMinor = radiusMinor,
                 rotation = rotation,
                 segmentStart = normalizeAngle(max(atS, stS)),
-                segmentEnd = normalizeAngle(min(atE, stE)),
+                segmentSweep = normalizeAngle(min(atE, stE)),
             )
 
             stS += 360;
@@ -164,7 +166,7 @@ open class FigureEllipse(
                 radiusMinor = radiusMinor,
                 rotation = rotation,
                 segmentStart = normalizeAngle(max(atS, stS)),
-                segmentEnd = normalizeAngle(min(atE, stE)),
+                segmentSweep = normalizeAngle(min(atE, stE)),
             )
 
             return FigureList(listOf(f1, f2))
@@ -176,21 +178,32 @@ open class FigureEllipse(
     }
 
     override fun print(): String {
-        return "M ${center.x} ${center.y} a $rotation e ${radius} ${radiusMinor} ${segmentStart} ${segmentEnd}"
+        return "M ${center.x} ${center.y} a $rotation e ${radius} ${radiusMinor} ${segmentStart} ${segmentSweep}"
+    }
+
+    fun isFill(): Boolean {
+        return (segmentSweep == 0.0 || abs(segmentSweep) >= 360.0)
+    }
+
+    fun endAngle(): Double {
+        return if (isFill()) {
+            segmentStart + 360.0
+        } else
+            segmentStart + segmentSweep
     }
 
     open fun perimeter(): Double {
-        if (segmentStart == segmentEnd) {
+        if (isFill()) {
             return Math.PI * (3 * (radius + radiusMinor) - sqrt((3 * radius + radiusMinor) * (radius + 3 * radiusMinor)))
         } else {
             val startAngle = segmentStart * Math.PI / 180;
-            val endAngle = segmentEnd * Math.PI / 180;
+            val endAngle = endAngle() * Math.PI / 180
             val dt = Math.PI * 0.001
             // считаем эксцентриситет
             val a = radius
             val b = radiusMinor
-            val a2 = a*a
-            val b2 = b*b
+            val a2 = a * a
+            val b2 = b * b
             val ex = 1.0 - b * b / a * a
 
             var result = 0.0
@@ -200,9 +213,9 @@ open class FigureEllipse(
 //                val ct = cos(t)
 //                result += sqrt(1 - ex * ct * ct)
                 val ct = cos(t)
-                val ct2 = ct*ct
+                val ct2 = ct * ct
                 val st2 = 1 - ct2
-                result += sqrt(a2*st2+b2*ct2)*dt
+                result += sqrt(a2 * st2 + b2 * ct2) * dt
                 // sqrt(1 - ex * ct * ct) need a >= b
                 t += dt
             }
@@ -224,14 +237,16 @@ open class FigureEllipse(
          * (y - y1) / (x - x1) = (- x1 y1 +- sqrt(b^2 x1^2 + a^2 y1^2 - a^2 b^2)) / a^2 - x1^2
          */
 
-        // Todo Значение вычисено для круга нкжно переписать для эллипса
-        val d = if (segmentStart == segmentEnd) {
-            360.0
-        } else
-            segmentEnd
 
-        val startAngle = segmentStart * Math.PI / 180;
-        val endAngle = d * Math.PI / 180;
+        val startAngleA = segmentStart * Math.PI / 180;
+        val endAngleB = endAngle() * Math.PI / 180
+
+        val (startAngle, endAngle) = if (startAngleA < endAngleB) {
+            startAngleA to endAngleB
+        } else {
+            endAngleB to startAngleA
+        }
+
 
         val pos = if (delta <= 0) {
             Vec2(radius * cos(startAngle), radiusMinor * sin(startAngle))
@@ -243,8 +258,8 @@ open class FigureEllipse(
                 val a = radius
                 val b = radiusMinor
                 //val ex = 1.0 - b * b / a * a
-                val a2 = a*a
-                val b2 = b*b
+                val a2 = a * a
+                val b2 = b * b
 
                 var result = 0.0
                 var t = startAngle
@@ -252,9 +267,9 @@ open class FigureEllipse(
                 while (t <= endAngle && result < tj) {
                     // сумма, интеграл
                     val ct = cos(t)
-                    val ct2 = ct*ct
+                    val ct2 = ct * ct
                     val st2 = 1 - ct2
-                    result += sqrt(a2*st2+b2*ct2)*dt
+                    result += sqrt(a2 * st2 + b2 * ct2) * dt
                     // sqrt(1 - ex * ct * ct) need a >= b
                     t += dt
                 }
@@ -262,9 +277,12 @@ open class FigureEllipse(
 
             }
 
-        val pr = center+  pos.rotate(rotation)
+        val pr = center + pos.rotate(rotation)
 
-        val normal =  Vec2.normalize(Vec2.Zero, Vec2(radiusMinor*radiusMinor*pos.x, radius*radius* pos.y)).rotate(rotation)
+        val normal = Vec2.normalize(
+            Vec2.Zero,
+            Vec2(radiusMinor * radiusMinor * pos.x, radius * radius * pos.y)
+        ).rotate(rotation)
         return PointWithNormal(pr, normal)
     }
 
@@ -274,16 +292,11 @@ open class FigureEllipse(
     }
 
     override fun approximate(pointCount: Int): List<List<Vec2>> {
-        val d = if (segmentStart == segmentEnd) {
-            360.0
-        } else
-            segmentEnd
+        val startAngle = segmentStart * Math.PI / 180
+        val sweepAngle = segmentSweep * Math.PI / 180
 
-        val startAngle = segmentStart * Math.PI / 180;
-        val endAngle = d * Math.PI / 180;
-
-        return listOf((0 .. pointCount).map{ p ->
-            val t = startAngle+ (endAngle-startAngle)* p.toDouble()/pointCount
+        return listOf((0..pointCount).map { p ->
+            val t = startAngle + sweepAngle * p.toDouble() / pointCount
             center + Vec2(radius * cos(t), radiusMinor * sin(t)).rotate(rotation)
         })
     }

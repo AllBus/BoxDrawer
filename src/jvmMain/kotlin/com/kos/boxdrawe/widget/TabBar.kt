@@ -1,5 +1,17 @@
 package com.kos.boxdrawe.widget
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.AnimationState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.with
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -54,6 +66,7 @@ import javax.swing.filechooser.FileNameExtensionFilter
 val TabContentModifier =
     Modifier.fillMaxWidth().fillMaxHeight().padding(vertical = 4.dp, horizontal = 16.dp)
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
     val tabIndex = vm.value.tabIndex.collectAsState()
@@ -77,30 +90,60 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
         Box(
             Modifier.fillMaxWidth().height(220.dp).background(ThemeColors.tabBackground)
         ) {
+
+
             ToolbarContainer(
                 content = {
-                    when (tabIndex.value) {
-                        TAB_BOX -> ToolbarForBox(vm.value.box)
-                        TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
-                        TAB_GRID -> ToolbarForGrid(vm.value.grid)
-                        TAB_SOFT -> ToolbarForSoft(vm.value.softRez)
-                        TAB_BEZIER -> ToolbarForBezier(vm.value.bezier)
-                        TAB_BUBLIK -> ToolbarForBublik(vm.value.bublik)
-                        TAB_REKA -> ToolbarForReka(vm.value.rectData)
-                        TAB_TOOLS -> ToolbarForTools(vm.value.options)
+                    AnimatedContent(
+                        targetState = tabIndex.value,
+                        transitionSpec = {
+                            // Compare the incoming number with the previous number.
+                            if (targetState > initialState) {
+                                // If the target number is larger, it slides up and fades in
+                                // while the initial (smaller) number slides up and fades out.
+                                slideInHorizontally { height -> height } togetherWith
+                                        slideOutHorizontally { height -> -height }
+                            } else {
+                                // If the target number is smaller, it slides down and fades in
+                                // while the initial number slides down and fades out.
+                                (slideInHorizontally { height -> -height } ).togetherWith(
+                                    slideOutHorizontally { height -> height })
+                            }.using(
+                                // Disable clipping since the faded slide-in/out should
+                                // be displayed out of bounds.
+                                SizeTransform(clip = false)
+                            )
+                        }
+                    ) { targetIndex ->
+                        when (targetIndex) {
+                            TAB_BOX -> ToolbarForBox(vm.value.box)
+                            TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
+                            TAB_GRID -> ToolbarForGrid(vm.value.grid)
+                            TAB_SOFT -> ToolbarForSoft(vm.value.softRez)
+                            TAB_BEZIER -> ToolbarForBezier(vm.value.bezier)
+                            TAB_BUBLIK -> ToolbarForBublik(vm.value.bublik)
+                            TAB_REKA -> ToolbarForReka(vm.value.rectData)
+                            TAB_TOOLS -> ToolbarForTools(vm.value.options)
+                        }
                     }
                 },
                 actionsBlock = {
-                    when (tabIndex.value) {
-                        TAB_BOX -> ToolbarActionForBox(vm.value.box)
-                        TAB_TORTOISE -> ToolbarActionForTortoise(vm.value.tortoise)
-                        TAB_GRID -> ToolbarActionForGrid(vm.value.grid)
-                        TAB_SOFT -> ToolbarActionForSoft(vm.value.softRez)
+                    AnimatedContent(
+                        targetState = tabIndex.value,
+                        transitionSpec = {
+                            fadeIn() togetherWith fadeOut()
+                        }) { targetIndex ->
+                        when (targetIndex) {
+                            TAB_BOX -> ToolbarActionForBox(vm.value.box)
+                            TAB_TORTOISE -> ToolbarActionForTortoise(vm.value.tortoise)
+                            TAB_GRID -> ToolbarActionForGrid(vm.value.grid)
+                            TAB_SOFT -> ToolbarActionForSoft(vm.value.softRez)
 
-                        TAB_BEZIER -> ToolbarActionForBezier(vm.value.bezier)
-                        TAB_BUBLIK -> ToolbarActionForBublik(vm.value.bublik)
-                        TAB_REKA -> ToolbarActionForReka(vm.value.rectData)
-                        TAB_TOOLS -> ToolbarActionForTools(vm.value.options)
+                            TAB_BEZIER -> ToolbarActionForBezier(vm.value.bezier)
+                            TAB_BUBLIK -> ToolbarActionForBublik(vm.value.bublik)
+                            TAB_REKA -> ToolbarActionForReka(vm.value.rectData)
+                            TAB_TOOLS -> ToolbarActionForTools(vm.value.options)
+                        }
                     }
                 }
             )

@@ -91,7 +91,7 @@ class FigureExtractor {
                 radiusMinor = entry.ratio * entry.halfMajorAxisLength,
                 rotation = entry.rotationAngle,
                 segmentStart = entry.startParameter * 180.0 / Math.PI,
-                segmentEnd = entry.endParameter * 180.0 / Math.PI,
+                segmentSweep = (entry.endParameter - entry.startParameter) * 180.0 / Math.PI,
             )
         }
 
@@ -102,7 +102,7 @@ class FigureExtractor {
                 center = entry.centerPoint.vec,
                 radius = entry.radius,
                 segmentStart = entry.startAngle,
-                segmentEnd = if (entry.endAngle < entry.startAngle) 360.0 else 0.0 + entry.endAngle,
+                segmentSweep = (entry.endAngle - entry.startAngle)
             )
         }
 

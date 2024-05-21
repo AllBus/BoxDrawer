@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.*
 import com.kos.drawer.IFigureGraphics
 import vectors.Vec2
+import kotlin.math.abs
 
 class ComposeFigureDrawer(
     private val scope: DrawScope,
@@ -45,9 +46,9 @@ class ComposeFigureDrawer(
         scope.drawPath(p, penColor, style = style)
     }
 
-    override fun drawArc(center: Vec2, radius: Double, radiusMinor: Double, startAngle: Double, endAngle: Double) {
+    override fun drawArc(center: Vec2, radius: Double, radiusMinor: Double, startAngle: Double, sweepAngle: Double) {
         val p = Path()
-        drawArc(p, center, radius, radiusMinor, startAngle, endAngle)
+        drawArc(p, center, radius, radiusMinor, startAngle, sweepAngle)
         scope.drawPath(p, penColor, style = style)
     }
 
@@ -110,18 +111,18 @@ class ComposeFigureDrawer(
         return points.map { it.vec }
     }
 
-    private fun drawArc(p: Path, center: Vec2, radius: Double, radius2: Double, startAngle: Double, endAngle: Double) {
+    private fun drawArc(p: Path, center: Vec2, radius: Double, radius2: Double, startAngle: Double, sweepAngle: Double) {
         val rect = Rect(
             (center.x - radius).toFloat(), (center.y - radius2).toFloat(), (center.x + radius).toFloat(),
             (center.y + radius2).toFloat()
         )
-        if (startAngle == endAngle)
+        if (sweepAngle == 0.0 || abs(sweepAngle)>=360.0)
             p.addOval(rect)
         else
             p.addArc(
                 rect,
                 -startAngle.toFloat(),
-                -(endAngle - startAngle).toFloat()
+                -sweepAngle.toFloat()
             )
     }
 

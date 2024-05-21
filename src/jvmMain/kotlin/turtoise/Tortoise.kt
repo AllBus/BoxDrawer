@@ -730,7 +730,7 @@ class Tortoise() {
                             radiusMinor = r2,
                             rotation = state.angle,
                             segmentStart = com.take(d, 0.0, memory),
-                            segmentEnd = com.take(d + 1, 0.0, memory),
+                            segmentSweep = com.take(d + 1, 360.0, memory),
                         )
                     )
                 }
@@ -759,7 +759,7 @@ class Tortoise() {
                         center = state.xy,
                         radius = r,
                         segmentStart = com.take(d + 0, 0.0, memory) - state.a,
-                        segmentEnd = com.take(d + 1, 0.0, memory) - state.a,
+                        segmentSweep = com.take(d + 1, 360.0, memory) - state.a,
                     )
                 )
             }

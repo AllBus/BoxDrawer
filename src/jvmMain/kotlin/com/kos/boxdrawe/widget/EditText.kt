@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.widget
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
@@ -55,7 +57,7 @@ fun EditText(
         modifier = Modifier.fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = value.value.toString(),
+            value = value.value,
             onValueChange = {
                 value.value = it
                 onChange(it)
@@ -65,8 +67,7 @@ fun EditText(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             modifier = modifier.fillMaxSize(),
             enabled = enabled,
-
-            )
+        )
     }
 }
 

@@ -8,6 +8,7 @@ import java.awt.Color
 import java.awt.geom.AffineTransform
 import java.util.Stack
 import kotlin.math.PI
+import kotlin.math.abs
 
 class DxfFigureDrawer(
     private val document: DXFDocument
@@ -42,9 +43,9 @@ class DxfFigureDrawer(
         radius: Double,
         radiusMinor: Double,
         startAngle: Double,
-        endAngle: Double
+        sweepAngle: Double
     ) {
-        drawArc(g, center, radius, radiusMinor, startAngle, endAngle)
+        drawArc(g, center, radius, radiusMinor, startAngle, sweepAngle)
     }
 
     override fun drawCircle(center: Vec2, radius: Double) {
@@ -91,9 +92,9 @@ class DxfFigureDrawer(
         radius: Double,
         radius2: Double,
         startAngle: Double,
-        endAngle: Double
+        sweepAngle: Double
     ) {
-        if (startAngle == endAngle) {
+        if (sweepAngle == 0.0 || abs(sweepAngle)>=360.0) {
             if (radius == radius2) {
                 g.drawCircle(center, radius)
             } else {
@@ -109,7 +110,7 @@ class DxfFigureDrawer(
                 radius * 2,
                 radius2 * 2,
                 startAngle,
-                (endAngle - startAngle)
+                sweepAngle,
             )
     }
 

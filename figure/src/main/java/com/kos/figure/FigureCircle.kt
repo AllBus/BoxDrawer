@@ -4,6 +4,7 @@ import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
 import vectors.Vec2
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.asin
 import kotlin.math.cos
@@ -17,14 +18,14 @@ class FigureCircle(
     center: Vec2,
     radius: Double,
     segmentStart: Double = 0.0,
-    segmentEnd: Double = 0.0,
+    segmentSweep: Double = 360.0,
 ) : FigureEllipse(
     center = center,
     radius = radius,
     radiusMinor = radius,
     rotation = 0.0,
     segmentStart = segmentStart,
-    segmentEnd = segmentEnd
+    segmentSweep = segmentSweep
 ) {
     override fun crop(k: Double, cropSide: CropSide): IFigure {
         return if (radius <= 0) Empty else when (cropSide) {
@@ -76,16 +77,16 @@ class FigureCircle(
         radiusMinor: Double,
         rotation: Double,
         segmentStart: Double,
-        segmentEnd: Double
+        segmentSweep: Double
     ): FigureEllipse {
-        return FigureCircle(center, radius, segmentStart, segmentEnd)
+        return FigureCircle(center, radius, segmentStart, segmentSweep)
     }
 
     override fun draw(g: IFigureGraphics) {
-        if (segmentStart == segmentEnd) {
+        if (isFill()) {
             g.drawCircle(center, radius)
         } else {
-            g.drawArc(center, radius, radiusMinor, segmentStart, segmentEnd)
+            g.drawArc(center, radius, radiusMinor, segmentStart, segmentSweep)
         }
     }
 
@@ -94,21 +95,16 @@ class FigureCircle(
     }
 
     override fun print(): String {
-        return "M ${center.x} ${center.y} c ${radius} ${segmentStart} ${segmentEnd}"
+        return "M ${center.x} ${center.y} c ${radius} ${segmentStart} ${segmentSweep}"
     }
 
     override fun perimeter(): Double {
-        if (segmentStart == segmentEnd) return 2 * Math.PI * radius
-        return (segmentEnd - segmentStart) * Math.PI / 180.0 * radius
+        if (isFill()) return 2 * Math.PI * radius
+        return abs((segmentSweep) * Math.PI / 180.0 * radius)
     }
 
     override fun positionInPath(delta: Double): PointWithNormal {
-        val d = if (segmentStart == segmentEnd) {
-            360.0
-        } else
-            segmentEnd - segmentStart
-
-        val rot = (segmentStart + delta * d) * Math.PI / 180
+        val rot = (segmentStart + delta * segmentSweep) * Math.PI / 180
         val pos = center + Vec2(radius, 0.0).rotate(rot)
         val normal = Vec2(1.0, 0.0).rotate(rot)
         return PointWithNormal(pos, normal)
@@ -119,16 +115,11 @@ class FigureCircle(
     }
 
     override fun approximate(pointCount: Int): List<List<Vec2>> {
-        val d = if (segmentStart == segmentEnd) {
-            360.0
-        } else
-            segmentEnd
-
         val startAngle = segmentStart * Math.PI / 180;
-        val endAngle = d * Math.PI / 180;
+        val sweepAngle = segmentSweep * Math.PI / 180;
 
         return listOf((0..pointCount).map { p ->
-            val t = startAngle + (endAngle - startAngle) * p.toDouble()/pointCount
+            val t = startAngle + (sweepAngle) * p.toDouble()/pointCount
             center + Vec2(radius * cos(t), radius * sin(t))
         })
     }
