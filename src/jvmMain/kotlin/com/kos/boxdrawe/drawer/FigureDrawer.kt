@@ -7,7 +7,7 @@ import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.figure.IFigure
 import vectors.Vec2
 
-fun DrawScope.drawFigures(figureLine: IFigure, selectedItem: IFigure) {
+fun DrawScope.drawFigures(figureLine: IFigure, selectedItem: List<IFigure>) {
 
     val penColor = Color.Gray
     val style = Stroke(width = Stroke.HairlineWidth)
@@ -16,7 +16,9 @@ fun DrawScope.drawFigures(figureLine: IFigure, selectedItem: IFigure) {
     figureLine.draw(drawer)
 
     drawer.penColor = ThemeColors.selectedFigureColor
-    selectedItem.draw(drawer)
+    selectedItem.forEach {
+        it.draw(drawer)
+    }
 
     val bound = figureLine.rect()
     drawer.penColor = Color.Green

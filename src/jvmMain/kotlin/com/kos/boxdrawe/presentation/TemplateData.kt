@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawer.figure.FigureExtractor
 import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateForm
@@ -23,6 +24,8 @@ import turtoise.TortoiseRunner
 import turtoise.TortoiseState
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.memory.TwoBlockTortoiseMemory
+import turtoise.paint.PaintUtils
+import vectors.Vec2
 import java.awt.datatransfer.Transferable
 import java.io.File
 import java.io.FileInputStream
@@ -187,4 +190,11 @@ class TemplateData(override val tools: ITools): SaveFigure {
         }
     }
 
+    suspend fun onPress(point: Vec2, button: Int, scale: Float) {
+        val figure = currentFigure.value
+        val result= PaintUtils.findFiguresAtCursor(point, 1.0, listOf(figure))
+        selectedItem.value = result
+    }
+
+    val selectedItem = mutableStateOf<List<IFigure>>(emptyList())
 }

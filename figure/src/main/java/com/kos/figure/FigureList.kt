@@ -2,6 +2,7 @@ package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
+import vectors.Matrix
 import vectors.Vec2
 
 class FigureList(
@@ -62,4 +63,7 @@ class FigureList(
     override fun name(): String {
         return "List"
     }
+
+    override val transform: Matrix
+        get() = Matrix.identity
 }

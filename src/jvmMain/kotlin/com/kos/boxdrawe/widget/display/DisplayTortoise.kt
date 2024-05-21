@@ -41,7 +41,7 @@ fun DisplayTortoise(
     matrix: State<Matrix>,
     enableMatrix: Boolean,
     figures: IFigure,
-    selectedItem: State<IFigure>,
+    selectedItem: State<List<IFigure>>,
     onStateChange: (String) -> Unit,
     onPress: (Vec2, Int, Float) -> Unit
 ) {
@@ -150,8 +150,7 @@ fun DisplayTortoise(
                     }
                 }
             ) {
-                this.drawFigures(figures, selectedItem.value)
-
+                this.drawFigures(figures,  selectedItem.value)
             }
         })
 

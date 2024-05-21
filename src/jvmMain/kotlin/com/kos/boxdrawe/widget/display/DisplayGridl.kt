@@ -187,11 +187,9 @@ fun DisplayGrid(gridData: GridData) {
                 val k = redrawEvent.value
                 for (x in 0 until grid.width) {
                     for (y in 0 until grid.height) {
-
                         val cell = grid.colorAt(x, y)
                         val penColor = colorList[cell % colorList.size]
                         drawRect(penColor, Offset(x * d, y * d), rectSize, style = style)
-
                     }
                 }
 
@@ -200,14 +198,12 @@ fun DisplayGrid(gridData: GridData) {
 
                 if (figurePreview.value) {
                     val sc = (d * 1f / widthCell.decimal).toFloat()
-
-
                         this.scale(
                             sc,
                             sc,
                             Offset(0.0f, 0.0f)
                         ) {
-                            drawFigures(figure.value, FigureEmpty)
+                            drawFigures(figure.value, emptyList())
                         }
 
                 }

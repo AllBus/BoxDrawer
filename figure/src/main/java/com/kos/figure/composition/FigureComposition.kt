@@ -4,6 +4,7 @@ import com.kos.figure.CropSide
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
+import vectors.Matrix
 import vectors.Vec2
 
 abstract class FigureComposition : IFigure {
@@ -46,4 +47,7 @@ abstract class FigureComposition : IFigure {
     override fun name(): String {
         return this.javaClass.name
     }
+
+    override val transform: Matrix
+        get() = Matrix.identity
 }

@@ -1,7 +1,9 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.figure.FigureEmpty
+import com.kos.figure.IFigure
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -93,6 +95,7 @@ class DrawerViewModel {
     suspend fun onPress(point: Vec2, button: Int, scale: Float) {
         when (tabIndex.value){
             BoxDrawerToolBar.TAB_REKA -> rectData.onPress(point, button, scale)
+            BoxDrawerToolBar.TAB_TOOLS -> template.onPress(point, button, scale)
         }
     }
 

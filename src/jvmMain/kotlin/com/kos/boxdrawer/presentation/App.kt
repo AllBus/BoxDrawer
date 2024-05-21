@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.gson.Gson
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
@@ -58,6 +59,10 @@ import vectors.Vec2
 @Composable
 @Preview
 fun App(vm: State<DrawerViewModel>) {
+    
+
+
+
 
     val figures = vm.value.figures.collectAsState(FigureEmpty)
 
@@ -78,7 +83,7 @@ fun App(vm: State<DrawerViewModel>) {
         derivedStateOf { IFigure.list(figures.value) }
     }
 
-    val selectedItem = remember(figures) { mutableStateOf<IFigure>(FigureEmpty) }
+    val selectedItem = remember(figures) { vm.value.template.selectedItem }
     val checkboxEditor = vm.value.template.checkboxEditor.collectAsState()
 
     MaterialTheme {
@@ -175,7 +180,7 @@ fun App(vm: State<DrawerViewModel>) {
                                     modifier = Modifier.align(Alignment.TopEnd).width(180.dp)
                                 ) {
                                     FigureListBox(figureList.value, selectedItem) { f ->
-                                        selectedItem.value = f
+                                        selectedItem.value = listOf(f)
                                     }
                                 }
                             }
@@ -199,7 +204,7 @@ fun App(vm: State<DrawerViewModel>) {
 }
 
 @Composable
-fun FigureListBox(figure: List<IFigure>, selectedItem: State<IFigure>, onClick: (IFigure) -> Unit) {
+fun FigureListBox(figure: List<IFigure>, selectedItem: State<List<IFigure>>, onClick: (IFigure) -> Unit) {
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -225,7 +230,7 @@ fun FigureListBox(figure: List<IFigure>, selectedItem: State<IFigure>, onClick: 
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.FigureItems(
     figures: List<IFigure>,
-    selectedItem: State<IFigure>,
+    selectedItem: State<List<IFigure>>,
     onClick: (IFigure) -> Unit
 ) {
     items(figures) { figure ->
@@ -233,7 +238,7 @@ private fun LazyListScope.FigureItems(
             modifier = Modifier
                 .border(1.dp, ThemeColors.figureListBorder, ThemeColors.figureListItemShape)
                 .background(
-                    if (figure === selectedItem.value)
+                    if (figure in selectedItem.value)
                         MaterialTheme.colors.primary else
                         ThemeColors.figureListBackground, ThemeColors.figureListItemShape
                 )

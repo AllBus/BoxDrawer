@@ -27,7 +27,7 @@ fun DisplayBox(
     stateText: MutableState<String>,
     alternative: MutableState<Boolean>,
     vm: State<DrawerViewModel>,
-    selectedItem: State<IFigure>,
+    selectedItem: State<List<IFigure>>,
 ) {
     val coroutineScope = rememberCoroutineScope()
 

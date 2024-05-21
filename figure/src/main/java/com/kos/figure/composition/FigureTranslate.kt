@@ -3,6 +3,7 @@ package com.kos.figure.composition
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.Approximation
 import com.kos.figure.IFigure
+import vectors.Matrix
 import vectors.Vec2
 import vectors.BoundingRectangle as BoundingRectangle1
 
@@ -61,4 +62,7 @@ class FigureTranslate(
         else
             emptyList()
     }
+
+    override val transform: Matrix
+        get() = Matrix.translate(offset.x, offset.y)
 }

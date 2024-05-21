@@ -171,7 +171,7 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
                 )
             }
 
-            this.drawFigures(figure.value, FigureEmpty)
+            this.drawFigures(figure.value, emptyList())
         }
     }
 }

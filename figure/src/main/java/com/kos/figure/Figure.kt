@@ -2,6 +2,7 @@ package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
+import vectors.Matrix
 import vectors.Vec2
 
 
@@ -18,8 +19,11 @@ interface IFigure {
     fun draw(g: IFigureGraphics)
 
     fun print():String
+    /** Список фигур внутри этой фигуры */
     fun collection(): List<IFigure>
     fun name():String
+
+    val transform : Matrix
 
     companion object {
         fun list(figure:IFigure):List<IFigure>{
@@ -49,6 +53,9 @@ abstract class Figure : IFigure {
     override fun name(): String {
         return this.javaClass.name
     }
+
+    override val transform: Matrix
+        get() = Matrix.identity
 
     companion object {
         val Empty = FigureEmpty
@@ -83,4 +90,7 @@ object FigureEmpty: IFigure {
     override fun collection(): List<IFigure> = emptyList()
 
     override fun name(): String = "Empty"
+
+    override val transform: Matrix
+        get() = Matrix.identity
 }

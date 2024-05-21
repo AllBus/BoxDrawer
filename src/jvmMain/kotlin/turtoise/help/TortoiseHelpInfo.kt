@@ -41,13 +41,31 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             "закрыть многоугольник"
         ), helpName(
             TortoiseCommand.TURTOISE_CIRCLE,
-            "r (sa ea)*",
-            "круг радиуса r."
+            listOf(
+                HelpData(
+                    "r (sa wa)*",
+                    "круг радиуса r",
+                    listOf(
+                        HelpDataParam("r", "радиус"),
+                        HelpDataParam("sa", "Задаёт начало дуги в градусах"),
+                        HelpDataParam("wa", "Задаёт длину дуги в градусах"),
+                    )
+                )
+            )
         ), helpName(
             TortoiseCommand.TURTOISE_ELLIPSE,
-            "rx ry (sa ea)*",
-            "эллипс с радиусами rx и ry.\n" +
-                    "     sa se необязательны задают начальный и конечный угол дуги"
+            listOf(
+                HelpData(
+                    "rx ry (sa wa)*",
+                    "эллипс с радиусами rx и ry",
+                    listOf(
+                        HelpDataParam("rx", "радиус по оси x"),
+                        HelpDataParam("ry", "радиус по оси y"),
+                        HelpDataParam("sa", "Задаёт начало дуги в градусах"),
+                        HelpDataParam("wa", "Задаёт длину дуги в градусах"),
+                    )
+                )
+            )
         ), helpName(
             TortoiseCommand.TURTOISE_RECTANGLE,
             "w h?",
@@ -58,8 +76,16 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             "прямоугольник шириной w и высотой h cо скруглённми углами радиуса r"
         ), helpName(
             TortoiseCommand.TURTOISE_REGULAR_POLYGON,
-            "n r",
-            "многоугольник радиуса с числом сторон n r"
+            listOf(
+                HelpData(
+                    "n r",
+                    "многоугольник радиуса r с числом сторон n",
+                    listOf(
+                        HelpDataParam("n", "числом сторон"),
+                        HelpDataParam("r", "радиус"),
+                    )
+                )
+            )
         ), helpName(
             TortoiseCommand.TURTOISE_ZIGZAG,
             listOf(
@@ -67,9 +93,9 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "w delta zigWidth board",
                     "Рисовать зигзаги:",
                     listOf(
-                        HelpDataParam("w", "общая длина,"),
-                        HelpDataParam("delta", "расстояние между началами двух зигзагов,"),
-                        HelpDataParam("zigWidth", "длина одноо зигзага,"),
+                        HelpDataParam("w", "общая длина"),
+                        HelpDataParam("delta", "расстояние между началами двух зигзагов"),
+                        HelpDataParam("zigWidth", "длина одноо зигзага"),
                         HelpDataParam("board", "толщина доски"),
 
                         )
@@ -77,8 +103,19 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             )
         ), helpName(
             TortoiseCommand.TURTOISE_ZIGZAG_FIGURE,
-            "w delta zigWidth board (@program (args)?)",
-            "Рисовать зигзаги формы описаной в строке @program"
+            listOf(
+                HelpData(
+                    "w delta zigWidth board (@program (args)?)",
+                    "Рисовать зигзаги формы описаной в строке @program",
+                    listOf(
+                        HelpDataParam("w", "общая длина"),
+                        HelpDataParam("delta", "расстояние между началами двух зигзагов"),
+                        HelpDataParam("zigWidth", "длина одноо зигзага"),
+                        HelpDataParam("board", "толщина доски"),
+                        HelpDataParam("(@program (args)?)", "фигура для формы зигзага"),
+                        )
+                )
+            )
         ), helpName(
             TortoiseCommand.TURTOISE_BEZIER,
             "(tx1 ty1 tx2 ty2 ex ey)*",
@@ -114,7 +151,7 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             TortoiseCommand.TURTOISE_IF_FIGURE,
             listOf(
                 HelpData(
-                    "(expresion)(@program args?)",
+                    "(expresion)(@program (args?))",
                     "Рисовать фигуру которая записана в строке начинающейся с @program\n",
                     listOf(
                         HelpDataParam(

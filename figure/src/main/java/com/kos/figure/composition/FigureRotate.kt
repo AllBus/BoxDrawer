@@ -4,6 +4,7 @@ import com.kos.drawer.IFigureGraphics
 import com.kos.figure.Approximation
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
+import vectors.Matrix
 import vectors.Vec2
 
 /**
@@ -66,4 +67,12 @@ class FigureRotate(
         else
             emptyList()
     }
+
+    override val transform: Matrix
+        get() {
+            val m = Matrix.translate(pivot.x, pivot.y)
+            m.rotateX(angle.toFloat())
+            m.translate(-pivot.x.toFloat(), -pivot.y.toFloat())
+            return m
+        }
 }

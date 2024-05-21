@@ -5,6 +5,7 @@ import com.kos.figure.CropSide
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
+import vectors.Matrix
 import vectors.Vec2
 
 class FigureArray(
@@ -122,4 +123,6 @@ class FigureArray(
     }
 
     override fun name(): String = "Array(${columns}x$rows)"
+    override val transform: Matrix
+        get() = Matrix.identity
 }

@@ -6,6 +6,7 @@ import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
 import vectors.BoundingRectangle
+import vectors.Matrix
 import vectors.Vec2
 
 class FigureOnPath(
@@ -110,4 +111,7 @@ class FigureOnPath(
     }
 
     override fun name(): String = "OnPath"
+
+    override val transform: Matrix
+        get() = Matrix.identity
 }
