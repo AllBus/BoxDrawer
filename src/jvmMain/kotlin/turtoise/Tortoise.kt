@@ -1,8 +1,6 @@
 package turtoise
 
 import androidx.compose.ui.graphics.Matrix
-import com.kos.figure.algorithms.UnionFigure
-import com.kos.figure.Approximation
 import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureBezierList
@@ -16,7 +14,10 @@ import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
 import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.composition.FigureArray
+import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureOnPath
+import com.kos.figure.composition.FigureRotate
+import com.kos.figure.composition.FigureTranslate
 import com.kos.figure.composition.booleans.FigureDiff
 import com.kos.figure.composition.booleans.FigureIntersect
 import com.kos.figure.composition.booleans.FigureSymDiff
@@ -24,6 +25,7 @@ import com.kos.figure.composition.booleans.FigureUnion
 import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
+import org.kabeja.dxf.DXFColor
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.MemoryKey.Companion.ZERO
 import turtoise.memory.keys.MemoryKey.Companion.orEmpty
@@ -172,12 +174,13 @@ class Tortoise() {
                 }
 
                 TortoiseCommand.TURTOISE_RECTANGLE -> {
-                    rectangle(com, memory, state, res)
+                    rectangle(state, com, memory, res)
                 }
 
                 TortoiseCommand.TURTOISE_ROUND_RECTANGLE -> {
                     roundrectangle(com, memory, state, res)
                 }
+
                 TortoiseCommand.TURTOISE_TRIANGLE -> {
                     triangle(com, memory, state, res)
                 }
@@ -205,14 +208,27 @@ class Tortoise() {
                     res.addAll(s)
                 }
 
-                TortoiseCommand.TURTOISE_IF_FIGURE ->{
-                    if (com.value(memory)>0.5){
+                TortoiseCommand.TURTOISE_IF_FIGURE -> {
+                    if (com.value(memory) > 0.5) {
                         val block = com.takeBlock(1)
                         figureList(block, ds, state, maxStackSize, memory, runner)?.let { g ->
                             res.add(
                                 g
                             )
                         }
+                    }
+                }
+
+                TortoiseCommand.TURTOISE_COLOR -> {
+                    val color = com.value(memory).toInt()
+                    val block = com.takeBlock(1)
+                    figureList(block, ds, state, maxStackSize, memory, runner)?.let { g ->
+                        res.add(
+                            FigureColor(
+                                DXFColor.getRgbColor(color),
+                                g
+                            )
+                        )
                     }
                 }
 
@@ -353,13 +369,14 @@ class Tortoise() {
 
                 TortoiseCommand.TURTOISE_UNION -> {
                     val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
-                    res.add(  FigureUnion(
-                        s.firstOrNull()?:Figure.Empty,
-                        s.getOrNull(1)?:Figure.Empty,
-                        appoximationSize
+                    res.add(
+                        FigureUnion(
+                            s.firstOrNull() ?: Figure.Empty,
+                            s.getOrNull(1) ?: Figure.Empty,
+                            appoximationSize
+                        )
                     )
-                    )
-                  //  res.add(UnionFigure.union(s.flatten()))
+                    //  res.add(UnionFigure.union(s.flatten()))
                 }
 
                 TortoiseCommand.TURTOISE_INTERSECT -> {
@@ -379,6 +396,7 @@ class Tortoise() {
 //                        res.add(FigureList(s.flatten().filterIsInstance(IFigure::class.java)))
 //                    }
                 }
+
                 TortoiseCommand.TURTOISE_DIFF -> {
                     val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
                     res.add(
@@ -445,6 +463,7 @@ class Tortoise() {
                     state.moveTo(Vec2(com[0, memory], com[1, memory]))
                 }
 
+
                 TortoiseCommand.TURTOISE_MATRIX_TRANSLATE -> {
                     res.add(FigureMatrixTranslate(com[0, memory], com[1, memory]))
                 }
@@ -462,7 +481,7 @@ class Tortoise() {
                 }
 
                 TortoiseCommand.TURTOISE_3D -> {
-                    val block = com.takeBlock(0)
+                    val block = com.takeBlock(2)
                     val f = figureList(block, ds, state, maxStackSize, memory, runner)
 
                     f?.let { g ->
@@ -498,6 +517,25 @@ class Tortoise() {
 
     }
 
+    private fun rectangle(
+        state: TortoiseState,
+        com: TortoiseCommand,
+        memory: TortoiseMemory,
+        res: MutableList<IFigure>
+    ) {
+        var c2 = state.xy
+        val angle = state.angle
+        for (d in 0 until com.size step 2) {
+            val width = com[d, 0.0, memory]
+            val height = com[d + 1, width, memory]
+            if (d > 0) {
+                c2 += Vec2(width / 2, 0.0).rotate(angle)
+            }
+            res.add(rectangle(width, height, c2, angle))
+            c2 += Vec2(width / 2, 0.0).rotate(angle)
+        }
+    }
+
     private fun figuresOnPath(
         com: TortoiseCommand,
         ds: DrawerSettings,
@@ -505,7 +543,7 @@ class Tortoise() {
         maxStackSize: Int,
         memory: TortoiseMemory,
         runner: TortoiseRunner,
-    ):IFigure {
+    ): IFigure {
         val block = com.takeBlock(0)
         val blockFigure = com.takeBlock(1)
         val blockProperties = com.takeBlock(2)
@@ -575,10 +613,10 @@ class Tortoise() {
         val s = (0 until com.size).mapNotNull { index ->
             com.takeBlock(index)
         }.map { block ->
-            figureList(block, ds, state, maxStackSize, memory, runner)?:Figure.Empty
-                //?.list()
-                //?.filterIsInstance(Approximation::class.java)
-               // .orEmpty()
+            figureList(block, ds, state, maxStackSize, memory, runner) ?: Figure.Empty
+            //?.list()
+            //?.filterIsInstance(Approximation::class.java)
+            // .orEmpty()
         }
         return s
     }
@@ -599,17 +637,20 @@ class Tortoise() {
         state: TortoiseState,
         res: MutableList<IFigure>
     ): Boolean {
+        val angles = com.takeBlock(1)
+        val translates = com.takeBlock(0)
+
         val mf = Matrix()
 
         mf.translate(
-            com[3, memory].toFloat(),
-            com[4, memory].toFloat(),
-            com[5, memory].toFloat()
+            memory.value(translates?.get(0) ?: ZERO, 0.0).toFloat(),
+            memory.value(translates?.get(1) ?: ZERO, 0.0).toFloat(),
+            memory.value(translates?.get(2) ?: ZERO, 0.0).toFloat(),
         )
 
-        mf.rotateX(com[0, memory].toFloat())
-        mf.rotateY(com[1, memory].toFloat())
-        mf.rotateZ(com[2, memory].toFloat())
+        mf.rotateX(memory.value(angles?.get(0) ?: ZERO, 0.0).toFloat())
+        mf.rotateY(memory.value(angles?.get(1) ?: ZERO, 0.0).toFloat())
+        mf.rotateZ(memory.value(angles?.get(2) ?: ZERO, 0.0).toFloat())
 
 
         val f3d = Figure3dTransform(
@@ -617,7 +658,7 @@ class Tortoise() {
             g
         )
 
-        val ft = com.takeBlock(1)?.let { a -> a as? TortoiseParserStackBlock }
+        val ft = com.takeBlock(3)?.let { a -> a as? TortoiseParserStackBlock }
             ?.let { a ->
 
                 val c = a.getBlockAtName("c")
@@ -702,26 +743,21 @@ class Tortoise() {
         val points = listOf<Vec2>(
             c2,
             c2 + Vec2(aa, 0.0).rotate(angle),
-            c2 + Vec2(aa+ bb*cos(vv),bb*sin(vv) ).rotate(angle),
+            c2 + Vec2(aa + bb * cos(vv), bb * sin(vv)).rotate(angle),
         )
 
-        res.add(FigurePolyline(points, true ))
+        res.add(FigurePolyline(points, true))
     }
 
     private fun rectangle(
-        com: TortoiseCommand,
-        memory: TortoiseMemory,
-        state: TortoiseState,
-        res: MutableList<IFigure>
-    ) {
-        val width = com.value(memory)
-        val height = com[1, width, memory]
-
+        width: Double,
+        height: Double,
+        c2: Vec2,
+        angle: Double,
+    ): IFigure {
         val width2 = width / 2
         val height2 = height / 2
 
-        val c2 = state.xy
-        val angle = state.angle
         val points = listOf<Vec2>(
             c2 + Vec2(-width2, -height2).rotate(angle),
             c2 + Vec2(-width2, height2).rotate(angle),
@@ -730,7 +766,7 @@ class Tortoise() {
             c2 + Vec2(-width2, -height2).rotate(angle),
         )
 
-        res.add(FigurePolyline(points))
+        return FigurePolyline(points)
     }
 
     private fun ellipse(
@@ -815,7 +851,8 @@ class Tortoise() {
     ): IFigure? {
         val f = block?.let { b ->
             val l = TortoiseParser.parseSimpleLine(block)
-            val st = TortoiseState().from(state)
+            val st = TortoiseState() //.from(state)
+
 
             val n = block.name.name
             if (n.startsWith("@")) {
@@ -841,8 +878,9 @@ class Tortoise() {
                     }
                 )
             }
+
         }
-        return f
+        return f?.let { FigureTranslate(FigureRotate(it, state.a, Vec2.Zero), state.xy) }
     }
 
     private fun calculateAngle(y: Double, x: Double): Double {

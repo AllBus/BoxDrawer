@@ -139,9 +139,9 @@ interface TortoiseCommand {
         const val TURTOISE_MEMORY_ASSIGN = '='
         const val TURTOISE_COLOR = 'C'
         const val TURTOISE_UNION = 'U'
-        const val TURTOISE_INTERSECT = 'I';
-        const val TURTOISE_DIFF = 'D';
-        const val TURTOISE_SYMDIFF = 'S';
+        const val TURTOISE_INTERSECT = 'I'
+        const val TURTOISE_DIFF = 'D'
+        const val TURTOISE_SYMDIFF = 'Y'
 
         fun Move(x: Double) = DoubleTortoiseCommand(TURTOISE_MOVE, x)
         fun Move(x: String) = SmallTortoiseCommand(TURTOISE_MOVE, x)

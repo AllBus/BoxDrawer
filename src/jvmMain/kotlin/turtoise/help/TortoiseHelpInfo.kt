@@ -267,6 +267,46 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     )
                 )
             )
+        ),
+        helpName(
+                TortoiseCommand.TURTOISE_3D,
+        listOf(
+            HelpData(
+                "(x y z)(ax ay az)(fiugre)((c c)(s s)(r r)(m m m))?",
+                "Нарисовать фигуру с трёхмерной трансформацией",
+                listOf(
+                    HelpDataParam(
+                        "figure",
+                        "Фигура рисуется по правилам фигур"
+                    ),
+                    HelpDataParam(
+                        "x",
+                        "Сдвиг по оси x до вращения"
+                    ),
+                    HelpDataParam(
+                        "y",
+                        "Сдвиг по оси y до вращения"
+                    ),
+                    HelpDataParam(
+                        "z",
+                        "Сдвиг по оси z до вращения"
+                    ),
+                    HelpDataParam(
+                        "ax",
+                        "Поворот вокруг оси x в градусах"
+                    ),
+                    HelpDataParam(
+                        "ay",
+                        "Поворот вокруг оси y в градусах"
+                    ),
+                    HelpDataParam(
+                        "az",
+                        "Поворот вокруг оси z в градусах"
+                    ),
+
+                )
+            )
         )
+    )
     )
 }

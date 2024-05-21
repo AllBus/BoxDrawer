@@ -10,6 +10,7 @@ import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.boxdrawer.template.TemplateMemoryItem
 import com.kos.boxdrawer.template.editor.TemplateEditorForm
 import com.kos.figure.FigureEmpty
+import com.kos.figure.FigureList
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -58,6 +59,8 @@ class TemplateData(override val tools: ITools): SaveFigure {
 
     val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
 
+    val dxfPreview = MutableStateFlow(false)
+
     val templateEditor =
         MutableStateFlow(TemplateEditorForm(TemplateForm("", "", emptyList())))
 
@@ -73,6 +76,8 @@ class TemplateData(override val tools: ITools): SaveFigure {
 
         val m = TwoBlockTortoiseMemory(top, algorithm.value.default)
 
+        selectedItem.value = emptyList()
+        dxfPreview.value = false
         currentFigure.value =
             algorithm.value.draw("", tools.ds(), TortoiseState(), m, runner, 10)
     }
@@ -162,15 +167,20 @@ class TemplateData(override val tools: ITools): SaveFigure {
             return templateEditor.value.form.print().line
         }else {
 
-            val name = algorithmName.value
+            if (dxfPreview.value){
+                val figures = FigureList(selectedItem.value)
+                return "f ("+figures.print()+")"
+            }else {
+                val name = algorithmName.value
 
-            val top = TortoiseParserStackBlock()
+                val top = TortoiseParserStackBlock()
 
-            memory.union(menu.first().memoryValues()).memoryBlock(top)
+                memory.union(menu.first().memoryValues()).memoryBlock(top)
 
-            val memoryarguments = top.innerLine
+                val memoryarguments = top.innerLine
 
-            return "f (@${name} ${memoryarguments})"
+                return "f (@${name} ${memoryarguments})"
+            }
         }
     }
 
@@ -185,6 +195,7 @@ class TemplateData(override val tools: ITools): SaveFigure {
             val extractor = FigureExtractor()
             currentFigure.value = extractor.extractFigures(doc)
             tools.updateChooserDir(fileName)
+            dxfPreview.value = true
         } catch (e: Exception) {
             e.printStackTrace()
         }

@@ -25,6 +25,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -59,10 +60,6 @@ import vectors.Vec2
 @Composable
 @Preview
 fun App(vm: State<DrawerViewModel>) {
-    
-
-
-
 
     val figures = vm.value.figures.collectAsState(FigureEmpty)
 
@@ -83,8 +80,12 @@ fun App(vm: State<DrawerViewModel>) {
         derivedStateOf { IFigure.list(figures.value) }
     }
 
-    val selectedItem = remember(figures) { vm.value.template.selectedItem }
+    val selectedItem = remember { vm.value.template.selectedItem }
     val checkboxEditor = vm.value.template.checkboxEditor.collectAsState()
+
+    LaunchedEffect(tabIndex.value){
+        selectedItem.value = emptyList()
+    }
 
     MaterialTheme {
         Column {

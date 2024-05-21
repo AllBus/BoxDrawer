@@ -113,7 +113,7 @@ public class DXFColor {
             return 0xFF000000;
         else {
             int[] rgb = rgbs[color];
-            return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[0];
+            return 0xff000000 | rgb[0] << 16 | rgb[1] << 8 | rgb[2];
         }
     }
     public static String getRGBString(int dxfColorCode) {
