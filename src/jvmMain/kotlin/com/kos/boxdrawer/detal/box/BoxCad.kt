@@ -17,9 +17,9 @@ import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslate
 import com.kos.figure.composition.Figure3dTransform
 import turtoise.*
-import turtoise.Tortoise.Companion.holes
-import turtoise.Tortoise.Companion.rectangle
-import turtoise.Tortoise.Companion.zigzag
+import turtoise.FigureCreator.holes
+import turtoise.FigureCreator.rectangle
+import turtoise.FigureCreator.zigzag
 import turtoise.memory.SimpleTortoiseMemory
 import turtoise.parser.TortoiseParser
 import vectors.Vec2
@@ -70,7 +70,7 @@ object BoxCad {
         //Левая сторона
         points.add(origin)
         points.add(origin + Vec2(0.0, wald.bottomOffset))
-        zigzag(points, points.last(), height - wald.verticalOffset, zigzag, angle90, p, boardWeight)
+        FigureCreator.zigzag(points, points.last(), height - wald.verticalOffset, zigzag, angle90, p, boardWeight)
         points.add(origin + Vec2(0.0, height))
 
         if (wald.topForm != PazForm.None) {
@@ -105,7 +105,7 @@ object BoxCad {
 
         // Правая сторона
         points.add(origin + Vec2(width, heightEnd - wald.topOffset))
-        zigzag(points, points.last(), heightEnd - wald.verticalOffset, zigzag, angle90, p, boardWeight)
+        FigureCreator.zigzag(points, points.last(), heightEnd - wald.verticalOffset, zigzag, angle90, p, boardWeight)
         points.add(origin + Vec2(width, 0.0))
 
         if (wald.bottomForm != PazForm.None) {

@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.presentation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.boxdrawer.template.editor.TemplateEditorForm
+import kotlin.reflect.KFunction3
 
 @Composable
 fun TemplateEditorBox(
@@ -29,7 +31,9 @@ fun TemplateEditorBox(
     templateGenerator: TemplateGeneratorListener,
 ) {
 
-    Column {
+    Column(
+    ) {
+
         TemplateBox(
             modifier = Modifier.padding(8.dp)
                 .width(250.dp)
@@ -45,63 +49,76 @@ fun TemplateEditorBox(
 //        }
     }
 
-    if (menu.value.edit) {
-
-        val createItem = templateGenerator::editorAddItem
-
-        val name = remember { mutableStateOf("") }
-        val argument = remember { mutableStateOf("") }
-
-        Row(
-            Modifier.background(ThemeColors.editorBackground, ThemeColors.figureListItemShape)
+    Column {
+        AnimatedVisibility(
+            menu.value.edit,
         ) {
-            Column(modifier = Modifier.width(200.dp)) {
-                Label("Ввод чисел")
-                Row {
-                    RunButton("1", Modifier.weight(1f)) {
-                        createItem("1", name.value, argument.value)
-                    }
-                    RunButton("2", Modifier.weight(1f)) {
-                        createItem("2", name.value, argument.value)
-                    }
-                    RunButton("3", Modifier.weight(1f)) {
-                        createItem("3", name.value, argument.value)
-                    }
-                    RunButton("4", Modifier.weight(1f)) {
-                        createItem("4", name.value, argument.value)
-                    }
-                }
-                Row {
-                    RunButton("целое", Modifier.weight(1f)) {
-                        createItem("int", name.value, argument.value)
-                    }
-                    RunButton("галка", Modifier.weight(1f)) {
-                        createItem("check", name.value, argument.value)
-                    }
-                }
-                Row {
-                    RunButton("текст", Modifier.weight(1f)) {
-                        createItem("string", name.value, argument.value)
-                    }
-                    RunButton("надпись", Modifier.weight(1f)) {
-                        createItem("label", name.value, argument.value)
-                    }
-                }
+
+            val createItem = templateGenerator::editorAddItem
+            val name = remember { mutableStateOf("") }
+            val argument = remember { mutableStateOf("") }
+
+
+            Row(
+                Modifier.background(ThemeColors.editorBackground, ThemeColors.figureListItemShape)
+            ) {
+                TempleteEditorActionMenu(createItem, name, argument)
+            }
+        }
+    }
+}
+
+@Composable
+private fun TempleteEditorActionMenu(
+    createItem: KFunction3<String, String, String, Unit>,
+    name: MutableState<String>,
+    argument: MutableState<String>
+) {
+    Column(modifier = Modifier.width(200.dp)) {
+        Label("Ввод чисел")
+        Row {
+            RunButton("1", Modifier.weight(1f)) {
+                createItem("1", name.value, argument.value)
+            }
+            RunButton("2", Modifier.weight(1f)) {
+                createItem("2", name.value, argument.value)
+            }
+            RunButton("3", Modifier.weight(1f)) {
+                createItem("3", name.value, argument.value)
+            }
+            RunButton("4", Modifier.weight(1f)) {
+                createItem("4", name.value, argument.value)
+            }
+        }
+        Row {
+            RunButton("целое", Modifier.weight(1f)) {
+                createItem("int", name.value, argument.value)
+            }
+            RunButton("галка", Modifier.weight(1f)) {
+                createItem("check", name.value, argument.value)
+            }
+        }
+        Row {
+            RunButton("текст", Modifier.weight(1f)) {
+                createItem("string", name.value, argument.value)
+            }
+            RunButton("надпись", Modifier.weight(1f)) {
+                createItem("label", name.value, argument.value)
+            }
+        }
 //                RunButton("форма") {
 //                    createItem("form", name.value, argument.value)
 //                }
 //                RunButton("множество") {
 //                    createItem("multi", name.value, argument.value)
 //                }
-            }
-            Column(modifier = Modifier.width(300.dp)) {
-                SimpleEditText("Название", "", name) { v ->
-                    name.value = v
-                }
-                SimpleEditText("Аргумент", "", argument) { v ->
-                    argument.value = v
-                }
-            }
+    }
+    Column(modifier = Modifier.width(300.dp)) {
+        SimpleEditText("Название", "", name) { v ->
+            name.value = v
+        }
+        SimpleEditText("Аргумент", "", argument) { v ->
+            argument.value = v
         }
     }
 }

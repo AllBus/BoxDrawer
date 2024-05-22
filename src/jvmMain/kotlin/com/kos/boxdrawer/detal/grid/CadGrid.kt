@@ -7,10 +7,9 @@ import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor
 import turtoise.DrawerSettings
+import turtoise.FigureCreator
+import turtoise.FigureCreator.next
 import turtoise.Tortoise
-import turtoise.Tortoise.Companion.bezierLine
-import turtoise.Tortoise.Companion.bezierQuartir
-import turtoise.Tortoise.Companion.next
 import vectors.Vec2
 import java.util.Stack
 import kotlin.math.abs
@@ -210,7 +209,7 @@ class CadGrid {
         smoothSize: Double,
         color: Int
     ): IFigure {
-        return FigureColor(color, Tortoise.rectangle(left, top, right, bottom, enableSmooth, smoothSize))
+        return FigureColor(color, FigureCreator.rectangle(left, top, right, bottom, enableSmooth, smoothSize))
     }
 
     fun createEntities(gridSize: GridOption, innerInfo: GridOption, frameSize: Double, drawerSettings: DrawerSettings) : IFigure
@@ -309,14 +308,14 @@ class CadGrid {
                                         radius = smoothSize
                                     }
 
-                                    bz.add(bezierQuartir(
+                                    bz.add(FigureCreator.bezierQuartir(
                                         v = Vec2(c.x * size, c.y * size),
                                         smoothSize = radius,
                                         g1 = c.g,
                                         g2 = n.g
                                     ));
                                     bz.add(
-                                        bezierLine(
+                                        FigureCreator.bezierLine(
                                             v = Vec2(c.x * size, c.y * size),
                                             v2 = Vec2(n.x * size, n.y * size),
                                             smoothSizeStart = radius,

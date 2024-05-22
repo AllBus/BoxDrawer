@@ -249,6 +249,7 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                 )
             )
         ),
+
         helpName(
             TortoiseCommand.TURTOISE_SYMDIFF,
             listOf(
@@ -269,10 +270,30 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             )
         ),
         helpName(
+            TortoiseCommand.TURTOISE_COLOR ,
+            listOf(
+                HelpData(
+                    "color (fiugre)",
+                    "Раскрасить фигуру цветом color",
+                    listOf(
+                        HelpDataParam(
+                            "color",
+                            "Индекс цвета в таблице dxf"
+                        ),
+                        HelpDataParam(
+                            "figure",
+                            "Фигура рисуется по правилам фигур"
+                        ),
+                    )
+                )
+            )
+        ),
+
+        helpName(
                 TortoiseCommand.TURTOISE_3D,
         listOf(
             HelpData(
-                "(x y z)(ax ay az)(fiugre)((c c)(s s)(r r)(m m m))?",
+                "(x y z)(ax ay az)(fiugre)((c *)(r *)(s * *)(m * *))?",
                 "Нарисовать фигуру с трёхмерной трансформацией",
                 listOf(
                     HelpDataParam(
@@ -303,7 +324,22 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         "az",
                         "Поворот вокруг оси z в градусах"
                     ),
-
+                    HelpDataParam(
+                        "c * *",
+                        "Количество повторений по оси x и дистанция"
+                    ),
+                    HelpDataParam(
+                        "r * *",
+                        "Количество повторений по оси y и дистанция"
+                    ),
+                    HelpDataParam(
+                        "s * *",
+                        "Масштабирование по осям x и y"
+                    ),
+                    HelpDataParam(
+                        "m * *",
+                        "Начальная точка по осям x и y"
+                    ),
                 )
             )
         )

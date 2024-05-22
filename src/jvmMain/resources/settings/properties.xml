@@ -9,6 +9,7 @@
                 holeDropHeight="0.0"
                 holeOffset="2.0"
                 name="3mm 2/2"
+                appoximationSize = "30"
         />
         <DrawerSettings
                 boardWeight="4.4"

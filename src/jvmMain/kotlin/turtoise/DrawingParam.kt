@@ -29,7 +29,11 @@ data class DrawerSettings(
     val holeDropHeight : Double = 0.0,
     val holeOffset : Double = 2.0,
 
-    val name:String = ""
+    val name:String = "",
+    /**
+     * Число отрезков на которое следует поделить кривую при аппроксимации
+     */
+    val appoximationSize: Int = 30,
 ) {
 
 }

@@ -1,5 +1,8 @@
 package com.kos.boxdrawer.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -45,7 +48,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.gson.Gson
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
@@ -54,7 +56,6 @@ import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
-import vectors.Vec2
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -64,7 +65,7 @@ fun App(vm: State<DrawerViewModel>) {
     val figures = vm.value.figures.collectAsState(FigureEmpty)
 
     val displayScale = remember { mutableFloatStateOf(2.0f) }
-    var pos  = rememberSaveable("DisplayTortoiseOffset") { mutableStateOf(Offset.Zero) }
+    var pos = rememberSaveable("DisplayTortoiseOffset") { mutableStateOf(Offset.Zero) }
 
     var dropValueX by remember { mutableStateOf(0f) }
     var dropValueY by remember { mutableStateOf(0f) }
@@ -83,7 +84,7 @@ fun App(vm: State<DrawerViewModel>) {
     val selectedItem = remember { vm.value.template.selectedItem }
     val checkboxEditor = vm.value.template.checkboxEditor.collectAsState()
 
-    LaunchedEffect(tabIndex.value){
+    LaunchedEffect(tabIndex.value) {
         selectedItem.value = emptyList()
     }
 
@@ -176,17 +177,31 @@ fun App(vm: State<DrawerViewModel>) {
                                 )
                             }
                         } else {
-                            if (tabIndex.value == BoxDrawerToolBar.TAB_TOOLS && !checkboxEditor.value) {
-                                Box(
-                                    modifier = Modifier.align(Alignment.TopEnd).width(180.dp)
-                                ) {
+                            //  var visible by remember { mutableStateOf(tabIndex.value == BoxDrawerToolBar.TAB_TOOLS && !checkboxEditor.value) }
+                            Row(
+                                modifier = Modifier.align(Alignment.TopEnd).width(180.dp),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+
+                                AnimatedVisibility(
+                                    tabIndex.value == BoxDrawerToolBar.TAB_TOOLS && !checkboxEditor.value,
+                                        enter = expandHorizontally(
+                                            expandFrom = Alignment.Start
+                                        ),
+                                        exit = shrinkHorizontally(
+                                            shrinkTowards = Alignment.Start
+                                        )
+                                )
+                                {
                                     FigureListBox(figureList.value, selectedItem) { f ->
                                         selectedItem.value = listOf(f)
                                     }
                                 }
+
                             }
                         }
                     }
+
                     StatusBar(displayScale, pos, stateText, onHomeClick = {
                         dropValueX = 0f
                         dropValueY = 0f
@@ -205,11 +220,13 @@ fun App(vm: State<DrawerViewModel>) {
 }
 
 @Composable
-fun FigureListBox(figure: List<IFigure>, selectedItem: State<List<IFigure>>, onClick: (IFigure) -> Unit) {
+fun FigureListBox(
+    figure: List<IFigure>,
+    selectedItem: State<List<IFigure>>,
+    onClick: (IFigure) -> Unit
+) {
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-
-
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(2.dp),
         state = scrollState,

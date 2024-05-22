@@ -2,13 +2,14 @@ package turtoise.rect
 
 import com.kos.figure.FigureList
 import com.kos.figure.IFigure
+import turtoise.FigureCreator
 import turtoise.Tortoise
 import vectors.Vec2
 
 @Deprecated("")
 object RectCad {
     fun createFigureFor(block: RectBlock, position: Vec2): IFigure {
-        return Tortoise.rectangle(position, block.width, block.height)
+        return FigureCreator.rectangle(position, block.width, block.height)
     }
 
     fun calculatePosition(block: RectBlock, c: RectBlock, position: Vec2): Vec2 {

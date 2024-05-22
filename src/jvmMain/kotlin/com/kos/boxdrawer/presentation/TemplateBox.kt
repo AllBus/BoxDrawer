@@ -49,9 +49,8 @@ fun TemplateBox(
     } else
         menu.value.values
 
-
-    if (!form.isEmpty()) {
-        Column(modifier = modifier) {
+    Column(modifier = modifier) {
+        if (!form.isEmpty()) {
             val prefix =
                 if (form.argumentName.isNotEmpty()) "." + form.argumentName else ""
             TemplateFormBox(
@@ -72,7 +71,7 @@ fun TemplateFormBox(
     block: TortoiseParserStackItem?,
     prefix: String,
     templateGenerator: TemplateGeneratorListener,
-    isEdit : Boolean,
+    isEdit: Boolean,
 ) {
 
     Column(
@@ -82,7 +81,7 @@ fun TemplateFormBox(
             .padding(2.dp)
     ) {
         Row() {
-            Text(form.title, modifier= Modifier.weight(1f))
+            Text(form.title, modifier = Modifier.weight(1f))
             Spacer(modifier = Modifier.width(4.dp))
             Text(form.argumentName, color = ThemeColors.templateArgumentColor)
         }
@@ -104,7 +103,7 @@ fun TemplateItemBox(
     block: TortoiseParserStackItem?,
     prefix: String,
     templateGenerator: TemplateGeneratorListener,
-    isEdit : Boolean,
+    isEdit: Boolean,
 ) {
     val newPrefix = prefix + "." + item.argumentName
     val inner = block?.getInnerAtName(item.argumentName)
@@ -178,8 +177,9 @@ fun TemplateItemBox(
                 )
             }
         }
-        if (isEdit){
-            TemplateFormEditRemove(newPrefix,
+        if (isEdit) {
+            TemplateFormEditRemove(
+                newPrefix,
                 templateGenerator = templateGenerator,
             )
         }
@@ -187,8 +187,10 @@ fun TemplateItemBox(
 }
 
 @Composable
-fun RowScope.TemplateFormEditRemove(itemPrefix: String,
-                           templateGenerator: TemplateGeneratorListener) {
+fun RowScope.TemplateFormEditRemove(
+    itemPrefix: String,
+    templateGenerator: TemplateGeneratorListener
+) {
     val iconDelete = Icons.Rounded.Delete
     Spacer(modifier = Modifier.width(4.dp))
     Text(itemPrefix, color = ThemeColors.templateArgumentColor)
@@ -203,7 +205,7 @@ fun RowScope.TemplateFormEditRemove(itemPrefix: String,
 @Composable
 fun TemplateFormEditAdd(
     templateGenerator: TemplateGeneratorListener
-){
+) {
 
 }
 
