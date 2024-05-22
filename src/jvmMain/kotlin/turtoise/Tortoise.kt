@@ -147,7 +147,7 @@ class Tortoise() : TortoiseBase() {
                 }
 
                 TortoiseCommand.TURTOISE_RECTANGLE -> {
-                    rectangle(state, com, memory, res)
+                    rectangleLine(state, com, memory, res)
                 }
 
                 TortoiseCommand.TURTOISE_ROUND_RECTANGLE -> {
@@ -176,7 +176,9 @@ class Tortoise() : TortoiseBase() {
                     val s = (0 until com.size).mapNotNull { index ->
                         com.takeBlock(index)
                     }.mapNotNull { block ->
-                        figureList(block, ds, state, maxStackSize, memory, runner)
+                        figureList(block, ds, maxStackSize, memory, runner)?.let {
+                            product(it, state)
+                        }
                     }
                     res.addAll(s)
                 }
@@ -184,29 +186,38 @@ class Tortoise() : TortoiseBase() {
                 TortoiseCommand.TURTOISE_IF_FIGURE -> {
                     if (com.value(memory) > 0.5) {
                         val block = com.takeBlock(1)
-                        figureList(block, ds, state, maxStackSize, memory, runner)?.let { g ->
+                        figureList(block, ds, maxStackSize, memory, runner)?.let { g ->
                             res.add(
-                                g
+                                product(g, state)
                             )
                         }
                     }
                 }
 
+                TortoiseCommand.TURTOISE_GROUP -> {
+                    res.add(product(figureGroups(com, ds, maxStackSize, memory, runner), state))
+                }
+
                 TortoiseCommand.TURTOISE_COLOR -> {
                     val color = com.value(memory).toInt()
                     val block = com.takeBlock(1)
-                    figureList(block, ds, state, maxStackSize, memory, runner)?.let { g ->
+                    figureList(block, ds, maxStackSize, memory, runner)?.let { g ->
                         res.add(
                             FigureColor(
                                 DXFColor.getRgbColor(color),
-                                g
+                                product(g, state)
                             )
                         )
                     }
                 }
 
                 TortoiseCommand.TURTOISE_PATH -> {
-                    res.add(figuresOnPath(com, ds, state, maxStackSize, memory, runner))
+                    res.add(
+                        product(
+                            figuresOnPath(com, ds, maxStackSize, memory, runner),
+                            state
+                        )
+                    )
                 }
 
                 TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {
@@ -216,7 +227,7 @@ class Tortoise() : TortoiseBase() {
                     val board = com.take(3, ds.boardWeight, memory)
 
                     val block = com.takeBlock(0)
-                    val f = figureList(block, ds, TortoiseState(), maxStackSize, memory, runner)
+                    val f = figureList(block, ds, maxStackSize, memory, runner)
                     val zf = f ?: FigureCreator.zigFigure(
                         hz = com.take(4, 0.0, memory),
                         bz1x = com.take(5, board / 2, memory),
@@ -341,46 +352,58 @@ class Tortoise() : TortoiseBase() {
                 }
 
                 TortoiseCommand.TURTOISE_UNION -> {
-                    val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
+                    val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
                     res.add(
-                        FigureUnion(
-                            s.firstOrNull() ?: Figure.Empty,
-                            s.getOrNull(1) ?: Figure.Empty,
-                            ds.appoximationSize
+                        product(
+                            FigureUnion(
+                                s.firstOrNull() ?: Figure.Empty,
+                                s.getOrNull(1) ?: Figure.Empty,
+                                ds.appoximationSize
+                            ),
+                            state
                         )
                     )
                     //  res.add(UnionFigure.union(s.flatten()))
                 }
 
                 TortoiseCommand.TURTOISE_INTERSECT -> {
-                    val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
+                    val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
                     res.add(
-                        FigureIntersect(
-                            s.firstOrNull() ?: Figure.Empty,
-                            s.getOrNull(1) ?: Figure.Empty,
-                            ds.appoximationSize
+                        product(
+                            FigureIntersect(
+                                s.firstOrNull() ?: Figure.Empty,
+                                s.getOrNull(1) ?: Figure.Empty,
+                                ds.appoximationSize
+                            ),
+                            state
                         )
                     )
                 }
 
                 TortoiseCommand.TURTOISE_DIFF -> {
-                    val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
+                    val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
                     res.add(
-                        FigureDiff(
-                            s.firstOrNull() ?: Figure.Empty,
-                            s.getOrNull(1) ?: Figure.Empty,
-                            ds.appoximationSize
+                        product(
+                            FigureDiff(
+                                s.firstOrNull() ?: Figure.Empty,
+                                s.getOrNull(1) ?: Figure.Empty,
+                                ds.appoximationSize
+                            ),
+                            state
                         )
                     )
                 }
 
                 TortoiseCommand.TURTOISE_SYMDIFF -> {
-                    val s = polylineFromCommand(com, ds, state, maxStackSize, memory, runner)
+                    val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
                     res.add(
-                        FigureSymDiff(
-                            s.firstOrNull() ?: Figure.Empty,
-                            s.getOrNull(1) ?: Figure.Empty,
-                            ds.appoximationSize
+                        product(
+                            FigureSymDiff(
+                                s.firstOrNull() ?: Figure.Empty,
+                                s.getOrNull(1) ?: Figure.Empty,
+                                ds.appoximationSize
+                            ),
+                            state
                         )
                     )
                 }
@@ -435,11 +458,11 @@ class Tortoise() : TortoiseBase() {
 
                 TortoiseCommand.TURTOISE_3D -> {
                     val block = com.takeBlock(2)
-                    val f = figureList(block, ds, state, maxStackSize, memory, runner)
+                    val f = figureList(block, ds, maxStackSize, memory, runner)
 
                     f?.let { g ->
                         res.add(
-                            figure3d(com, memory, g, state)
+                            product(figure3d(com, memory, g, state), state)
                         )
                     }
                 }

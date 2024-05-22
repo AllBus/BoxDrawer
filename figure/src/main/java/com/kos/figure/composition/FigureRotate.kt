@@ -71,7 +71,7 @@ class FigureRotate(
     override val transform: Matrix
         get() {
             val m = Matrix.translate(pivot.x, pivot.y)
-            m.rotateX(angle.toFloat())
+            m.rotateZ(angle.toFloat())
             m.translate(-pivot.x.toFloat(), -pivot.y.toFloat())
             return m
         }

@@ -1,7 +1,9 @@
+import androidx.compose.material.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.google.gson.GsonBuilder
@@ -84,8 +86,6 @@ fun main(args: Array<String>) {
             icon = painterResource( "drawable/robot.ico"),
             title = stringResource(Res.string.app_name),
         ) {
-
-
             LaunchedEffect(model.value) {
                 model.value.loadSettings()
             }

@@ -12,6 +12,18 @@ class FigureList(
     override val count: Int
         get() = figures.size
 
+    operator fun plus(figure: IFigure): FigureList {
+        return FigureList(this.figures + figure)
+    }
+
+    operator fun plus(list: List<IFigure>): FigureList {
+        return FigureList(this.figures + list)
+    }
+
+    operator fun plus(list: FigureList): FigureList {
+        return FigureList(this.figures + list)
+    }
+
     override fun list(): List<Figure> {
         return figures.flatMap { it.list() }
     }

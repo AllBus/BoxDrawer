@@ -182,7 +182,63 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     )
                 )
             )
-        ), helpName(
+        ),
+        helpName(
+            TortoiseCommand.TURTOISE_PATH,
+            listOf(
+                HelpData(
+                    "(path) (count distance offset angle normal px py reverse) (figure)",
+                    "Рисовать фигуру которая записана в строке начинающейся с @program\n",
+                    listOf(
+                        HelpDataParam("path", "фигура вдоль которой будут располагться другие фигуры"),
+                         HelpDataParam(
+                            "count",
+                            "Количество фигкур вдоль пути"
+                        ),
+                                            HelpDataParam(
+                            "distance",
+                            "Дистанция между копиями от 0 до 1.0 "
+                        ),
+                                            HelpDataParam(
+                            "offset",
+                            "Сдвиг относительно начала пути первой копии от 0 до 1.0"
+                        ),
+                        HelpDataParam(
+                            "angle",
+                            "Угол расположения элементов"
+                        ),
+                        HelpDataParam(
+                            "normal",
+                            "Располагать копии по нормали относительно к пути"
+                        ),
+                        HelpDataParam(
+                            "px",
+                            "Точка вращения копии по оси x"
+                        ),
+                        HelpDataParam(
+                            "py",
+                            "Точка вращения копии по оси y"
+                        ),
+                        HelpDataParam(
+                            "reverse",
+                            "Располагать копии в обратном порядке"
+                        ),
+                        HelpDataParam(
+                            "figure",
+                            "Фигура, копии которой распологаются вдоль пути"
+                        ),
+                    )
+                ),
+                HelpData(
+                    "(tortoise)",
+                    "Рисовать фигуру которая записана в строке по правилам черепашки",
+                    listOf(
+                        HelpDataParam("tortoise", "Строка черепашьих команд"),
+                    )
+                )
+            )
+        ),
+        helpName(
             TortoiseCommand.TURTOISE_LOOP,
             "c commands* <",
             "выполнить c раз команды между > <"
