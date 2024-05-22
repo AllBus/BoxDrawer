@@ -96,6 +96,7 @@ kotlin {
             implementation("com.darkrockstudios:mpfilepicker:3.1.0")
             implementation("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}")
             implementation("org.locationtech.jts:jts-core:1.19.0")
+            implementation("io.github.windedge.table:table-m3:0.1.8")
 
             implementation(project(":figure"))
             implementation(project(":dxfprinter"))

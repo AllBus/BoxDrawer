@@ -11,4 +11,15 @@
     <string name="rekaPadding">Отступ</string>
     <string name="rekaGroupShift">Сдвиг</string>
     <string name="rekaGroupAngle">Поворот</string>
+    <string name="boxWidth">Длина</string>
+    <string name="boxHeight">Высота</string>
+    <string name="boxWeight">Ширина</string>
+    <string name="boxTop">Крышка</string>
+    <string name="boxBottom">Дно</string>
+    <string name="boxEdges">Высоты углов коробки</string>
+    <string name="boxPolki">Полки</string>
+    <string name="boxSizeInside">Размеры по внутреннему объёму</string>
+    <string name="boxSizeWithBoard">Учитывать толщину полки</string>
+    <string name="boxPreviewStyle">Альтернативное расположение</string>
+    <string name="metricMM">мм</string>
 </resources>

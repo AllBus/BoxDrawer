@@ -7,11 +7,14 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalDensity
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.BoxData
+import com.kos.boxdrawe.presentation.ZigZagState
 import com.kos.boxdrawe.widget.*
 import com.kos.boxdrawe.widget.model.ButtonData
 import com.kos.boxdrawer.detal.box.PazExt
@@ -20,134 +23,327 @@ import com.kos.boxdrawer.generated.resources.act_hole
 import com.kos.boxdrawer.generated.resources.act_line
 import com.kos.boxdrawer.generated.resources.act_outside
 import com.kos.boxdrawer.generated.resources.act_paz
+import com.kos.boxdrawer.generated.resources.boxBottom
+import com.kos.boxdrawer.generated.resources.boxEdges
+import com.kos.boxdrawer.generated.resources.boxHeight
+import com.kos.boxdrawer.generated.resources.boxPolki
+import com.kos.boxdrawer.generated.resources.boxPreviewStyle
+import com.kos.boxdrawer.generated.resources.boxSizeInside
+import com.kos.boxdrawer.generated.resources.boxSizeWithBoard
+import com.kos.boxdrawer.generated.resources.boxTop
+import com.kos.boxdrawer.generated.resources.boxWeight
+import com.kos.boxdrawer.generated.resources.boxWidth
+import com.kos.boxdrawer.generated.resources.metricMM
+import io.github.windedge.table.DataTable
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ToolbarForBox(vm: BoxData) {
 
+    val text = rememberSaveable(key = "ToolbarForBox.Text") { vm.text }
+
+
+    val rowArrange = remember { mutableStateOf(1) }
+    val density = LocalDensity.current
+
+    Row(
+        modifier = TabContentModifier.onSizeChanged {
+            rowArrange.value = if (it.width < 600*density.density) 2 else 1
+        },
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        if (rowArrange.value == 1 ) {
+            ToolbarBoxRowOne(
+                vm = vm,
+                modifier = Modifier.weight(weight = 0.8f, fill = true)
+            )
+            ToolbarBoxRowTwo(vm, Modifier.weight(weight = 1.2f, fill = true))
+            ToolbarBoxRowThree(vm, text, Modifier.weight(weight = 0.8f, fill = true))
+        } else{
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ){
+                ToolbarBoxRowOne(
+                    vm = vm,
+                    modifier = Modifier //.weight(weight = 1f, fill = true)
+                )
+                ToolbarBoxRowTwo(vm, Modifier) //.weight(weight = 1f, fill = true))
+                ToolbarBoxRowThree(vm, text, Modifier) //.weight(weight = 1f, fill = true))
+            }
+
+        }
+    }
+}
+
+@Composable
+private fun ToolbarBoxRowThree(
+    vm: BoxData,
+    text: MutableState<String>,
+    modifier: Modifier,
+) {
     var insideChecked by remember { vm.insideChecked }
     var polkiInChecked by remember { vm.polkiInChecked }
     var alternative by remember { vm.alternative }
 
+    Column(
+        modifier = modifier
+    ) {
+        RunCheckBox(
+            checked = insideChecked,
+            title = stringResource(Res.string.boxSizeInside),
+            onCheckedChange = { c ->
+                insideChecked = c
+                vm.redrawBox()
+            },
+        )
+        RunCheckBox(
+            checked = polkiInChecked,
+            title = stringResource(Res.string.boxSizeWithBoard),
+            onCheckedChange = { c ->
+                polkiInChecked = c
+                vm.redrawBox()
+            },
+        )
+        RunCheckBox(
+            checked = alternative,
+            title = stringResource(Res.string.boxPreviewStyle),
+            onCheckedChange = { c ->
+                alternative = c
+                vm.redrawBox()
+            },
+        )
+        EditText(title = stringResource(Res.string.boxPolki), value = text, enabled = true) { vm.createBox(it) }
+    }
+}
+
+@Composable
+private fun ToolbarBoxRowOne(
+    vm: BoxData,
+    modifier: Modifier,
+) {
     val width = remember { vm.width }
     val height = remember { vm.height }
     val weight = remember { vm.weight }
-    val text = rememberSaveable(key = "ToolbarForBox.Text") { vm.text }
-
-
     val edgeFL = remember { vm.edgeFL }
     val edgeBL = remember { vm.edgeBL }
     val edgeBR = remember { vm.edgeBR }
     val edgeFR = remember { vm.edgeFR }
 
-    Row(
-        modifier = TabContentModifier
+    Column(
+        modifier = modifier.padding(end = 2.dp)
+            //.verticalScroll(rememberScrollState())
     ) {
-        Column(
-            modifier = Modifier.weight(weight = 2f, fill = true).padding(end = 2.dp).verticalScroll(rememberScrollState())
+        Row(
         ) {
-            Row(
+            Column(
+                modifier = Modifier
+                    .weight(weight = 1f, fill = true)
+
             ) {
-                Column(
-                    modifier = Modifier
-                        .weight(weight = 1f, fill = true)
+                NumericUpDown(stringResource(Res.string.boxWidth), stringResource(Res.string.metricMM), width)
+                NumericUpDown(stringResource(Res.string.boxWeight), stringResource(Res.string.metricMM), weight)
+                NumericUpDown(stringResource(Res.string.boxHeight), stringResource(Res.string.metricMM), height)
 
+                Label(
+                    stringResource(Res.string.boxEdges),
+                    singleLine = false,
+                    modifier = Modifier.align(Alignment.End)
+                )
+                Row(
+                    modifier = Modifier.align(Alignment.End)
                 ) {
-                    NumericUpDown("Длина", "мм", width)
-                    NumericUpDown("Ширина", "мм", weight)
-                    NumericUpDown("Высота", "мм", height)
-
-
-                    Row(
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    ) {
-                        Label(
-                            "Высоты\nуглов коробки",
-                            singleLine = false,
-                           // modifier = Modifier.align(Alignment.CenterHorizontally)
-                        )
-                        NumericUpDown("", "", edgeFL, modifier = Modifier.width(50.dp))
-                        NumericUpDown("", "", edgeBL, modifier = Modifier.width(50.dp))
-                        NumericUpDown("", "", edgeBR, modifier = Modifier.width(50.dp))
-                        NumericUpDown("", "мм", edgeFR, modifier = Modifier.width(80.dp))
-                    }
-                }
-                Column(
-                    modifier = Modifier.weight(weight = 1f, fill = true)
-                ) {
-                    Row() {
-                        ZigZagLabel()
-                        ZigZagInput(
-                            modifier = Modifier.weight(weight = 1f, fill = true),
-                            title = "длина",
-                            drawNames = false,
-                            zigState = vm.widthZigState
-
-                        )
-                        ZigZagInput(
-                            modifier = Modifier.weight(weight = 1f, fill = true),
-                            title = "ширина",
-                            drawNames = false,
-                            zigState = vm.weightZigState
-
-                        )
-                        ZigZagInput(
-                            modifier = Modifier.weight(weight = 1f, fill = true),
-                            title = "высота",
-                            drawNames = false,
-                            zigState = vm.heightZigState
-
-                        )
-                        ZigZagInput(
-                            modifier = Modifier.weight(weight = 1f, fill = true),
-                            title = "полки",
-                            drawNames = false,
-                            zigState = vm.polkaZigState
-                        )
-                        ZigZagInput(
-                            modifier = Modifier.weight(weight = 1f, fill = true),
-                            title = "дно полки",
-                            drawNames = false,
-                            zigState = vm.polkaPolZigState
-                        )
-                    }
+                    NumericUpDown("", "", edgeFL, modifier = Modifier.width(50.dp))
+                    NumericUpDown("", "", edgeBL, modifier = Modifier.width(50.dp))
+                    NumericUpDown("", "", edgeBR, modifier = Modifier.width(50.dp))
+                    NumericUpDown("", stringResource(Res.string.metricMM), edgeFR, modifier = Modifier.width(80.dp))
                 }
             }
 
-            BoxAdvancedProperties(
-                vm,
-            )
         }
-        Column(
-            modifier = Modifier.weight(weight = 1f, fill = true)
-        ) {
-            RunCheckBox(
-                checked = insideChecked,
-                title = "Размеры по внутреннему объёму",
-                onCheckedChange = { c ->
-                    insideChecked = c
-                    vm.redrawBox()
-                },
-            )
-            RunCheckBox(
-                checked = polkiInChecked,
-                title = "Учитывать толщину полки",
-                onCheckedChange = { c ->
-                    polkiInChecked = c
-                    vm.redrawBox()
-                },
-            )
-            RunCheckBox(
-                checked = alternative,
-                title = "Альтернативное расположение",
-                onCheckedChange = { c ->
-                    alternative = c
-                    vm.redrawBox()
-                },
-            )
-            EditText(title = "Полки", value = text, enabled = true) { vm.createBox(it) }
+    }
+}
+
+@Composable
+private fun ToolbarBoxRowTwo(vm: BoxData, modifier: Modifier) {
+    Column(
+        modifier = modifier
+    ) {
+        ZigZagBox(vm)
+        BoxAdvancedProperties(
+            vm,
+        )
+    }
+}
+
+@Composable
+private fun ZigZagTable(
+    vm: BoxData,
+) {
+    DataTable(
+        modifier = Modifier.size(400.dp, 400.dp),
+        columns = {
+            column { Label("Пазы", singleLine = true) }
+            column { Label("длина", singleLine = true) }
+            column { Label("ширина", singleLine = true) }
+            column { Label("высота", singleLine = true) }
+            column { Label("полки", singleLine = true) }
+            column { Label("дно полки", singleLine = true) }
+
         }
+    ) {
+        row {
+            cell { Label("Длина паза", singleLine = true) }
+            cell {
+                val WwidthInput = remember { vm.widthZigState.width }
+                NumericUpDown("", "", WwidthInput)
+            }
+            cell {
+                val WwidthInput = remember { vm.weightZigState.width }
+                NumericUpDown("", "", WwidthInput)
+            }
+            cell {
+                val WwidthInput = remember { vm.heightZigState.width }
+                NumericUpDown("", "", WwidthInput)
+            }
+            cell {
+                val WwidthInput = remember { vm.polkaZigState.width }
+                NumericUpDown("", "", WwidthInput)
+            }
+            cell {
+                val WwidthInput = remember { vm.polkaPolZigState.width }
+                NumericUpDown("", "", WwidthInput)
+            }
+        }
+
+        row {
+            cell { Label("Дельта", singleLine = true) }
+            cell {
+                val WwidthInput = remember { vm.widthZigState.delta }
+                NumericUpDown("", "", WwidthInput)
+            }
+            cell {
+                val WwidthInput = remember { vm.weightZigState.delta }
+                NumericUpDown("", "", WwidthInput)
+            }
+            cell {
+                val WwidthInput = remember { vm.heightZigState.delta }
+                NumericUpDown("", "", WwidthInput)
+            }
+            cell {
+                val WwidthInput = remember { vm.polkaZigState.delta }
+                NumericUpDown("", "", WwidthInput)
+            }
+            cell {
+                val WwidthInput = remember { vm.polkaPolZigState.delta }
+                NumericUpDown("", "", WwidthInput)
+            }
+        }
+
+        row {
+            cell { Label("Толщина паза", singleLine = true) }
+            cell {
+                val WwidthInput = remember { vm.widthZigState.height }
+                NumericUpDown("", "", WwidthInput)
+            }
+            cell {
+                val WwidthInput = remember { vm.weightZigState.height }
+                NumericUpDown("", "", WwidthInput)
+            }
+            cell {
+                val WwidthInput = remember { vm.heightZigState.height }
+                NumericUpDown("", "", WwidthInput)
+            }
+            cell {
+                val WwidthInput = remember { vm.polkaZigState.height }
+                NumericUpDown("", "", WwidthInput)
+            }
+            cell {
+                val WwidthInput = remember { vm.polkaPolZigState.height }
+                NumericUpDown("", "", WwidthInput)
+            }
+        }
+
+        row {
+            cell { Label("Есть", singleLine = true) }
+            cell {
+                val checked = remember { vm.widthZigState.enable }
+                RunCheckBox(checked.value, "") { c ->
+                    checked.value = c
+                    vm.widthZigState.redrawBox()
+                }
+            }
+            cell {
+                val checked = remember { vm.weightZigState.enable }
+                RunCheckBox(checked.value, "") { c ->
+                    checked.value = c
+                    vm.widthZigState.redrawBox()
+                }
+            }
+            cell {
+                val checked = remember { vm.heightZigState.enable }
+                RunCheckBox(checked.value, "") { c ->
+                    checked.value = c
+                    vm.widthZigState.redrawBox()
+                }
+            }
+            cell {
+                val checked = remember { vm.polkaZigState.enable }
+                RunCheckBox(checked.value, "") { c ->
+                    checked.value = c
+                    vm.widthZigState.redrawBox()
+                }
+            }
+            cell {
+                val checked = remember { vm.polkaPolZigState.enable }
+                RunCheckBox(checked.value, "") { c ->
+                    checked.value = c
+                    vm.widthZigState.redrawBox()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ZigZagBox(vm: BoxData) {
+    Row() {
+        ZigZagLabel()
+        ZigZagInput(
+            modifier = Modifier.weight(weight = 1f, fill = true),
+            title = "длина",
+            drawNames = false,
+            zigState = vm.widthZigState
+
+        )
+        ZigZagInput(
+            modifier = Modifier.weight(weight = 1f, fill = true),
+            title = "ширина",
+            drawNames = false,
+            zigState = vm.weightZigState
+
+        )
+        ZigZagInput(
+            modifier = Modifier.weight(weight = 1f, fill = true),
+            title = "высота",
+            drawNames = false,
+            zigState = vm.heightZigState
+
+        )
+        ZigZagInput(
+            modifier = Modifier.weight(weight = 1f, fill = true),
+            title = "полки",
+            drawNames = false,
+            zigState = vm.polkaZigState
+        )
+        ZigZagInput(
+            modifier = Modifier.weight(weight = 1f, fill = true),
+            title = "дно полки",
+            drawNames = false,
+            zigState = vm.polkaPolZigState
+        )
     }
 }
 
@@ -190,7 +386,7 @@ private fun ColumnScope.BoxAdvancedProperties(
         Column() {
             //Label("Форма крышки", Modifier.Companion.align(Alignment.CenterHorizontally))
             Row() {
-                Label("Форма крышки", Modifier.width(120.dp))
+                Label(stringResource(Res.string.boxTop), Modifier.width(60.dp))
                 NumericUpDown(
                     "↕",
                     "",
@@ -230,7 +426,7 @@ private fun ColumnScope.BoxAdvancedProperties(
         Column() {
          //   Label("Форма дна", Modifier.Companion.align(Alignment.CenterHorizontally))
             Row() {
-                Label("Форма дна", Modifier.width(120.dp))
+                Label(stringResource(Res.string.boxBottom), Modifier.width(60.dp))
                 NumericUpDown(
                     "↕",
                     "",
