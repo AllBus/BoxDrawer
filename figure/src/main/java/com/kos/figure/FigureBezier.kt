@@ -109,6 +109,19 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
                 PointWithNormal.EMPTY
     }
 
+    override fun positionInPath(edge: Int, delta: Double): PointWithNormal {
+        if (edge< 0)
+            return PointWithNormal.EMPTY
+
+        val start = edge*3
+        if (start+4<= points.size) {
+            val p = points.subList(start, start + 4)
+            val le = if (edge == 0 ) length[0] else (length[edge] - length[edge-1])
+            return Vec2.bezierPosition(p, delta, 1000, le)
+        }
+        return PointWithNormal.EMPTY
+    }
+
     fun calculateLength(): List<Double> {
         var sum = 0.0
         return points.windowed(4, 3) { p ->

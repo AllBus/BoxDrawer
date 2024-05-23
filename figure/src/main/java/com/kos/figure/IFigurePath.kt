@@ -4,6 +4,7 @@ import vectors.Vec2
 
 interface IFigurePath {
     fun positionInPath(delta: Double): PointWithNormal
+    fun positionInPath(edge: Int, delta: Double): PointWithNormal
 }
 
 class PointWithNormal(

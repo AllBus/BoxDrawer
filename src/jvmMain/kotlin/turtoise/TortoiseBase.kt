@@ -468,15 +468,18 @@ abstract class TortoiseBase {
                         memory,
                         runner
                     )?.let { figure ->
-                        positions?.inner.orEmpty().map { pos ->
-                            memory.value(pos.value, 0.0)
-                        }.map { delta ->
-                            val p = path.positionInPath(delta)
-                            FigureTranslateWithRotate(
-                                figure,
-                                p.point,
-                                p.normal.angle * 180 / PI
-                            )
+                       positions?.inner?.getOrNull(0)?.let { edgeMem ->
+                           val edge = memory.value(edgeMem.value, 0.0).toInt()
+                            positions?.inner.orEmpty().drop(1).map { pos ->
+                                memory.value(pos.value, 0.0)
+                            }.map { delta ->
+                                val p = path.positionInPath(edge, delta)
+                                FigureTranslateWithRotate(
+                                    figure,
+                                    p.point,
+                                    p.normal.angle * 180 / PI
+                                )
+                            }
                         }
                     }.orEmpty()
                     resf

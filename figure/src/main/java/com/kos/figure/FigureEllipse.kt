@@ -286,6 +286,9 @@ open class FigureEllipse(
         return PointWithNormal(pr, normal)
     }
 
+    override fun positionInPath(edge: Int, delta: Double): PointWithNormal {
+        return positionInPath(delta)
+    }
 
     override fun name(): String {
         return "Эллипс"

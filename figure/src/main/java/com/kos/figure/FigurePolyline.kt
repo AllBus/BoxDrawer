@@ -132,6 +132,18 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
                 PointWithNormal.EMPTY
     }
 
+    override fun positionInPath(edge: Int, delta: Double): PointWithNormal {
+        if (points.size>=2){
+            if (0 <= edge && edge < points.size-1){
+                val pred = points[edge]
+                val next = points[edge+1]
+                val p = Vec2.lerp(pred, next, delta)
+                return PointWithNormal.from(p, pred, next)
+            }
+        }
+        return PointWithNormal.EMPTY
+    }
+
     fun calculateLength(): List<Double> {
         val iterator = points.iterator()
         if (!iterator.hasNext()) return emptyList()

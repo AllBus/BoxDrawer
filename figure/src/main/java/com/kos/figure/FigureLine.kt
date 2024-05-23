@@ -112,6 +112,10 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
             PointWithNormal.EMPTY
     }
 
+    override fun positionInPath(edge: Int, delta: Double): PointWithNormal {
+        return positionInPath(delta)
+    }
+
     override fun name(): String {
         return "Линия"
     }
