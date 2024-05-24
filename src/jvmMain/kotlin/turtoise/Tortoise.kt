@@ -2,7 +2,7 @@ package turtoise
 
 import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
-import com.kos.figure.FigureEmpty
+import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.FigureSpline
 import com.kos.figure.IFigure
@@ -35,49 +35,40 @@ class Tortoise() : TortoiseBase() {
         if (maxStackSize <= 0)
             return emptyList()
 
-        val res = mutableListOf<IFigure>()
-        var result = mutableListOf<Vec2>()
         val le = commands.size
         var i = 0
+
+        val builder = TortoiseBuilder(state)
 
         /** стак вызовов циклов */
         var stack: TortoiseStack? = null
         val stateStack = Stack<TortoiseState>()
         var cancel = false
 
-        fun saveLine() {
-            if (result.size > 1) {
-                res.add(FigurePolyline(points = result.toList()))
-            }
-            result = mutableListOf()
-        }
+
 
         while (i < le && !cancel) {
             val com = commands[i]
 
             when (com.command) {
                 TortoiseCommand.TURTOISE_CLEAR -> state.clear()
-                TortoiseCommand.TURTOISE_CIRCLE -> circle(com, memory, res, state)
-                TortoiseCommand.TURTOISE_ELLIPSE -> ellipse(com, memory, res, state)
+                TortoiseCommand.TURTOISE_CIRCLE -> circle(com, memory, builder)
+                TortoiseCommand.TURTOISE_ELLIPSE -> ellipse(com, memory, builder)
 
                 TortoiseCommand.TURTOISE_MOVE -> {
                     state.move(com[0, memory], com[1, memory])
                 }
 
                 TortoiseCommand.TURTOISE_HORIZONTAL -> {
-                    if (result.isEmpty()) {
-                        result.add(state.xy)
-                    }
+                    builder.startPoint()
                     state.x += com.value(memory)
-                    result.add(state.xy)
+                    builder.add(state.xy)
                 }
 
                 TortoiseCommand.TURTOISE_VERTICAL -> {
-                    if (result.isEmpty()) {
-                        result.add(state.xy)
-                    }
+                    builder.startPoint()
                     state.y += com.value(memory)
-                    result.add(state.xy)
+                    builder.add(state.xy)
                 }
 
                 TortoiseCommand.TURTOISE_ANGLE -> {
@@ -98,72 +89,69 @@ class Tortoise() : TortoiseBase() {
 
                 TortoiseCommand.TURTOISE_LINE -> {
                     val v = com.value(memory)
-                    if (result.isEmpty() && v != 0.0) {
-                        result.add(state.xy)
+                    if (v != 0.0) {
+                        builder.startPoint()
                     }
                     state.move(v)
-                    result.add(state.xy)
+                    builder.add(state.xy)
                     for (d in 1 until com.size) {
                         if (d % 2 == 0) {
                             state.move(com[d, memory])
                         } else {
                             state.move90(com[d, memory])
                         }
-                        result.add(state.xy)
+                        builder.add(state.xy)
                     }
                 }
 
                 TortoiseCommand.TURTOISE_LINE_WITH_ANGLE -> {
                     val v = com.value(memory)
-                    if (result.isEmpty() && v != 0.0) {
-                        result.add(state.xy)
+                    if (v != 0.0) {
+                        builder.startPoint()
                     }
                     state.move(v)
-                    result.add(state.xy)
+                    builder.add(state.xy)
                     val currentAngle = state.a;
                     for (d in 1 until com.size step 2) {
                         val a2 = com[d, memory]
                         val di = com[d + 1, memory]
                         state.a = currentAngle + a2;
                         state.move(di);
-                        result.add(state.xy)
+                        builder.add(state.xy)
                     }
                     state.a = currentAngle;
                 }
 
                 TortoiseCommand.TURTOISE_LINE_PERPENDICULAR -> {
                     state.move90(com.value(memory))
-                    result.add(state.xy)
+                    builder.add(state.xy)
                 }
 
                 TortoiseCommand.TURTOISE_CLOSE -> {
-                    if (result.size > 2) {
-                        result.add(result.first())
-                        saveLine()
-                    }
+                    builder.closeLine()
                 }
 
                 TortoiseCommand.TURTOISE_SPLIT -> {
-                    saveLine()
+                    builder.saveLine()
                 }
 
                 TortoiseCommand.TURTOISE_RECTANGLE -> {
-                    rectangleLine(state, com, memory, res)
+                    rectangleLine(builder, com, memory)
                 }
 
                 TortoiseCommand.TURTOISE_ROUND_RECTANGLE -> {
-                    roundrectangle(com, memory, state, res)
+                    roundrectangle(builder, com, memory)
                 }
 
                 TortoiseCommand.TURTOISE_TRIANGLE -> {
-                    triangle(com, memory, state, res)
+                    triangle(builder, com, memory)
                 }
 
                 TortoiseCommand.TURTOISE_REGULAR_POLYGON -> {
                     val r = com.take(1, 0.0, memory)
                     val count = min(com.take(0, 3.0, memory).toInt(), MAX_REGULAR_POLYGON_EDGES)
 
-                    res.add(
+                    builder.add(
                         FigureCreator.regularPolygon(
                             center = state.xy,
                             count = count,
@@ -177,73 +165,72 @@ class Tortoise() : TortoiseBase() {
                     val s = (0 until com.size).mapNotNull { index ->
                         com.takeBlock(index)
                     }.mapNotNull { block ->
-                        figureList(block, ds, maxStackSize, memory, runner)?.let {
-                            product(it, state)
-                        }
+                        figureList(block, ds, maxStackSize, memory, runner)
                     }
-                    res.addAll(s)
+                    if (s.isNotEmpty()) {
+                        builder.addProduct(
+                            if (s.size == 1)
+                                s[0]
+                            else
+                                FigureList(s)
+                        )
+                    }
                 }
 
                 TortoiseCommand.TURTOISE_IF_FIGURE -> {
                     if (com.value(memory) > 0.5) {
                         val block = com.takeBlock(1)
                         figureList(block, ds, maxStackSize, memory, runner)?.let { g ->
-                            res.add(
-                                product(g, state)
-                            )
+                            builder.addProduct(g)
                         }
                     }
                 }
 
                 TortoiseCommand.TURTOISE_GROUP -> {
-                    res.add(product(figureGroups(com, ds, maxStackSize, memory, runner), state))
+                    builder.addProduct(figureGroups(com, ds, maxStackSize, memory, runner))
                 }
 
                 TortoiseCommand.TURTOISE_COLOR -> {
                     val color = com.value(memory).toInt()
                     val block = com.takeBlock(1)
                     figureList(block, ds, maxStackSize, memory, runner)?.let { g ->
-                        res.add(
+                        builder.addProduct(
                             FigureColor(
                                 DXFColor.getRgbColor(color),
-                                product(g, state)
+                                g,
                             )
                         )
                     }
                 }
 
                 TortoiseCommand.TURTOISE_PATH -> {
-                    res.add(
-                        product(
-                            figuresOnPath(com, ds, maxStackSize, memory, runner),
-                            state
-                        )
+                    builder.addProduct(
+                        figuresOnPath(com, ds, maxStackSize, memory, runner)
                     )
                 }
 
-                TortoiseCommand.TURTOISE_SPLASH ->{
-                    val sp =  figuresSplash(
+                TortoiseCommand.TURTOISE_SPLASH -> {
+                    figuresSplash(
+                        builder = builder,
                         com = com,
-                        state = state,
                         ds = ds,
                         maxStackSize = maxStackSize,
                         memory = memory,
                         runner = runner,
-                        result = result
                     )
-                    if (sp !is FigureEmpty) {
-                        res.add(
-                            product(
-                                sp,
-                                state
-                            )
-                        )
-                    }
+//                    if (sp !is FigureEmpty) {
+//                        res.add(
+//                            product(
+//                                sp,
+//                                state
+//                            )
+//                        )
+//                    }
                 }
 
 
                 TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {
-                    saveLine()
+                    builder.saveLine()
 
                     val zigWidth = com.take(2, state.zigWidth, memory)
                     val board = com.take(3, ds.boardWeight, memory)
@@ -261,30 +248,30 @@ class Tortoise() : TortoiseBase() {
                     )
 
                     val width = com.value(memory)
-                    res += ZigConstructor.zigZag(
-                        origin = state.xy,
-                        width = width,
-                        zig = ZigzagInfo(
-                            zigWidth,
-                            com.take(1, state.zigDelta, memory),
-                        ),
-                        angle = state.angle,
-                        param = state.zigParam,
-                        zigzagFigure = zf
+                    builder.add(
+                        ZigConstructor.zigZag(
+                            origin = state.xy,
+                            width = width,
+                            zig = ZigzagInfo(
+                                zigWidth,
+                                com.take(1, state.zigDelta, memory),
+                            ),
+                            angle = state.angle,
+                            param = state.zigParam,
+                            zigzagFigure = zf
 
+                        )
                     )
                     state.move(width)
 
                 }
 
                 TortoiseCommand.TURTOISE_ZIGZAG -> {
-                    if (result.size == 0) {
-                        result.add(state.xy)
-                    }
+                    builder.startPoint()
 
                     FigureCreator.zigzag(
-                        points = result,
-                        origin = result.last(),
+                        points = builder.result,
+                        origin = builder.result.last(),
                         width = com.value(memory),
                         zig = ZigzagInfo(
                             com.take(2, state.zigWidth, memory),
@@ -295,12 +282,12 @@ class Tortoise() : TortoiseBase() {
                         boardWeight = com.take(3, ds.boardWeight, memory)
                     )
 
-                    state.moveTo(result.last());
+                    state.moveTo(builder.result.last());
 
                 }
 
                 TortoiseCommand.TURTOISE_BEZIER -> {
-                    saveLine()
+                    builder.saveLine()
 
                     val angle = state.angle
 
@@ -330,12 +317,12 @@ class Tortoise() : TortoiseBase() {
                     }
 
                     if (points.size > 1) {
-                        res.add(FigureBezier(points.toList()))
+                        builder.add(FigureBezier(points.toList()))
                     }
                 }
 
                 TortoiseCommand.TURTOISE_SPLINE -> {
-                    saveLine()
+                    builder.saveLine()
 
                     val angle = state.angle
 
@@ -350,12 +337,12 @@ class Tortoise() : TortoiseBase() {
                         state.moveTo(xy)
                     }
                     if (points.size > 1) {
-                        res.add(FigureSpline(points.toList()))
+                        builder.add(FigureSpline(points.toList()))
                     }
                 }
 
                 TortoiseCommand.TURTOISE_POLYLINE -> {
-                    saveLine()
+                    builder.saveLine()
                     val c2 = state.xy
                     val angle = state.angle
 
@@ -369,20 +356,17 @@ class Tortoise() : TortoiseBase() {
                         )
                     }
                     if (points.size > 1) {
-                        res.add(FigurePolyline(points.toList()))
+                        builder.add(FigurePolyline(points.toList()))
                     }
                 }
 
                 TortoiseCommand.TURTOISE_UNION -> {
                     val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
-                    res.add(
-                        product(
-                            FigureUnion(
-                                s.firstOrNull() ?: Figure.Empty,
-                                s.getOrNull(1) ?: Figure.Empty,
-                                ds.appoximationSize
-                            ),
-                            state
+                    builder.addProduct(
+                        FigureUnion(
+                            s.firstOrNull() ?: Figure.Empty,
+                            s.getOrNull(1) ?: Figure.Empty,
+                            ds.appoximationSize
                         )
                     )
                     //  res.add(UnionFigure.union(s.flatten()))
@@ -390,42 +374,33 @@ class Tortoise() : TortoiseBase() {
 
                 TortoiseCommand.TURTOISE_INTERSECT -> {
                     val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
-                    res.add(
-                        product(
-                            FigureIntersect(
-                                s.firstOrNull() ?: Figure.Empty,
-                                s.getOrNull(1) ?: Figure.Empty,
-                                ds.appoximationSize
-                            ),
-                            state
+                    builder.addProduct(
+                        FigureIntersect(
+                            s.firstOrNull() ?: Figure.Empty,
+                            s.getOrNull(1) ?: Figure.Empty,
+                            ds.appoximationSize
                         )
                     )
                 }
 
                 TortoiseCommand.TURTOISE_DIFF -> {
                     val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
-                    res.add(
-                        product(
-                            FigureDiff(
-                                s.firstOrNull() ?: Figure.Empty,
-                                s.getOrNull(1) ?: Figure.Empty,
-                                ds.appoximationSize
-                            ),
-                            state
+                    builder.addProduct(
+                        FigureDiff(
+                            s.firstOrNull() ?: Figure.Empty,
+                            s.getOrNull(1) ?: Figure.Empty,
+                            ds.appoximationSize
                         )
                     )
                 }
 
                 TortoiseCommand.TURTOISE_SYMDIFF -> {
                     val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
-                    res.add(
-                        product(
-                            FigureSymDiff(
-                                s.firstOrNull() ?: Figure.Empty,
-                                s.getOrNull(1) ?: Figure.Empty,
-                                ds.appoximationSize
-                            ),
-                            state
+                    builder.addProduct(
+                        FigureSymDiff(
+                            s.firstOrNull() ?: Figure.Empty,
+                            s.getOrNull(1) ?: Figure.Empty,
+                            ds.appoximationSize
                         )
                     )
                 }
@@ -463,15 +438,15 @@ class Tortoise() : TortoiseBase() {
 
 
                 TortoiseCommand.TURTOISE_MATRIX_TRANSLATE -> {
-                    res.add(FigureMatrixTranslate(com[0, memory], com[1, memory]))
+                    builder.add(FigureMatrixTranslate(com[0, memory], com[1, memory]))
                 }
 
                 TortoiseCommand.TURTOISE_MATRIX_SCALE -> {
-                    res.add(FigureMatrixScale(com[0, 1.0, memory], com[1, 1.0, memory]))
+                    builder.add(FigureMatrixScale(com[0, 1.0, memory], com[1, 1.0, memory]))
                 }
 
                 TortoiseCommand.TURTOISE_MATRIX_ROTATE -> {
-                    res.add(FigureMatrixRotate(com[0, 0.0, memory], state.xy))
+                    builder.add(FigureMatrixRotate(com[0, 0.0, memory], state.xy))
                 }
 
                 TortoiseCommand.TURTOISE_MEMORY_ASSIGN -> {
@@ -483,8 +458,8 @@ class Tortoise() : TortoiseBase() {
                     val f = figureList(block, ds, maxStackSize, memory, runner)
 
                     f?.let { g ->
-                        res.add(
-                            product(figure3d(com, memory, g, state), state)
+                        builder.addProduct(
+                            figure3d(com, memory, g, state)
                         )
                     }
                 }
@@ -511,8 +486,7 @@ class Tortoise() : TortoiseBase() {
             } // end when
             i++
         }//end while
-        saveLine()
-        return res
-
+        builder.saveLine()
+        return builder.build()
     }
 }

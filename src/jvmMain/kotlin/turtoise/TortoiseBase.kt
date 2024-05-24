@@ -7,6 +7,7 @@ import com.kos.figure.Figure
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureEmpty
+import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
@@ -25,9 +26,11 @@ import turtoise.parser.TortoiseParserStackItem
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.acos
+import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.min
+import kotlin.math.sign
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -50,43 +53,41 @@ abstract class TortoiseBase {
     }
 
     protected fun rectangle(
-        state: TortoiseState,
+        builder: TortoiseBuilder,
         com: TortoiseCommand,
         memory: TortoiseMemory,
-        res: MutableList<IFigure>
     ) {
-        var c2 = state.xy
-        val angle = state.angle
+        var c2 = builder.xy
+        val angle = builder.angle
         for (d in 0 until com.size step 2) {
             val width = com[d, 0.0, memory]
             val height = com[d + 1, width, memory]
             if (d > 0) {
                 c2 += Vec2(width / 2, 0.0).rotate(angle)
             }
-            res.add(rectangle(width, height, c2, angle))
+            builder.add(rectangle(width, height, c2, angle))
             c2 += Vec2(width / 2, 0.0).rotate(angle)
         }
     }
 
     protected fun rectangleLine(
-        state: TortoiseState,
+        builder: TortoiseBuilder,
         com: TortoiseCommand,
         memory: TortoiseMemory,
-        res: MutableList<IFigure>
     ) {
         if (com.size <= 2)
-            rectangle(state, com, memory, res)
+            rectangle(builder, com, memory)
         else {
 
 
-            val angle = state.angle
+            val angle = builder.angle
 
             val startWidth = com[0, 0.0, memory]
             val startHeight = com[1, startWidth, memory]
             val points = mutableListOf<Vec2>()
             val endPoints = mutableListOf<Vec2>()
 
-            val c2 = state.xy + Vec2(0.0, 0.0)
+            val c2 = builder.xy + Vec2(0.0, 0.0)
             var xp = 0.0 //startWidth/2
 
             for (d in 0 until com.size step 2) {
@@ -99,7 +100,7 @@ abstract class TortoiseBase {
                 endPoints.add(Vec2(xp, height / 2))
             }
             endPoints.reverse()
-            res.add(
+            builder.add(
                 FigurePolyline(
                     (points + endPoints).map { c2 + it.rotate(angle) },
                     close = true
@@ -199,10 +200,9 @@ abstract class TortoiseBase {
     }
 
     protected fun roundrectangle(
+        builder: TortoiseBuilder,
         com: TortoiseCommand,
         memory: TortoiseMemory,
-        state: TortoiseState,
-        res: MutableList<IFigure>
     ) {
         val width = com.value(memory)
         val height = com[1, width, memory]
@@ -212,10 +212,10 @@ abstract class TortoiseBase {
 
         val smoothSize = com[2, min(width2, height2), memory]
 
-        val c2 = state.xy
-        val angle = state.angle
+        val c2 = builder.xy
+        val angle = builder.angle
 
-        res.add(
+        builder.add(
             FigureCreator.rectangle(
                 -width2 + c2.x, -height2 + c2.y, width2 + c2.x, height2 + c2.y,
                 enableSmooth = smoothSize != 0.0,
@@ -225,16 +225,15 @@ abstract class TortoiseBase {
     }
 
     protected fun triangle(
+        builder: TortoiseBuilder,
         com: TortoiseCommand,
         memory: TortoiseMemory,
-        state: TortoiseState,
-        res: MutableList<IFigure>
     ) {
         val aa = com.value(memory)
         val bb = com[1, aa, memory]
         val cc = com[2, aa, memory]
-        val angle = state.angle
-        val c2 = state.xy
+        val angle = builder.angle
+        val c2 = builder.xy
 
         val v = acos(
             (bb * bb + cc * cc - aa * aa) / (2 * bb * cc)
@@ -247,7 +246,7 @@ abstract class TortoiseBase {
             c2 + Vec2(aa + bb * cos(vv), bb * sin(vv)).rotate(angle),
         )
 
-        res.add(FigurePolyline(points, true))
+        builder.add(FigurePolyline(points, true))
     }
 
     protected fun rectangle(
@@ -273,38 +272,37 @@ abstract class TortoiseBase {
     protected fun ellipse(
         com: TortoiseCommand,
         memory: TortoiseMemory,
-        res: MutableList<IFigure>,
-        state: TortoiseState
+        builder: TortoiseBuilder,
     ) {
         val r1 = com.take(0, 0.0, memory)
         val r2 = com.take(1, r1, memory)
 
         if (com.size == 1) {
-            res.add(
+            builder.add(
                 FigureCircle(
-                    center = state.xy,
+                    center = builder.state.xy,
                     radius = r1,
                 )
             )
         } else
             if (com.size == 2) {
-                res.add(
+                builder.add(
                     FigureEllipse(
-                        center = state.xy,
+                        center = builder.state.xy,
                         radius = r1,
                         radiusMinor = r2,
-                        rotation = state.angle,
+                        rotation = builder.state.angle,
                     )
                 )
             } else {
 
                 for (d in 2 until com.size step 2) {
-                    res.add(
+                    builder.add(
                         FigureEllipse(
-                            center = state.xy,
+                            center = builder.state.xy,
                             radius = r1,
                             radiusMinor = r2,
-                            rotation = state.angle,
+                            rotation = builder.state.angle,
                             segmentStart = com.take(d, 0.0, memory),
                             segmentSweep = com.take(d + 1, 360.0, memory),
                         )
@@ -316,26 +314,25 @@ abstract class TortoiseBase {
     protected fun circle(
         com: TortoiseCommand,
         memory: TortoiseMemory,
-        res: MutableList<IFigure>,
-        state: TortoiseState
+        builder: TortoiseBuilder,
     ) {
         val r = com.take(0, 0.0, memory)
 
         if (com.size == 1) {
-            res.add(
+            builder.add(
                 FigureCircle(
-                    center = state.xy,
+                    center = builder.state.xy,
                     radius = r,
                 )
             )
         } else {
             for (d in 1 until com.size step 2) {
-                res.add(
+                builder.add(
                     FigureCircle(
-                        center = state.xy,
+                        center = builder.state.xy,
                         radius = r,
-                        segmentStart = com.take(d + 0, 0.0, memory) - state.a,
-                        segmentSweep = com.take(d + 1, 360.0, memory) - state.a,
+                        segmentStart = com.take(d + 0, 0.0, memory) - builder.state.a,
+                        segmentSweep = com.take(d + 1, 360.0, memory) - builder.state.a,
                     )
                 )
             }
@@ -471,8 +468,8 @@ abstract class TortoiseBase {
                         memory,
                         runner
                     )?.let { figure ->
-                       positions?.inner?.getOrNull(0)?.let { edgeMem ->
-                           val edge = memory.value(edgeMem.value, 0.0).toInt()
+                        positions?.inner?.getOrNull(0)?.let { edgeMem ->
+                            val edge = memory.value(edgeMem.value, 0.0).toInt()
                             positions?.inner.orEmpty().drop(1).map { pos ->
                                 memory.value(pos.value, 0.0)
                             }.map { delta ->
@@ -494,93 +491,130 @@ abstract class TortoiseBase {
     }
 
     protected fun figuresSplash(
+        builder: TortoiseBuilder,
         com: TortoiseCommand,
-        state: TortoiseState,
         ds: DrawerSettings,
         maxStackSize: Int,
         memory: TortoiseMemory,
         runner: TortoiseRunner,
-        result: MutableList<Vec2>,
-    ): IFigure {
+    ) {
         val command = com.takeBlock(0)?.name?.name
-        return when (command){
+        when (command) {
             "length" -> {
                 com.takeBlock(1)?.let { block ->
                     figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
                         val variables = com.takeBlock(2)?.inner.orEmpty()
-                        f.list().filterIsInstance(IFigurePath::class.java).zip(variables){ p, v ->
+                        f.list().filterIsInstance(IFigurePath::class.java).zip(variables) { p, v ->
                             memory.assign(v.argument, p.pathLength())
                         }
                     }
                 }
-                FigureEmpty
             }
+
             "arc" -> {
                 val cs = com.size
                 val figures = FigureList(
-                (1 until cs).map {i -> com.takeBlock(i)}.map {block ->
-                    val r = memory.value(block?.get(0)?: ZERO, 0.0)
-                    val p = Vec2(memory.value(block?.get(1)?: ZERO, 0.0), 0.0)
-                    val z = Vec2(memory.value(block?.get(2)?: ZERO, 0.0), 0.0)
-                    val distance2 = Vec2.distance(p, z) /2
-                    if (r>= distance2) {
-                        val hyp = sqrt(r * r - distance2 * distance2)
-                        val pza = (z - p).angle
-                        val h2 = (p + z) / 2.0 + Vec2(0.0, hyp) .rotate(pza)
-
-                        val b = (z - h2).angle
-                        val a = (p - h2).angle
-                  //      println("$r $p $z $h2 $a $b")
-                        FigureCircle(-h2, r, a * 180 / PI, (b - a) * 180 / PI)
-                    } else
-                        FigureEmpty
-                }
+                    (1 until cs).map { i -> com.takeBlock(i) }.map { block ->
+                        val r = memory.value(block?.get(0) ?: ZERO, 0.0)
+                        val p = Vec2(memory.value(block?.get(1) ?: ZERO, 0.0), 0.0)
+                        val z = Vec2(memory.value(block?.get(2) ?: ZERO, 0.0), 0.0)
+                        arcInTwoPoint(p, z, r)
+                    }
                 )
-                figures
+                builder.addProduct(figures)
             }
+
             "tooth" -> {
-                if (result.isEmpty()) {
-                    result.add(state.xy)
+                builder.startPoint()
+                if (builder.state.zigParam.reverse) {
+                    toothreverse(builder, com, memory)
+                } else {
+                    tooth(builder, com, memory)
                 }
-                if (state.zigParam.reverse) {
-                    toothreverse(com, memory, state, result)
-                }else{
-                    tooth(com, memory, state, result)
-                }
-                FigureEmpty
             }
+
             "toothr" -> {
-                if (result.isEmpty()) {
-                    result.add(state.xy)
+                builder.startPoint()
+                if (builder.state.zigParam.reverse) {
+                    tooth(builder, com, memory)
+                } else {
+                    toothreverse(builder, com, memory)
                 }
-                if (state.zigParam.reverse) {
-                    tooth(com, memory, state, result)
-                }else{
-                    toothreverse(com, memory, state, result)
-                }
-                FigureEmpty
             }
+
             "line" -> {
-                if (result.isEmpty()) {
-                    result.add(state.xy)
-                }
+                builder.startPoint()
                 for (i in 1 until com.size step 2) {
                     val a = com[i, memory]
-                    val b = com[i+1, memory]
-                    state.move(a, -b)
-                    result.add(state.xy)
+                    val b = com[i + 1, memory]
+                    builder.state.move(a, -b)
+                    builder.add(builder.xy)
                 }
-                FigureEmpty
             }
+
+            "rline",
+            "roundline" -> {
+
+                val cr = Vec2.Zero
+                val rest = mutableListOf<IFigure>()
+
+                val i = 1
+                val r = com[i, memory]
+                val ax = com[i + 1, memory]
+                val ay = com[i + 2, memory]
+                val ll = if (com.size > 4) com[i + 3, memory] else null
+                val aa = Vec2(ax, ay)
+
+                val aap = if (r > 0) {
+                    val preda = sign(ay) * 90
+                    val cc = Vec2(0.0, sign(ay) * r)
+
+                    val al = (aa - cc).angle
+                    val hl = Vec2.distance(cc, aa)
+                    val rv = asin(r / hl) * sign(ay)
+                    val alp = al + rv
+                    val p = cc + Vec2(0.0, r).rotate((if (ay > 0) PI + alp else alp))
+
+                    //   println (" ${ rv *180/ PI} : ${al*PI/180} : ${p} ${hl} ${r}")
+                    //rest += FigureLine(p + cr, cc + cr)
+
+                    val ap = if (ll == null) {
+                        aa
+                    } else {
+                        p+Vec2.normalize( p, aa ) * ll
+                    }
+                    if (ap != p) {
+                        rest += FigureLine(p + cr, cr + ap)
+                    }
+
+                    rest += FigureCircle(cr + cc, r, preda, -alp * 180 / PI)
+                    ap
+                } else {
+                    val ap = if (ll == null) {
+                        aa
+                    } else {
+                        Vec2.normalize(Vec2.Zero, aa) * ll
+                    }
+
+                    if (ap != Vec2.Zero) {
+                        rest += FigureLine(cr, ap + cr)
+                    }
+                    ap
+                }
+
+                builder.addProduct(FigureList(rest))
+                builder.state.move(aap.x, aap.y)
+            }
+
             "rez" -> {
                 val width = com[1, memory]
                 val height = com[2, memory]
                 val delta = com[3, 5.2, memory]
                 val dlina = com[4, 18.0, memory]
                 val soedinenie = com[5, 6.0, memory]
-                val firstSmall = com[6,  memory]
+                val firstSmall = com[6, memory]
 
-                SoftRez().drawRez(
+                val figures = SoftRez().drawRez(
                     width,
                     height,
                     delta,
@@ -588,57 +622,65 @@ abstract class TortoiseBase {
                     soedinenie,
                     firstSmall > 0
                 )
+                builder.addProduct(figures)
             }
+
             "r" -> {
-                state.zigParam = state.zigParam.copy(reverse = true)
-                FigureEmpty
+                builder. state.zigParam =builder. state.zigParam.copy(reverse = true)
             }
+
             "f" -> {
-                state.zigParam = state.zigParam.copy(reverse = false)
-                FigureEmpty
+                builder.state.zigParam = builder.state.zigParam.copy(reverse = false)
             }
+
             else -> {
-                FigureEmpty
             }
         }
     }
 
+    private fun arcInTwoPoint(p: Vec2, z: Vec2, radius: Double): IFigure {
+        val distance2 = Vec2.distance(p, z) / 2
+        return if (radius >= distance2) {
+            val hyp = sqrt(radius * radius - distance2 * distance2)
+            val pza = (z - p).angle
+            val h2 = (p + z) / 2.0 + Vec2(0.0, hyp).rotate(pza)
+
+            val b = (z - h2).angle
+            val a = (p - h2).angle
+            //      println("$r $p $z $h2 $a $b")
+            FigureCircle(-h2, radius, a * 180 / PI, (b - a) * 180 / PI)
+        } else
+            FigureEmpty
+    }
+
     private fun toothreverse(
+        builder: TortoiseBuilder,
         com: TortoiseCommand,
         memory: TortoiseMemory,
-        state: TortoiseState,
-        result: MutableList<Vec2>
     ) {
         for (i in 1 until com.size step 2) {
             val a = com[i, memory]
             val b = com[i + 1, memory]
-            state.move(0.0, -b)
-            result.add(state.xy)
-            state.move(a, b)
-            result.add(state.xy)
+            builder.state.move(0.0, -b)
+            builder.addPoint()
+            builder.state.move(a, b)
+            builder.addPoint()
         }
     }
 
     private fun tooth(
+        builder: TortoiseBuilder,
         com: TortoiseCommand,
         memory: TortoiseMemory,
-        state: TortoiseState,
-        result: MutableList<Vec2>
     ) {
         for (i in 1 until com.size step 2) {
             val a = com[i, memory]
             val b = com[i + 1, memory]
-            state.move(a, -b)
-            result.add(state.xy)
-            state.move(0.0, b)
-            result.add(state.xy)
+            builder.state.move(a, -b)
+            builder.addPoint()
+            builder.state.move(0.0, b)
+            builder.addPoint()
         }
-    }
-
-    protected fun product(figure: IFigure, state: TortoiseState): IFigure {
-        if (figure is FigureEmpty)
-            return figure
-        return FigureTranslateWithRotate(figure, state.xy, state.a)
     }
 
     abstract fun draw(
