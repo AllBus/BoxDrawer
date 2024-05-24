@@ -303,6 +303,10 @@ open class FigureEllipse(
             center + Vec2(radius * cos(t), radiusMinor * sin(t)).rotate(rotation)
         })
     }
+
+    override fun pathLength(): Double {
+        return length
+    }
 }
 
 

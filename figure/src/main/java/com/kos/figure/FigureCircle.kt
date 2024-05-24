@@ -118,6 +118,10 @@ class FigureCircle(
         return "Круг"
     }
 
+    override fun pathLength(): Double {
+        return perimeter()
+    }
+
     override fun approximate(pointCount: Int): List<List<Vec2>> {
         val startAngle = segmentStart * Math.PI / 180;
         val sweepAngle = segmentSweep * Math.PI / 180;

@@ -159,6 +159,10 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
         return result
     }
 
+    override fun pathLength(): Double {
+        return length.lastOrNull()?:0.0
+    }
+
     override fun name(): String {
         if (points.isEmpty()) return "Пустой Многоугольник"
         return if (points.first() == points.last())

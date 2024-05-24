@@ -16,6 +16,7 @@ import com.kos.figure.composition.FigureOnPath
 import com.kos.figure.composition.FigureTranslateWithRotate
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.MemoryKey
+import turtoise.memory.keys.MemoryKey.Companion.ZERO
 import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 import turtoise.parser.TortoiseParser
 import turtoise.parser.TortoiseParserStackBlock
@@ -27,6 +28,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 abstract class TortoiseBase {
 
@@ -490,10 +492,57 @@ abstract class TortoiseBase {
         } ?: FigureEmpty
     }
 
+    protected fun figuresSplash(
+        com: TortoiseCommand,
+        ds: DrawerSettings,
+        maxStackSize: Int,
+        memory: TortoiseMemory,
+        runner: TortoiseRunner,
+    ): IFigure {
+        val command = com.takeBlock(0)?.name?.name
+        return when (command){
+            "length" -> {
+                com.takeBlock(1)?.let { block ->
+                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                        val variables = com.takeBlock(2)?.inner.orEmpty()
+                        f.list().filterIsInstance(IFigurePath::class.java).zip(variables){ p, v ->
+                            memory.assign(v.argument, p.pathLength())
+                        }
+                    }
+                }
+                FigureEmpty
+            }
+            "arc" -> {
+                val cs = com.size
+                FigureList(
+                (1 until cs).map {i -> com.takeBlock(i)}.map {block ->
+                    val r = memory.value(block?.get(0)?: ZERO, 0.0)
+                    val p = Vec2(memory.value(block?.get(1)?: ZERO, 0.0), 0.0)
+                    val z = Vec2(memory.value(block?.get(2)?: ZERO, 0.0), 0.0)
+                    val distance2 = Vec2.distance(p, z) /2
+                    if (r>= distance2) {
+                        val hyp = sqrt(r * r - distance2 * distance2)
+                        val pza = (z - p).angle
+                        val h2 = (p + z) / 2.0 + Vec2(0.0, hyp) .rotate(pza)
+
+                        val b = (z - h2).angle
+                        val a = (p - h2).angle
+                  //      println("$r $p $z $h2 $a $b")
+                        FigureCircle(-h2, r, a * 180 / PI, (b - a) * 180 / PI)
+                    } else
+                        FigureEmpty
+                }
+                )
+            }
+            else -> {
+                FigureEmpty
+            }
+        }
+    }
+
     protected fun product(figure: IFigure, state: TortoiseState): IFigure {
         return FigureTranslateWithRotate(figure, state.xy, state.a)
     }
-
 
     abstract fun draw(
         commands: TortoiseBlock,

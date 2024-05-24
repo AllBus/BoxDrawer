@@ -119,4 +119,8 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
     override fun name(): String {
         return "Линия"
     }
+
+    override fun pathLength(): Double {
+        return if (points.size >= 2) return Vec2.distance(points[0], points[1]) else 0.0
+    }
 }

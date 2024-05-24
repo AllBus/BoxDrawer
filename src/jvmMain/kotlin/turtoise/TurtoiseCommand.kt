@@ -95,6 +95,7 @@ interface TortoiseCommand {
                 TURTOISE_FIGURE -> "TURTOISE_FIGURE"
                 TURTOISE_IF_FIGURE -> "TURTOISE_IF_FIGURE"
                 TURTOISE_GROUP -> "TURTOISE_GROUP"
+                TURTOISE_SPLASH -> "TURTOISE_SPLASH"
                 else -> c.toString()
             }
         }
@@ -144,6 +145,7 @@ interface TortoiseCommand {
         const val TURTOISE_DIFF = 'D'
         const val TURTOISE_SYMDIFF = 'Y'
         const val TURTOISE_GROUP = 'g'
+        const val TURTOISE_SPLASH = '/'
 
         fun Move(x: Double) = DoubleTortoiseCommand(TURTOISE_MOVE, x)
         fun Move(x: String) = SmallTortoiseCommand(TURTOISE_MOVE, x)

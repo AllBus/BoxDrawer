@@ -122,6 +122,10 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
         return PointWithNormal.EMPTY
     }
 
+    override fun pathLength(): Double {
+        return length.lastOrNull()?:0.0
+    }
+
     fun calculateLength(): List<Double> {
         var sum = 0.0
         return points.windowed(4, 3) { p ->

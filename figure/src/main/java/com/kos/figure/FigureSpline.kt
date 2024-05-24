@@ -48,6 +48,10 @@ class FigureSpline(points: List<Vec2>) : FigurePolygon(points) {
         return positionInPath(delta)
     }
 
+    override fun pathLength(): Double {
+        return length.lastOrNull()?:0.0
+    }
+
     fun calculateLength(): List<Double> {
         return points.windowed(4, 3) { p ->
             Vec2.bezierLength(p)

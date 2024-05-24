@@ -220,6 +220,16 @@ class Tortoise() : TortoiseBase() {
                     )
                 }
 
+                TortoiseCommand.TURTOISE_SPLASH ->{
+                    res.add(
+                        product(
+                            figuresSplash(com, ds, maxStackSize, memory, runner),
+                            state
+                        )
+                    )
+                }
+
+
                 TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {
                     saveLine()
 
