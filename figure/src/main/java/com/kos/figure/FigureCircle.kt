@@ -115,7 +115,7 @@ class FigureCircle(
     }
 
     override fun name(): String {
-        return "Круг"
+        return if (abs(segmentSweep)<360.0) "Дуга" else "Окружность"
     }
 
     override fun pathLength(): Double {

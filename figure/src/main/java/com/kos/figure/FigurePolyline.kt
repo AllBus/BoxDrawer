@@ -165,6 +165,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
 
     override fun name(): String {
         if (points.isEmpty()) return "Пустой Многоугольник"
+        if (points.size == 2) return "Отрезок"
         return if (points.first() == points.last())
             "Многоугольник ${points.size - 1}"
         else
