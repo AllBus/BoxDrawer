@@ -578,13 +578,15 @@ abstract class TortoiseBase {
                 val delta = com[3, 5.2, memory]
                 val dlina = com[4, 18.0, memory]
                 val soedinenie = com[5, 6.0, memory]
+                val firstSmall = com[6,  memory]
 
                 SoftRez().drawRez(
                     width,
                     height,
                     delta,
                     dlina,
-                    soedinenie
+                    soedinenie,
+                    firstSmall > 0
                 )
             }
             "r" -> {

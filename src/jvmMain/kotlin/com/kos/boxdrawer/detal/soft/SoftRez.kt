@@ -9,20 +9,27 @@ import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureArray
 import com.kos.figure.composition.FigureRez
 import vectors.Vec2
+import kotlin.math.abs
 
 
 class SoftRez {
 
     fun drawRez(
-        width: Double,
-        height: Double,
+        widthF: Double,
+        heightF: Double,
         delta: Double,
         dlina: Double,
-        soedinenie: Double
+        soedinenie: Double,
+        firstSmall: Boolean
     ): IFigure {
 
         if (delta< 0.1)
             return FigureEmpty
+
+        val width = abs(widthF)
+        val height = abs(heightF)
+
+        val coord = Vec2(if (widthF<0) -width else 0.0 , if (heightF<0) -height else 0.0)
 
         val count = (width/delta).toInt()
 
@@ -33,7 +40,7 @@ class SoftRez {
         if (countw<=0 || countw > 1000)
             return FigureEmpty
         val dw =  (height-soedinenie)/ countw
-        return FigureRez(Vec2.Zero, count, countw, dn, dw-soedinenie, soedinenie)
+        return FigureRez(coord, count, countw, dn, dw-soedinenie, soedinenie, firstSmall)
     }
 
     fun drawRect(
