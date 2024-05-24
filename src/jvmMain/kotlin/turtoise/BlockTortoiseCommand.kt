@@ -15,7 +15,7 @@ class BlockTortoiseCommand(
     override fun take(index: Int, defaultValue: Double, memory: TortoiseMemory): Double {
         return block.get(index)?.let { b ->
             memory.value(b, defaultValue)
-        } ?: 0.0
+        } ?: defaultValue
     }
 
     override fun takeBlock(index: Int): TortoiseParserStackItem? {

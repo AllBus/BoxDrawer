@@ -2,6 +2,7 @@ package turtoise
 
 import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
+import com.kos.figure.FigureEmpty
 import com.kos.figure.FigurePolyline
 import com.kos.figure.FigureSpline
 import com.kos.figure.IFigure
@@ -221,12 +222,23 @@ class Tortoise() : TortoiseBase() {
                 }
 
                 TortoiseCommand.TURTOISE_SPLASH ->{
-                    res.add(
-                        product(
-                            figuresSplash(com, ds, maxStackSize, memory, runner),
-                            state
-                        )
+                    val sp =  figuresSplash(
+                        com = com,
+                        state = state,
+                        ds = ds,
+                        maxStackSize = maxStackSize,
+                        memory = memory,
+                        runner = runner,
+                        result = result
                     )
+                    if (sp !is FigureEmpty) {
+                        res.add(
+                            product(
+                                sp,
+                                state
+                            )
+                        )
+                    }
                 }
 
 

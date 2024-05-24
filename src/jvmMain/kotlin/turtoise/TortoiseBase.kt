@@ -2,6 +2,7 @@ package turtoise
 
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.isIdentity
+import com.kos.boxdrawer.detal.soft.SoftRez
 import com.kos.figure.Figure
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEllipse
@@ -494,10 +495,12 @@ abstract class TortoiseBase {
 
     protected fun figuresSplash(
         com: TortoiseCommand,
+        state: TortoiseState,
         ds: DrawerSettings,
         maxStackSize: Int,
         memory: TortoiseMemory,
         runner: TortoiseRunner,
+        result: MutableList<Vec2>,
     ): IFigure {
         val command = com.takeBlock(0)?.name?.name
         return when (command){
@@ -514,7 +517,7 @@ abstract class TortoiseBase {
             }
             "arc" -> {
                 val cs = com.size
-                FigureList(
+                val figures = FigureList(
                 (1 until cs).map {i -> com.takeBlock(i)}.map {block ->
                     val r = memory.value(block?.get(0)?: ZERO, 0.0)
                     val p = Vec2(memory.value(block?.get(1)?: ZERO, 0.0), 0.0)
@@ -533,6 +536,64 @@ abstract class TortoiseBase {
                         FigureEmpty
                 }
                 )
+                figures
+            }
+            "tooth" -> {
+                if (result.isEmpty()) {
+                    result.add(state.xy)
+                }
+                if (state.zigParam.reverse) {
+                    toothreverse(com, memory, state, result)
+                }else{
+                    tooth(com, memory, state, result)
+                }
+                FigureEmpty
+            }
+            "toothr" -> {
+                if (result.isEmpty()) {
+                    result.add(state.xy)
+                }
+                if (state.zigParam.reverse) {
+                    tooth(com, memory, state, result)
+                }else{
+                    toothreverse(com, memory, state, result)
+                }
+                FigureEmpty
+            }
+            "line" -> {
+                if (result.isEmpty()) {
+                    result.add(state.xy)
+                }
+                for (i in 1 until com.size step 2) {
+                    val a = com[i, memory]
+                    val b = com[i+1, memory]
+                    state.move(a, -b)
+                    result.add(state.xy)
+                }
+                FigureEmpty
+            }
+            "rez" -> {
+                val width = com[1, memory]
+                val height = com[2, memory]
+                val delta = com[3, 5.2, memory]
+                val dlina = com[4, 18.0, memory]
+                val soedinenie = com[5, 6.0, memory]
+
+                SoftRez().drawRez(
+                    width,
+                    height,
+                    delta,
+                    dlina,
+                    soedinenie
+                )
+            }
+            "r" -> {
+                state.zigParam = state.zigParam.copy(reverse = true)
+                FigureEmpty
+            }
+            "f" -> {
+                state.zigParam = state.zigParam.copy(reverse = false)
+                FigureEmpty
             }
             else -> {
                 FigureEmpty
@@ -540,7 +601,41 @@ abstract class TortoiseBase {
         }
     }
 
+    private fun toothreverse(
+        com: TortoiseCommand,
+        memory: TortoiseMemory,
+        state: TortoiseState,
+        result: MutableList<Vec2>
+    ) {
+        for (i in 1 until com.size step 2) {
+            val a = com[i, memory]
+            val b = com[i + 1, memory]
+            state.move(0.0, -b)
+            result.add(state.xy)
+            state.move(a, b)
+            result.add(state.xy)
+        }
+    }
+
+    private fun tooth(
+        com: TortoiseCommand,
+        memory: TortoiseMemory,
+        state: TortoiseState,
+        result: MutableList<Vec2>
+    ) {
+        for (i in 1 until com.size step 2) {
+            val a = com[i, memory]
+            val b = com[i + 1, memory]
+            state.move(a, -b)
+            result.add(state.xy)
+            state.move(0.0, b)
+            result.add(state.xy)
+        }
+    }
+
     protected fun product(figure: IFigure, state: TortoiseState): IFigure {
+        if (figure is FigureEmpty)
+            return figure
         return FigureTranslateWithRotate(figure, state.xy, state.a)
     }
 

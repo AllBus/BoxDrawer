@@ -2,14 +2,39 @@ package com.kos.boxdrawer.detal.soft
 
 import com.kos.figure.CropSide
 import com.kos.figure.Figure
+import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureArray
+import com.kos.figure.composition.FigureRez
 import vectors.Vec2
 
 
 class SoftRez {
+
+    fun drawRez(
+        width: Double,
+        height: Double,
+        delta: Double,
+        dlina: Double,
+        soedinenie: Double
+    ): IFigure {
+
+        if (delta< 0.1)
+            return FigureEmpty
+
+        val count = (width/delta).toInt()
+
+        if (count<=0|| count > 1000)
+            return FigureEmpty
+        val dn = width/ count
+        val countw = ((height-soedinenie) / (dlina + soedinenie)).toInt()
+        if (countw<=0 || countw > 1000)
+            return FigureEmpty
+        val dw =  (height-soedinenie)/ countw
+        return FigureRez(Vec2.Zero, count, countw, dn, dw-soedinenie, soedinenie)
+    }
 
     fun drawRect(
         w: Double, h: Double, sdx: Double, sdy: Double, xCount: Int, yCount: Int, fit: Boolean, form: IFigure,
