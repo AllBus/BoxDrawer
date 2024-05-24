@@ -45,7 +45,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
 
         if (figures.isEmpty())
             return Empty
-        return FigureBezierList(figures.toList())
+        return FigureBezierList(figures.toList()).toFigure()
     }
 
     override fun draw(g: IFigureGraphics) {

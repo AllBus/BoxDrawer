@@ -330,7 +330,7 @@ class CadGrid {
                             group.add(
                                 FigureColor(
                                 figureColor,
-                                FigureBezierList.simple( bz.toList())
+                                FigureBezierList.simple( bz.toList()).toFigure()
                             )
                             )
                         }

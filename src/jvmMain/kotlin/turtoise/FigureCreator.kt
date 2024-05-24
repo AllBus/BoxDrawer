@@ -220,7 +220,7 @@ object FigureCreator {
                 )
             )
 
-            return bz
+            return bz.toFigure()
         } else {
             val bz = FigurePolyline(
                 listOf(

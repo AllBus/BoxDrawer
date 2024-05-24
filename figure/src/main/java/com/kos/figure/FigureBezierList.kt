@@ -1,76 +1,19 @@
 package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
-import vectors.BoundingRectangle
 import vectors.Vec2
 
-class FigureBezierList(val points: List<List<Vec2>>) : Figure(), Approximation {
+class FigureBezierList(val points: List<List<Vec2>>) {
 
     constructor(
         a: Vec2, b: Vec2, c: Vec2, d: Vec2
     ) : this(listOf(listOf(a, b, c, d)))
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
-        val figures = mutableListOf<List<Vec2>>()
-
-        val (predicate, napr) = when (cropSide) {
-            CropSide.LEFT ->
-                Pair({ a: Vec2 -> a.x >= k }, { a: Vec2 -> a.x })
-
-            CropSide.RIGHT ->
-                Pair({ a: Vec2 -> a.x <= k }, { a: Vec2 -> a.x })
-
-            CropSide.BOTTOM ->
-                Pair({ a: Vec2 -> a.y >= k }, { a: Vec2 -> a.y })
-
-            CropSide.TOP ->
-                Pair({ a: Vec2 -> a.y <= k }, { a: Vec2 -> a.y })
-        }//end when
-
-        for (ps in points) {
-            when {
-                ps.all(predicate) -> figures.add(ps)
-                !ps.all { !predicate(it) } -> {
-                    val roots = Vec2.getCubicRoots(ps.map(napr).map { it - k })
-                    //Todo: Правильно фильтровать
-                    figures.addAll(Vec2.casteljauLine(ps, roots).filter { l -> predicate(l[1]) })
-                }
-            }
-        }
-
-        if (figures.isEmpty())
-            return Empty
-        return FigureBezierList(figures.toList())
-    }
-
-    override fun rect(): BoundingRectangle {
-        return BoundingRectangle.union(points.map(BoundingRectangle.Companion::apply))
-    }
-
-    override fun translate(translateX: Double, translateY: Double): IFigure {
-        return FigureBezierList(points.map { l ->
-            l.map { p ->
-                Vec2(
-                    p.x + translateX,
-                    p.y + translateY
-                )
-            }
-        })
-    }
-
-    override fun rotate(angle: Double): IFigure {
-        return FigureBezierList(points.map { l -> l.map { p -> p.rotate(angle) } })
-    }
-
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
-        return FigureBezierList(points.map { l -> l.map { p -> (p - rotateCenter).rotate(angle) + rotateCenter } })
-    }
-
-    override fun draw(g: IFigureGraphics) {
+    fun draw(g: IFigureGraphics) {
         g.drawBezierList(points)
     }
 
-    override fun print(): String {
+    fun print(): String {
         return points.joinToString(" ") { point ->
             var st = point.first()
             "M ${st.x} ${st.y} b ${
@@ -83,23 +26,8 @@ class FigureBezierList(val points: List<List<Vec2>>) : Figure(), Approximation {
         }
     }
 
-    override fun name(): String {
+    fun name(): String {
         return "Кривые ${this.points.size}"
-    }
-
-    override fun approximate(pointCount: Int): List<List<Vec2>> {
-
-        return points.filter { it.size>=4 }.map { pointGroup ->
-            val result = ArrayList<Vec2>()
-            result.add(pointGroup.first())
-
-            pointGroup.windowed(4, 3).forEach { curve ->
-                (1..pointCount).mapTo(result) { p ->
-                    Vec2.bezierLerp(curve, p.toDouble() / pointCount)
-                }
-            }
-            result
-        }
     }
 
     companion object {
@@ -125,7 +53,15 @@ class FigureBezierList(val points: List<List<Vec2>>) : Figure(), Approximation {
 
             return FigureBezierList(list)
         }
+
     }
 
-
+    fun toFigure(): IFigure {
+        if (points.size == 0)
+            return FigureEmpty
+        if (points.size == 1)
+            return FigureBezier(points[0])
+        else
+            return FigureList(points.map { p -> FigureBezier(p) })
+    }
 }
