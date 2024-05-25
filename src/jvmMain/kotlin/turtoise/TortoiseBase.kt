@@ -12,6 +12,7 @@ import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
+import com.kos.figure.PointWithNormal
 import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.composition.FigureArray
 import com.kos.figure.composition.FigureOnPath
@@ -456,8 +457,8 @@ abstract class TortoiseBase {
         }
 
         return figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
-            val path = f.list().filterIsInstance(IFigurePath::class.java).firstOrNull()
-            FigureList(if (path != null) {
+            val paths = f.list().filterIsInstance(IFigurePath::class.java)
+            FigureList(if (paths.isNotEmpty()) {
                 (1 until commands.size step 2).flatMap {
                     val positions = commands.takeBlock(it)
                     val figures = commands.takeBlock(it + 1)
@@ -472,13 +473,14 @@ abstract class TortoiseBase {
                             val edge = memory.value(edgeMem.value, 0.0).toInt()
                             positions?.inner.orEmpty().drop(1).map { pos ->
                                 memory.value(pos.value, 0.0)
-                            }.map { delta ->
-                                val p = path.positionInPath(edge, delta)
-                                FigureTranslateWithRotate(
-                                    figure,
-                                    p.point,
-                                    p.normal.angle * 180 / PI
-                                )
+                            }.mapNotNull { delta ->
+                                positionInPath(paths, edge, delta)?.let { p ->
+                                    FigureTranslateWithRotate(
+                                        figure,
+                                        p.point,
+                                        p.normal.angle * 180 / PI
+                                    )
+                                }
                             }
                         }
                     }.orEmpty()
@@ -488,6 +490,18 @@ abstract class TortoiseBase {
                 emptyList<IFigure>()
             ) + f
         } ?: FigureEmpty
+    }
+
+    private fun positionInPath(paths: List<IFigurePath>, edge: Int, delta: Double): PointWithNormal? {
+        var e = edge
+        for ( p in paths){
+            if (p.edgeCount()> e){
+                return p.positionInPath(e, delta)
+            } else {
+                e -= p.edgeCount()
+            }
+        }
+        return null
     }
 
     protected fun figuresSplash(
@@ -633,6 +647,88 @@ abstract class TortoiseBase {
                 builder.state.zigParam = builder.state.zigParam.copy(reverse = false)
             }
 
+            "paz" -> {
+                com.takeBlock(1)?.let { block ->
+                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                        val paths = f.list().filterIsInstance(IFigurePath::class.java)
+                        val v = (2  until com.size).mapNotNull { j ->
+                            com.takeBlock(j)?.let{ item ->
+                                val e = memory.value(item.get(0)?: ZERO, 0.0)
+                                val d = memory.value(item.get(1)?: ZERO, 0.0)
+                                val zigle = item.get(2)?.let{ memory.value(it, 15.0)} ?: 15.0
+                                val zighe = item.get(3)?.let{ memory.value(it, ds.boardWeight)} ?: ds.boardWeight
+                                positionInPath(paths, e.toInt() , d)?.let{ pos ->
+                                    FigurePolyline(
+                                        listOf(
+                                            Vec2(-zigle, 0.0),
+                                            Vec2(-zigle, zighe),
+                                            Vec2(zigle, zighe),
+                                            Vec2(zigle, 0.0),
+                                        ).map { pos.point+it.rotate(pos.normal.angle+PI/2) }
+                                    )
+                                }
+                            }
+                        }
+                        builder.addProduct(FigureList(v+f))
+                    }
+                }
+            }
+
+            "stena" -> {
+                com.takeBlock(1)?.let { block ->
+                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                        val paths = f.list().filterIsInstance(IFigurePath::class.java)
+//                        val v = (2  until com.size).mapNotNull { j ->
+                        val h = com.takeBlock(2)?.let { item ->
+                            memory.value(item.get(0) ?: ZERO, 0.0)
+                            //val d = memory.value(item.get(1)?: ZERO, 0.0)
+//                                val zigle = item.get(2)?.let{ memory.value(it, 15.0)} ?: 15.0
+//                                val zighe = item.get(3)?.let{ memory.value(it, ds.boardWeight)} ?: ds.boardWeight
+//                                positionInPath(paths, e.toInt() , d)?.let{ pos ->
+//                                    FigurePolyline(
+//                                        listOf(
+//                                            Vec2(-zigle, 0.0),
+//                                            Vec2(-zigle, zighe),
+//                                            Vec2(zigle, zighe),
+//                                            Vec2(zigle, 0.0),
+//                                        ).map { pos.point+it.rotate(pos.normal.angle+PI/2) }
+//                                    )
+//                                }
+                        } ?: 10.0
+                        val heights = (3 until com.size).mapNotNull {j ->
+                            com.takeBlock(j)?.let { item ->
+                                val e = (item.get(0)?.let { memory.value(it, 0.0) } ?: 0.0).toInt()
+                                val h = (item.get(1)?.let { memory.value(it, 0.0) } ?: 0.0)
+                                e to h
+                            }
+                        }.toMap()
+
+                        var xc = 0.0
+                        var edge = 0
+                        val v = paths.flatMap { path ->
+                            val er = edge
+                            edge += path.edgeCount()
+                            (0 until path.edgeCount()).map { e ->
+                                val he = heights.get(e + er) ?: h
+                                val le = path.pathLength(e)
+                                val f = FigurePolyline(
+                                    listOf(
+                                        Vec2(xc, 0.0),
+                                        Vec2(xc + le, 0.0),
+                                        Vec2(xc + le, he),
+                                        Vec2(xc, he),
+                                    ),
+                                    close = true
+                                )
+                                xc += le
+                                f
+                            }
+                        }
+
+                        builder.addProduct(FigureList(v))
+                    }
+                }
+            }
             else -> {
             }
         }

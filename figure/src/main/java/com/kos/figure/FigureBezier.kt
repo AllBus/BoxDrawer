@@ -151,5 +151,11 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
             listOf(result)
         } else emptyList()
     }
+
+    override fun edgeCount() = points.size/3
+
+    override fun pathLength(edge: Int): Double {
+        return (length.getOrNull(edge)?:0.0) - (length.getOrNull(edge-1)?:0.0)
+    }
 }
 

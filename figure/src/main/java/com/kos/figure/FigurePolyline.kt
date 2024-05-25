@@ -163,6 +163,18 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
         return length.lastOrNull()?:0.0
     }
 
+    override fun pathLength(edge:Int): Double {
+        if (points.size>=2){
+            if (0 <= edge && edge < points.size-1){
+                val pred = points[edge]
+                val next = points[edge+1]
+                val p = Vec2.distance(pred, next)
+                return p
+            }
+        }
+        return 0.0
+    }
+
     override fun name(): String {
         if (points.isEmpty()) return "Пустой Многоугольник"
         if (points.size == 2) return "Отрезок"
@@ -171,6 +183,8 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
         else
             "Полилиния ${points.size}"
     }
+
+    override fun edgeCount(): Int = points.size-1
 
     fun isClose(): Boolean {
         return if (points.size > 3) points.first() == points.last() else false

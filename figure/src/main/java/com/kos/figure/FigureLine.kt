@@ -120,7 +120,13 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
         return "Линия"
     }
 
+    override fun edgeCount(): Int = 1
+
     override fun pathLength(): Double {
+        return if (points.size >= 2) return Vec2.distance(points[0], points[1]) else 0.0
+    }
+
+    override fun pathLength(edge:Int): Double {
         return if (points.size >= 2) return Vec2.distance(points[0], points[1]) else 0.0
     }
 }

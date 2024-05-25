@@ -5,7 +5,10 @@ import vectors.Vec2
 interface IFigurePath {
     fun positionInPath(delta: Double): PointWithNormal
     fun positionInPath(edge: Int, delta: Double): PointWithNormal
+   // fun positionInPathAtMM(edge: Int, mm: Double): PointWithNormal
     fun pathLength():Double
+    fun pathLength(edge: Int):Double
+    fun edgeCount():Int
 }
 
 class PointWithNormal(

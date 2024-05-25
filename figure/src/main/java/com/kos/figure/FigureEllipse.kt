@@ -307,6 +307,12 @@ open class FigureEllipse(
     override fun pathLength(): Double {
         return length
     }
+
+    override fun pathLength(edge: Int): Double {
+        return length
+    }
+
+    override fun edgeCount(): Int = 1
 }
 
 

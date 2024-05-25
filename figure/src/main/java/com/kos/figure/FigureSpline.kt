@@ -58,6 +58,12 @@ class FigureSpline(points: List<Vec2>) : FigurePolygon(points) {
         }
     }
 
+    override fun pathLength(edge: Int): Double {
+        return (length.getOrNull(edge)?:0.0) - (length.getOrNull(edge-1)?:0.0)
+    }
+
+    override fun edgeCount(): Int = length.size
+
     override fun name(): String {
         return "Сплайн"
     }

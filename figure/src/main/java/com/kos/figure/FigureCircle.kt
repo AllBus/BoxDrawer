@@ -122,6 +122,8 @@ class FigureCircle(
         return perimeter()
     }
 
+    override fun edgeCount(): Int = 1
+
     override fun approximate(pointCount: Int): List<List<Vec2>> {
         val startAngle = segmentStart * Math.PI / 180;
         val sweepAngle = segmentSweep * Math.PI / 180;
@@ -131,4 +133,5 @@ class FigureCircle(
             center + Vec2(radius * cos(t), radius * sin(t))
         })
     }
+
 }
