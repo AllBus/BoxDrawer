@@ -22,4 +22,19 @@
     <string name="boxSizeWithBoard">Учитывать толщину полки</string>
     <string name="boxPreviewStyle">Альтернативное расположение</string>
     <string name="metricMM">мм</string>
+    <string name="metricCount">шт</string>
+    <string name="rezTitleArea">"Область"</string>
+    <string name="rezAreaWidth">Длина</string>
+    <string name="rezAreaHeight">Высота</string>
+    <string name="rezCheckStyle">По длине реза</string>
+    <string name="rezLength">Длина реза</string>
+    <string name="rezCheckFirstKine">Первая линия короткая</string>
+    <string name="rezTitleCount">Количество элементов</string>
+    <string name="rezCountX">По длине</string>
+    <string name="rezCountY">По высоте</string>
+    <string name="rezProprzija">Сохранять пропорции</string>
+    <string name="rezTitleSoedinenie">Растояние между резами</string>
+    <string name="rezSoedinenie">X</string>
+    <string name="rezDelta">Y</string>
+    <string name="rezCheckArea">Обводящий прямоугольник</string>
 </resources>

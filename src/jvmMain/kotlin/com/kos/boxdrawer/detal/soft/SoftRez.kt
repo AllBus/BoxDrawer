@@ -43,15 +43,10 @@ class SoftRez {
         return FigureRez(coord, count, countw, dn, dw-soedinenie, soedinenie, firstSmall)
     }
 
-    fun drawRect(
-        w: Double, h: Double, sdx: Double, sdy: Double, xCount: Int, yCount: Int, fit: Boolean, form: IFigure,
-    ): IFigure {
-
-
-        val res = mutableListOf<IFigure>()
-
-        res.add(
-            FigurePolyline(
+    fun drawRectangle(
+        w: Double, h: Double,
+    ):IFigure{
+         return FigurePolyline(
                 listOf(
                     Vec2(0.0, 0.0),
                     Vec2(w, 0.0),
@@ -60,7 +55,26 @@ class SoftRez {
                     Vec2(0.0, 0.0),
                 )
             )
-        )
+    }
+
+    fun drawRect(
+        w: Double, h: Double, sdx: Double, sdy: Double, xCount: Int, yCount: Int, fit: Boolean, form: IFigure,
+    ): IFigure {
+
+
+        val res = mutableListOf<IFigure>()
+//
+//        res.add(
+//            FigurePolyline(
+//                listOf(
+//                    Vec2(0.0, 0.0),
+//                    Vec2(w, 0.0),
+//                    Vec2(w, h),
+//                    Vec2(0.0, h),
+//                    Vec2(0.0, 0.0),
+//                )
+//            )
+//        )
 
         if (xCount <= 0 || (yCount <= 0 && !fit))
             return Figure.Empty
