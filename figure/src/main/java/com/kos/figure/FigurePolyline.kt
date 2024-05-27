@@ -193,4 +193,14 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
     override fun approximate(pointCount: Int): List<List<Vec2>> {
         return listOf(points)
     }
+
+    override fun path(edge: Int): IFigure {
+        if (0 <= edge && edge < points.size-1){
+            val pred = points[edge]
+            val next = points[edge+1]
+            return FigureLine(pred, next)
+        }
+
+        return FigureEmpty
+    }
 }

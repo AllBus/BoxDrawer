@@ -313,6 +313,20 @@ open class FigureEllipse(
     }
 
     override fun edgeCount(): Int = 1
+
+    override fun path(edge: Int): IFigure {
+        return this
+    }
+
+    override fun startPoint(): Vec2 {
+        val t = segmentStart * Math.PI / 180
+        return center + Vec2(radius * cos(t), radiusMinor * sin(t)).rotate(rotation)
+    }
+
+    override fun endPoint(): Vec2 {
+        val t = (segmentStart+segmentSweep) * Math.PI / 180
+        return center + Vec2(radius * cos(t), radiusMinor * sin(t)).rotate(rotation)
+    }
 }
 
 

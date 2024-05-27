@@ -67,4 +67,13 @@ class FigureSpline(points: List<Vec2>) : FigurePolygon(points) {
     override fun name(): String {
         return "Сплайн"
     }
+
+    override fun path(edge: Int): IFigure {
+        if (edge>=0 && edge*3+4< points.size) {
+            val p = points.subList(edge * 3, edge * 3 + 4)
+            return  FigureBezier(p)
+        }
+
+        return FigureEmpty
+    }
 }

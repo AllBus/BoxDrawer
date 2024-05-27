@@ -15,8 +15,10 @@ import com.kos.figure.IFigurePath
 import com.kos.figure.PointWithNormal
 import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.composition.FigureArray
+import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureOnPath
 import com.kos.figure.composition.FigureTranslateWithRotate
+import org.jetbrains.skia.Color
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.MemoryKey
 import turtoise.memory.keys.MemoryKey.Companion.ZERO
@@ -504,6 +506,18 @@ abstract class TortoiseBase {
         return null
     }
 
+    private fun pathAtIndex(paths: List<IFigurePath>, edge: Int): IFigure {
+        var e = edge
+        for ( p in paths){
+            if (p.edgeCount()> e){
+                return p.path(e)
+            } else {
+                e -= p.edgeCount()
+            }
+        }
+        return FigureEmpty
+    }
+
     protected fun figuresSplash(
         builder: TortoiseBuilder,
         com: TortoiseCommand,
@@ -654,18 +668,27 @@ abstract class TortoiseBase {
                         val v = (2  until com.size).mapNotNull { j ->
                             com.takeBlock(j)?.let{ item ->
                                 val e = memory.value(item.get(0)?: ZERO, 0.0)
-                                val d = memory.value(item.get(1)?: ZERO, 0.0)
-                                val zigle = item.get(2)?.let{ memory.value(it, 15.0)} ?: 15.0
-                                val zighe = item.get(3)?.let{ memory.value(it, ds.boardWeight)} ?: ds.boardWeight
-                                positionInPath(paths, e.toInt() , d)?.let{ pos ->
-                                    FigurePolyline(
-                                        listOf(
-                                            Vec2(-zigle, 0.0),
-                                            Vec2(-zigle, zighe),
-                                            Vec2(zigle, zighe),
-                                            Vec2(zigle, 0.0),
-                                        ).map { pos.point+it.rotate(pos.normal.angle+PI/2) }
+                                if (item.get(1) == null) {
+                                    FigureColor(
+                                        Color.GREEN,
+                                        pathAtIndex(paths, e.toInt())
                                     )
+
+                                }else{
+                                    val d = memory.value(item.get(1) ?: ZERO, 0.0)
+                                    val zigle = item.get(2)?.let { memory.value(it, 15.0) } ?: 15.0
+                                    val zighe = item.get(3)?.let { memory.value(it, ds.boardWeight) }
+                                        ?: ds.boardWeight
+                                    positionInPath(paths, e.toInt(), d)?.let { pos ->
+                                        FigurePolyline(
+                                            listOf(
+                                                Vec2(-zigle, 0.0),
+                                                Vec2(-zigle, zighe),
+                                                Vec2(zigle, zighe),
+                                                Vec2(zigle, 0.0),
+                                            ).map { pos.point + it.rotate(pos.normal.angle + PI / 2) }
+                                        )
+                                    }
                                 }
                             }
                         }

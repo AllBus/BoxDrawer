@@ -55,4 +55,12 @@ abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath {
             (p-rotateCenter).rotate(angle)+rotateCenter
         })
     }
+
+    override fun startPoint(): Vec2 {
+        return points.firstOrNull()?:Vec2.Zero
+    }
+
+    override fun endPoint(): Vec2 {
+        return points.lastOrNull()?:Vec2.Zero
+    }
 }

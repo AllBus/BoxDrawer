@@ -5,6 +5,8 @@ import vectors.Vec2
 import vectors.Vec2.Companion.casteljauLine
 import vectors.Vec2.Companion.getCubicRoots
 
+private const val DEFAULT_STEP_SIZE = 1000
+
 class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
     override fun create(points: List<Vec2>): FigurePolygon {
         return FigureBezier(points)
@@ -96,7 +98,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
                 val c = (fp - pd) / (pde - pd)
 
                val pt =  points.windowed(4, 3).getOrNull(i+1)?.let { p ->
-                    Vec2.bezierPosition(p, c, 1000  ,(pde - pd))
+                    Vec2.bezierPosition(p, c, DEFAULT_STEP_SIZE,(pde - pd))
                 } ?: PointWithNormal.EMPTY
                 pt
             }
@@ -117,7 +119,20 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
         if (start+4<= points.size) {
             val p = points.subList(start, start + 4)
             val le = if (edge == 0 ) length[0] else (length[edge] - length[edge-1])
-            return Vec2.bezierPosition(p, delta, 1000, le)
+            return Vec2.bezierPosition(p, delta, DEFAULT_STEP_SIZE, le)
+        }
+        return PointWithNormal.EMPTY
+    }
+
+    override fun positionInPathAtMM(edge: Int, mm: Double): PointWithNormal {
+        if (edge< 0)
+            return PointWithNormal.EMPTY
+
+        val start = edge*3
+        if (start+4<= points.size) {
+            val p = points.subList(start, start + 4)
+            val le = if (edge == 0 ) length[0] else (length[edge] - length[edge-1])
+            return Vec2.bezierPositionAtMM(p, mm, DEFAULT_STEP_SIZE, le)
         }
         return PointWithNormal.EMPTY
     }
@@ -157,5 +172,15 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
     override fun pathLength(edge: Int): Double {
         return (length.getOrNull(edge)?:0.0) - (length.getOrNull(edge-1)?:0.0)
     }
+
+    override fun path(edge: Int): IFigure {
+        if (edge>=0 && edge*3+4< points.size) {
+            val p = points.subList(edge * 3, edge * 3 + 4)
+            return  FigureBezier(p)
+        }
+
+        return FigureEmpty
+    }
+
 }
 

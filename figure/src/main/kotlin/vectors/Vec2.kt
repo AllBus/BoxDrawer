@@ -276,13 +276,36 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             steps: Int,
             length: Double
         ): PointWithNormal {
-            var pred = points[0]
-            var sum = 0.0
+
             val tr = k * length
             if (k >= 1.0)
                 return PointWithNormal.fromPreviousPoint(points.last(), points[points.size - 2])
             if (k <= 0.0)
                 return PointWithNormal.from(points.first(), points[1])
+            return bezierPositionAtMM(
+                points,
+                tr,
+                steps,
+                length
+            )
+        }
+
+        fun bezierPositionAtMM(
+            points: List<Vec2>,
+            mm: Double,
+            steps: Int,
+            length: Double
+        ): PointWithNormal {
+
+            if (mm >= length)
+                return PointWithNormal.fromPreviousPoint(points.last(), points[points.size - 2])
+            if (mm <= 0.0)
+                return PointWithNormal.from(points.first(), points[1])
+
+            var pred = points[0]
+            var sum = 0.0
+            val tr = mm
+
             var predt = 0.0
             for (i in 0..<steps) {
                 val t = i.toDouble() / (steps - 1)
