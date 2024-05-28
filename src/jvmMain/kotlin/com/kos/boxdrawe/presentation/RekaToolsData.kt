@@ -85,14 +85,14 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
                 FigurePolyline(result.points, close = true),
                 FigureTranslate(
                     FigureRotate(
-                        FigureColor(0xffff00, f),
+                        FigureColor(0xffff00, 1, f),
                         (rfp?.angle ?: 0.0) * 180 / PI,
                         Vec2.Zero
                     ),
                     rfp?.coord ?: Vec2(0.0, 0.0),
                 ),
-                FigureColor(0xffff00, RekaCad.centerFigures(result)),
-                FigureColor(0xff00ff, RekaCad.selectPositionFigure(result, cur)),
+                FigureColor(0xffff00,2, RekaCad.centerFigures(result)),
+                FigureColor(0xff00ff, 6, RekaCad.selectPositionFigure(result, cur)),
             )
         )
     }

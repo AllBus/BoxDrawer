@@ -59,7 +59,7 @@ class TemplateData(override val tools: ITools): SaveFigure {
 
     val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
 
-    val dxfPreview = MutableStateFlow(false)
+
 
     val templateEditor =
         MutableStateFlow(TemplateEditorForm(TemplateForm("", "", emptyList())))
@@ -77,7 +77,7 @@ class TemplateData(override val tools: ITools): SaveFigure {
         val m = TwoBlockTortoiseMemory(top, algorithm.value.default)
 
         selectedItem.value = emptyList()
-        dxfPreview.value = false
+      //  dxfPreview.value = false
         currentFigure.value =
             algorithm.value.draw("", tools.ds(), TortoiseState(), m, runner, 10)
     }
@@ -167,10 +167,11 @@ class TemplateData(override val tools: ITools): SaveFigure {
             return templateEditor.value.form.print().line
         }else {
 
-            if (dxfPreview.value){
-                val figures = FigureList(selectedItem.value)
-                return "f ("+figures.print()+")"
-            }else {
+//            if (dxfPreview.value){
+//                val figures = FigureList(selectedItem.value)
+//                return "f ("+figures.print()+")"
+//            }else
+//            {
                 val name = algorithmName.value
 
                 val top = TortoiseParserStackBlock()
@@ -180,26 +181,11 @@ class TemplateData(override val tools: ITools): SaveFigure {
                 val memoryarguments = top.innerLine
 
                 return "f (@${name} ${memoryarguments})"
-            }
+           // }
         }
     }
 
-    fun loadDxf(fileName: String) {
-        try {
-            val f = File(fileName)
-            val parser = ParserBuilder.createDefaultParser()
 
-            parser.parse(FileInputStream(f), DXFParser.DEFAULT_ENCODING)
-            val doc: DXFDocument = parser.getDocument()
-
-            val extractor = FigureExtractor()
-            currentFigure.value = extractor.extractFigures(doc)
-            tools.updateChooserDir(fileName)
-            dxfPreview.value = true
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 
     suspend fun onPress(point: Vec2, button: Int, scale: Float) {
         val figure = currentFigure.value

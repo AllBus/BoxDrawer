@@ -1,6 +1,8 @@
 package com.kos.boxdrawer.detal.grid
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import com.jsevy.jdxf.DXFColor
 import com.kos.figure.FigureBezierList
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
@@ -207,9 +209,10 @@ class CadGrid {
         bottom: Double,
         enableSmooth: Boolean,
         smoothSize: Double,
-        color: Int
+        dxfColor: Int
     ): IFigure {
-        return FigureColor(color, FigureCreator.rectangle(left, top, right, bottom, enableSmooth, smoothSize))
+        // Todo:
+        return FigureColor(DXFColor.getClosestDXFColor(dxfColor), dxfColor,  FigureCreator.rectangle(left, top, right, bottom, enableSmooth, smoothSize))
     }
 
     fun createEntities(gridSize: GridOption, innerInfo: GridOption, frameSize: Double, drawerSettings: DrawerSettings) : IFigure
@@ -219,9 +222,9 @@ class CadGrid {
         val size = gridSize.size;
         val unionSize = gridSize.roundCell;
 
-        val figureColor = androidx.compose.ui.graphics.Color.Companion.Blue.toArgb();
-        val innerColor = androidx.compose.ui.graphics.Color.Companion.Red.toArgb();
-        val frameColor = androidx.compose.ui.graphics.Color.Companion.DarkGray.toArgb();
+        val figureColor = DXFColor.getClosestDXFColor(androidx.compose.ui.graphics.Color.Companion.Blue.toArgb())
+        val innerColor = DXFColor.getClosestDXFColor(androidx.compose.ui.graphics.Color.Companion.Red.toArgb())
+        val frameColor = DXFColor.getClosestDXFColor(androidx.compose.ui.graphics.Color.Companion.DarkGray.toArgb())
 
         val result = mutableListOf<IFigure>()
 
@@ -329,6 +332,7 @@ class CadGrid {
 
                             group.add(
                                 FigureColor(
+                                    DXFColor.getRgbColor(figureColor),
                                 figureColor,
                                 FigureBezierList.simple( bz.toList()).toFigure()
                             )
@@ -345,7 +349,10 @@ class CadGrid {
                                 points.add(Vec2(c.x * size, c.y * size));
                             }
 
-                            group.add(FigureColor(figureColor, FigurePolyline(points.toList(), true) ));
+                            group.add(FigureColor(
+                                DXFColor.getRgbColor(figureColor),
+                                figureColor,
+                                FigurePolyline(points.toList(), true) ));
                         }
                     }
                     if (group.size > 0)

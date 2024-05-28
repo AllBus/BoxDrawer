@@ -30,6 +30,7 @@ import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BEZIER
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BUBLIK
+import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_DXF
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_REKA
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
@@ -37,6 +38,7 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TOOLS
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
 import com.kos.boxdrawe.widget.tabbar.ToolbarActionForBezier
 import com.kos.boxdrawe.widget.tabbar.ToolbarActionForBox
+import com.kos.boxdrawe.widget.tabbar.ToolbarActionForDxf
 import com.kos.boxdrawe.widget.tabbar.ToolbarActionForGrid
 import com.kos.boxdrawe.widget.tabbar.ToolbarActionForReka
 import com.kos.boxdrawe.widget.tabbar.ToolbarActionForSoft
@@ -45,6 +47,7 @@ import com.kos.boxdrawe.widget.tabbar.ToolbarActionForTortoise
 import com.kos.boxdrawe.widget.tabbar.ToolbarContainer
 import com.kos.boxdrawe.widget.tabbar.ToolbarForBezier
 import com.kos.boxdrawe.widget.tabbar.ToolbarForBox
+import com.kos.boxdrawe.widget.tabbar.ToolbarForDxf
 import com.kos.boxdrawe.widget.tabbar.ToolbarForGrid
 import com.kos.boxdrawe.widget.tabbar.ToolbarForReka
 import com.kos.boxdrawe.widget.tabbar.ToolbarForSoft
@@ -97,6 +100,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                         TAB_BUBLIK -> ToolbarForBublik(vm.value.bublik)
                         TAB_REKA -> ToolbarForReka(vm.value.rectData)
                         TAB_TOOLS -> ToolbarForTools(vm.value.options)
+                        TAB_DXF -> ToolbarForDxf(vm.value.dxfData)
                     }
                 },
                 actionsBlock = {
@@ -115,6 +119,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                             TAB_BUBLIK -> ToolbarActionForBublik(vm.value.bublik)
                             TAB_REKA -> ToolbarActionForReka(vm.value.rectData)
                             TAB_TOOLS -> ToolbarActionForTools(vm.value.options)
+                            TAB_DXF -> ToolbarActionForDxf(vm.value.dxfData)
                         }
                     }
                 }
@@ -231,7 +236,8 @@ object BoxDrawerToolBar {
     const val TAB_BEZIER = 4
     const val TAB_BUBLIK = 5
     const val TAB_REKA = 6
-    const val TAB_TOOLS = 7
+    const val TAB_DXF = 7
+    const val TAB_TOOLS = 8
 
     val tabs = listOf(
         TabInfo(TAB_BOX, "Коробка"),
@@ -241,6 +247,7 @@ object BoxDrawerToolBar {
         TabInfo(TAB_BEZIER, "Безье"),
         TabInfo(TAB_BUBLIK, "Бублик"),
         TabInfo(TAB_REKA, "Река"),
+        TabInfo(TAB_DXF, "DXF"),
         TabInfo(TAB_TOOLS, "Инструменты"),
     )
 }

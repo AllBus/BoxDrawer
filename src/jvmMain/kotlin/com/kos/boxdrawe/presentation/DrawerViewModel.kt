@@ -1,9 +1,7 @@
 package com.kos.boxdrawe.presentation
 
-import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.figure.FigureEmpty
-import com.kos.figure.IFigure
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +21,7 @@ class DrawerViewModel {
     val bezier = BezierData(tools)
     val bublik = BublikData(tools)
     val rectData = RekaToolsData(tools)
+    val dxfData = DxfToolsData(tools)
     val tabIndex = MutableStateFlow(BoxDrawerToolBar.TAB_TORTOISE)
 
     private val noneFigure = MutableStateFlow(FigureEmpty).asStateFlow()
@@ -35,6 +34,7 @@ class DrawerViewModel {
             BoxDrawerToolBar.TAB_BUBLIK -> bublik.figures
             BoxDrawerToolBar.TAB_REKA -> rectData.figures
             BoxDrawerToolBar.TAB_TOOLS -> template.currentFigure
+            BoxDrawerToolBar.TAB_DXF -> dxfData.currentFigure
             else -> noneFigure
         }
     }
@@ -62,6 +62,7 @@ class DrawerViewModel {
             BoxDrawerToolBar.TAB_TOOLS -> template
             BoxDrawerToolBar.TAB_BEZIER -> bezier
             BoxDrawerToolBar.TAB_GRID -> grid
+            BoxDrawerToolBar.TAB_DXF -> dxfData
             else -> null
         }
         return tf
@@ -79,6 +80,7 @@ class DrawerViewModel {
             BoxDrawerToolBar.TAB_TOOLS -> template.print()
             BoxDrawerToolBar.TAB_BEZIER -> bezier.print()
             BoxDrawerToolBar.TAB_GRID -> grid.print()
+            BoxDrawerToolBar.TAB_DXF -> dxfData.print()
             else -> ""
         }
     }

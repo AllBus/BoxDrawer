@@ -184,7 +184,9 @@ fun App(vm: State<DrawerViewModel>) {
                             ) {
 
                                 AnimatedVisibility(
-                                    tabIndex.value == BoxDrawerToolBar.TAB_TOOLS && !checkboxEditor.value,
+                                    tabIndex.value == BoxDrawerToolBar.TAB_TOOLS && !checkboxEditor.value ||
+                                            tabIndex.value == BoxDrawerToolBar.TAB_DXF
+                                    ,
                                         enter = expandHorizontally(
                                             expandFrom = Alignment.Start
                                         ),

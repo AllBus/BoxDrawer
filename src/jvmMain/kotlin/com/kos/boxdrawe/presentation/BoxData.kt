@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import com.jsevy.jdxf.DXFColor
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.box.*
 import com.kos.figure.Figure
@@ -85,6 +86,7 @@ class BoxData(override val tools: ITools): SaveFigure {
         val ds = tools.ds()
         return FigureColor(
             Color.DarkGray.toArgb(),
+            DXFColor.getClosestDXFColor(Color.DarkGray.toArgb()),
             boxFigures(alg, ds)
         )
     }

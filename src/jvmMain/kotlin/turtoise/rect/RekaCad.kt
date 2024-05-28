@@ -1,11 +1,13 @@
 package turtoise.rect
 
+import com.jsevy.jdxf.DXFColor
 import com.kos.boxdrawe.presentation.RectBlockPosition
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor
+import org.jetbrains.skia.Color
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.DegreesMemoryKey
 import turtoise.memory.keys.MemoryKey
@@ -452,6 +454,7 @@ object RekaCad {
             if (kubik.parent == cur.reka && kubik.index == cur.position.block && kubik.bias == cur.position.storona) {
                 FigureColor(
                     0xff00ff,
+                   6,
                     FigureLine(
                         kubikStart + Vec2(-5.0, 0.0).rotate(kubik.angle),
                         kubikStart + Vec2(5.0, 0.0).rotate(kubik.angle)

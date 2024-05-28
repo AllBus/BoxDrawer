@@ -734,6 +734,7 @@ object BoxCad {
 
         resultMap.getOrPut(F_BOTTOM) { mutableListOf() }.add(
             FigureColor(0xFF0000,
+                1,
                 FigureList(
                     polki.calcList.map { po ->
                         FigureLine(

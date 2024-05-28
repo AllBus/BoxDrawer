@@ -6,6 +6,7 @@ import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import com.kos.figure.algorithms.UnionFigure
 import com.kos.figure.composition.FigureComposition
+import com.kos.figure.composition.FigureTranslate
 import vectors.Vec2
 
 open class FigureUnion(
@@ -22,7 +23,7 @@ open class FigureUnion(
         return newFigure
     }
 
-    protected fun approximations(figure: IFigure): List<Approximation>{
+    protected fun approximations(figure: IFigure): List<Approximation> {
         return figure.list().filterIsInstance(Approximation::class.java)
     }
 
@@ -33,7 +34,7 @@ open class FigureUnion(
             figure2 == Figure.Empty -> figure1
             else -> {
                 return UnionFigure.union(
-                    approximations(figure1) + approximations(figure2) ,
+                    approximations(figure1) + approximations(figure2),
                     approximationSize
                 )
             }
@@ -45,7 +46,7 @@ open class FigureUnion(
         get() = unionFigure ?: recalculateFigure()
 
     override fun create(figure: IFigure): FigureComposition {
-        return FigureUnion(figure, figure, approximationSize)
+        return FigureTranslate(figure, Vec2.Zero)
     }
 
     override fun draw(g: IFigureGraphics) {

@@ -14,7 +14,7 @@ import com.kos.figure.composition.booleans.FigureUnion
 import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
-import org.kabeja.dxf.DXFColor
+import com.jsevy.jdxf.DXFColor
 import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 import java.util.Stack
@@ -196,8 +196,9 @@ class Tortoise() : TortoiseSplash() {
                     figureList(block, ds, maxStackSize, memory, runner)?.let { g ->
                         builder.addProduct(
                             FigureColor(
-                                DXFColor.getRgbColor(color),
-                                g,
+                                color = DXFColor.getRgbColor(color),
+                                dxfColor = color,
+                                figure = g,
                             )
                         )
                     }

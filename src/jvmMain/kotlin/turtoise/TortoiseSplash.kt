@@ -1,5 +1,6 @@
 package turtoise
 
+import com.jsevy.jdxf.DXFColor
 import com.kos.boxdrawer.detal.soft.SoftRez
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureLine
@@ -177,6 +178,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                                 if (item.get(1) == null) {
                                     FigureColor(
                                         Color.GREEN,
+                                        DXFColor.getClosestDXFColor(Color.GREEN),
                                         pathAtIndex(paths, e.toInt())
                                     )
 

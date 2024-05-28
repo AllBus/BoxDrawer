@@ -37,9 +37,11 @@ class FigureExtractor {
                     if (entry.color != currentColor) {
                         if (colorBlock.isNotEmpty()) {
                             result += FigureColor(
-                                org.kabeja.dxf.DXFColor.getRgbColor(currentColor),
-                                FigureList(colorBlock.toList()).simple()
+                                color = com.jsevy.jdxf.DXFColor.getRgbColor(currentColor),
+                                dxfColor = currentColor,
+                                figure = FigureList(colorBlock.toList()).simple()
                             )
+                            println("" +currentColor+" as "+  com.jsevy.jdxf.DXFColor.getRgbColor(currentColor))
                             colorBlock = mutableListOf<IFigure>()
                         }
                         currentColor = entry.color
@@ -51,7 +53,12 @@ class FigureExtractor {
                     }
                 } //end for entry
             }
-            result += FigureColor(currentColor, FigureList(colorBlock.toList()).simple())
+            result += FigureColor(
+                color = com.jsevy.jdxf.DXFColor.getRgbColor(currentColor),
+                dxfColor = currentColor,
+                figure = FigureList(colorBlock.toList()).simple()
+            )
+            println("" +currentColor+" as "+  com.jsevy.jdxf.DXFColor.getRgbColor(currentColor))
         }
         return FigureList(result.toList())
     }

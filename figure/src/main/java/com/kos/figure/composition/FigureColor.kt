@@ -3,10 +3,12 @@ package com.kos.figure.composition
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.IFigure
 
-class FigureColor(val color: Int, override val figure: IFigure) : FigureComposition() {
+class FigureColor(val color: Int,
+                  val dxfColor:Int,
+                  override val figure: IFigure) : FigureComposition() {
 
     override fun create(figure: IFigure): FigureComposition {
-        return FigureColor(this.color, figure)
+        return FigureColor(this.color, this.dxfColor, figure)
     }
 
     override fun draw(g: IFigureGraphics) {
@@ -22,6 +24,6 @@ class FigureColor(val color: Int, override val figure: IFigure) : FigureComposit
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun name(): String {
-        return "Цвет(${color.toHexString()})"
+        return "Цвет[$dxfColor](${color.toHexString()})"
     }
 }

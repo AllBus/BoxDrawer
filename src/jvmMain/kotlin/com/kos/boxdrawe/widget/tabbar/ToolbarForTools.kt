@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.presentation.DxfToolsData
 import com.kos.boxdrawe.presentation.ToolsData
 import com.kos.boxdrawe.widget.CheckboxK
 import com.kos.boxdrawe.widget.Label
@@ -201,10 +202,56 @@ fun ToolbarActionForTools(vm: ToolsData) {
                 clipboardManager.setText(AnnotatedString(vm.templateData.print()))
             }
         }
+//        Spacer(Modifier.height(4.dp))
+//        RunButton("Открыть файл") {
+//            coroutineScope.launch {
+//                showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.templateData.loadDxf(f) }
+//            }
+//        }
+    }
+}
+
+@Composable
+fun ToolbarForDxf(vm: DxfToolsData) {
+
+    val scaleValue = remember { vm.scaleEdit }
+    val colorValue = remember { vm.scaleColor }
+    val scaleValue2 = remember { vm.scaleEdit2 }
+    val colorValue2 = remember { vm.scaleColor2 }
+    Row(
+        modifier = TabContentModifier
+    ) {
+        Column {
+            Row {
+                NumericUpDown("Цвет DXF", "", colorValue, modifier = Modifier.weight(1f))
+                NumericUpDown("Масштаб", "", scaleValue, modifier = Modifier.weight(3f))
+            }
+            Row {
+                NumericUpDown("Цвет DXF", "", colorValue2, modifier = Modifier.weight(1f))
+                NumericUpDown("Масштаб", "", scaleValue2, modifier = Modifier.weight(3f))
+            }
+        }
+    }
+}
+
+@Composable
+fun ToolbarActionForDxf(vm: DxfToolsData) {
+    val coroutineScope = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
+    Column(
+    ) {
+        SaveToFileButton(vm)
+
+        Spacer(Modifier.height(4.dp))
+        RunButton("Скопировать код") {
+            coroutineScope.launch {
+                clipboardManager.setText(AnnotatedString(vm.print()))
+            }
+        }
         Spacer(Modifier.height(4.dp))
         RunButton("Открыть файл") {
             coroutineScope.launch {
-                showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.templateData.loadDxf(f) }
+                showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.loadDxf(f) }
             }
         }
     }
