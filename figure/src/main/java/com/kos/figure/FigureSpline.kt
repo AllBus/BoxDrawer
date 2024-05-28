@@ -76,4 +76,13 @@ class FigureSpline(points: List<Vec2>) : FigurePolygon(points) {
 
         return FigureEmpty
     }
+
+    override fun duplicationAtNormal(h: Double): IFigure {
+        //Todo:
+        val pp = points.zipWithNext().flatMap { (pred, next) ->
+            val n = Vec2.normal(pred, next)
+            listOf(pred+n*h, next+n*h)
+        }
+        return FigurePolyline(pp)
+    }
 }

@@ -182,5 +182,18 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
         return FigureEmpty
     }
 
+    override fun duplicationAtNormal(h: Double): IFigure {
+        val l =  points.windowed(4, 3).map { curve ->
+            val ns = Vec2.normal(curve[0], curve[1])
+            val ne = Vec2.normal(curve[2], curve[3])
+            listOf(
+                curve[0]+ns*h,
+                curve[1]+ns*h,
+                curve[2]+ne*h,
+                curve[3]+ne*h
+            )
+        }
+        return FigureBezierList(l).toFigure()
+    }
 }
 

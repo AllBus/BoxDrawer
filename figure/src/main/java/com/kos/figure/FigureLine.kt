@@ -133,4 +133,10 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
     override fun path(edge: Int): IFigure {
         return this
     }
+
+    override fun duplicationAtNormal(h: Double): IFigure {
+        val s = positionInPath(0.0)
+        val e = positionInPath(1.0)
+        return FigureLine(points[0]+ s.normal*h, points[1]+e.normal*h)
+    }
 }

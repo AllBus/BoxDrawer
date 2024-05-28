@@ -14,6 +14,7 @@ interface IFigurePath {
     fun path(edge:Int):IFigure
     fun startPoint():Vec2
     fun endPoint():Vec2
+    fun duplicationAtNormal(h: Double): IFigure
 }
 
 class PointWithNormal(

@@ -203,4 +203,12 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
 
         return FigureEmpty
     }
+
+    override fun duplicationAtNormal(h: Double): IFigure {
+        val pp = points.zipWithNext().flatMap { (pred, next) ->
+            val n = Vec2.normal(pred, next)
+            listOf(pred+n*h, next+n*h)
+        }
+        return FigurePolyline(pp)
+    }
 }

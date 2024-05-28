@@ -134,4 +134,7 @@ class FigureCircle(
         })
     }
 
+    override fun duplicationAtNormal(h: Double): IFigure {
+        return FigureCircle(center, radius+h, segmentStart, segmentSweep)
+    }
 }

@@ -22,7 +22,7 @@ import kotlin.math.min
 
 private const val MAX_REGULAR_POLYGON_EDGES = 500
 
-class Tortoise() : TortoiseBase() {
+class Tortoise() : TortoiseSplash() {
 
     override fun draw(
         commands: TortoiseBlock,

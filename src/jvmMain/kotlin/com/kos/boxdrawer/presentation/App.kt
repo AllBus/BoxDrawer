@@ -65,7 +65,7 @@ fun App(vm: State<DrawerViewModel>) {
     val figures = vm.value.figures.collectAsState(FigureEmpty)
 
     val displayScale = remember { mutableFloatStateOf(2.0f) }
-    var pos = rememberSaveable("DisplayTortoiseOffset") { mutableStateOf(Offset.Zero) }
+    val pos = rememberSaveable("DisplayTortoiseOffset") { mutableStateOf(Offset.Zero) }
 
     var dropValueX by remember { mutableStateOf(0f) }
     var dropValueY by remember { mutableStateOf(0f) }

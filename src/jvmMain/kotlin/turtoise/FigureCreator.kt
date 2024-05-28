@@ -167,10 +167,11 @@ object FigureCreator {
     fun bezierLine(v: Vec2, v2: Vec2, smoothSize: Double, g1: Int, g2: Int): FigureBezierList {
         val p1 = next[g1 % 4]
         val p2 = next[g2 % 4]
+        val eps = 0.0 //-0.00001
         return FigureBezierList(
             Vec2(v.x - p1.first * smoothSize, v.y - p1.second * smoothSize),
-            Vec2(v.x - p1.first * smoothSize, v.y - p1.second * smoothSize),
-            Vec2(v2.x + p2.first * smoothSize, v2.y + p2.second * smoothSize),
+            Vec2(v.x - (eps+p1.first) * smoothSize, v.y - (eps+p1.second) * smoothSize),
+            Vec2(v2.x + (eps+p2.first) * smoothSize, v2.y + (eps+p2.second) * smoothSize),
             Vec2(v2.x + p2.first * smoothSize, v2.y + p2.second * smoothSize)
         )
     }

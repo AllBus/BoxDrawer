@@ -327,6 +327,17 @@ open class FigureEllipse(
         val t = (segmentStart+segmentSweep) * Math.PI / 180
         return center + Vec2(radius * cos(t), radiusMinor * sin(t)).rotate(rotation)
     }
+
+    override fun duplicationAtNormal(h: Double): IFigure {
+        return FigureEllipse(
+            center = center,
+            radius = radius+h,
+            radiusMinor = radiusMinor+h,
+            rotation = rotation,
+            segmentStart = segmentStart,
+            segmentSweep = segmentSweep
+        )
+    }
 }
 
 
