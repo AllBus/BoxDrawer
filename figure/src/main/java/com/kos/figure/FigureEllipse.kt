@@ -3,6 +3,7 @@ package com.kos.figure
 import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
 import vectors.Vec2
+import java.text.DecimalFormat
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.acos
@@ -75,7 +76,9 @@ open class FigureEllipse(
         segmentStart: Double,
         segmentSweep: Double
     ): FigureEllipse {
-        return FigureEllipse(center, radius, radiusMinor, rotation, segmentStart, segmentSweep)
+        return FigureEllipse(center, radius, radiusMinor, rotation, segmentStart,
+            if (segmentSweep == 0.0) 360.0 else segmentSweep
+        )
     }
 
     override fun translate(translateX: Double, translateY: Double): IFigure {
@@ -290,8 +293,12 @@ open class FigureEllipse(
         return positionInPath(delta)
     }
 
+    companion object {
+        val digitFormatter =  DecimalFormat().apply{ setMaximumFractionDigits(3) }
+    }
+
     override fun name(): String {
-        return "Эллипс"
+        return "Эллипс ${digitFormatter.format(radius)} : ${digitFormatter.format(radiusMinor)} - ${digitFormatter.format(segmentStart)} : ${digitFormatter.format(segmentSweep)}"
     }
 
     override fun approximate(pointCount: Int): List<List<Vec2>> {

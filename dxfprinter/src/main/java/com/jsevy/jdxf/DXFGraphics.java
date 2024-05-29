@@ -977,8 +977,17 @@ public class DXFGraphics extends Graphics2D {
     }
 
     public void drawCircle(@NotNull Vec2 center, double radius) {
-        double sx = graphicsMatrix.getScaleX();
-        double sy = graphicsMatrix.getScaleY();
+
+        Point2D p = new Point2D.Double(1, 0);
+        p = graphicsMatrix.deltaTransform(p, p);
+        double sx = p.distance(0, 0);
+
+        p = new Point2D.Double(0, 1);
+        p = graphicsMatrix.deltaTransform(p, p);
+        double sy = p.distance(0, 0);
+      //  double sx = graphicsMatrix.getScaleX();
+      //  double sy = graphicsMatrix.getScaleY();
+
 
         if (sx == sy) {
             //Todo: not support all transform matrix

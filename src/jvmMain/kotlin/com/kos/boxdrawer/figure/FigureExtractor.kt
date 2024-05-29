@@ -41,14 +41,14 @@ class FigureExtractor {
                                 dxfColor = currentColor,
                                 figure = FigureList(colorBlock.toList()).simple()
                             )
-                            println("" +currentColor+" as "+  com.jsevy.jdxf.DXFColor.getRgbColor(currentColor))
+                            //println("" +currentColor+" as "+  com.jsevy.jdxf.DXFColor.getRgbColor(currentColor))
                             colorBlock = mutableListOf<IFigure>()
                         }
                         currentColor = entry.color
                     }
                     val figure = createFigure(entry, doc)
                     if (figure != FigureEmpty) {
-                        println( entry.id+" "+entry.color)
+                //        println( entry.id+" "+entry.color)
                         colorBlock += figure
                     }
                 } //end for entry
@@ -58,7 +58,7 @@ class FigureExtractor {
                 dxfColor = currentColor,
                 figure = FigureList(colorBlock.toList()).simple()
             )
-            println("" +currentColor+" as "+  com.jsevy.jdxf.DXFColor.getRgbColor(currentColor))
+       //     println("" +currentColor+" as "+  com.jsevy.jdxf.DXFColor.getRgbColor(currentColor))
         }
         return FigureList(result.toList())
     }
@@ -98,7 +98,8 @@ class FigureExtractor {
                 radiusMinor = entry.ratio * entry.halfMajorAxisLength,
                 rotation = entry.rotationAngle,
                 segmentStart = entry.startParameter * 180.0 / Math.PI,
-                segmentSweep = (entry.endParameter - entry.startParameter) * 180.0 / Math.PI,
+                segmentSweep = if (entry.endParameter == entry.startParameter) 360.0 else
+                    (entry.endParameter - entry.startParameter) * 180.0 / Math.PI,
             )
         }
 
@@ -109,7 +110,8 @@ class FigureExtractor {
                 center = entry.centerPoint.vec,
                 radius = entry.radius,
                 segmentStart = entry.startAngle,
-                segmentSweep = (entry.endAngle - entry.startAngle)
+                segmentSweep = if (entry.endAngle == entry.startAngle) 360.0 else
+                        (entry.endAngle - entry.startAngle)
             )
         }
 
