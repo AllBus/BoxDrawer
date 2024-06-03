@@ -1,7 +1,5 @@
 package com.kos.boxdrawe.presentation
 
-import androidx.compose.runtime.mutableStateOf
-import com.kos.boxdrawer.figure.FigureExtractor
 import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.TemplateGeneratorListener
@@ -10,28 +8,21 @@ import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.boxdrawer.template.TemplateMemoryItem
 import com.kos.boxdrawer.template.editor.TemplateEditorForm
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureList
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import org.kabeja.dxf.DXFDocument
-import org.kabeja.parser.DXFParser
-import org.kabeja.parser.ParserBuilder
 import turtoise.TemplateAlgorithm
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
-import turtoise.parser.TortoiseParserStackBlock
 import turtoise.memory.TwoBlockTortoiseMemory
 import turtoise.paint.PaintUtils
+import turtoise.parser.TortoiseParserStackBlock
 import vectors.Vec2
-import java.awt.datatransfer.Transferable
-import java.io.File
-import java.io.FileInputStream
 
-class TemplateData(override val tools: ITools): SaveFigure {
+class TemplateData(override val tools: ITools, val selectedItem: MutableStateFlow<List<IFigure>>) : SaveFigure {
     private val templater = TemplateCreator
     private val emptyAlgorithm = TemplateAlgorithm(
         "",
@@ -60,7 +51,6 @@ class TemplateData(override val tools: ITools): SaveFigure {
     val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
 
 
-
     val templateEditor =
         MutableStateFlow(TemplateEditorForm(TemplateForm("", "", emptyList())))
 
@@ -77,7 +67,7 @@ class TemplateData(override val tools: ITools): SaveFigure {
         val m = TwoBlockTortoiseMemory(top, algorithm.value.default)
 
         selectedItem.value = emptyList()
-      //  dxfPreview.value = false
+        //  dxfPreview.value = false
         currentFigure.value =
             algorithm.value.draw("", tools.ds(), TortoiseState(), m, runner, 10)
     }
@@ -127,8 +117,8 @@ class TemplateData(override val tools: ITools): SaveFigure {
                     addItems(
                         listOf(
                             TortoiseParserStackBlock().apply {
-                            add(listOf("title", title))
-                        },
+                                add(listOf("title", title))
+                            },
                             TortoiseParserStackBlock().apply {
                                 add(listOf("arg", arg))
                             }
@@ -163,35 +153,34 @@ class TemplateData(override val tools: ITools): SaveFigure {
     override suspend fun createFigure(): IFigure = currentFigure.value
 
     suspend fun print(): String {
-        if (checkboxEditor.value){
+        if (checkboxEditor.value) {
             return templateEditor.value.form.print().line
-        }else {
+        } else {
 
 //            if (dxfPreview.value){
 //                val figures = FigureList(selectedItem.value)
 //                return "f ("+figures.print()+")"
 //            }else
 //            {
-                val name = algorithmName.value
+            val name = algorithmName.value
 
-                val top = TortoiseParserStackBlock()
+            val top = TortoiseParserStackBlock()
 
-                memory.union(menu.first().memoryValues()).memoryBlock(top)
+            memory.union(menu.first().memoryValues()).memoryBlock(top)
 
-                val memoryarguments = top.innerLine
+            val memoryarguments = top.innerLine
 
-                return "f (@${name} ${memoryarguments})"
-           // }
+            return "f (@${name} ${memoryarguments})"
+            // }
         }
     }
 
 
-
     suspend fun onPress(point: Vec2, button: Int, scale: Float) {
         val figure = currentFigure.value
-        val result= PaintUtils.findFiguresAtCursor(point, 1.0, listOf(figure))
+        val result = PaintUtils.findFiguresAtCursor(point, 1.0, listOf(figure))
         selectedItem.value = result
     }
 
-    val selectedItem = mutableStateOf<List<IFigure>>(emptyList())
+   // val selectedItem = MutableStateFlow<List<IFigure>>(emptyList())
 }

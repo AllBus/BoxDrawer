@@ -81,11 +81,11 @@ fun App(vm: State<DrawerViewModel>) {
         derivedStateOf { IFigure.list(figures.value) }
     }
 
-    val selectedItem = remember { vm.value.template.selectedItem }
+    val selectedItem = vm.value.selectedItem.collectAsState(emptyList<IFigure>())
     val checkboxEditor = vm.value.template.checkboxEditor.collectAsState()
 
     LaunchedEffect(tabIndex.value) {
-        selectedItem.value = emptyList()
+        vm.value.setSelected(emptyList())
     }
 
     MaterialTheme {
@@ -196,7 +196,7 @@ fun App(vm: State<DrawerViewModel>) {
                                 )
                                 {
                                     FigureListBox(figureList.value, selectedItem) { f ->
-                                        selectedItem.value = listOf(f)
+                                        vm.value.setSelected(listOf(f))
                                     }
                                 }
 

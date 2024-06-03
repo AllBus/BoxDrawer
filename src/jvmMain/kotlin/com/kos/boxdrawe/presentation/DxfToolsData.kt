@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.figure.FigureExtractor
 import com.kos.figure.FigureEllipse
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.kabeja.dxf.DXFDocument
 import org.kabeja.parser.DXFParser
 import org.kabeja.parser.ParserBuilder
+import turtoise.paint.PaintUtils
 import vectors.Vec2
 import java.io.File
 import java.io.FileInputStream
@@ -49,6 +51,12 @@ class DxfToolsData(override val tools: ITools): SaveFigure {
     suspend fun print(): String {
         val figures = currentFigure.value
         return "f ("+figures.print()+")"
+    }
+
+    suspend fun onPress(point: Vec2, button: Int, scale: Float, selectedItem: MutableStateFlow<List<IFigure>>) {
+        val figure = currentFigure.value
+        val result= PaintUtils.findFiguresAtCursor(point, 1.0, listOf(figure))
+        selectedItem.value = result
     }
 
     override suspend fun createFigure(): IFigure {
@@ -149,4 +157,6 @@ class DxfToolsData(override val tools: ITools): SaveFigure {
 
     val scaleEdit2 = NumericTextFieldState(1.0) { redrawBox() }
     val scaleColor2 = NumericTextFieldState(0.0, digits = 0) { redrawBox() }
+
+ //   val selectedItem = MutableStateFlow<List<IFigure>>(emptyList())
 }

@@ -2,8 +2,11 @@ package com.kos.boxdrawe.presentation
 
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.figure.FigureEmpty
+import com.kos.figure.IFigure
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import vectors.Vec2
@@ -11,12 +14,15 @@ import java.awt.datatransfer.Transferable
 
 class DrawerViewModel {
 
+    private val noneFigure = MutableStateFlow(FigureEmpty).asStateFlow()
+    private val _selectedItem = MutableStateFlow(emptyList<IFigure>())
+
     val tools = Tools()
     val tortoise = TortoiseData(tools)
     val softRez = SoftRezData(tools, tortoise)
     val box = BoxData(tools)
     val grid = GridData(tools)
-    val template = TemplateData(tools)
+    val template = TemplateData(tools, _selectedItem)
     val options = ToolsData(tools, template)
     val bezier = BezierData(tools)
     val bublik = BublikData(tools)
@@ -24,10 +30,10 @@ class DrawerViewModel {
     val dxfData = DxfToolsData(tools)
     val tabIndex = MutableStateFlow(BoxDrawerToolBar.TAB_TORTOISE)
 
-    private val noneFigure = MutableStateFlow(FigureEmpty).asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val figures = tabIndex.flatMapLatest { tab -> when (tab) {
+    val figures = tabIndex.flatMapLatest { tab ->
+        when (tab) {
             BoxDrawerToolBar.TAB_TORTOISE -> tortoise.figures
             BoxDrawerToolBar.TAB_SOFT -> softRez.figures
             BoxDrawerToolBar.TAB_BOX -> box.figures
@@ -39,13 +45,29 @@ class DrawerViewModel {
         }
     }
 
+    val selectedItem: StateFlow<List<IFigure>> get() = _selectedItem
+
+//    @OptIn(ExperimentalCoroutinesApi::class)
+//    val selectedItem: Flow<List<IFigure>> = tabIndex.flatMapLatest { tab ->
+//        when (tab) {
+//            //        BoxDrawerToolBar.TAB_TORTOISE ->
+//            //        BoxDrawerToolBar.TAB_SOFT ->
+//            //        BoxDrawerToolBar.TAB_BOX ->
+//            //        BoxDrawerToolBar.TAB_BUBLIK ->
+//            //        BoxDrawerToolBar.TAB_REKA ->
+//            BoxDrawerToolBar.TAB_TOOLS -> template.selectedItem
+//            BoxDrawerToolBar.TAB_DXF -> dxfData.selectedItem
+//            else -> noneSelectedFigure
+//        }
+//    }
+
     suspend fun copy(): Transferable? {
         val tab = tabIndex.value
         val tf: SaveFigure? = modelAtTab(tab)
         return tf?.copy()
     }
 
-    suspend fun save(fileName:String){
+    suspend fun save(fileName: String) {
         val tab = tabIndex.value
         tools.updateChooserDir(fileName)
         val tf: SaveFigure? = modelAtTab(tab)
@@ -68,11 +90,11 @@ class DrawerViewModel {
         return tf
     }
 
-    suspend fun print():String{
+    suspend fun print(): String {
         val tab = tabIndex.value
 
         return when (tab) {
-            BoxDrawerToolBar.TAB_TORTOISE ->  tortoise.printCommand()
+            BoxDrawerToolBar.TAB_TORTOISE -> tortoise.printCommand()
             BoxDrawerToolBar.TAB_SOFT -> ""
             BoxDrawerToolBar.TAB_BOX -> box.print()
             BoxDrawerToolBar.TAB_BUBLIK -> ""
@@ -89,16 +111,21 @@ class DrawerViewModel {
         println("DrawerViewModel")
     }
 
-    fun loadSettings(){
+    fun loadSettings() {
         tools.loadSettings()
         options.selectSettings(tools.ds())
     }
 
     suspend fun onPress(point: Vec2, button: Int, scale: Float) {
-        when (tabIndex.value){
+        when (tabIndex.value) {
             BoxDrawerToolBar.TAB_REKA -> rectData.onPress(point, button, scale)
             BoxDrawerToolBar.TAB_TOOLS -> template.onPress(point, button, scale)
+            BoxDrawerToolBar.TAB_DXF -> dxfData.onPress(point, button, scale, _selectedItem)
         }
+    }
+
+    fun setSelected(figures: List<IFigure>) {
+        _selectedItem.value = figures
     }
 
 }
