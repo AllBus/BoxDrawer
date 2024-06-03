@@ -19,12 +19,12 @@ data class TemplateForm(
     fun isEmpty(): Boolean = list.isEmpty()
 
     override fun print(): TortoiseParserStackItem {
-        val inner = TortoiseParserStackBlock('(', list.map { it.print() })
+        val inner = TortoiseParserStackBlock('(', "items", list.map { it.print() })
         val tp = TortoiseParserStackBlock()
         tp.add("form")
-        tp.add("title", title)
+        tp.add("title", "[$title]")
         tp.add("arg", argumentName)
-        tp.add("items", inner)
+        tp.add(inner)
         return tp
     }
 
@@ -62,12 +62,12 @@ data class TemplateForm(
 
     fun replace(arg: String, item: TemplateItem): TemplateForm {
         val a = arg.split(".").drop(1)
-  //      println("Start insert $a from ${this.argumentName} and ${item.argumentName}")
+        //      println("Start insert $a from ${this.argumentName} and ${item.argumentName}")
 
         var inserted = false
 
         fun insertItem(b: List<String>, item: TemplateItem): TemplateItem? {
-        //    println("insert $inserted $b")
+            //    println("insert $inserted $b")
             if (inserted)
                 return null
 
@@ -91,10 +91,10 @@ data class TemplateForm(
 
             val ar = b.first()
             val next = b.drop(1)
-          //  println("remove $ar from ${form.argumentName}")
+            //  println("remove $ar from ${form.argumentName}")
             return form.copy(
                 list = form.list.mapNotNull { f ->
-               //     println("check $ar with ${f.argumentName}")
+                    //     println("check $ar with ${f.argumentName}")
                     if (f.argumentName == ar) {
                         if (f is TemplateForm) {
                             if (next.isEmpty()) {
@@ -108,9 +108,10 @@ data class TemplateForm(
                     } else {
                         f
                     }
-                } + listOfNotNull(insertItem(b.dropLast(1),  item))
+                } + listOfNotNull(insertItem(b.dropLast(1), item))
             )
         }
+
         val t = removeInner(a, this)
         return t.copy(list = t.list)
     }
@@ -129,12 +130,12 @@ data class TemplateItemMulti(
         get() = 1
 
     override fun print(): TortoiseParserStackItem {
-        val inner = TortoiseParserStackBlock('(', listOf(data.print()))
+        val inner = TortoiseParserStackBlock('(', "item", listOf(data.print()))
         val tp = TortoiseParserStackBlock()
         tp.add("multi")
-        tp.add("title", title)
+        tp.add("title", "[$title]")
         tp.add("arg", argumentName)
-        tp.add("item", inner)
+        tp.add(inner)
         return tp
     }
 }
@@ -150,7 +151,7 @@ data class TemplateItemInt(
         val tp = TortoiseParserStackBlock()
         tp.add("int")
         tp.add(argumentName)
-        tp.add(title)
+        tp.add("[$title]")
         return tp
     }
 }
@@ -167,7 +168,7 @@ data class TemplateItemNumeric(
         val tp = TortoiseParserStackBlock()
         tp.add("1")
         tp.add(argumentName)
-        tp.add(title)
+        tp.add("[$title]")
         return tp
     }
 }
@@ -184,7 +185,7 @@ data class TemplateItemSize(
         val tp = TortoiseParserStackBlock()
         tp.add("2")
         tp.add(argumentName)
-        tp.add(title)
+        tp.add("[$title]")
         return tp
     }
 }
@@ -201,7 +202,7 @@ data class TemplateItemTriple(
         val tp = TortoiseParserStackBlock()
         tp.add("3")
         tp.add(argumentName)
-        tp.add(title)
+        tp.add("[$title]")
         return tp
     }
 }
@@ -218,7 +219,7 @@ data class TemplateItemRect(
         val tp = TortoiseParserStackBlock()
         tp.add("4")
         tp.add(argumentName)
-        tp.add(title)
+        tp.add("[$title]")
         return tp
     }
 }
@@ -235,7 +236,7 @@ data class TemplateItemCheck(
         val tp = TortoiseParserStackBlock()
         tp.add("check")
         tp.add(argumentName)
-        tp.add(title)
+        tp.add("[$title]")
         return tp
     }
 }
@@ -252,7 +253,7 @@ data class TemplateItemString(
         val tp = TortoiseParserStackBlock()
         tp.add("text")
         tp.add(argumentName)
-        tp.add(title)
+        tp.add("[$title]")
         return tp
     }
 }
@@ -269,7 +270,7 @@ data class TemplateItemLabel(
         val tp = TortoiseParserStackBlock()
         tp.add("label")
         tp.add(argumentName)
-        tp.add(title)
+        tp.add("[$title]")
         return tp
     }
 }

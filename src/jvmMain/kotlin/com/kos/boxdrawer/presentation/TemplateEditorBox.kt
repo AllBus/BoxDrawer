@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -28,6 +30,8 @@ import kotlin.reflect.KFunction3
 @Composable
 fun TemplateEditorBox(
     menu: State<TemplateInfo>,
+    figureLine: MutableState<String>,
+    figureName: MutableState<String>,
     templateGenerator: TemplateGeneratorListener,
 ) {
 
@@ -58,11 +62,10 @@ fun TemplateEditorBox(
             val name = remember { mutableStateOf("") }
             val argument = remember { mutableStateOf("") }
 
-
             Row(
                 Modifier.background(ThemeColors.editorBackground, ThemeColors.figureListItemShape)
             ) {
-                TempleteEditorActionMenu(createItem, name, argument)
+                TempleteEditorActionMenu(createItem, name, argument, figureLine, figureName)
             }
         }
     }
@@ -72,7 +75,9 @@ fun TemplateEditorBox(
 private fun TempleteEditorActionMenu(
     createItem: KFunction3<String, String, String, Unit>,
     name: MutableState<String>,
-    argument: MutableState<String>
+    argument: MutableState<String>,
+    figureLine: MutableState<String>,
+    figureName: MutableState<String>,
 ) {
     Column(modifier = Modifier.width(200.dp)) {
         Label("Ввод чисел")
@@ -114,11 +119,20 @@ private fun TempleteEditorActionMenu(
 //                }
     }
     Column(modifier = Modifier.width(300.dp)) {
+        Label("Новое поле:")
         SimpleEditText("Название", "", name) { v ->
             name.value = v
         }
         SimpleEditText("Аргумент", "", argument) { v ->
             argument.value = v
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Label("Рисование:")
+        SimpleEditText("Название", "", figureName) { v ->
+            figureName.value = v
+        }
+        SimpleEditText("Фигура", "", figureLine) { v ->
+            figureLine.value = v
         }
     }
 }

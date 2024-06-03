@@ -126,6 +126,8 @@ fun App(vm: State<DrawerViewModel>) {
                                 ) {
                                     TemplateEditorBox(
                                         menu = menu,
+                                        figureLine = remember(vm.value) { vm.value.template.figureLine },
+                                        figureName = remember(vm.value) { vm.value.template.figureName },
                                         templateGenerator = vm.value.template.templateGenerator,
                                     )
                                 }
@@ -185,14 +187,13 @@ fun App(vm: State<DrawerViewModel>) {
 
                                 AnimatedVisibility(
                                     tabIndex.value == BoxDrawerToolBar.TAB_TOOLS && !checkboxEditor.value ||
-                                            tabIndex.value == BoxDrawerToolBar.TAB_DXF
-                                    ,
-                                        enter = expandHorizontally(
-                                            expandFrom = Alignment.Start
-                                        ),
-                                        exit = shrinkHorizontally(
-                                            shrinkTowards = Alignment.Start
-                                        )
+                                            tabIndex.value == BoxDrawerToolBar.TAB_DXF,
+                                    enter = expandHorizontally(
+                                        expandFrom = Alignment.Start
+                                    ),
+                                    exit = shrinkHorizontally(
+                                        shrinkTowards = Alignment.Start
+                                    )
                                 )
                                 {
                                     FigureListBox(figureList.value, selectedItem) { f ->

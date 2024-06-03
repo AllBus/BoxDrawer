@@ -1,5 +1,7 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.TemplateGeneratorListener
@@ -49,6 +51,8 @@ class TemplateData(override val tools: ITools, val selectedItem: MutableStateFlo
     val memory = TemplateMemory()
 
     val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
+    val figureLine = mutableStateOf("")
+    val figureName = mutableStateOf("")
 
 
     val templateEditor =
@@ -154,7 +158,8 @@ class TemplateData(override val tools: ITools, val selectedItem: MutableStateFlo
 
     suspend fun print(): String {
         if (checkboxEditor.value) {
-            return templateEditor.value.form.print().line
+            return TemplateAlgorithm.constructBlock(figureName.value, templateEditor.value.form, memory, figureLine.value)
+
         } else {
 
 //            if (dxfPreview.value){

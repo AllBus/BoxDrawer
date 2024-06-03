@@ -77,12 +77,7 @@ object TortoiseParser {
                     items.blocks.firstOrNull()?.innerLine.orEmpty()
                 )
 
-                "template" -> TemplateAlgorithm(
-                    name = f.getOrElse(1) { "figure" },
-                    line = items.getBlockAtName("figure") ?: TortoiseParserStackBlock(),
-                    default = items.getBlockAtName("default") ?: TortoiseParserStackBlock(),
-                    template = items.getBlockAtName("form") ?: TortoiseParserStackBlock(),
-                )
+                "template" -> TemplateAlgorithm.create(f.getOrElse(1) { "figure" }, items)
 
                 "reka" -> RekaAlgorithm(
                     items, f.drop(1).dropLast(1).toTypedArray()

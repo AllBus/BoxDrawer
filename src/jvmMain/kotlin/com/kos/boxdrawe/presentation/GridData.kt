@@ -60,6 +60,7 @@ class GridData(override val tools: ITools):SaveFigure {
                 cad.setColor(x, y, (c - '0'))
             }
         }
+        redraw()
     }
 
     fun print():String {

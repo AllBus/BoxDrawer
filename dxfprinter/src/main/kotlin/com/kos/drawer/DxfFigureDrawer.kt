@@ -98,7 +98,6 @@ class DxfFigureDrawer(
         startAngle: Double,
         sweepAngle: Double
     ) {
-        println("Ellipse ${radius} ${startAngle} ${sweepAngle}")
         if (sweepAngle == 0.0 || abs(sweepAngle)>=360.0) {
             if (radius == radius2) {
                 g.drawCircle(center, radius)

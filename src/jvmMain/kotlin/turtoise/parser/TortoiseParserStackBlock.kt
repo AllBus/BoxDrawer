@@ -7,7 +7,8 @@ class TortoiseParserStackBlock(
     val skobka: Char = '(',
 ) : TortoiseParserStackItem() {
 
-    constructor(skobka: Char, items: List<TortoiseParserStackItem>) : this(skobka) {
+    constructor(skobka: Char, name: String, items: List<TortoiseParserStackItem>) : this(skobka) {
+        add(name)
         addItems(items)
     }
 
@@ -83,8 +84,9 @@ class TortoiseParserStackBlock(
     fun add(name: String, argument: TortoiseParserStackItem) {
         add(
             TortoiseParserStackBlock(
-                '(', listOf(
-                    TortoiseParserStackArgument(MemoryKey(name)),
+                '(',
+                name,
+                listOf(
                     argument
                 )
             )
