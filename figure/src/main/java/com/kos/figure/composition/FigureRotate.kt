@@ -21,7 +21,7 @@ class FigureRotate(
     }
 
     override fun rect(): BoundingRectangle {
-        return figure.rect().translate(pivot)
+        return figure.rect()
     }
 
     override fun translate(translateX: Double, translateY: Double): IFigure {

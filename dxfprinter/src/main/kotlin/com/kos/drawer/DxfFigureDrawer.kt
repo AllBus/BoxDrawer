@@ -64,6 +64,10 @@ class DxfFigureDrawer(
         g.drawSpline(3, controls, m, false)
     }
 
+    override fun drawText(text: String) {
+        g.drawString(text, 0.0,0.0)
+    }
+
     override fun save() {
         transforms.push(g.transform)
     }

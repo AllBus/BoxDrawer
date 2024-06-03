@@ -30,6 +30,7 @@ import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.rememberTextMeasurer
 import com.kos.boxdrawe.drawer.drawFigures
 import com.kos.boxdrawe.presentation.GridData
 import com.kos.boxdrawe.widget.toVec2
@@ -59,6 +60,7 @@ fun DisplayGrid(gridData: GridData) {
     val grid = gridData.cad
 
     val redrawEvent = gridData.redrawEvent.collectAsState()
+    val measurer = rememberTextMeasurer()
 
     val scale = remember{1.0}
     var pos by rememberSaveable("DisplayyGridOffset") { mutableStateOf(Offset.Zero) }
@@ -203,7 +205,7 @@ fun DisplayGrid(gridData: GridData) {
                             sc,
                             Offset(0.0f, 0.0f)
                         ) {
-                            drawFigures(figure.value, emptyList())
+                            drawFigures(figure.value, emptyList(), measurer)
                         }
 
                 }

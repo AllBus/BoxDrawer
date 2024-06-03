@@ -6,12 +6,14 @@ import com.kos.figure.FigureCircle
 import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
+import com.kos.figure.FigureText
 import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
 import com.kos.figure.composition.FigureColor
 import org.jetbrains.skia.Color
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.MemoryKey
+import turtoise.parser.TortoiseParserStackBlock
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.asin
@@ -281,6 +283,17 @@ abstract class TortoiseSplash : TortoiseBase() {
                         }
                     }
                 }
+            }
+            "print" -> {
+
+               val text = (1 until com.size).mapNotNull{ i -> com.takeBlock(i)}.map {block ->
+                    if (block is TortoiseParserStackBlock && block.skobka!='('){
+                        block.innerLine
+                    } else{
+                        memory.value(block.argument, 0.0).toString()
+                    }
+                }.joinToString(" ")
+                builder.addProduct(FigureText(text))
             }
 
             else -> {

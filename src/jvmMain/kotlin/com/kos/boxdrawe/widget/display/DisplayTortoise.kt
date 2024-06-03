@@ -24,6 +24,7 @@ import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntSize
 import com.kos.boxdrawe.drawer.drawFigures
 import com.kos.boxdrawe.widget.toOffset
@@ -48,7 +49,7 @@ fun DisplayTortoise(
 
 //    var pos by rememberSaveable("DisplayTortoiseOffset") { mutableStateOf(Offset.Zero) }
     val displaySize = remember { mutableStateOf(IntSize(0, 0)) }
-
+    val measurer = rememberTextMeasurer()
 
     val selectedType = remember { mutableIntStateOf(0) }
 
@@ -150,7 +151,7 @@ fun DisplayTortoise(
                     }
                 }
             ) {
-                this.drawFigures(figures,  selectedItem.value)
+                this.drawFigures(figures,  selectedItem.value, measurer)
             }
         })
 

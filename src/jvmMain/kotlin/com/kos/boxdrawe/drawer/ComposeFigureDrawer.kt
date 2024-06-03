@@ -3,8 +3,19 @@ package com.kos.boxdrawe.drawer
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Matrix
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PointMode
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.graphics.rotate
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
 import com.kos.drawer.IFigureGraphics
 import vectors.Vec2
 import kotlin.math.abs
@@ -13,6 +24,7 @@ class ComposeFigureDrawer(
     private val scope: DrawScope,
     var penColor: Color = Color.Gray,
     var style: Stroke = Stroke(width = 1.0f),
+    val measurer: TextMeasurer,
 ) : IFigureGraphics {
 
     override fun drawLine(a: Vec2, b: Vec2) {
@@ -22,7 +34,12 @@ class ComposeFigureDrawer(
     }
 
     override fun drawRect(leftTop: Vec2, size: Vec2) {
-        scope.drawRect(penColor, leftTop.vec, Size(size.x.toFloat(), size.y.toFloat()), style = style)
+        scope.drawRect(
+            penColor,
+            leftTop.vec,
+            Size(size.x.toFloat(), size.y.toFloat()),
+            style = style
+        )
     }
 
     override fun drawPolyline(points: List<Vec2>) {
@@ -46,7 +63,13 @@ class ComposeFigureDrawer(
         scope.drawPath(p, penColor, style = style)
     }
 
-    override fun drawArc(center: Vec2, radius: Double, radiusMinor: Double, startAngle: Double, sweepAngle: Double) {
+    override fun drawArc(
+        center: Vec2,
+        radius: Double,
+        radiusMinor: Double,
+        startAngle: Double,
+        sweepAngle: Double
+    ) {
         val p = Path()
         drawArc(p, center, radius, radiusMinor, startAngle, sweepAngle)
         scope.drawPath(p, penColor, style = style)
@@ -60,6 +83,14 @@ class ComposeFigureDrawer(
         val p = Path()
         splinePoints(p, points)
         scope.drawPath(p, penColor, style = style)
+    }
+
+    override fun drawText(text: String) {
+        scope.drawText(
+            textMeasurer = measurer,
+            text = AnnotatedString(text),
+            style = TextStyle.Default.copy(color = penColor)
+        )
     }
 
     override fun save() {
@@ -87,7 +118,7 @@ class ComposeFigureDrawer(
     }
 
     override fun transform(m: vectors.Matrix, actions: () -> Unit) {
-        scope.withTransform({transform(Matrix(m.values))}){
+        scope.withTransform({ transform(Matrix(m.values)) }) {
             actions()
         }
     }
@@ -96,7 +127,7 @@ class ComposeFigureDrawer(
         penColor = Color(color).copy(alpha = 1.0f)
     }
 
-    override fun getColor():Int {
+    override fun getColor(): Int {
         return penColor.toArgb()
     }
 
@@ -111,12 +142,21 @@ class ComposeFigureDrawer(
         return points.map { it.vec }
     }
 
-    private fun drawArc(p: Path, center: Vec2, radius: Double, radius2: Double, startAngle: Double, sweepAngle: Double) {
+    private fun drawArc(
+        p: Path,
+        center: Vec2,
+        radius: Double,
+        radius2: Double,
+        startAngle: Double,
+        sweepAngle: Double
+    ) {
         val rect = Rect(
-            (center.x - radius).toFloat(), (center.y - radius2).toFloat(), (center.x + radius).toFloat(),
+            (center.x - radius).toFloat(),
+            (center.y - radius2).toFloat(),
+            (center.x + radius).toFloat(),
             (center.y + radius2).toFloat()
         )
-        if (sweepAngle == 0.0 || abs(sweepAngle)>=360.0)
+        if (sweepAngle == 0.0 || abs(sweepAngle) >= 360.0)
             p.addOval(rect)
         else
             p.addArc(
@@ -140,7 +180,14 @@ class ComposeFigureDrawer(
                 val c = points[r + 1]
                 val d = points[r + 2]
 
-                p.cubicTo(b.x.toFloat(), b.y.toFloat(), c.x.toFloat(), c.y.toFloat(), d.x.toFloat(), d.y.toFloat())
+                p.cubicTo(
+                    b.x.toFloat(),
+                    b.y.toFloat(),
+                    c.x.toFloat(),
+                    c.y.toFloat(),
+                    d.x.toFloat(),
+                    d.y.toFloat()
+                )
             }
         }
     }
@@ -153,7 +200,14 @@ class ComposeFigureDrawer(
                 val c = points[r + 1]
                 val d = points[r + 2]
 
-                p.cubicTo(b.x.toFloat(), b.y.toFloat(), c.x.toFloat(), c.y.toFloat(), d.x.toFloat(), d.y.toFloat())
+                p.cubicTo(
+                    b.x.toFloat(),
+                    b.y.toFloat(),
+                    c.x.toFloat(),
+                    c.y.toFloat(),
+                    d.x.toFloat(),
+                    d.y.toFloat()
+                )
             }
         }
     }

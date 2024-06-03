@@ -7,6 +7,7 @@ import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
+import com.kos.figure.FigureText
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureArray
 import com.kos.figure.composition.FigureColor
@@ -20,6 +21,7 @@ import org.kabeja.dxf.DXFLine
 import org.kabeja.dxf.DXFPoint
 import org.kabeja.dxf.DXFPolyline
 import org.kabeja.dxf.DXFSpline
+import org.kabeja.dxf.DXFText
 import org.kabeja.dxf.helpers.Point
 import vectors.Vec2
 
@@ -134,6 +136,11 @@ class FigureExtractor {
                 )
             } ?: FigureEmpty
         }
+        is DXFText -> {
+            val t = entry.text
+            FigureText(t)
+        }
+
 
         else -> FigureEmpty
     }

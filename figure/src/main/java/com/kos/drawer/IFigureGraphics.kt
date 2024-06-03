@@ -19,6 +19,7 @@ interface IFigureGraphics {
     fun drawCircle(center: Vec2, radius: Double)
 
     fun drawSpline(points: List<Vec2>)
+    fun drawText(text:String)
     fun save()
     fun translate(x: Double, y: Double)
     fun scale(scaleX: Double, scaleY: Double)
@@ -30,4 +31,6 @@ interface IFigureGraphics {
     fun setColor(color:Int)
 
     fun getColor():Int
+
+
 }

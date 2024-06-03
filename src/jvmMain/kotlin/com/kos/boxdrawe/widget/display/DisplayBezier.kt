@@ -27,6 +27,7 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.isAltPressed
 import androidx.compose.ui.input.pointer.isCtrlPressed
 import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.text.rememberTextMeasurer
 import com.kos.boxdrawe.drawer.drawFigures
 import com.kos.boxdrawe.presentation.BezierData
 import com.kos.boxdrawe.widget.toOffset
@@ -62,7 +63,7 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
 
     var rotation by rememberSaveable("DisplayBezierRotation") { mutableStateOf(0f) }
     var pos by rememberSaveable("DisplayBezierOffset") { mutableStateOf(Offset.Zero) }
-
+    val measurer = rememberTextMeasurer()
     val scale = displayScale.value
 
     Canvas(modifier = Modifier.fillMaxSize().clipToBounds().onPointerEvent(PointerEventType.Press) {
@@ -171,7 +172,7 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
                 )
             }
 
-            this.drawFigures(figure.value, emptyList())
+            this.drawFigures(figure.value, emptyList(), measurer)
         }
     }
 }
