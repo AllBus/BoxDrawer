@@ -22,7 +22,7 @@ object TemplateCreator {
     private fun createForm(block: TortoiseParserStackBlock): TemplateForm {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
-        val argument = block.getBlockAtName("arg")?.argument.orEmpty().name
+        val argument = block.getBlockAtName("arg")?.value.orEmpty().name
 
         val items = block.getBlockAtName("items")?.blocks?.mapNotNull { b ->
             createItem(b)
@@ -41,7 +41,7 @@ object TemplateCreator {
     fun createMulti(block: TortoiseParserStackBlock): TemplateItemMulti? {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
-        val argument = block.getBlockAtName("arg")?.argument.orEmpty().name
+        val argument = block.getBlockAtName("arg")?.value.orEmpty().name
 
         return block.getBlockAtName("item")?.blocks?.firstOrNull()?.let { b ->
             createItem(b)
