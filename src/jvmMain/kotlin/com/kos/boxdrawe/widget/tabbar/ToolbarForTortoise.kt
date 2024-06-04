@@ -31,12 +31,13 @@ fun ToolbarForTortoise(vm: TortoiseData) {
         Column(
             modifier = Modifier.weight(weight = 2f, fill = true).padding(end = 8.dp)
         ) {
-            EditTextField("Фигуры", text, true) {
-                vm.findHelp(vm.text.value.text, vm.text.value.selection)
-                vm.createTortoise()
-            }
+            EditTextField("Фигуры", text, true,
+                onMove = { tv ->
+                    vm.findHelp(vm.text.value.text, vm.text.value.selection)
+                }, onChange = {
+                    vm.createTortoise()
+            })
         }
-
     }
 }
 

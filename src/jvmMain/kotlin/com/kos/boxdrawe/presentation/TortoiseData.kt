@@ -81,7 +81,7 @@ class TortoiseData(override val tools: ITools) : SaveFigure {
         val p = text.lastIndexOfAny(helpSeparator, s) + 1
         val e = Math.min(text.length - 1, text.indexOfAny(helpSpaceSeparator, p + 1))
 
-        var comEnd = s - 1
+        var comEnd = s
         while (comEnd >= 0 && comEnd < text.length) {
             if (text[comEnd] in helpSpaceSeparator) {
                 break

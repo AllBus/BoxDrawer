@@ -110,7 +110,8 @@ fun EditTextField(
     title: String,
     value: MutableState<TextFieldValue>,
     enabled: Boolean = true,
-    onChange: (TextFieldValue) -> Unit
+    onChange: (TextFieldValue) -> Unit,
+    onMove: (TextFieldValue) -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth()
@@ -120,6 +121,7 @@ fun EditTextField(
             onValueChange = {
                 val change = (value.value.text != it.text)
                 value.value = it
+                onMove(it)
                 if (change) {
                     onChange(it)
                 }
