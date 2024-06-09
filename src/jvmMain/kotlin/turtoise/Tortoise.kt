@@ -358,6 +358,7 @@ class Tortoise() : TortoiseSplash() {
                     }
                     if (points.size > 1) {
                         builder.add(FigurePolyline(points.toList()))
+                        state.moveTo(points.last())
                     }
                 }
 

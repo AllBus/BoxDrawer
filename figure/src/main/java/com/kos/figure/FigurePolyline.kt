@@ -133,10 +133,10 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
     }
 
     override fun positionInPath(edge: Int, delta: Double): PointWithNormal {
-        if (points.size>=2){
-            if (0 <= edge && edge < points.size-1){
+        if (points.size >= 2) {
+            if (0 <= edge && edge < points.size - 1) {
                 val pred = points[edge]
-                val next = points[edge+1]
+                val next = points[edge + 1]
                 val p = Vec2.lerp(pred, next, delta)
                 return PointWithNormal.from(p, pred, next)
             }
@@ -160,14 +160,14 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
     }
 
     override fun pathLength(): Double {
-        return length.lastOrNull()?:0.0
+        return length.lastOrNull() ?: 0.0
     }
 
-    override fun pathLength(edge:Int): Double {
-        if (points.size>=2){
-            if (0 <= edge && edge < points.size-1){
+    override fun pathLength(edge: Int): Double {
+        if (points.size >= 2) {
+            if (0 <= edge && edge < points.size - 1) {
                 val pred = points[edge]
-                val next = points[edge+1]
+                val next = points[edge + 1]
                 val p = Vec2.distance(pred, next)
                 return p
             }
@@ -184,7 +184,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
             "Полилиния ${points.size}"
     }
 
-    override fun edgeCount(): Int = points.size-1
+    override fun edgeCount(): Int = points.size - 1
 
     fun isClose(): Boolean {
         return if (points.size > 3) points.first() == points.last() else false
@@ -195,9 +195,9 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
     }
 
     override fun path(edge: Int): IFigure {
-        if (0 <= edge && edge < points.size-1){
+        if (0 <= edge && edge < points.size - 1) {
             val pred = points[edge]
-            val next = points[edge+1]
+            val next = points[edge + 1]
             return FigureLine(pred, next)
         }
 
@@ -205,10 +205,64 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
     }
 
     override fun duplicationAtNormal(h: Double): IFigure {
-        val pp = points.zipWithNext().flatMap { (pred, next) ->
+        if (points.size == 2) {
+            val pred = points[0]
+            val next = points[1]
             val n = Vec2.normal(pred, next)
-            listOf(pred+n*h, next+n*h)
-        }
-        return FigurePolyline(pp)
+            return FigureLine(
+                pred + n * h, next + n * h
+            )
+        } else
+            if (points.size >= 3) {
+                var pred = points[0]
+                var next = points[1]
+                val res = mutableListOf<Vec2>()
+                if (isClose()) {
+                    pred = points[points.size - 2]
+                    next = points[0]
+                    val n = Vec2.normal(pred, next)
+                    val a = pred + n * h
+                    val b = next + n * h
+                    pred = points[0]
+                    next = points[1]
+                    val n2 = Vec2.normal(pred, next)
+                    val c = pred + n2 * h
+                    val d = next + n2 * h
+                    Vec2.intersection(a, b, c, d)?.let { ins ->
+                        res.add(ins)
+                    } ?: res.add(pred + n * h)
+                } else {
+                    pred = points[0]
+                    next = points[1]
+                    val n = Vec2.normal(pred, next)
+                    res.add(pred + n * h)
+                }
+
+                for (i in 1 until points.size - 1) {
+                    val start = pred
+                    pred = points[i + 0]
+                    next = points[i + 1]
+
+                    val n = Vec2.normal(start, pred)
+                    val a = start + n * h
+                    val b = pred + n * h
+
+                    val n2 = Vec2.normal(pred, next)
+                    val c = pred + n2 * h
+                    val d = next + n2 * h
+                    Vec2.intersection(a, b, c, d)?.let { ins ->
+                        res.add(ins)
+                    }
+                }
+                if (isClose()){
+                    res.add(res.first())
+                } else {
+                    val n2 = Vec2.normal(pred, next)
+                    val d = next + n2 * h
+                    res.add(d)
+                }
+                return FigurePolyline(res)
+            } else
+                return FigureEmpty
     }
 }

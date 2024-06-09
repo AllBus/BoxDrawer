@@ -391,5 +391,13 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             bl[3] = br[0]
             return bezierSingleLength(bl) + bezierSingleLength(br)
         }
+
+        fun intersection(a:Vec2, b:Vec2, c:Vec2, d:Vec2): Vec2?{
+            val bt = b - a
+            val zn = (a.x -b.x)*(c.y-d.y) - (a.y-b.y)*(c.x-d.x)
+            if (abs(zn)<0.0001) return null
+            val t = ((a.x-c.x)*(c.y-d.y)-(a.y-c.y)*(c.x-d.x)) / zn
+            return a+bt*t
+        }
     }
 }

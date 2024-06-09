@@ -498,7 +498,17 @@ abstract class TortoiseBase {
         var e = edge
         for ( p in paths){
             if (p.edgeCount()> e){
-                return p.positionInPath(e, delta)
+                return when {
+                    delta in 0.0..1.0 -> {
+                        p.positionInPath(e, delta)
+                    }
+                    delta > 1.0 -> {
+                        p.positionInPathAtMM(e, delta)
+                    }
+                    else -> {
+                        p.positionInPathAtMM(e, p.pathLength(e) -delta)
+                    }
+                }
             } else {
                 e -= p.edgeCount()
             }
@@ -517,8 +527,6 @@ abstract class TortoiseBase {
         }
         return FigureEmpty
     }
-
-
 
     protected fun arcInTwoPoint(p: Vec2, z: Vec2, radius: Double): IFigure {
         val distance2 = Vec2.distance(p, z) / 2

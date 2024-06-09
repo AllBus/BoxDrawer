@@ -49,6 +49,7 @@ abstract class TortoiseSplash : TortoiseBase() {
             }
 
             "arc" -> {
+                /* (radius pointStart pointEnd)+ */
                 val cs = com.size
                 val figures = FigureList(
                     (1 until cs).map { i -> com.takeBlock(i) }.map { block ->
@@ -92,52 +93,7 @@ abstract class TortoiseSplash : TortoiseBase() {
             "rline",
             "roundline" -> {
 
-                val cr = Vec2.Zero
-                val rest = mutableListOf<IFigure>()
-
-                val i = 1
-                val r = com[i, memory]
-                val ax = com[i + 1, memory]
-                val ay = com[i + 2, memory]
-                val ll = if (com.size > 4) com[i + 3, memory] else null
-                val aa = Vec2(ax, ay)
-
-                val aap = if (r > 0) {
-                    val preda = sign(ay) * 90
-                    val cc = Vec2(0.0, sign(ay) * r)
-
-                    val al = (aa - cc).angle
-                    val hl = Vec2.distance(cc, aa)
-                    val rv = asin(r / hl) * sign(ay)
-                    val alp = al + rv
-                    val p = cc + Vec2(0.0, r).rotate((if (ay > 0) PI + alp else alp))
-
-                    //   println (" ${ rv *180/ PI} : ${al*PI/180} : ${p} ${hl} ${r}")
-                    //rest += FigureLine(p + cr, cc + cr)
-
-                    val ap = if (ll == null) {
-                        aa
-                    } else {
-                        p + Vec2.normalize(p, aa) * ll
-                    }
-                    if (ap != p) {
-                        rest += FigureLine(p + cr, cr + ap)
-                    }
-
-                    rest += FigureCircle(cr + cc, r, preda, -alp * 180 / PI)
-                    ap
-                } else {
-                    val ap = if (ll == null) {
-                        aa
-                    } else {
-                        Vec2.normalize(Vec2.Zero, aa) * ll
-                    }
-
-                    if (ap != Vec2.Zero) {
-                        rest += FigureLine(cr, ap + cr)
-                    }
-                    ap
-                }
+                val (rest, aap) = roundLine(com, memory)
 
                 builder.addProduct(FigureList(rest))
                 builder.state.move(aap.x, aap.y)
@@ -171,6 +127,7 @@ abstract class TortoiseSplash : TortoiseBase() {
             }
 
             "paz" -> {
+                /* (Figure) (edge delta le he)* */
                 com.takeBlock(1)?.let { block ->
                     figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
                         val paths = f.list().filterIsInstance(IFigurePath::class.java)
@@ -209,6 +166,7 @@ abstract class TortoiseSplash : TortoiseBase() {
             }
 
             "stena" -> {
+                /* (Figure) he (edge he)* */
                 com.takeBlock(1)?.let { block ->
                     figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
                         val paths = f.list().filterIsInstance(IFigurePath::class.java)
@@ -269,27 +227,30 @@ abstract class TortoiseSplash : TortoiseBase() {
                     figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
                         val paths = f.list().filterIsInstance(IFigurePath::class.java)
                         if (paths.isNotEmpty()) {
-                            val h = com.takeBlock(2)?.let { item ->
-                                valueAt(item, 0, ds.boardWeight, memory)
-                            } ?: ds.boardWeight
+                            (2 until com.size).map { ind ->
+                                val h = com.takeBlock(ind)?.let { item ->
+                                    valueAt(item, 0, ds.boardWeight, memory)
+                                } ?: ds.boardWeight
 
-                            builder.addProduct(
-                                FigureList(
-                                    paths.map { p ->
-                                        p.duplicationAtNormal(h)
-                                    }
+                                builder.addProduct(
+                                    FigureList(
+                                        paths.map { p ->
+                                            p.duplicationAtNormal(h)
+                                        }
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }
             }
-            "print" -> {
 
-               val text = (1 until com.size).mapNotNull{ i -> com.takeBlock(i)}.map {block ->
-                    if (block is TortoiseParserStackBlock && block.skobka!='('){
+            "print" -> {
+                /* [text] | (variable) */
+                val text = (1 until com.size).mapNotNull { i -> com.takeBlock(i) }.map { block ->
+                    if (block is TortoiseParserStackBlock && block.skobka != '(') {
                         block.innerLine
-                    } else{
+                    } else {
                         memory.value(block.argument, 0.0).toString()
                     }
                 }.joinToString(" ")
@@ -299,6 +260,59 @@ abstract class TortoiseSplash : TortoiseBase() {
             else -> {
             }
         }
+    }
+
+    private fun roundLine(
+        com: TortoiseCommand,
+        memory: TortoiseMemory
+    ): Pair<MutableList<IFigure>, Vec2> {
+        val cr = Vec2.Zero
+        val rest = mutableListOf<IFigure>()
+
+        val i = 1
+        val r = com[i, memory]
+        val ax = com[i + 1, memory]
+        val ay = com[i + 2, memory]
+        val ll = if (com.size > 4) com[i + 3, memory] else null
+        val aa = Vec2(ax, ay)
+
+        val aap = if (r > 0) {
+            val preda = sign(ay) * 90
+            val cc = Vec2(0.0, sign(ay) * r)
+
+            val al = (aa - cc).angle
+            val hl = Vec2.distance(cc, aa)
+            val rv = asin(r / hl) * sign(ay)
+            val alp = al + rv
+            val p = cc + Vec2(0.0, r).rotate((if (ay > 0) PI + alp else alp))
+
+            //   println (" ${ rv *180/ PI} : ${al*PI/180} : ${p} ${hl} ${r}")
+            //rest += FigureLine(p + cr, cc + cr)
+
+            val ap = if (ll == null) {
+                aa
+            } else {
+                p + Vec2.normalize(p, aa) * ll
+            }
+            if (ap != p) {
+                rest += FigureLine(p + cr, cr + ap)
+            }
+
+            rest += FigureCircle(cr + cc, r, preda, -alp * 180 / PI)
+            ap
+        } else {
+            val ap = if (ll == null) {
+                aa
+            } else {
+                Vec2.normalize(Vec2.Zero, aa) * ll
+            }
+
+            if (ap != Vec2.Zero) {
+                rest += FigureLine(cr, ap + cr)
+            }
+            ap
+        }
+        return Pair(rest, aap)
     }
 
 }

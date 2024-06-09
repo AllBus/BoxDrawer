@@ -35,7 +35,18 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             TortoiseCommand.TURTOISE_LINE,
             "d+",
             "нарисовать длиной d. Последующие значения ресуют перпендикулярно"
-        ), helpName(
+        ),
+        helpName(
+            TortoiseCommand.TURTOISE_POLYLINE,
+            "x y +",
+            "Построение полилинии по координатам относительно текущей"
+        ),
+        helpName(
+            TortoiseCommand.TURTOISE_LINE_WITH_ANGLE,
+            "d a d +",
+            "Построение полилинии задаётся длина линии и угол между ними"
+        ),
+        helpName(
             TortoiseCommand.TURTOISE_CLOSE,
             "",
             "закрыть многоугольник"
