@@ -15,11 +15,16 @@ import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.MemoryKey
 import turtoise.parser.TortoiseParserStackBlock
 import vectors.Vec2
+import java.text.DecimalFormat
 import kotlin.math.PI
 import kotlin.math.asin
 import kotlin.math.sign
 
+
 abstract class TortoiseSplash : TortoiseBase() {
+
+    protected var printFormat = DecimalFormat("0.####")
+
     protected fun figuresSplash(
         builder: TortoiseBuilder,
         com: TortoiseCommand,
@@ -170,28 +175,19 @@ abstract class TortoiseSplash : TortoiseBase() {
                 com.takeBlock(1)?.let { block ->
                     figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
                         val paths = f.list().filterIsInstance(IFigurePath::class.java)
-//                        val v = (2  until com.size).mapNotNull { j ->
-                        val h = com.takeBlock(2)?.let { item ->
-                            memory.value(item.get(0) ?: MemoryKey.ZERO, 0.0)
-                            //val d = memory.value(item.get(1)?: ZERO, 0.0)
-//                                val zigle = item.get(2)?.let{ memory.value(it, 15.0)} ?: 15.0
-//                                val zighe = item.get(3)?.let{ memory.value(it, ds.boardWeight)} ?: ds.boardWeight
-//                                positionInPath(paths, e.toInt() , d)?.let{ pos ->
-//                                    FigurePolyline(
-//                                        listOf(
-//                                            Vec2(-zigle, 0.0),
-//                                            Vec2(-zigle, zighe),
-//                                            Vec2(zigle, zighe),
-//                                            Vec2(zigle, 0.0),
-//                                        ).map { pos.point+it.rotate(pos.normal.angle+PI/2) }
-//                                    )
-//                                }
-                        } ?: 10.0
+                        val (h , we) = com.takeBlock(2)?.let { item ->
+                            val h = (item.get(0)?.let{ im -> memory.value(im, 0.0)}?: 10.0)
+                            val w = (item.get(1)?.let { im ->
+                                memory.value(im, ds.boardWeight)
+                            }?: ds.boardWeight)
+                            h to w
+                        } ?: (10.0 to ds.boardWeight)
+
                         val heights = (3 until com.size).mapNotNull { j ->
                             com.takeBlock(j)?.let { item ->
                                 val e = (item.get(0)?.let { memory.value(it, 0.0) } ?: 0.0).toInt()
-                                val h = (item.get(1)?.let { memory.value(it, 0.0) } ?: 0.0)
-                                e to h
+                                val h1 = (item.get(1)?.let { memory.value(it, 0.0) } ?: 0.0)
+                                e to h1
                             }
                         }.toMap()
 
@@ -251,7 +247,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                     if (block is TortoiseParserStackBlock && block.skobka != '(') {
                         block.innerLine
                     } else {
-                        memory.value(block.argument, 0.0).toString()
+                        printFormat.format( memory.value(block.argument, 0.0))
                     }
                 }.joinToString(" ")
                 builder.addProduct(FigureText(text))
