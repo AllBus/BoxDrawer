@@ -5,12 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawer.template.TemplateGeneratorListener
+import com.kos.boxdrawer.template.TemplateItem
 import com.kos.boxdrawer.template.TemplateItemCheck
 import turtoise.parser.TortoiseParserStackItem
 
 @Composable
 fun TemplateCheckBox(
-    form: TemplateItemCheck,
+    form: TemplateItem,
     block: TortoiseParserStackItem?,
     prefix: String,
     templateGenerator: TemplateGeneratorListener

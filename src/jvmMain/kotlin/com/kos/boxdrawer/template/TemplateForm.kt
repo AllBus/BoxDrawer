@@ -159,7 +159,6 @@ data class TemplateItemInt(
 data class TemplateItemNumeric(
     override val title: String,
     override val argumentName: String
-
 ) : TemplateItem {
     override val argumentCount: Int
         get() = 1
@@ -167,6 +166,22 @@ data class TemplateItemNumeric(
     override fun print(): TortoiseParserStackItem {
         val tp = TortoiseParserStackBlock()
         tp.add("1")
+        tp.add(argumentName)
+        tp.add("[$title]")
+        return tp
+    }
+}
+
+data class TemplateItemAngle(
+    override val title: String,
+    override val argumentName: String
+) : TemplateItem {
+    override val argumentCount: Int
+        get() = 1
+
+    override fun print(): TortoiseParserStackItem {
+        val tp = TortoiseParserStackBlock()
+        tp.add("angle")
         tp.add(argumentName)
         tp.add("[$title]")
         return tp

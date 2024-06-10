@@ -52,7 +52,10 @@ import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.boxdrawe.widget.TabBar
+import com.kos.boxdrawer.template.TemplateGeneratorListener
+import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateInfo
+import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
@@ -87,6 +90,8 @@ fun App(vm: State<DrawerViewModel>) {
     LaunchedEffect(tabIndex.value) {
         vm.value.setSelected(emptyList())
     }
+    val tortoiseListener = vm.value.tortoise.editorListener
+
 
     MaterialTheme {
         Column {
@@ -111,13 +116,25 @@ fun App(vm: State<DrawerViewModel>) {
                     ) {
                         when (tabIndex.value) {
                             BoxDrawerToolBar.TAB_TORTOISE -> {
-                                Text(
-                                    text = helpText,
-                                    modifier = Modifier.width(350.dp).wrapContentHeight()
-                                        .align(Alignment.TopStart).padding(8.dp),
-                                    fontSize = 10.sp,
-                                    lineHeight = 12.sp,
+                                Column(
+                                    Modifier.align(Alignment.TopStart).padding(8.dp)
                                 )
+                                {
+                                    Column(
+                                        modifier = Modifier.width(200.dp).padding(end = 4.dp).background(
+                                            color = ThemeColors.editorBackground, shape = ThemeColors.figureListItemShape
+                                        ),
+
+                                    ) {
+                                        EditPosition(tortoiseListener)
+                                    }
+                                    Text(
+                                        text = helpText,
+                                        modifier = Modifier.width(350.dp).wrapContentHeight(),
+                                        fontSize = 10.sp,
+                                        lineHeight = 12.sp,
+                                    )
+                                }
                             }
 
                             BoxDrawerToolBar.TAB_TOOLS -> {

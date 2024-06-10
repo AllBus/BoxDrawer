@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -18,6 +20,9 @@ import com.kos.boxdrawe.widget.EditTextField
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.TabContentModifier
+import com.kos.boxdrawer.presentation.EditPosition
+import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
+import com.kos.boxdrawer.template.TemplateMemory
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -25,9 +30,13 @@ import kotlinx.coroutines.launch
 fun ToolbarForTortoise(vm: TortoiseData) {
     val text = rememberSaveable(key = "ToolbarForTortoise.Text") { vm.text }
 
+
+
     Row(
         modifier = TabContentModifier
     ) {
+
+
         Column(
             modifier = Modifier.weight(weight = 2f, fill = true).padding(end = 8.dp)
         ) {

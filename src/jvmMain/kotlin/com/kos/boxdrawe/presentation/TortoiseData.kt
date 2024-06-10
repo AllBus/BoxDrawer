@@ -6,13 +6,18 @@ import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.getTextAfterSelection
+import androidx.compose.ui.text.input.getTextBeforeSelection
+import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
+import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.figure.CropSide
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
-import turtoise.*
+import turtoise.TortoiseProgram
+import turtoise.TortoiseRunner
+import turtoise.TortoiseState
 import turtoise.parser.TortoiseParser
-import java.awt.datatransfer.Transferable
 
 class TortoiseData(override val tools: ITools) : SaveFigure {
     val figures = MutableStateFlow<IFigure>(Figure.Empty)
@@ -20,6 +25,60 @@ class TortoiseData(override val tools: ITools) : SaveFigure {
     val helpText = mutableStateOf(AnnotatedString(""))
 
     val matrix = mutableStateOf(Matrix())
+
+    @OptIn(ExperimentalFoundationApi::class)
+    val text = mutableStateOf(TextFieldValue(""))
+
+    val editorListener = object : TemplateGeneratorSimpleListener {
+        val memory = TemplateMemory()
+        override fun put(arg: String, index: Int, count: Int, value: String) {
+            if (count > 1) {
+                memory.put(arg, index, count, value)
+                recalc()
+            } else {
+                put(arg, value)
+            }
+        }
+
+        override fun put(arg: String, value: String) {
+            memory.put(arg, value)
+            recalc()
+        }
+
+        override fun get(arg: String): List<String> {
+            return memory.get(arg)
+        }
+
+        fun recalc() {
+            val x = memory.get("xy").getOrElse(0) { "0" }
+            val y = memory.get("xy").getOrElse(1) { "0" }
+            val xa =  memory.get("axy").getOrElse(0) { "0" }
+            val ya = memory.get("axy").getOrElse(1) { "0" }
+            val a = memory.get("a").getOrElse(0) { "0" }
+
+            val f =   if (xa.toDoubleOrNull() == 0.0 && ya.toDoubleOrNull() == 0.0){
+                if (x.toDoubleOrNull() == 0.0 && y.toDoubleOrNull() == 0.0){
+                    " q $a "
+                }else {
+                    " m $x $y $a "
+                }
+            }else{
+                " m $x $y $a $xa $ya "
+            }
+
+
+            val tv = text.value
+            val ntext =
+                tv.getTextBeforeSelection(tv.text.length) + AnnotatedString(f) + tv.getTextAfterSelection(
+                    tv.text.length
+                )
+            text.value = tv.copy(
+                annotatedString = ntext,
+                selection = TextRange(tv.selection.min, tv.selection.min + f.length)
+            )
+            createTortoise()
+        }
+    }
 
     override suspend fun createFigure(): IFigure {
         val lines = text.value.text
@@ -119,6 +178,5 @@ class TortoiseData(override val tools: ITools) : SaveFigure {
         matrix.value = m
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
-    val text = mutableStateOf(TextFieldValue(""))
+
 }

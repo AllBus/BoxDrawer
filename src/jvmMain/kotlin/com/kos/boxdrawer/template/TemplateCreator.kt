@@ -88,6 +88,11 @@ object TemplateCreator {
                 argumentName = argument,
             )
 
+            "a", "angle", "degree" -> TemplateItemAngle(
+                title = title,
+                argumentName = argument,
+            )
+
             "check", "chekbox", "switch" -> TemplateItemCheck(
                 title = title,
                 argumentName = argument,

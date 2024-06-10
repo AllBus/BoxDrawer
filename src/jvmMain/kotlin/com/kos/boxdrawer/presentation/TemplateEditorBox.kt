@@ -79,7 +79,7 @@ private fun TempleteEditorActionMenu(
     figureLine: MutableState<String>,
     figureName: MutableState<String>,
 ) {
-    Column(modifier = Modifier.width(200.dp)) {
+    Column(modifier = Modifier.width(240.dp)) {
         Label("Ввод чисел")
         Row {
             RunButton("1", Modifier.weight(1f)) {
@@ -98,6 +98,9 @@ private fun TempleteEditorActionMenu(
         Row {
             RunButton("целое", Modifier.weight(1f)) {
                 createItem("int", name.value, argument.value)
+            }
+            RunButton("угол", Modifier.weight(1f)) {
+                createItem("angle", name.value, argument.value)
             }
             RunButton("галка", Modifier.weight(1f)) {
                 createItem("check", name.value, argument.value)

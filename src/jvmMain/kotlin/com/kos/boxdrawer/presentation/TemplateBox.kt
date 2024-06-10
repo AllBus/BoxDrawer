@@ -24,6 +24,7 @@ import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.boxdrawer.template.TemplateItem
+import com.kos.boxdrawer.template.TemplateItemAngle
 import com.kos.boxdrawer.template.TemplateItemCheck
 import com.kos.boxdrawer.template.TemplateItemInt
 import com.kos.boxdrawer.template.TemplateItemLabel
@@ -119,6 +120,13 @@ fun TemplateItemBox(
                 )
 
                 is TemplateItemNumeric -> TemplateNumericBox(
+                    form = item,
+                    block = inner,
+                    prefix = newPrefix,
+                    templateGenerator = templateGenerator
+                )
+
+                is TemplateItemAngle -> TemplateAngleBox(
                     form = item,
                     block = inner,
                     prefix = newPrefix,

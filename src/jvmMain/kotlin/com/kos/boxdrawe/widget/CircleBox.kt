@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.Fill
@@ -27,12 +28,13 @@ import kotlin.math.PI
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CircleBox(
+    modifier : Modifier,
     onRotate: (current: Double, change: Double, start: Double) -> Unit
 ) {
     val pressedState = remember { mutableStateOf(false) }
     val thumbPosition = remember { mutableStateOf(0) }
     val thumbStartPosition = remember { mutableStateOf(0) }
-    Box(modifier = Modifier.size(160.dp)) {
+    Box(modifier = modifier) {
         val color = MaterialTheme.colors.primary
         val thumbColor = MaterialTheme.colors.secondary
         Canvas(
@@ -138,6 +140,6 @@ private fun calculateRotor(
 @Preview
 private fun PreviewCircleBox() {
     MaterialTheme {
-        CircleBox({ _, _, _ -> })
+        CircleBox(Modifier, { _, _, _ -> })
     }
 }

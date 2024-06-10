@@ -47,8 +47,8 @@ abstract class TortoiseBase {
     protected fun valueAt(
         blockProperties: TortoiseParserStackItem?,
         index: Int,
-        defaultValue: Double,
-        memory: TortoiseMemory
+        memory: TortoiseMemory,
+        defaultValue: Double = 0.0,
     ): Double {
         return blockProperties?.get(index)?.let { key ->
             memory.value(key, defaultValue)
@@ -412,31 +412,33 @@ abstract class TortoiseBase {
                                 distanceInPercent = valueAt(
                                     blockProperties,
                                     1,
+                                    memory,
                                     1.0 / count,
-                                    memory
+
                                 ),
                                 startOffsetInPercent = valueAt(
                                     blockProperties,
                                     2,
+                                    memory,
                                     0.0,
-                                    memory
+
                                 ),
                                 reverse = valueAt(
                                     blockProperties,
                                     7,
+                                    memory,
                                     0.0,
-                                    memory
                                 ) >= 1.0,
                                 useNormal = valueAt(
                                     blockProperties,
                                     4,
+                                    memory,
                                     1.0,
-                                    memory
                                 ) >= 1.0,
-                                angle = valueAt(blockProperties, 3, 0.0, memory),
+                                angle = valueAt(blockProperties, 3,  memory),
                                 pivot = Vec2(
-                                    valueAt(blockProperties, 5, 0.0, memory),
-                                    valueAt(blockProperties, 6, 0.0, memory)
+                                    valueAt(blockProperties, 5,  memory),
+                                    valueAt(blockProperties, 6,  memory)
                                 ),
                             )
                         }

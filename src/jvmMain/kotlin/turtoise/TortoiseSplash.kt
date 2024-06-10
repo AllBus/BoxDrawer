@@ -5,6 +5,7 @@ import com.kos.boxdrawer.detal.soft.SoftRez
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
+import com.kos.figure.FigurePolygon
 import com.kos.figure.FigurePolyline
 import com.kos.figure.FigureText
 import com.kos.figure.IFigure
@@ -225,7 +226,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                         if (paths.isNotEmpty()) {
                             (2 until com.size).map { ind ->
                                 val h = com.takeBlock(ind)?.let { item ->
-                                    valueAt(item, 0, ds.boardWeight, memory)
+                                    valueAt(item, 0, memory, ds.boardWeight)
                                 } ?: ds.boardWeight
 
                                 builder.addProduct(
@@ -236,6 +237,44 @@ abstract class TortoiseSplash : TortoiseBase() {
                                     )
                                 )
                             }
+                        }
+                    }
+                }
+            }
+            "edit", "e" -> {
+                /* (figure) (m e x y) (r e+) */
+                com.takeBlock(1)?.let { block ->
+                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                         f.list().filterIsInstance(FigurePolygon::class.java).firstOrNull()?.let {
+                            path ->
+                            val points = path.points.toMutableList()
+                            (2 until com.size).mapNotNull { j ->
+                                com.takeBlock(j)?.let { item ->
+                                    when (item.name.name) {
+                                        "m" -> {
+                                            val e = valueAt(item, 1, memory).toInt()
+                                            val x = valueAt(item, 2, memory)
+                                            val y = valueAt(item, 3, memory)
+                                            val a = valueAt(item, 4, memory)
+                                            if (e>=0 && e< points.size) {
+                                                points[e] = points[e]+Vec2(x, y).rotate(a)
+                                            }
+                                        }
+                                        "r" -> {
+                                            (1 until item.size).map{ i ->
+                                                valueAt(item, i, memory).toInt()
+                                            }.sorted().reversed().forEach {ind ->
+                                                if (ind>=0 && ind< points.size) {
+                                                    points.removeAt(ind)
+                                                }
+                                            }
+                                        }
+
+                                        else -> {}
+                                    }
+                                }
+                            }
+                            builder.addProduct(path.create(points.toList()))
                         }
                     }
                 }
@@ -310,5 +349,4 @@ abstract class TortoiseSplash : TortoiseBase() {
         }
         return Pair(rest, aap)
     }
-
 }

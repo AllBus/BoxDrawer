@@ -9,12 +9,13 @@ import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawer.template.TemplateGeneratorListener
+import com.kos.boxdrawer.template.TemplateItem
 import com.kos.boxdrawer.template.TemplateItemRect
 import turtoise.parser.TortoiseParserStackItem
 
 @Composable
 fun TemplateRectBox(
-    form: TemplateItemRect,
+    form: TemplateItem,
     block: TortoiseParserStackItem?,
     prefix: String,
     templateGenerator: TemplateGeneratorListener

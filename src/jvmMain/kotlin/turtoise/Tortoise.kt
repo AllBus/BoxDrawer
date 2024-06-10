@@ -57,6 +57,12 @@ class Tortoise() : TortoiseSplash() {
 
                 TortoiseCommand.TURTOISE_MOVE -> {
                     state.move(com[0, memory], com[1, memory])
+                    if (com.size>=3) {
+                        state.a += com[2, memory]
+                        if (com.size>3) {
+                            state.move(com[3, memory], com[4, memory])
+                        }
+                    }
                 }
 
                 TortoiseCommand.TURTOISE_HORIZONTAL -> {

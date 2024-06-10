@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -134,7 +135,7 @@ fun ToolbarForReka(vm: RekaToolsData) {
             modifier = Modifier.weight(weight = 1f, fill = true).padding(end = 2.dp)
         ) {
             Label(   stringResource(Res.string.rekaGroupShift))
-            CircleBox { current, change, start ->
+            CircleBox(Modifier.size(160.dp)) { current, change, start ->
                 vm.moveCurrentReka(change)
             }
             SimpleEditText("", "", shiftValue) {}
@@ -143,7 +144,7 @@ fun ToolbarForReka(vm: RekaToolsData) {
             modifier = Modifier.weight(weight = 1f, fill = true).padding(end = 2.dp)
         ) {
             Label(   stringResource(Res.string.rekaGroupAngle))
-            CircleBox { current, change, start ->
+            CircleBox(Modifier.size(160.dp)) { current, change, start ->
                 vm.rotateCurrentReka(change)
             }
             SimpleEditText("", "", angleValue) {}

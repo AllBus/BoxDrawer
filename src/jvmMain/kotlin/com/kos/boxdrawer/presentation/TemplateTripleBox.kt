@@ -9,12 +9,13 @@ import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawer.template.TemplateGeneratorListener
+import com.kos.boxdrawer.template.TemplateItem
 import com.kos.boxdrawer.template.TemplateItemTriple
 import turtoise.parser.TortoiseParserStackItem
 
 @Composable
 fun TemplateTripleBox(
-    form: TemplateItemTriple,
+    form: TemplateItem,
     block: TortoiseParserStackItem?,
     prefix: String,
     templateGenerator: TemplateGeneratorListener

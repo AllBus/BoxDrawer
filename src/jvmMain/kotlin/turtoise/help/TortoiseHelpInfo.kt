@@ -17,16 +17,60 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
     override val name: String = ""
     override val title: AnnotatedString = TortoiseParser.helpTitle("Команды черепашки")
     override val commandList = listOf<HelpInfoCommand>(
-        helpName(TortoiseCommand.TURTOISE_MOVE, "x y", "переместить позицию"),
+        helpName(TortoiseCommand.TURTOISE_MOVE,
+            listOf(
+                HelpData(
+                    "x y a xa ya",
+                    "переместить позицию",
+                    listOf(
+                        HelpDataParam("x", "расстояние по оси x"),
+                        HelpDataParam("y", "расстояние по оси y"),
+                        HelpDataParam("a", "поворот в градусах"),
+                        HelpDataParam("xa", "расстояние по оси x после поворота"),
+                        HelpDataParam("ya", "расстояние по оси y после поворота"),
+                    )
+                )
+            )
+        ),
         helpName(
             TortoiseCommand.TURTOISE_ANGLE,
+            listOf(
+                HelpData(
             "a",
-            "повернуть направление движение на угол a"
+            "повернуть направление движение на угол a",
+                    listOf(
+                        HelpDataParam("a", "угол в градусах"),
+                    )
+                ),
+                HelpData(
+                    "x y",
+                    "повернуть направление движение в направлении радиус-вектора x y",
+                    listOf(
+                        HelpDataParam("x", "координата радиус-вектора по оси x"),
+                        HelpDataParam("y", "координата радиус-вектора расстояние по оси y"),
+                    )
+                )
+            )
         ),
         helpName(
             TortoiseCommand.TURTOISE_ANGLE_ADD,
-            "a",
-            "повернуть направление движение на угол a относительно текущего угла"
+            listOf(
+                HelpData(
+                    "a",
+                    "повернуть направление движение относительно текущего угла на угол a",
+                    listOf(
+                        HelpDataParam("a", "угол в градусах"),
+                    )
+                ),
+                HelpData(
+                    "x y",
+                    "повернуть направление движение относительно текущего угла на направлении радиус-вектора x y",
+                    listOf(
+                        HelpDataParam("x", "координата радиус-вектора по оси x"),
+                        HelpDataParam("y", "координата радиус-вектора расстояние по оси y"),
+                    )
+                )
+            )
         ), helpName(
             TortoiseCommand.TURTOISE_CLEAR,
             "",
@@ -50,7 +94,18 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             TortoiseCommand.TURTOISE_CLOSE,
             "",
             "закрыть многоугольник"
-        ), helpName(
+        ),
+        helpName(
+            TortoiseCommand.TURTOISE_VERTICAL,
+            "y",
+            "нарисовать вертикальную прямую длиной y"
+        ),
+        helpName(
+            TortoiseCommand.TURTOISE_HORIZONTAL,
+            "x",
+            "нарисовать горизонтальную прямую длиной x"
+        ),
+        helpName(
             TortoiseCommand.TURTOISE_CIRCLE,
             listOf(
                 HelpData(
@@ -410,6 +465,68 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                 )
             )
         )
-    )
+    ),
+        helpName(
+            TortoiseCommand.TURTOISE_SPLASH,
+            listOf(
+                HelpData(
+                    "length (figure) (variable+)",
+                    "поместить длину каждого пути figure в переменные variable"
+                ),
+                HelpData(
+                    "board (variable)",
+                    "поместить толщину доски в переменную variable"
+                ),
+                HelpData(
+                    "arc (radius pointStart pointEnd)+",
+                    "Нарисовать дугу заданного радиуса radius через две точки"
+                ),
+                HelpData(
+                    "tooth h w ",
+                    "Нарисовать зуб"
+                ),
+                HelpData(
+                    "toothr h w",
+                    "Нарисовать зуб в обратную сторону"
+                ),
+                HelpData(
+                    "line (x y)+",
+                    "Нарисовать линию задавая сдвиг относительно предудыщей точки"
+                ),
+                HelpData(
+                    "rline r x y",
+                    "Нарисовать скругление радиуса r текущей линии к точке x y "
+                ),
+                HelpData(
+                    "rez width height delta dlina soedinenie isFirstSmall",
+                    "Нарисовать мягкий рез"
+                ),
+                HelpData(
+                    "r",
+                    "Включить опцию рисования зигзагов в обратном направлении"
+                ),
+                HelpData(
+                    "f",
+                    "Включить опцию рисования зигзагов в прямом направлении"
+                ),
+                HelpData(
+                    "paz (figure) (edge delta le he)+",
+                    "Нарисовать пазы вдоль пути figure"
+                ),
+                HelpData(
+                    "stena (figure) (h w) (edge he)*",
+                    "Нарисовать стены воль пути"
+                ),
+                HelpData(
+                    "o (figure) h+",
+                    "Нарисовать фигуру сдвунутую на h от текущей фигуры"
+                ),
+                HelpData(
+                    "print [text] | (variable)",
+                    "Написать текст или значение переменной"
+                ),
+            )
+        )
+
     )
 }

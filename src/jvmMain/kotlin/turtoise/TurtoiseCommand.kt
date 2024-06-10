@@ -114,7 +114,7 @@ interface TortoiseCommand {
         const val TURTOISE_REGULAR_POLYGON = 'n'
         const val TURTOISE_MOVE = 'm'
         const val TURTOISE_LINE = 'l'
-        const val TURTOISE_LINE_WITH_ANGLE = 'л'
+        const val TURTOISE_LINE_WITH_ANGLE = 'k'
         const val TURTOISE_LINE_PERPENDICULAR = 'p'
         const val TURTOISE_HORIZONTAL = 'h'
         const val TURTOISE_ELLIPSE = 'e'
