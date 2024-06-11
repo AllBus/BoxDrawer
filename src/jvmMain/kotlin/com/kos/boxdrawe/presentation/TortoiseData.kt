@@ -178,5 +178,4 @@ class TortoiseData(override val tools: ITools) : SaveFigure {
         matrix.value = m
     }
 
-
 }
