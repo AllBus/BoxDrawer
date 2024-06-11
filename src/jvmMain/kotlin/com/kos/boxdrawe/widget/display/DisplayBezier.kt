@@ -5,22 +5,17 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableFloatState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
@@ -32,8 +27,10 @@ import com.kos.boxdrawe.drawer.drawFigures
 import com.kos.boxdrawe.presentation.BezierData
 import com.kos.boxdrawe.widget.toOffset
 import com.kos.boxdrawe.widget.toVec2
-import com.kos.figure.FigureEmpty
 import vectors.Vec2
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 private fun indexOfPoint(points: List<Vec2>, position: Vec2, maxDistance: Double): Int {
     var index = -1
@@ -50,7 +47,7 @@ private fun indexOfPoint(points: List<Vec2>, position: Vec2, maxDistance: Double
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
+fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData, stateText: MutableState<String>) {
 
     val figure = remember { vm.figure }
     val c1 = vm.c1.collectAsState()
@@ -106,13 +103,36 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
         selectIndex.value = -1
         selectedType.value = 0
     }.onPointerEvent(PointerEventType.Move) {
+        val sp = Vec2.freqency(
+            (it.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.toVec2() / scale.toDouble(),
+            currentDistance.value
+        )
+       val indexWhitePoint = indexOfPoint(c1.value, sp, 20.0)
+        val v = selectIndex.value
+        if (Vec2.distance(cst.value, sp) < 20.0){
+            stateText.value="При нажатии левой кнопкой происходит  добавление сегмента.\n"+
+                    "При нажатии правой кнопкой происходит удаление сегмента.\n"
 
-        if (it.changes.first().pressed) {
-            val sp = Vec2.freqency(
-                (it.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.toVec2() / scale.toDouble(),
-                currentDistance.value
-            )
-            val v = selectIndex.value
+        } else
+            if (Vec2.distance(cen.value, sp) < 20.0){
+                stateText.value="При нажатии левой кнопкой происходит  добавление сегмента.\n"+
+                        "При нажатии правой кнопкой происходит удаление сегмента.\n"
+            } else
+                if(indexWhitePoint%3!=0){
+                    stateText.value="Захватите левой кнопкой для перемещении точки.\n"+
+
+                            "При нажатии средней кнопкой на белый кружочек сохраняется угол между соседникми точками.\n"+
+                            "При нажатии правой кнопкой на белый кружочек становится развернутым на 180.\n"
+                }else
+        if ( indexWhitePoint>= 0){
+            stateText.value="Захватите левой кнопкой для перемещении точки."
+
+        } else{
+            stateText.value=""
+        }
+            if (it.changes.first().pressed) {
+
+
             if (v >= 0) {
                 when (selectedType.value) {
                     0 -> vm.movePoint(v, sp)
@@ -159,11 +179,20 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData) {
 
                 bezier.forEachIndexed { i, c ->
                     val color = if (selectIndex.value == i) Color.Green else Color.LightGray
-                    this.drawCircle(color, radius = 5f / scale, center = c.toOffset())
+                    this.drawCircle(color, radius = 10f / scale, center = c.toOffset())
                 }
-
-                this.drawCircle(Color.Yellow, 5f / scale, cst.value.toOffset())
-                this.drawCircle(Color.Yellow, 5f / scale, cen.value.toOffset())
+val octagon =Path()
+                val r=5.5f
+    octagon.moveTo(r*sin(0.0).toFloat(), r*cos(0.0).toFloat())
+                for (i in 1..8){
+                    octagon.lineTo(
+                        (r*sin((45*PI*i)/180)).toFloat(), r*cos((45* PI*i)/180).toFloat()
+                    )
+                }
+                octagon.close()
+                this.translate (cst.value.x.toFloat(), cst.value.y.toFloat()){
+                this.drawPath(octagon,Color.Yellow)}
+                this.drawCircle(Color.Yellow, 10f / scale, cen.value.toOffset())
 
                 this.drawPoints(
                     bezier.map { it.toOffset() },

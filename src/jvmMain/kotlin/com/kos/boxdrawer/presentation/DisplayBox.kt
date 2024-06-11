@@ -14,7 +14,6 @@ import com.kos.boxdrawe.widget.display.DisplayBezier
 import com.kos.boxdrawe.widget.display.DisplayGrid
 import com.kos.boxdrawe.widget.display.DisplayTortoise
 import com.kos.figure.IFigure
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -33,6 +32,15 @@ fun DisplayBox(
 
     LaunchedEffect(tabIndex.value) {
         stateText.value = ""
+        when (tabIndex.value){
+            BoxDrawerToolBar.TAB_BEZIER -> {
+                stateText.value="При нажатии левой кнопкой на желтый кружочек добавляется новый сегмент.\n"+
+                        "При нажатии правой кнопкой на желтый кружочек удаляется сегмент линии.\n"+
+                "При нажатии средней кнопкой на белый кружочек сохраняется угол между соседникми точками.\n" +
+                        "При нажатии правой кнопкой на белый кружочек становится развернутым на 180° углом."
+            }
+        }
+
     }
 
     when (tabIndex.value) {
@@ -79,7 +87,8 @@ fun DisplayBox(
         }
 
         BoxDrawerToolBar.TAB_BEZIER -> {
-            DisplayBezier(displayScale, vm.value.bezier)
+            DisplayBezier(displayScale, vm.value.bezier, stateText)
+
         }
 
         BoxDrawerToolBar.TAB_REKA,

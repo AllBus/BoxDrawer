@@ -4,7 +4,10 @@ import androidx.compose.ui.text.AnnotatedString
 import turtoise.DrawerSettings
 import turtoise.TortoiseBlock
 import turtoise.TortoiseCommand
-import turtoise.TurtoiseParserStackItem
+import turtoise.help.HelpInfoCommand
+import turtoise.memory.keys.MemoryKey
+import turtoise.parser.TortoiseParserStackItem
+
 
 class RobotDrawLine(): IRobotCommand  {
 
@@ -122,15 +125,16 @@ class RobotDrawLine(): IRobotCommand  {
     }
 
     object Factory: IRobotCommandFactory {
-        override fun create(args: List<String>, item: TurtoiseParserStackItem): IRobotCommand {
+
+        override fun create(args: List<MemoryKey>, item: TortoiseParserStackItem): IRobotCommand {
             return RobotDrawLine()
         }
 
         override val names: List<String>
             get() = listOf("line")
 
-        override fun help(): AnnotatedString {
-            return AnnotatedString("")
+        override fun help(): HelpInfoCommand {
+            return HelpInfoCommand("", AnnotatedString(""))
         }
 
     }

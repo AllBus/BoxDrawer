@@ -245,7 +245,7 @@ object BoxDrawerToolBar {
         TabInfo(TAB_GRID, "Сетка"),
         TabInfo(TAB_SOFT, "Мягкий рез"),
         TabInfo(TAB_BEZIER, "Безье"),
-        TabInfo(TAB_BUBLIK, "Бублик"),
+        TabInfo(TAB_BUBLIK, "Тор"),
         TabInfo(TAB_REKA, "Река"),
         TabInfo(TAB_DXF, "DXF"),
         TabInfo(TAB_TOOLS, "Инструменты"),
