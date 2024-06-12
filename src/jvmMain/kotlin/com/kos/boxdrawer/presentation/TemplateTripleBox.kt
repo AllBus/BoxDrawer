@@ -22,10 +22,11 @@ fun TemplateTripleBox(
 ) {
     val input1 = remember("$prefix.1") {
         NumericTextFieldState(
-            templateGenerator.get(prefix).getOrNull(0)?.toDoubleOrNull() ?: block?.doubleValue(
+            value = templateGenerator.get(prefix).getOrNull(0)?.toDoubleOrNull() ?: block?.doubleValue(
                 1,
                 0.0
-            ) ?: 0.0
+            ) ?: 0.0,
+            minValue = -1000000.0,
         ) { v ->
             templateGenerator.put(
                 prefix,
@@ -37,10 +38,11 @@ fun TemplateTripleBox(
     }
     val input2 = remember("$prefix.2") {
         NumericTextFieldState(
-            templateGenerator.get(prefix).getOrNull(1)?.toDoubleOrNull() ?: block?.doubleValue(
+            value = templateGenerator.get(prefix).getOrNull(1)?.toDoubleOrNull() ?: block?.doubleValue(
                 2,
                 0.0
-            ) ?: 0.0
+            ) ?: 0.0,
+            minValue = -1000000.0,
         ) { v ->
             templateGenerator.put(
                 prefix,
@@ -52,10 +54,11 @@ fun TemplateTripleBox(
     }
     val input3 = remember("$prefix.3") {
         NumericTextFieldState(
-            templateGenerator.get(prefix).getOrNull(2)?.toDoubleOrNull() ?: block?.doubleValue(
+            value = templateGenerator.get(prefix).getOrNull(2)?.toDoubleOrNull() ?: block?.doubleValue(
                 3,
                 0.0
-            ) ?: 0.0
+            ) ?: 0.0,
+            minValue = -1000000.0,
         ) { v ->
             templateGenerator.put(
                 prefix,

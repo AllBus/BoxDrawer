@@ -16,6 +16,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.SoftRezData
 import com.kos.boxdrawe.widget.NumericUpDown
+import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
@@ -68,8 +69,8 @@ fun ToolbarForSoft(vm: SoftRezData) {
                 modifier = Modifier,
                 softWrap = false,
             )
-            NumericUpDown(stringResource(Res.string.rezAreaWidth), stringResource(Res.string.metricMM), width)
-            NumericUpDown(stringResource(Res.string.rezAreaHeight), stringResource(Res.string.metricMM), height)
+            NumericUpDownLine(stringResource(Res.string.rezAreaWidth), stringResource(Res.string.metricMM), width)
+            NumericUpDownLine(stringResource(Res.string.rezAreaHeight), stringResource(Res.string.metricMM), height)
             RunCheckBox(
                 checked = isDrawBox,
                 title = stringResource(Res.string.rezCheckArea),
@@ -106,8 +107,8 @@ fun ToolbarForSoft(vm: SoftRezData) {
                     modifier = Modifier,
                     softWrap = false,
                 )
-                NumericUpDown(stringResource(Res.string.rezCountX),  stringResource(Res.string.metricCount), cellWidthCount)
-                NumericUpDown(stringResource(Res.string.rezCountY),  stringResource(Res.string.metricCount), cellHeightCount, enabled = !innerChecked)
+                NumericUpDownLine(stringResource(Res.string.rezCountX),  stringResource(Res.string.metricCount), cellWidthCount)
+                NumericUpDownLine(stringResource(Res.string.rezCountY),  stringResource(Res.string.metricCount), cellHeightCount, enabled = !innerChecked)
                 RunCheckBox(
                     checked = innerChecked,
                     title = stringResource(Res.string.rezProprzija),
@@ -126,8 +127,8 @@ fun ToolbarForSoft(vm: SoftRezData) {
                 modifier = Modifier,
                 softWrap = false,
             )
-            NumericUpDown(stringResource(Res.string.rezSoedinenie), stringResource(Res.string.metricMM), cellWidthDistance)
-            NumericUpDown(stringResource(Res.string.rezDelta), stringResource(Res.string.metricMM), cellHeightDistance)
+            NumericUpDownLine(stringResource(Res.string.rezSoedinenie), stringResource(Res.string.metricMM), cellWidthDistance)
+            NumericUpDownLine(stringResource(Res.string.rezDelta), stringResource(Res.string.metricMM), cellHeightDistance)
         }
 
     }

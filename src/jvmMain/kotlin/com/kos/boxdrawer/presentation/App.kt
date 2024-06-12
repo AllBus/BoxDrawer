@@ -222,17 +222,20 @@ fun App(vm: State<DrawerViewModel>) {
                         }
                     }
 
-                    StatusBar(displayScale, pos, stateText, onHomeClick = {
-                        dropValueX = 0f
-                        dropValueY = 0f
-                        dropValueZ = 0f
-                        pos.value = Offset.Zero
-                        vm.value.tortoise.rotate(
-                            dropValueX,
-                            dropValueY,
-                            dropValueZ
-                        )
-                    })
+                    val tabIndex = vm.value.tabIndex.collectAsState()
+                    AnimatedVisibility (tabIndex.value!= BoxDrawerToolBar.TAB_GRID) {
+                        StatusBar(displayScale, pos, stateText, onHomeClick = {
+                            dropValueX = 0f
+                            dropValueY = 0f
+                            dropValueZ = 0f
+                            pos.value = Offset.Zero
+                            vm.value.tortoise.rotate(
+                                dropValueX,
+                                dropValueY,
+                                dropValueZ
+                            )
+                        })
+                    }
                 }
             }
         }

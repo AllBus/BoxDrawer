@@ -20,5 +20,10 @@ object ThemeColors {
     val figureListItemShape = RoundedCornerShape(4.dp)
     val editorBackground = Color(0x30FFFFFF)
 
+    val bezierPointTangent = Color(0xAA00B563)
+    val bezierPoint = Color(0xAA808080)
+    val bezierPointSelect = Color(0xAA00C609)
+    val bezierPointButton = Color(0xAAFFD800)
 
+    val NumericFieldHeight = 30.dp
 }

@@ -4,12 +4,27 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TextFieldColors
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
@@ -24,13 +39,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.themes.ThemeColors
 
+
 @Composable
-fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
-                  fieldMaxWidth: Dp = 160.dp,
-                  modifier: Modifier = Modifier,
-                  enabled : Boolean = true,
-                  titleWeight: Boolean = true,
-                  ) {
+fun NumericUpDown(
+    title: String, postfix: String, value: NumericTextFieldState,
+    fieldMaxWidth: Dp = 160.dp,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    titleWeight: Boolean = true,
+) {
     //var text by remember { mutableStateOf(title) }
     Row(
         modifier = modifier.padding(2.dp),
@@ -48,7 +65,8 @@ fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
             Text(
                 text = title,
                 fontSize = LocalTextStyle.current.fontSize,
-                modifier = if (titleWeight) Modifier.align(Alignment.CenterVertically).weight(1f) else Modifier,
+                modifier = if (titleWeight) Modifier.align(Alignment.CenterVertically)
+                    .weight(1f) else Modifier,
                 softWrap = false,
                 textAlign = TextAlign.End,
             )
@@ -56,14 +74,14 @@ fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
         }
         BasicTextField(
             value = value.text,
-            onValueChange = { v :TextFieldValue ->
+            onValueChange = { v: TextFieldValue ->
                 value.update(v)
             },
             modifier = Modifier
-                .height(30.dp)
+                .height(ThemeColors.NumericFieldHeight)
                 .width(fieldMaxWidth)
                 .weight(1f)
-             //   .background(colors.backgroundColor(enabled).value)
+                //   .background(colors.backgroundColor(enabled).value)
                 .background(ThemeColors.inputBackgroundState(enabled))
                 .border(1.dp, ThemeColors.inputBorder).padding(4.dp),
             enabled = enabled,
@@ -72,6 +90,75 @@ fun NumericUpDown(title:String, postfix:String, value:NumericTextFieldState,
             textStyle = mergedTextStyle
 
         )
+        if (postfix.isNotEmpty()) {
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = postfix,
+                fontSize = LocalTextStyle.current.fontSize,
+                modifier = Modifier.align(Alignment.CenterVertically),
+                softWrap = false,
+            )
+        }
+    }
+}
+
+@Composable
+fun NumericUpDownLine(
+    title: String, postfix: String, value: NumericTextFieldState,
+    fieldMaxWidth: Dp = 160.dp,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    titleWeight: Boolean = true,
+) {
+    Row(
+        modifier = modifier.padding(2.dp),
+        verticalAlignment = Alignment.Bottom
+    ) {
+
+        val textStyle = TextStyle.Default
+        val colors = TextFieldDefaults.textFieldColors()
+        val textColor = textStyle.color.takeOrElse {
+            colors.textColor(enabled).value
+        }
+
+        val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
+        if (title.isNotEmpty()) {
+            Text(
+                text = title,
+                fontSize = LocalTextStyle.current.fontSize,
+                modifier = if (titleWeight) Modifier.align(Alignment.CenterVertically)
+                    .weight(1f) else Modifier,
+                softWrap = false,
+                textAlign = TextAlign.End,
+            )
+            Spacer(Modifier.width(4.dp))
+        }
+        BasicTextField(
+            value = value.text,
+            onValueChange = { v: TextFieldValue ->
+                value.update(v)
+            },
+            modifier = Modifier
+                .height(ThemeColors.NumericFieldHeight)
+                .width(fieldMaxWidth)
+                .weight(1f)
+                //   .background(colors.backgroundColor(enabled).value)
+                .background(ThemeColors.inputBackgroundState(enabled))
+                .border(1.dp, ThemeColors.inputBorder).padding(4.dp),
+            enabled = enabled,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            textStyle = mergedTextStyle
+        )
+        LineBox(
+            modifier = Modifier.size(12.dp, ThemeColors.NumericFieldHeight)
+                .background(ThemeColors.inputBackgroundState(enabled)),
+            { value.decimal }) { current, change, start ->
+            if (enabled) {
+                value.update(current)
+            }
+        }
+
         if (postfix.isNotEmpty()) {
             Spacer(Modifier.width(4.dp))
             Text(
@@ -102,7 +189,7 @@ fun NumericUpDownTextField(
     minLines: Int = 1,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
-    ){
+) {
     // If color is not provided via the text style, use content color as a default
     val textColor = textStyle.color.takeOrElse {
         colors.textColor(enabled).value
@@ -166,19 +253,21 @@ fun NumericUpDownPreview() {
 class NumericTextFieldState(
     value: Double,
     private val digits: Int = 2,
-    private val maxValue: Double= 1000000.0,
+    private val maxValue: Double = 1000000.0,
+    private val minValue: Double = 0.0,
     private val updateAction: (Double) -> Unit = {}
-){
+) {
     var decimal: Double by mutableStateOf(value)
 
-    private val fieldValue = mutableStateOf(TextFieldValue(String.format("%1$,.${digits}f", decimal)))
+    private val fieldValue =
+        mutableStateOf(TextFieldValue(String.format("%1$,.${digits}f", decimal)))
 
     private val spaceReg = "[\\s\\u00A0]+".toRegex()
 
-    fun update(newValue: String){
-        val v = newValue.replace(spaceReg, "").replace(',','.').toDoubleOrNull()
-        if (v != null && v != decimal){
-            if (v>maxValue)
+    fun update(newValue: String) {
+        val v = newValue.replace(spaceReg, "").replace(',', '.').toDoubleOrNull()
+        if (v != null && v != decimal) {
+            if (v > maxValue)
                 decimal = maxValue
             else
                 decimal = v
@@ -188,31 +277,28 @@ class NumericTextFieldState(
         }
     }
 
-    fun update(newValue: Double){
-        if (newValue != decimal) {
-            decimal = newValue
+    fun update(newValue: Double) {
+        val nv = newValue.coerceIn(minValue, maxValue)
+        if (nv != decimal) {
+            decimal = nv
             updateAction(decimal)
             fieldValue.value = TextFieldValue(String.format("%1$,.${digits}f", decimal))
         }
     }
 
-    fun update(newValue: TextFieldValue){
-        val v = newValue.text.replace(spaceReg, "").replace(',','.').toDoubleOrNull()
+    fun update(newValue: TextFieldValue) {
+        val v = newValue.text.replace(spaceReg, "").replace(',', '.').toDoubleOrNull()
 
         var u = false
-        if (v != null && v != decimal){
-            if (v>maxValue)
-                decimal = maxValue
-            else
-                decimal = v
-
+        if (v != null && v != decimal) {
+            decimal = v.coerceIn(minValue, maxValue)
             u = true
             updateAction(decimal)
         }
 
-        if (u){
+        if (u) {
             fieldValue.value = newValue.copy(String.format("%1$,.${digits}f", decimal))
-        }else{
+        } else {
             fieldValue.value = newValue
         }
     }

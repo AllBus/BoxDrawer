@@ -4,12 +4,36 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.GridData
-import com.kos.boxdrawe.widget.*
-import kotlinx.coroutines.launch
+import com.kos.boxdrawe.widget.EditText
+import com.kos.boxdrawe.widget.NumericUpDown
+import com.kos.boxdrawe.widget.RunButton
+import com.kos.boxdrawe.widget.RunCheckBox
+import com.kos.boxdrawe.widget.SaveToFileButton
+import com.kos.boxdrawe.widget.TabContentModifier
+import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.gridCellsInHorizontal
+import com.kos.boxdrawer.generated.resources.gridCellsInVertical
+import com.kos.boxdrawer.generated.resources.gridCheckInnerFrom
+import com.kos.boxdrawer.generated.resources.gridCheckPreview
+import com.kos.boxdrawer.generated.resources.gridCheckRoundCorners
+import com.kos.boxdrawer.generated.resources.gridCornerRadius
+import com.kos.boxdrawer.generated.resources.gridInnerFormCornerRadius
+import com.kos.boxdrawer.generated.resources.gridInnerFormSize
+import com.kos.boxdrawer.generated.resources.gridRoundEdges
+import com.kos.boxdrawer.generated.resources.gridSizeCell
+import com.kos.boxdrawer.generated.resources.gridSizeFrame
+import com.kos.boxdrawer.generated.resources.metricCell
+import com.kos.boxdrawer.generated.resources.metricMM
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ToolbarForGrid(vm: GridData) {
@@ -34,42 +58,75 @@ fun ToolbarForGrid(vm: GridData) {
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            NumericUpDown("ячейки", "мм", widthCell)
-            NumericUpDown("рамки", "мм", widthFrame)
+            NumericUpDown(
+                stringResource(Res.string.gridSizeCell),
+                stringResource(Res.string.metricMM),
+                widthCell
+            )
+            NumericUpDown(
+                stringResource(Res.string.gridSizeFrame),
+                stringResource(Res.string.metricMM),
+                widthFrame
+            )
             RunCheckBox(
                 checked = roundChecked,
-                title = "Скруглять углы",
+                title = stringResource(Res.string.gridCheckRoundCorners),
                 onCheckedChange = { c -> roundChecked = c },
             )
-            NumericUpDown("Радиус", "мм", radius, enabled = roundChecked)
-            NumericUpDown("Количество", "ячеек", cellRadius)
+            NumericUpDown(
+                stringResource(Res.string.gridCornerRadius),
+                stringResource(Res.string.metricMM),
+                radius,
+                enabled = roundChecked
+            )
+            NumericUpDown(
+                stringResource(Res.string.gridRoundEdges),
+                stringResource(Res.string.metricCell),
+                cellRadius
+            )
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            NumericUpDown("горизонталь", "ячеек", cellWidthCount)
-            NumericUpDown("вертикаль", "ячеек", cellHeightCount)
+            NumericUpDown(
+                stringResource(Res.string.gridCellsInHorizontal),
+                stringResource(Res.string.metricCell),
+                cellWidthCount
+            )
+            NumericUpDown(
+                stringResource(Res.string.gridCellsInVertical),
+                stringResource(Res.string.metricCell),
+                cellHeightCount
+            )
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
             RunCheckBox(
                 checked = innerChecked,
-                title = "Внутрение квадраты",
+                title = stringResource(Res.string.gridCheckInnerFrom),
                 onCheckedChange = { c -> innerChecked = c },
             )
-            NumericUpDown("Сторона", "мм", innerWidth)
-            NumericUpDown("Радиус", "мм", innerRadius)
+            NumericUpDown(
+                stringResource(Res.string.gridInnerFormSize),
+                stringResource(Res.string.metricMM),
+                innerWidth
+            )
+            NumericUpDown(
+                stringResource(Res.string.gridInnerFormCornerRadius),
+                stringResource(Res.string.metricMM),
+                innerRadius
+            )
             RunCheckBox(
                 checked = figurePreview.value,
-                title = "Предпросмотр",
+                title = stringResource(Res.string.gridCheckPreview),
                 onCheckedChange = { c -> vm.figurePreview.value = c },
             )
         }
         Column(
             modifier = Modifier.weight(weight = 2f, fill = true)
-        ){
-            EditText(title = "", value = gridText, enabled = true, modifier = Modifier){
+        ) {
+            EditText(title = "", value = gridText, enabled = true, modifier = Modifier) {
 
             }
         }

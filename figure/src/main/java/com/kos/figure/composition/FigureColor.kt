@@ -19,7 +19,7 @@ class FigureColor(val color: Int,
     }
 
     override fun print(): String {
-        return "C (${figure.print()})"
+        return "C $dxfColor (${figure.print()})"
     }
 
     @OptIn(ExperimentalStdlibApi::class)

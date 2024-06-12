@@ -32,15 +32,6 @@ fun DisplayBox(
 
     LaunchedEffect(tabIndex.value) {
         stateText.value = ""
-        when (tabIndex.value){
-            BoxDrawerToolBar.TAB_BEZIER -> {
-                stateText.value="При нажатии левой кнопкой на желтый кружочек добавляется новый сегмент.\n"+
-                        "При нажатии правой кнопкой на желтый кружочек удаляется сегмент линии.\n"+
-                "При нажатии средней кнопкой на белый кружочек сохраняется угол между соседникми точками.\n" +
-                        "При нажатии правой кнопкой на белый кружочек становится развернутым на 180° углом."
-            }
-        }
-
     }
 
     when (tabIndex.value) {
@@ -87,7 +78,12 @@ fun DisplayBox(
         }
 
         BoxDrawerToolBar.TAB_BEZIER -> {
-            DisplayBezier(displayScale, vm.value.bezier, stateText)
+            DisplayBezier(
+                displayScale = displayScale,
+                pos = pos,
+                vm = vm.value.bezier,
+                onSetStateText = {stateText.value = it},
+                )
 
         }
 

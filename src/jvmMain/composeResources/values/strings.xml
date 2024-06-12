@@ -23,7 +23,8 @@
     <string name="boxPreviewStyle">Альтернативное расположение</string>
     <string name="metricMM">мм</string>
     <string name="metricCount">шт</string>
-    <string name="rezTitleArea">"Область"</string>
+    <string name="metricCell">ячеек</string>
+    <string name="rezTitleArea">Область</string>
     <string name="rezAreaWidth">Длина</string>
     <string name="rezAreaHeight">Высота</string>
     <string name="rezCheckStyle">По длине реза</string>
@@ -37,4 +38,15 @@
     <string name="rezSoedinenie">X</string>
     <string name="rezDelta">Y</string>
     <string name="rezCheckArea">Обводящий прямоугольник</string>
+    <string name="gridSizeCell">ячейки</string>
+    <string name="gridSizeFrame">рамки</string>
+    <string name="gridCheckRoundCorners">Скруглять углы</string>
+    <string name="gridCornerRadius">Радиус</string>
+    <string name="gridRoundEdges">Количество</string>
+    <string name="gridCellsInHorizontal">горизонталь</string>
+    <string name="gridCellsInVertical">вертикаль</string>
+    <string name="gridCheckInnerFrom">Внутрение квадраты</string>
+    <string name="gridInnerFormSize">Сторона</string>
+    <string name="gridInnerFormCornerRadius">Радиус</string>
+    <string name="gridCheckPreview">Предпросмотр</string>
 </resources>

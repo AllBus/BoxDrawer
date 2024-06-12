@@ -143,9 +143,9 @@ private fun ToolbarBoxRowOne(
                     .weight(weight = 1f, fill = true)
 
             ) {
-                NumericUpDown(stringResource(Res.string.boxWidth), stringResource(Res.string.metricMM), width)
-                NumericUpDown(stringResource(Res.string.boxWeight), stringResource(Res.string.metricMM), weight)
-                NumericUpDown(stringResource(Res.string.boxHeight), stringResource(Res.string.metricMM), height)
+                NumericUpDownLine(stringResource(Res.string.boxWidth), stringResource(Res.string.metricMM), width)
+                NumericUpDownLine(stringResource(Res.string.boxWeight), stringResource(Res.string.metricMM), weight)
+                NumericUpDownLine(stringResource(Res.string.boxHeight), stringResource(Res.string.metricMM), height)
 
                 Label(
                     stringResource(Res.string.boxEdges),

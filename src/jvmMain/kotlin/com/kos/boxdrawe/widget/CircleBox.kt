@@ -4,7 +4,6 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -12,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.Fill
@@ -21,14 +19,85 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import androidx.compose.ui.unit.dp
 import vectors.Vec2
 import kotlin.math.PI
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
+fun LineBox(
+    modifier: Modifier,
+    onGetStartValue: () -> Double,
+    onMove: (current: Double, change: Double, start: Double) -> Unit
+) {
+    val pressedState = remember { mutableStateOf(false) }
+    val thumbPosition = remember { mutableStateOf(0) }
+    val thumbStartPosition = remember { mutableStateOf(0) }
+    val thumbPlusValue = remember { mutableStateOf(0.0) }
+    Box(modifier = modifier) {
+        val color = MaterialTheme.colors.primary
+        val thumbColor = MaterialTheme.colors.secondary
+        Canvas(
+            modifier = Modifier.fillMaxSize().clipToBounds()
+                .onPointerEvent(PointerEventType.Press) {
+                    pressedState.value = true
+
+                    val p = it.changes.first().position.toVec2()
+                    val s = size.toVec2() / 2.0
+                    thumbPlusValue.value = onGetStartValue()
+                    calculateMove(p, s, thumbPosition, thumbStartPosition, thumbPlusValue.value, onMove, false)
+
+                }
+                .onPointerEvent(PointerEventType.Move) {
+                    if (pressedState.value) {
+                        val p = it.changes.first().position.toVec2()
+                        val s = size.toVec2() / 2.0
+                        calculateMove(p, s, thumbPosition, thumbStartPosition, thumbPlusValue.value, onMove, true)
+                    }
+                }
+                .onPointerEvent(PointerEventType.Release) {
+                    pressedState.value = false
+                },
+
+            ) {
+            val c = size / 2f
+            val delta = 8f
+            val wid = c.width * 2 / 3
+            val thumbRadius = wid / 2
+
+
+            this.withTransform({
+                translate(c.width, c.height)
+            }
+            ) {
+
+                for (i in -12..12) {
+                    drawLine(
+                        color = color,
+                        start = Offset(-wid, i * delta),
+                        end = Offset(wid, i * delta),
+                        strokeWidth = 1f
+                    )
+                }
+                if (pressedState.value) {
+
+                    drawCircle(
+                        color = thumbColor,
+                        radius = thumbRadius,
+                        center = Offset(0f, thumbPosition.value.toFloat() * delta),
+                        style = Fill
+                    )
+
+                }
+            }
+        }
+
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
 fun CircleBox(
-    modifier : Modifier,
+    modifier: Modifier,
     onRotate: (current: Double, change: Double, start: Double) -> Unit
 ) {
     val pressedState = remember { mutableStateOf(false) }
@@ -92,6 +161,34 @@ fun CircleBox(
             }
         }
     }
+}
+
+private fun calculateMove(
+    p: Vec2,
+    s: Vec2,
+    thumbPosition: MutableState<Int>,
+    thumbStartPosition: MutableState<Int>,
+    plusValue:Double,
+    onMove: (current: Double, change: Double, start: Double) -> Unit,
+    isMove: Boolean,
+) {
+    val ps = (p - s)
+    val d = ps.y / 8.0
+
+    val c = if (isMove) {
+        val c2 = d - thumbPosition.value
+        c2
+    } else {
+        thumbStartPosition.value = d.toInt()
+        0f
+    }
+
+    thumbPosition.value = d.toInt()
+    onMove(
+        thumbStartPosition.value-thumbPosition.value.toDouble()+plusValue,
+        c.toDouble(),
+        plusValue,
+    )
 }
 
 private fun calculateRotor(

@@ -31,6 +31,7 @@ fun SaveToFileButton(vm: SaveFigure) {
         coroutineScope.launch {
             val dxf = vm.copy()
 
+
             Toolkit.getDefaultToolkit().systemClipboard.setContents(dxf, null)
 //                val fileList =
 //                    Toolkit.getDefaultToolkit().systemClipboard.availableDataFlavors //a(DataFlavor.javaFileListFlavor) as List<File>

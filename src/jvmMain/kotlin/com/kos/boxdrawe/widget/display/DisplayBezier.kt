@@ -5,8 +5,17 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableFloatState
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -15,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.drawscope.scale
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
@@ -25,6 +33,7 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.rememberTextMeasurer
 import com.kos.boxdrawe.drawer.drawFigures
 import com.kos.boxdrawe.presentation.BezierData
+import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.toOffset
 import com.kos.boxdrawe.widget.toVec2
 import vectors.Vec2
@@ -45,9 +54,17 @@ private fun indexOfPoint(points: List<Vec2>, position: Vec2, maxDistance: Double
     return index
 }
 
+private const val START_DOT_INDEX = -21
+private const val END_DOT_INDEX = -22
+
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData, stateText: MutableState<String>) {
+fun DisplayBezier(
+    displayScale: MutableFloatState,
+    pos: MutableState<Offset>,
+    vm: BezierData,
+    onSetStateText: (String) -> Unit,
+) {
 
     val figure = remember { vm.figure }
     val c1 = vm.c1.collectAsState()
@@ -58,14 +75,45 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData, stateText: Mu
     val selectIndex = remember { mutableIntStateOf(-1) }
     val selectedType = remember { mutableIntStateOf(0) }
 
-    var rotation by rememberSaveable("DisplayBezierRotation") { mutableStateOf(0f) }
-    var pos by rememberSaveable("DisplayBezierOffset") { mutableStateOf(Offset.Zero) }
     val measurer = rememberTextMeasurer()
     val scale = displayScale.value
+    val mousePointIndex = remember { mutableIntStateOf(1) }
+
+    LaunchedEffect(mousePointIndex.value) {
+        val mpv =  mousePointIndex.value
+        val helpText = when {
+            mpv == START_DOT_INDEX ||
+                    mousePointIndex.value == END_DOT_INDEX -> "При нажатии левой кнопкой происходит  добавление сегмента.\n" +
+                    "При нажатии правой кнопкой происходит удаление сегмента."
+
+            mpv < 0 -> ""
+            mpv % 3 != 0 -> "Захватите левой кнопкой для перемещении точки.\n" +
+                    "При нажатии средней кнопкой на белый кружочек сохраняется угол между соседникми точками.\n" +
+                    "При нажатии правой кнопкой на белый кружочек становится развернутым на 180."
+
+            mpv >= 0 -> "Захватите левой кнопкой для перемещении точки."
+            else -> ""
+        }
+        onSetStateText(helpText)
+    }
+
+    val octagon = remember(scale) {
+        val octagon = Path()
+        val r = 10f/scale
+        octagon.moveTo(r * sin(0.0).toFloat(), r * cos(0.0).toFloat())
+        for (i in 1..8) {
+            octagon.lineTo(
+                (r * sin((45 * PI * i) / 180)).toFloat(),
+                r * cos((45 * PI * i) / 180).toFloat()
+            )
+        }
+        octagon.close()
+        octagon
+    }
 
     Canvas(modifier = Modifier.fillMaxSize().clipToBounds().onPointerEvent(PointerEventType.Press) {
         val sp =
-            (it.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.toVec2() / scale.toDouble()
+            (it.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.value.toVec2() / scale.toDouble()
         // if (it.button == PointerButton.Primary) {
         selectIndex.value = indexOfPoint(c1.value, sp, 20.0)
         /// }
@@ -104,33 +152,21 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData, stateText: Mu
         selectedType.value = 0
     }.onPointerEvent(PointerEventType.Move) {
         val sp = Vec2.freqency(
-            (it.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.toVec2() / scale.toDouble(),
+            (it.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.value.toVec2() / scale.toDouble(),
             currentDistance.value
         )
-       val indexWhitePoint = indexOfPoint(c1.value, sp, 20.0)
+
         val v = selectIndex.value
-        if (Vec2.distance(cst.value, sp) < 20.0){
-            stateText.value="При нажатии левой кнопкой происходит  добавление сегмента.\n"+
-                    "При нажатии правой кнопкой происходит удаление сегмента.\n"
-
+        if (Vec2.distance(cst.value, sp) < 20.0) {
+            mousePointIndex.value = START_DOT_INDEX
         } else
-            if (Vec2.distance(cen.value, sp) < 20.0){
-                stateText.value="При нажатии левой кнопкой происходит  добавление сегмента.\n"+
-                        "При нажатии правой кнопкой происходит удаление сегмента.\n"
-            } else
-                if(indexWhitePoint%3!=0){
-                    stateText.value="Захватите левой кнопкой для перемещении точки.\n"+
+            if (Vec2.distance(cen.value, sp) < 20.0) {
+                mousePointIndex.value = END_DOT_INDEX
+            } else {
+                mousePointIndex.value = indexOfPoint(c1.value, sp, 20.0)
+            }
 
-                            "При нажатии средней кнопкой на белый кружочек сохраняется угол между соседникми точками.\n"+
-                            "При нажатии правой кнопкой на белый кружочек становится развернутым на 180.\n"
-                }else
-        if ( indexWhitePoint>= 0){
-            stateText.value="Захватите левой кнопкой для перемещении точки."
-
-        } else{
-            stateText.value=""
-        }
-            if (it.changes.first().pressed) {
+        if (it.changes.first().pressed) {
 
 
             if (v >= 0) {
@@ -149,7 +185,7 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData, stateText: Mu
         ) + PointerMatcher.stylus,
         onDrag = { offset ->
             if (selectIndex.value < 0)
-                pos += offset
+                pos.value += offset
         }
     )
     ) {
@@ -158,10 +194,10 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData, stateText: Mu
 
         this.withTransform(
             {
-                translate(pos.x, pos.y)
+                translate(pos.value.x, pos.value.y)
                 scale(scale = displayScale.value)
                 translate(c.width, c.height)
-            }){
+            }) {
 
             val gm =
                 20f * (if (scale > 100) 0.01f else if (scale > 10) 0.1f else if (scale < 0.5) 10f else 1f)
@@ -178,21 +214,26 @@ fun DisplayBezier(displayScale: MutableFloatState, vm: BezierData, stateText: Mu
             c1.value.let { bezier ->
 
                 bezier.forEachIndexed { i, c ->
-                    val color = if (selectIndex.value == i) Color.Green else Color.LightGray
+                    val color = if (selectIndex.value == i) ThemeColors.bezierPointSelect else
+                        if (i % 3 == 0) ThemeColors.bezierPoint else ThemeColors.bezierPointTangent
                     this.drawCircle(color, radius = 10f / scale, center = c.toOffset())
                 }
-val octagon =Path()
-                val r=5.5f
-    octagon.moveTo(r*sin(0.0).toFloat(), r*cos(0.0).toFloat())
-                for (i in 1..8){
-                    octagon.lineTo(
-                        (r*sin((45*PI*i)/180)).toFloat(), r*cos((45* PI*i)/180).toFloat()
-                    )
+
+                withTransform(
+                    {
+                        translate(cst.value.x.toFloat(), cst.value.y.toFloat())
+
+                    }
+                ) {
+                    this.drawPath(octagon, ThemeColors.bezierPointButton)
                 }
-                octagon.close()
-                this.translate (cst.value.x.toFloat(), cst.value.y.toFloat()){
-                this.drawPath(octagon,Color.Yellow)}
-                this.drawCircle(Color.Yellow, 10f / scale, cen.value.toOffset())
+                withTransform(
+                    {
+                        translate(cen.value.x.toFloat(), cen.value.y.toFloat())
+                    }
+                ) {
+                    this.drawPath(octagon, ThemeColors.bezierPointButton)
+                }
 
                 this.drawPoints(
                     bezier.map { it.toOffset() },

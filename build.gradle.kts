@@ -92,7 +92,7 @@ kotlin {
             implementation("io.github.pdvrieze.xmlutil:serialization:0.86.3")
             implementation("androidx.collection:collection:1.4.0-rc01")
             implementation("androidx.collection:collection-ktx:1.4.0-rc01")
-            implementation("org.jetbrains.skiko:skiko-awt-runtime-$target:0.7.90")
+            implementation("org.jetbrains.skiko:skiko-awt-runtime-$target:0.8.4")
             implementation("com.darkrockstudios:mpfilepicker:3.1.0")
             implementation("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}")
             implementation("org.locationtech.jts:jts-core:1.19.0")
@@ -126,7 +126,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "boxdrawer"
-            packageVersion = "2.3.0"
+            packageVersion = "2.4.0"
             windows {
                 iconFile.set(project.file("robot.ico"))
             }

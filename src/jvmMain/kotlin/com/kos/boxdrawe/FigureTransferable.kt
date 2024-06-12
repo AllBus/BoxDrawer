@@ -2,6 +2,7 @@ package com.kos.boxdrawe
 
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
+import java.awt.datatransfer.UnsupportedFlavorException
 import java.io.File
 
 class FigureTransferable(val file: File) : Transferable {
@@ -24,6 +25,9 @@ class FigureTransferable(val file: File) : Transferable {
     }
 
     override fun getTransferData(flavor: DataFlavor): List<File> {
-        return listOf(file)
+        if (flavor in supported) {
+            return listOf(file)
+        }
+        throw UnsupportedFlavorException(flavor)
     }
 }
