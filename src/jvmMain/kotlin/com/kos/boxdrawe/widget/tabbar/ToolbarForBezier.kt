@@ -24,7 +24,18 @@ import com.kos.boxdrawe.widget.SegmentDoubleButton
 import com.kos.boxdrawe.widget.SimpleEditText
 import com.kos.boxdrawe.widget.TabContentModifier
 import com.kos.boxdrawe.widget.model.ButtonDoubleData
+import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.bezierFigure
+import com.kos.boxdrawer.generated.resources.bezierFigureCount
+import com.kos.boxdrawer.generated.resources.bezierFigureDistance
+import com.kos.boxdrawer.generated.resources.bezierFigureLabel
+import com.kos.boxdrawer.generated.resources.bezierFigurePadding
+import com.kos.boxdrawer.generated.resources.bezierNewLineButton
+import com.kos.boxdrawer.generated.resources.metricMM
+import com.kos.boxdrawer.generated.resources.metricPercent
+import com.kos.boxdrawer.generated.resources.toolsButtonCopyCode
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ToolbarForBezier(vm: BezierData) {
@@ -82,7 +93,7 @@ fun ToolbarForBezier(vm: BezierData) {
             Spacer(
                 Modifier.height(40.dp)
             )
-            RunButton("Создать линию") {
+            RunButton(stringResource(Res.string.bezierNewLineButton)) {
                 coroutineScope.launch {
                     val text = bezierText.value
                     if (text.isEmpty())
@@ -96,10 +107,11 @@ fun ToolbarForBezier(vm: BezierData) {
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            NumericUpDown("Расстояние", "%", pathRast)
-            NumericUpDown("Отсуп", "%", pathOffset)
-            NumericUpDown("Количество", "шт", pathCount)
-            EditText(title = "Фигура", value = pathFigure, enabled = true) { vm.createFigure(it) }
+            Label(stringResource(Res.string.bezierFigureLabel))
+            NumericUpDown(stringResource(Res.string.bezierFigureDistance), stringResource(Res.string.metricPercent), pathRast)
+            NumericUpDown(stringResource(Res.string.bezierFigurePadding), stringResource(Res.string.metricPercent), pathOffset)
+            NumericUpDown(stringResource(Res.string.bezierFigureCount), stringResource(Res.string.metricMM), pathCount)
+            EditText(title = stringResource(Res.string.bezierFigure), value = pathFigure, enabled = true) { vm.createFigure(it) }
         }
 
 
@@ -115,7 +127,7 @@ fun ToolbarActionForBezier(vm: BezierData) {
         SaveToFileButton(vm)
 
         Spacer(Modifier.height(4.dp))
-        RunButton("Скопировать код") {
+        RunButton(stringResource(Res.string.toolsButtonCopyCode)) {
             coroutineScope.launch {
                 clipboardManager.setText(AnnotatedString(vm.print()))
             }

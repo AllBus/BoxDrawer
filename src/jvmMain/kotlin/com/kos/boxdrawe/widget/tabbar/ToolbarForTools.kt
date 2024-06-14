@@ -3,42 +3,51 @@ package com.kos.boxdrawe.widget.tabbar
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.onClick
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.DxfToolsData
 import com.kos.boxdrawe.presentation.ToolsData
-import com.kos.boxdrawe.widget.CheckboxK
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.TabContentModifier
-import com.kos.boxdrawe.widget.showFileChooser
 import com.kos.boxdrawe.widget.showLoadFileChooser
+import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.metricMM
+import com.kos.boxdrawer.generated.resources.toolsButtonCopyCode
+import com.kos.boxdrawer.generated.resources.toolsButtonOpenFile
+import com.kos.boxdrawer.generated.resources.toolsCheckBoxTemplateEditor
+import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsBoardLabel
+import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsBoardWeight
+import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsHoleDropHeight
+import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsHoleDropWidth
+import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsHoleHeight
+import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsHoleLabel
+import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsHoleOffset
+import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsTemplateComboBox
+import com.kos.boxdrawer.generated.resources.toolsFiguresList
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import turtoise.DrawerSettings
 import turtoise.TemplateAlgorithm
 
@@ -63,8 +72,8 @@ fun ToolbarForTools(vm: ToolsData) {
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
             Row {
-                Label("Фигуры")
-                RunCheckBox(checkboxEditor.value, "Редактор меню") { checked ->
+                Label(stringResource(Res.string.toolsFiguresList))
+                RunCheckBox(checkboxEditor.value, stringResource(Res.string.toolsCheckBoxTemplateEditor)) { checked ->
                     vm.templateData.checkboxEditor.value = checked
                 }
             }
@@ -94,7 +103,7 @@ fun ToolbarForTools(vm: ToolsData) {
             val selectedMovie = remember { vm.tools.settings }
 
             ComboBox(
-                label = "Шаблон",
+                label = stringResource(Res.string.toolsDrawerSettingsTemplateComboBox),
                 selectedTitle = selectedMovie.value.name,
                 items = settingsList.value.group,
                 onClick = { item -> vm.selectSettings(item) }
@@ -103,39 +112,28 @@ fun ToolbarForTools(vm: ToolsData) {
                 modifier = Modifier.weight(weight = 1f, fill = true)
             ) {
                 Text(
-                    text = "Доска",
+                    text = stringResource(Res.string.toolsDrawerSettingsBoardLabel),
                     modifier = Modifier.fillMaxWidth(),
                     softWrap = false,
                     textAlign = TextAlign.Center
                 )
-                NumericUpDown("Толщина", "мм", boardWeight)
+                NumericUpDown(stringResource(Res.string.toolsDrawerSettingsBoardWeight), stringResource(Res.string.metricMM), boardWeight)
             }
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
             Text(
-                text = "Отверстие",
+                text = stringResource(Res.string.toolsDrawerSettingsHoleLabel),
                 modifier = Modifier.fillMaxWidth(),
                 softWrap = false,
                 textAlign = TextAlign.Center
             )
-            NumericUpDown("Высота", "мм", holeWeight)
-            NumericUpDown("Уменьшение длины", "мм", holeDrop)
-            NumericUpDown("Уменьшение высоты", "мм", holeDropHeight)
-            NumericUpDown("Отступ от края", "мм", holeOffset)
+            NumericUpDown(stringResource(Res.string.toolsDrawerSettingsHoleHeight), stringResource(Res.string.metricMM), holeWeight)
+            NumericUpDown(stringResource(Res.string.toolsDrawerSettingsHoleDropWidth), stringResource(Res.string.metricMM), holeDrop)
+            NumericUpDown(stringResource(Res.string.toolsDrawerSettingsHoleDropHeight), stringResource(Res.string.metricMM), holeDropHeight)
+            NumericUpDown(stringResource(Res.string.toolsDrawerSettingsHoleOffset), stringResource(Res.string.metricMM), holeOffset)
         }
-//        Column(
-//            modifier = Modifier.weight(weight = 1f, fill = true)
-//        ) {
-//            Text(
-//                text = "Паз",
-//                modifier = Modifier.fillMaxWidth(),
-//                softWrap = false,
-//                textAlign = TextAlign.Center
-//            )
-//            NumericUpDown("Уменьшение длины", "мм", zigDrop)
-//        }
     }
 }
 
@@ -197,7 +195,7 @@ fun ToolbarActionForTools(vm: ToolsData) {
         SaveToFileButton(vm.templateData)
 
         Spacer(Modifier.height(4.dp))
-        RunButton("Скопировать код") {
+        RunButton(stringResource(Res.string.toolsButtonCopyCode)) {
             coroutineScope.launch {
                 clipboardManager.setText(AnnotatedString(vm.templateData.print()))
             }
@@ -208,51 +206,5 @@ fun ToolbarActionForTools(vm: ToolsData) {
 //                showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.templateData.loadDxf(f) }
 //            }
 //        }
-    }
-}
-
-@Composable
-fun ToolbarForDxf(vm: DxfToolsData) {
-
-    val scaleValue = remember { vm.scaleEdit }
-    val colorValue = remember { vm.scaleColor }
-    val scaleValue2 = remember { vm.scaleEdit2 }
-    val colorValue2 = remember { vm.scaleColor2 }
-    Row(
-        modifier = TabContentModifier
-    ) {
-        Column {
-            Row {
-                NumericUpDown("Цвет DXF", "", colorValue, modifier = Modifier.weight(1f))
-                NumericUpDown("Масштаб", "", scaleValue, modifier = Modifier.weight(3f))
-            }
-            Row {
-                NumericUpDown("Цвет DXF", "", colorValue2, modifier = Modifier.weight(1f))
-                NumericUpDown("Масштаб", "", scaleValue2, modifier = Modifier.weight(3f))
-            }
-        }
-    }
-}
-
-@Composable
-fun ToolbarActionForDxf(vm: DxfToolsData) {
-    val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
-    Column(
-    ) {
-        SaveToFileButton(vm)
-
-        Spacer(Modifier.height(4.dp))
-        RunButton("Скопировать код") {
-            coroutineScope.launch {
-                clipboardManager.setText(AnnotatedString(vm.print()))
-            }
-        }
-        Spacer(Modifier.height(4.dp))
-        RunButton("Открыть файл") {
-            coroutineScope.launch {
-                showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.loadDxf(f) }
-            }
-        }
     }
 }

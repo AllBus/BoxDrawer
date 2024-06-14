@@ -56,6 +56,7 @@ import com.kos.boxdrawer.generated.resources.rekaGroupAngle
 import com.kos.boxdrawer.generated.resources.rekaGroupShift
 import com.kos.boxdrawer.generated.resources.rekaPadding
 import com.kos.boxdrawer.generated.resources.rekaPoints
+import com.kos.boxdrawer.generated.resources.toolsButtonCopyCode
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import turtoise.rect.Kubik.Companion.STORONA_C
@@ -313,7 +314,7 @@ fun ToolbarActionForReka(vm: RekaToolsData) {
         SaveToFileButton(vm)
 
         Spacer(Modifier.height(4.dp))
-        RunButton("Скопировать код") {
+        RunButton(stringResource(Res.string.toolsButtonCopyCode)) {
             coroutineScope.launch {
                 clipboardManager.setText(AnnotatedString(vm.print()))
             }

@@ -42,7 +42,9 @@ import com.kos.boxdrawe.themes.ThemeColors
 
 @Composable
 fun NumericUpDown(
-    title: String, postfix: String, value: NumericTextFieldState,
+    title: String,
+    postfix: String,
+    value: NumericTextFieldState,
     fieldMaxWidth: Dp = 160.dp,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -104,7 +106,9 @@ fun NumericUpDown(
 
 @Composable
 fun NumericUpDownLine(
-    title: String, postfix: String, value: NumericTextFieldState,
+    title: String,
+    postfix: String,
+    value: NumericTextFieldState,
     fieldMaxWidth: Dp = 160.dp,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,

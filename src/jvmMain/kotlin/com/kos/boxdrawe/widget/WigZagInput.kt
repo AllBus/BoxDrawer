@@ -12,6 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.ZigZagState
+import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.boxPazDelta
+import com.kos.boxdrawer.generated.resources.boxPazLabel
+import com.kos.boxdrawer.generated.resources.boxPazLength
+import com.kos.boxdrawer.generated.resources.boxPazWeight
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ZigZagInput(
@@ -26,14 +32,14 @@ fun ZigZagInput(
     val WheightInput = remember { zigState.height }
 
     Column(modifier = modifier) {
-        Label(title, singleLine = true)
-        NumericUpDown(if (drawNames) "Длина паза" else "", "", WwidthInput)
-        NumericUpDown(if (drawNames) "Дельта" else "", "", WdeltaInput)
-        NumericUpDown(if (drawNames) "Толщина паза" else "", "", WheightInput)
-        RunCheckBox(Wchecked.value, if (drawNames) "Есть" else "", { c ->
+  //      Label(title, singleLine = true)
+        RunCheckBox(Wchecked.value, title) { c ->
             Wchecked.value = c
             zigState.redrawBox()
-        })
+        }
+        NumericUpDown( "", "", WwidthInput)
+        NumericUpDown("", "", WdeltaInput)
+        NumericUpDown( "", "", WheightInput)
     }
 }
 
@@ -43,10 +49,10 @@ fun ZigZagLabel(
 ){
     Column(modifier = modifier.padding(end = 2.dp),
         horizontalAlignment = Alignment.End) {
-        Label("Пазы", singleLine = true)
+        Label(stringResource(Res.string.boxPazLabel), singleLine = true)
         Text(
             modifier = Modifier.padding(vertical = 4.dp),
-            text = "Длина",
+            text = stringResource(Res.string.boxPazLength),
             fontSize = LocalTextStyle.current.fontSize,
 
             softWrap = false,
@@ -54,21 +60,14 @@ fun ZigZagLabel(
         )
         Text(
             modifier = Modifier.padding(vertical = 4.dp),
-            text = "Дельта",
+            text = stringResource(Res.string.boxPazDelta),
             fontSize = LocalTextStyle.current.fontSize,
             softWrap = false,
             textAlign = TextAlign.End,
         )
         Text(
             modifier = Modifier.padding(vertical = 4.dp),
-            text = "Ширина",
-            fontSize = LocalTextStyle.current.fontSize,
-            softWrap = false,
-            textAlign = TextAlign.End,
-        )
-        Text(
-            modifier = Modifier.padding(vertical = 2.dp),
-            text =  "Есть",
+            text = stringResource(Res.string.boxPazWeight),
             fontSize = LocalTextStyle.current.fontSize,
             softWrap = false,
             textAlign = TextAlign.End,

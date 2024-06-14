@@ -21,7 +21,7 @@ import vectors.Vec2
 import java.io.File
 import java.io.FileInputStream
 
-class DxfToolsData(override val tools: ITools): SaveFigure {
+class DxfToolsData(override val tools: ITools) : SaveFigure {
 
     private val loadedFigure = MutableStateFlow<IFigure>(FigureEmpty)
     val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
@@ -50,12 +50,17 @@ class DxfToolsData(override val tools: ITools): SaveFigure {
 
     suspend fun print(): String {
         val figures = currentFigure.value
-        return "f ("+figures.print()+")"
+        return "f (" + figures.print() + ")"
     }
 
-    suspend fun onPress(point: Vec2, button: Int, scale: Float, selectedItem: MutableStateFlow<List<IFigure>>) {
+    suspend fun onPress(
+        point: Vec2,
+        button: Int,
+        scale: Float,
+        selectedItem: MutableStateFlow<List<IFigure>>
+    ) {
         val figure = currentFigure.value
-        val result= PaintUtils.findFiguresAtCursor(point, 1.0, listOf(figure))
+        val result = PaintUtils.findFiguresAtCursor(point, 1.0, listOf(figure))
         selectedItem.value = result
     }
 
@@ -63,29 +68,35 @@ class DxfToolsData(override val tools: ITools): SaveFigure {
         return currentFigure.value
     }
 
-    fun redrawBox(){
+    fun redrawBox() {
         val scale = scaleEdit.decimal
         val color1 = scaleColor.decimal.toInt()
-        if (scale!= 0.0){
+        if (scale != 0.0) {
             val f = loadedFigure.value
 
             val scale2 = scaleEdit2.decimal
             val color2 = scaleColor2.decimal.toInt()
-            val c1 = scaleForColor(  com.jsevy.jdxf.DXFColor.getRgbColor(color1), f, scale)
-            val c2 = scaleForColor(  com.jsevy.jdxf.DXFColor.getRgbColor(color2), c1, scale2)
-            currentFigure.value = c2
-         }
+
+            val scale3 = scaleEdit3.decimal
+            val color3 = scaleColor3.decimal.toInt()
+
+            val c1 = scaleForColor(com.jsevy.jdxf.DXFColor.getRgbColor(color1), f, scale)
+            val c2 = scaleForColor(com.jsevy.jdxf.DXFColor.getRgbColor(color2), c1, scale2)
+            val c3 = scaleForColor(com.jsevy.jdxf.DXFColor.getRgbColor(color3), c2, scale3)
+            currentFigure.value = c3
+        }
     }
 
     private fun scaleForColor(rgbColor: Int, figure: IFigure, scale: Double): IFigure {
-        return when (figure){
+        return when (figure) {
             is FigureList -> FigureList(
                 figure.collection().map { f ->
                     scaleForColor(rgbColor, f, scale)
                 }
             )
+
             is FigureColor -> {
-              //  println("Scale for $rgbColor ${figure.color} ${figure.color == rgbColor}")
+                //  println("Scale for $rgbColor ${figure.color} ${figure.color == rgbColor}")
                 if (figure.color == rgbColor) {
 
                     FigureColor(
@@ -101,31 +112,35 @@ class DxfToolsData(override val tools: ITools): SaveFigure {
                     )
                 }
             }
+
             is FigureComposition ->
                 figure.create(scaleForColor(rgbColor, figure.figure, scale))
+
             else -> figure
         }
     }
 
     private fun changeScale(figure: IFigure, scale: Double): IFigure {
-        return when (figure){
+        return when (figure) {
             is FigurePolygon -> {
                 val rect = figure.rect()
                 val c = Vec2(rect.centerX, rect.centerY)
-                val points = figure.points.map { (it - c)*scale+c }
-               // println("Super $scale")
+                val points = figure.points.map { (it - c) * scale + c }
+                // println("Super $scale")
                 figure.create(points)
             }
+
             is FigureEllipse -> {
                 figure.create(
                     center = figure.center,
-                    radius = figure.radius*scale,
-                    radiusMinor = figure.radiusMinor*scale,
+                    radius = figure.radius * scale,
+                    radiusMinor = figure.radiusMinor * scale,
                     rotation = figure.rotation,
                     segmentStart = figure.segmentStart,
                     segmentSweep = figure.segmentSweep
-                    )
+                )
             }
+
             is FigureArray ->
                 FigureArray(
                     changeScale(figure.figure, scale),
@@ -136,27 +151,33 @@ class DxfToolsData(override val tools: ITools): SaveFigure {
                     angle = figure.angle,
                     scaleX = figure.scaleX,
                     scaleY = figure.scaleY,
-                    figureStart = figure.figureStart?.let {  changeScale(it, scale) },
-                    figureEnd = figure.figureEnd?.let {  changeScale(it, scale) },
+                    figureStart = figure.figureStart?.let { changeScale(it, scale) },
+                    figureEnd = figure.figureEnd?.let { changeScale(it, scale) },
                 )
+
             is FigureComposition ->
                 figure.create(changeScale(figure.figure, scale))
+
             is FigureList ->
                 FigureList(
                     figure.collection().map { f ->
-                        changeScale( f, scale)
+                        changeScale(f, scale)
                     }
                 )
+
             else -> figure
         }
 
     }
 
-    val scaleEdit = NumericTextFieldState(1.0) { redrawBox() }
-    val scaleColor = NumericTextFieldState(0.0, digits = 0) { redrawBox() }
+    val scaleEdit = NumericTextFieldState(1.0, minValue = 0.000001) { redrawBox() }
+    val scaleColor = NumericTextFieldState(0.0, digits = 0, maxValue = 1000.0) { redrawBox() }
 
-    val scaleEdit2 = NumericTextFieldState(1.0) { redrawBox() }
-    val scaleColor2 = NumericTextFieldState(0.0, digits = 0) { redrawBox() }
+    val scaleEdit2 = NumericTextFieldState(1.0, minValue = 0.000001) { redrawBox() }
+    val scaleColor2 = NumericTextFieldState(0.0, digits = 0, maxValue = 1000.0) { redrawBox() }
 
- //   val selectedItem = MutableStateFlow<List<IFigure>>(emptyList())
+    val scaleEdit3 = NumericTextFieldState(1.0, minValue = 0.000001) { redrawBox() }
+    val scaleColor3 = NumericTextFieldState(0.0, digits = 0, maxValue = 1000.0) { redrawBox() }
+
+    //   val selectedItem = MutableStateFlow<List<IFigure>>(emptyList())
 }

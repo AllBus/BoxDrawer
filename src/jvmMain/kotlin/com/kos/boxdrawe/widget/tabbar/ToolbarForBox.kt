@@ -26,14 +26,28 @@ import com.kos.boxdrawer.generated.resources.act_paz
 import com.kos.boxdrawer.generated.resources.boxBottom
 import com.kos.boxdrawer.generated.resources.boxEdges
 import com.kos.boxdrawer.generated.resources.boxHeight
+import com.kos.boxdrawer.generated.resources.boxPazDelta
+import com.kos.boxdrawer.generated.resources.boxPazInBottomPolka
+import com.kos.boxdrawer.generated.resources.boxPazInHeight
+import com.kos.boxdrawer.generated.resources.boxPazInPolka
+import com.kos.boxdrawer.generated.resources.boxPazInWeight
+import com.kos.boxdrawer.generated.resources.boxPazInWidth
+import com.kos.boxdrawer.generated.resources.boxPazIsEnable
+import com.kos.boxdrawer.generated.resources.boxPazLabel
+import com.kos.boxdrawer.generated.resources.boxPazLength
+import com.kos.boxdrawer.generated.resources.boxPazWeight
 import com.kos.boxdrawer.generated.resources.boxPolki
 import com.kos.boxdrawer.generated.resources.boxPreviewStyle
 import com.kos.boxdrawer.generated.resources.boxSizeInside
 import com.kos.boxdrawer.generated.resources.boxSizeWithBoard
 import com.kos.boxdrawer.generated.resources.boxTop
+import com.kos.boxdrawer.generated.resources.boxTopHoleOffset
+import com.kos.boxdrawer.generated.resources.boxTopOffset
+import com.kos.boxdrawer.generated.resources.boxTopRadius
 import com.kos.boxdrawer.generated.resources.boxWeight
 import com.kos.boxdrawer.generated.resources.boxWidth
 import com.kos.boxdrawer.generated.resources.metricMM
+import com.kos.boxdrawer.generated.resources.toolsButtonCopyCode
 import io.github.windedge.table.DataTable
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -185,17 +199,17 @@ private fun ZigZagTable(
     DataTable(
         modifier = Modifier.size(400.dp, 400.dp),
         columns = {
-            column { Label("Пазы", singleLine = true) }
-            column { Label("длина", singleLine = true) }
-            column { Label("ширина", singleLine = true) }
-            column { Label("высота", singleLine = true) }
-            column { Label("полки", singleLine = true) }
-            column { Label("дно полки", singleLine = true) }
+            column { Label(stringResource(Res.string.boxPazLabel), singleLine = true) }
+            column { Label(stringResource(Res.string.boxPazInWidth), singleLine = true) }
+            column { Label(stringResource(Res.string.boxPazInWeight), singleLine = true) }
+            column { Label(stringResource(Res.string.boxPazInHeight), singleLine = true) }
+            column { Label(stringResource(Res.string.boxPazInPolka), singleLine = true) }
+            column { Label(stringResource(Res.string.boxPazInBottomPolka), singleLine = true) }
 
         }
     ) {
         row {
-            cell { Label("Длина паза", singleLine = true) }
+            cell { Label(stringResource(Res.string.boxPazLength), singleLine = true) }
             cell {
                 val WwidthInput = remember { vm.widthZigState.width }
                 NumericUpDown("", "", WwidthInput)
@@ -219,7 +233,7 @@ private fun ZigZagTable(
         }
 
         row {
-            cell { Label("Дельта", singleLine = true) }
+            cell { Label(stringResource(Res.string.boxPazDelta), singleLine = true) }
             cell {
                 val WwidthInput = remember { vm.widthZigState.delta }
                 NumericUpDown("", "", WwidthInput)
@@ -243,7 +257,7 @@ private fun ZigZagTable(
         }
 
         row {
-            cell { Label("Толщина паза", singleLine = true) }
+            cell { Label(stringResource(Res.string.boxPazWeight), singleLine = true) }
             cell {
                 val WwidthInput = remember { vm.widthZigState.height }
                 NumericUpDown("", "", WwidthInput)
@@ -267,7 +281,7 @@ private fun ZigZagTable(
         }
 
         row {
-            cell { Label("Есть", singleLine = true) }
+            cell { Label(stringResource(Res.string.boxPazIsEnable), singleLine = true) }
             cell {
                 val checked = remember { vm.widthZigState.enable }
                 RunCheckBox(checked.value, "") { c ->
@@ -313,34 +327,34 @@ private fun ZigZagBox(vm: BoxData) {
         ZigZagLabel()
         ZigZagInput(
             modifier = Modifier.weight(weight = 1f, fill = true),
-            title = "длина",
+            title = stringResource(Res.string.boxPazInWidth),
             drawNames = false,
             zigState = vm.widthZigState
 
         )
         ZigZagInput(
             modifier = Modifier.weight(weight = 1f, fill = true),
-            title = "ширина",
+            title = stringResource(Res.string.boxPazInWeight),
             drawNames = false,
             zigState = vm.weightZigState
 
         )
         ZigZagInput(
             modifier = Modifier.weight(weight = 1f, fill = true),
-            title = "высота",
+            title = stringResource(Res.string.boxPazInHeight),
             drawNames = false,
             zigState = vm.heightZigState
 
         )
         ZigZagInput(
             modifier = Modifier.weight(weight = 1f, fill = true),
-            title = "полки",
+            title = stringResource(Res.string.boxPazInPolka),
             drawNames = false,
             zigState = vm.polkaZigState
         )
         ZigZagInput(
             modifier = Modifier.weight(weight = 1f, fill = true),
-            title = "дно полки",
+            title = stringResource(Res.string.boxPazInBottomPolka),
             drawNames = false,
             zigState = vm.polkaPolZigState
         )
@@ -388,21 +402,21 @@ private fun ColumnScope.BoxAdvancedProperties(
             Row() {
                 Label(stringResource(Res.string.boxTop), Modifier.width(60.dp))
                 NumericUpDown(
-                    "↕",
+                    stringResource(Res.string.boxTopOffset),
                     "",
                     topOffset,
                     modifier = Modifier.width(60.dp),
                     titleWeight = false
                 )
                 NumericUpDown(
-                    "о",
+                    stringResource(Res.string.boxTopHoleOffset),
                     "",
                     topHoleOffset,
                     modifier = Modifier.width(60.dp),
                     titleWeight = false
                 )
                 NumericUpDown(
-                    "◵",
+                    stringResource(Res.string.boxTopRadius),
                     "",
                     topRadius,
                     modifier = Modifier.width(60.dp),
@@ -428,21 +442,21 @@ private fun ColumnScope.BoxAdvancedProperties(
             Row() {
                 Label(stringResource(Res.string.boxBottom), Modifier.width(60.dp))
                 NumericUpDown(
-                    "↕",
+                    stringResource(Res.string.boxTopOffset),
                     "",
                     bottomOffset,
                     modifier = Modifier.width(60.dp),
                     titleWeight = false
                 )
                 NumericUpDown(
-                    "о",
+                    stringResource(Res.string.boxTopHoleOffset),
                     "",
                     bottomHoleOffset,
                     modifier = Modifier.width(60.dp),
                     titleWeight = false
                 )
                 NumericUpDown(
-                    "◵",
+                    stringResource(Res.string.boxTopRadius),
                     "",
                     bottomRadius,
                     modifier = Modifier.width(60.dp),
@@ -489,7 +503,7 @@ fun ToolbarActionForBox(vm: BoxData) {
         SaveToFileButton(vm)
 
         Spacer(Modifier.height(4.dp))
-        RunButton("Скопировать код") {
+        RunButton(stringResource(Res.string.toolsButtonCopyCode)) {
             coroutineScope.launch {
                 clipboardManager.setText(AnnotatedString(vm.print()))
             }

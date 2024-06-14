@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -17,35 +19,43 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.TortoiseData
 import com.kos.boxdrawe.widget.EditTextField
+import com.kos.boxdrawe.widget.EditTextField2
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.TabContentModifier
+import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.metricMM
+import com.kos.boxdrawer.generated.resources.toolsButtonCopyProgram
+import com.kos.boxdrawer.generated.resources.toolsButtonOpenFile
+import com.kos.boxdrawer.generated.resources.tortoiseFigureField
 import com.kos.boxdrawer.presentation.EditPosition
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateMemory
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ToolbarForTortoise(vm: TortoiseData) {
     val text = rememberSaveable(key = "ToolbarForTortoise.Text") { vm.text }
-
-
+  //  val text2 = rememberSaveable(key = "ToolbarForTortoise.Text2") { mutableStateOf(TextFieldState("")) }
 
     Row(
         modifier = TabContentModifier
     ) {
-
-
         Column(
             modifier = Modifier.weight(weight = 2f, fill = true).padding(end = 8.dp)
         ) {
-            EditTextField("Фигуры", text, true,
+            EditTextField(stringResource(Res.string.tortoiseFigureField), text, true,
                 onMove = { tv ->
                     vm.findHelp(vm.text.value.text, vm.text.value.selection)
                 }, onChange = {
                     vm.createTortoise()
             })
+//            EditTextField2(stringResource(Res.string.tortoiseFigureField), text2, true,
+//                onChange = {
+//                    vm.createTortoise()
+//                })
         }
     }
 }
@@ -59,7 +69,7 @@ fun ToolbarActionForTortoise(vm: TortoiseData) {
     ) {
         SaveToFileButton(vm)
         Spacer(Modifier.height(4.dp))
-        RunButton("Скопировать как программу") {
+        RunButton(stringResource(Res.string.toolsButtonCopyProgram)) {
             coroutineScope.launch {
                 clipboardManager.setText(AnnotatedString(vm.printCommand()))
             }

@@ -39,6 +39,7 @@ import com.kos.boxdrawer.generated.resources.rezSoedinenie
 import com.kos.boxdrawer.generated.resources.rezTitleArea
 import com.kos.boxdrawer.generated.resources.rezTitleCount
 import com.kos.boxdrawer.generated.resources.rezTitleSoedinenie
+import com.kos.boxdrawer.generated.resources.toolsButtonCopyCode
 import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -142,7 +143,7 @@ fun ToolbarActionForSoft(vm: SoftRezData){
     ) {
         SaveToFileButton(vm)
         Spacer(Modifier.height(4.dp))
-        RunButton("Скопировать код") {
+        RunButton(stringResource(Res.string.toolsButtonCopyCode)) {
             coroutineScope.launch {
                 clipboardManager.setText(AnnotatedString(vm.print()))
             }

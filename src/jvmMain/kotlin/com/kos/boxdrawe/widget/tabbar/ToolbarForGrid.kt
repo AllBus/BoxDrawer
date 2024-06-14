@@ -20,6 +20,8 @@ import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.TabContentModifier
 import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.gridButtonCreateFromText
+import com.kos.boxdrawer.generated.resources.gridButtonTextFromGrid
 import com.kos.boxdrawer.generated.resources.gridCellsInHorizontal
 import com.kos.boxdrawer.generated.resources.gridCellsInVertical
 import com.kos.boxdrawer.generated.resources.gridCheckInnerFrom
@@ -37,7 +39,6 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ToolbarForGrid(vm: GridData) {
-    val coroutineScope = rememberCoroutineScope()
     var roundChecked by remember { vm.roundChecked }
     var innerChecked by remember { vm.innerChecked }
 
@@ -141,11 +142,11 @@ fun ToolbarActionForGrid(vm: GridData) {
         SaveToFileButton(vm)
 
         Spacer(Modifier.height(4.dp))
-        RunButton("Посторить по тексту") {
+        RunButton(stringResource(Res.string.gridButtonCreateFromText)) {
             vm.createFromText()
         }
         Spacer(Modifier.height(4.dp))
-        RunButton("Получить текст") {
+        RunButton(stringResource(Res.string.gridButtonTextFromGrid)) {
             vm.saveToText()
         }
     }

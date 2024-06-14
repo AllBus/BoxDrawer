@@ -53,7 +53,19 @@ import com.kos.boxdrawe.widget.tabbar.ToolbarForReka
 import com.kos.boxdrawe.widget.tabbar.ToolbarForSoft
 import com.kos.boxdrawe.widget.tabbar.ToolbarForTools
 import com.kos.boxdrawe.widget.tabbar.ToolbarForTortoise
+import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.tabBezier
+import com.kos.boxdrawer.generated.resources.tabBox
+import com.kos.boxdrawer.generated.resources.tabDxf
+import com.kos.boxdrawer.generated.resources.tabGrid
+import com.kos.boxdrawer.generated.resources.tabReka
+import com.kos.boxdrawer.generated.resources.tabSettings
+import com.kos.boxdrawer.generated.resources.tabSoft
+import com.kos.boxdrawer.generated.resources.tabTor
+import com.kos.boxdrawer.generated.resources.tabTortoise
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import java.io.File
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
@@ -79,7 +91,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                     selected = info.id == tabIndex.value,
                     onClick = { vm.value.tabIndex.value = info.id },
                     modifier = Modifier,
-                    text = { Text(info.title) },
+                    text = { Text(stringResource(info.title)) },
                 )
             }
         }
@@ -225,7 +237,7 @@ fun TabBarPreview() {
 
 class TabInfo(
     val id: Int,
-    val title: String,
+    val title: StringResource,
 )
 
 object BoxDrawerToolBar {
@@ -240,14 +252,14 @@ object BoxDrawerToolBar {
     const val TAB_TOOLS = 8
 
     val tabs = listOf(
-        TabInfo(TAB_BOX, "Коробка"),
-        TabInfo(TAB_TORTOISE, "Фигуры"),
-        TabInfo(TAB_GRID, "Сетка"),
-        TabInfo(TAB_SOFT, "Мягкий рез"),
-        TabInfo(TAB_BEZIER, "Безье"),
-        TabInfo(TAB_BUBLIK, "Тор"),
-        TabInfo(TAB_REKA, "Река"),
-        TabInfo(TAB_DXF, "DXF"),
-        TabInfo(TAB_TOOLS, "Инструменты"),
+        TabInfo(TAB_BOX, Res.string.tabBox),
+        TabInfo(TAB_TORTOISE, Res.string.tabTortoise),
+        TabInfo(TAB_GRID, Res.string.tabGrid),
+        TabInfo(TAB_SOFT, Res.string.tabSoft),
+        TabInfo(TAB_BEZIER, Res.string.tabBezier),
+        TabInfo(TAB_BUBLIK, Res.string.tabTor),
+        TabInfo(TAB_REKA, Res.string.tabReka),
+        TabInfo(TAB_DXF, Res.string.tabDxf),
+        TabInfo(TAB_TOOLS, Res.string.tabSettings),
     )
 }
