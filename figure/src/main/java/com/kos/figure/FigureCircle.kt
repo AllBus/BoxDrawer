@@ -27,7 +27,7 @@ class FigureCircle(
     segmentStart = segmentStart,
     segmentSweep = segmentSweep
 ) {
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
+    override fun crop(k: Double, cropSide: CropSide): Figure {
         return if (radius <= 0) FigureEmpty else when (cropSide) {
             CropSide.LEFT -> {
                 if (center.x + radius <= k) return FigureEmpty
@@ -138,7 +138,7 @@ class FigureCircle(
         return FigureCircle(center, radius+h, segmentStart, segmentSweep)
     }
 
-    override fun take(startMM: Double, endMM: Double): IFigure {
+    override fun take(startMM: Double, endMM: Double): Figure {
         val pe = pathLength()
         if (pe<=0)
             return FigureEmpty

@@ -1,7 +1,6 @@
 package com.kos.figure.composition
 
 import com.kos.drawer.IFigureGraphics
-import com.kos.figure.CropSide
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
@@ -19,13 +18,13 @@ class FigureWithPosition(
         v.value.sortedBy { it.offset }
     }
 
-    private fun createOutFigures(): List<IFigure> {
-        val res = mutableListOf<IFigure>()
+    private fun createOutFigures(): List<Figure> {
+        val res = mutableListOf<Figure>()
         for (i in 0 until path.edgeCount()) {
             val p = path.path(i)
             val group = groupedPositions[i]
             if (group.isNullOrEmpty()){
-                res.add( p)
+                res.add( p.toFigure())
             } else {
                 var pred = 0.0
                 group.forEach { pos ->
@@ -38,8 +37,8 @@ class FigureWithPosition(
         return res.toList()
     }
 
-    private fun createInFigures(): List<IFigure> {
-        val res = mutableListOf<IFigure>()
+    private fun createInFigures(): List<Figure> {
+        val res = mutableListOf<Figure>()
         for (i in 0 until path.edgeCount()) {
             val p = path.path(i)
             val group = groupedPositions[i]
@@ -79,7 +78,7 @@ class FigureWithPosition(
     }
 
     override fun print(): String {
-        return "/${if (isDrop) "drop" else "take"} (${path.print()}) ${positions.joinToString(" ") { "(${it.edge} ${it.offset} ${it.width} ${it.bias})" }}"
+        return "/${if (isDrop) "drop" else "take"} (${path.toFigure().print()}) ${positions.joinToString(" ") { "(${it.edge} ${it.offset} ${it.width} ${it.bias})" }}"
     }
 
     override fun collection(): List<IFigure> {

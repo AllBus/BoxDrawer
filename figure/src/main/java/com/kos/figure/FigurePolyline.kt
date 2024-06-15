@@ -17,7 +17,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
     }
 
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
+    override fun crop(k: Double, cropSide: CropSide): Figure {
         if (points.size < 2) {
             return FigureEmpty
         }
@@ -25,8 +25,8 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
     }
 
 
-    fun cropPolyline(k: Double, cropSide: CropSide): IFigure {
-        val figures = mutableListOf<IFigure>()
+    fun cropPolyline(k: Double, cropSide: CropSide): Figure {
+        val figures = mutableListOf<Figure>()
         var result = mutableListOf<Vec2>()
 
         fun saveFigure() {
@@ -82,7 +82,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
         return if (figures.size == 1) {
             figures.first()
         } else {
-            FigureList(figures.toList())
+            FigurePath(figures.toList())
         }
     }
 
@@ -204,7 +204,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
         return FigureEmpty
     }
 
-    override fun duplicationAtNormal(h: Double): IFigure {
+    override fun duplicationAtNormal(h: Double): Figure {
         if (points.size == 2) {
             val pred = points[0]
             val next = points[1]
@@ -266,7 +266,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
                 return FigureEmpty
     }
 
-    override fun take(startMM: Double, endMM: Double): IFigure {
+    override fun take(startMM: Double, endMM: Double): Figure {
         val e1 = edgeAtPosition(startMM)
         val e2 = edgeAtPosition(endMM)
 
@@ -292,7 +292,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
 
         } else emptyList()
 
-        return FigureList(
+        return FigurePath(
             listOfNotNull(
                 if (a1.isNotEmpty()) FigurePolyline(a1) else null,
                 if (a2.isNotEmpty()) FigurePolyline(a2) else null

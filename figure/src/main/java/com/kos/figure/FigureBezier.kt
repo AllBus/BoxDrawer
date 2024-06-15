@@ -13,7 +13,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
         return FigureBezier(points)
     }
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
+    override fun crop(k: Double, cropSide: CropSide): Figure {
 
         val figures = mutableListOf<List<Vec2>>()
 
@@ -183,7 +183,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
         return FigureEmpty
     }
 
-    override fun duplicationAtNormal(h: Double): IFigure {
+    override fun duplicationAtNormal(h: Double): Figure {
         val l =  points.windowed(4, 3).map { curve ->
             val ns = Vec2.normal(curve[0], curve[1])
             val ne = Vec2.normal(curve[2], curve[3])
@@ -197,7 +197,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
         return FigureBezierList(l).toFigure()
     }
 
-    override fun take(startMM: Double, endMM: Double): IFigure {
+    override fun take(startMM: Double, endMM: Double): Figure {
         val pe = pathLength()
         if (pe<=0.0)
             return FigureEmpty

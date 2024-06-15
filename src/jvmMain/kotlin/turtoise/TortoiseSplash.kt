@@ -146,7 +146,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                                     FigureColor(
                                         Color.GREEN,
                                         DXFColor.getClosestDXFColor(Color.GREEN),
-                                        pathAtIndex(paths, e.toInt())
+                                        pathAtIndex(paths, e.toInt()).toFigure()
                                     )
 
                                 } else {

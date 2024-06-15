@@ -524,7 +524,7 @@ abstract class TortoiseBase {
         return null
     }
 
-    protected fun pathAtIndex(paths: List<IFigurePath>, edge: Int): IFigure {
+    protected fun pathAtIndex(paths: List<IFigurePath>, edge: Int): IFigurePath {
         var e = edge
         for ( p in paths){
             if (p.edgeCount()> e){
@@ -584,8 +584,9 @@ abstract class TortoiseBase {
     protected fun collectPolygons(f: IFigure) : List<FigurePolygon> =
         f.list().filterIsInstance(FigurePolygon::class.java)
 
-    protected fun collectPaths(f: IFigure) : List<IFigurePath> =
-        f.list().filterIsInstance(IFigurePath::class.java)
+    protected fun collectPaths(f: IFigure) : List<IFigurePath> {
+        return IFigure.path(f)
+    }
 
     abstract fun draw(
         commands: TortoiseBlock,

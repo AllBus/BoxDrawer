@@ -1,9 +1,11 @@
 package com.kos.figure.algorithms
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureList
+import com.kos.figure.FigurePath
 import com.kos.figure.IFigure
 import vectors.Vec2
 
@@ -60,12 +62,12 @@ class FigureBezierList(val points: List<List<Vec2>>) {
 
     }
 
-    fun toFigure(): IFigure {
+    fun toFigure(): Figure {
         if (points.size == 0)
             return FigureEmpty
         if (points.size == 1)
             return FigureBezier(points[0])
         else
-            return FigureList(points.filter { it.size>=4 }.map { p -> FigureBezier(p) })
+            return FigurePath(points.filter { it.size>=4 }.map { p -> FigureBezier(p) })
     }
 }

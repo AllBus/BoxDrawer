@@ -47,7 +47,7 @@ abstract class Figure : IFigure {
 
     abstract fun transform(matrix: Matrix): Figure
 
-    abstract fun crop(k: Double, cropSide: CropSide): IFigure
+    abstract fun crop(k: Double, cropSide: CropSide): Figure
 }
 
 interface Approximation {
@@ -87,18 +87,14 @@ object FigureEmpty : Figure(), IFigurePath {
         return Vec2.Zero
     }
 
-    override fun take(startMM: Double, endMM: Double): IFigurePath {
-        return this
-    }
+    override fun take(startMM: Double, endMM: Double) = this
 
-    override fun duplicationAtNormal(h: Double): IFigurePath {
-        return this
-    }
+    override fun duplicationAtNormal(h: Double) = this
 
     override val count: Int
         get() = 0
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure = this
+    override fun crop(k: Double, cropSide: CropSide): Figure = this
 
     override fun list(): List<Figure> = emptyList()
 
@@ -110,7 +106,9 @@ object FigureEmpty : Figure(), IFigurePath {
 
     override fun rotate(angle: Double, rotateCenter: Vec2) = this
 
-    override fun transform(matrix: Matrix): Figure = this
+    override fun transform(matrix: Matrix) = this
+
+    override fun toFigure(): Figure = this
 
     override fun draw(g: IFigureGraphics) {}
     override fun print(): String {

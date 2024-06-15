@@ -15,14 +15,14 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
         return FigureLine(points)
     }
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
+    override fun crop(k: Double, cropSide: CropSide): Figure {
         if (points.size < 2) {
             return FigureEmpty
         }
         return cropLine(k, cropSide);
     }
 
-    private fun cropLine(k: Double, cropSide: CropSide): IFigure {
+    private fun cropLine(k: Double, cropSide: CropSide): Figure {
         when (cropSide) {
             CropSide.LEFT -> {
                 if (points[0].x >= k && points[1].x >= k) {
@@ -134,13 +134,13 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
         return this
     }
 
-    override fun duplicationAtNormal(h: Double): IFigurePath {
+    override fun duplicationAtNormal(h: Double): Figure {
         val s = positionInPath(0.0)
         val e = positionInPath(1.0)
         return FigureLine(points[0] + s.normal * h, points[1] + e.normal * h)
     }
 
-    override fun take(startMM: Double, endMM: Double): IFigurePath {
+    override fun take(startMM: Double, endMM: Double): Figure {
         val a = points[0]
         val b = points[1]
         val d = Vec2.distance(a, b)

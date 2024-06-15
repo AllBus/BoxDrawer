@@ -12,7 +12,7 @@ abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath {
             BoundingRectangle.apply(points)
     }
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
+    override fun crop(k: Double, cropSide: CropSide): Figure {
         if (points.size < 2) {
             return FigureEmpty
         }
@@ -51,7 +51,7 @@ abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath {
         })
     }
 
-    override fun transform(matrix: Matrix): Figure {
+    override fun transform(matrix: Matrix): FigurePolygon {
         return create(points.map { p ->
             matrix.map(p)
         })
@@ -70,4 +70,6 @@ abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath {
     override fun endPoint(): Vec2 {
         return points.lastOrNull()?:Vec2.Zero
     }
+
+    override fun toFigure(): Figure = this
 }

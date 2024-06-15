@@ -1,8 +1,10 @@
 package com.kos.figure
 
+import vectors.BoundingRectangle
+import vectors.Matrix
 import vectors.Vec2
 
-interface IFigurePath: IFigure {
+interface IFigurePath {
     fun positionInPath(delta: Double): PointWithNormal
     fun positionInPath(edge: Int, delta: Double): PointWithNormal
     fun positionInPathAtMM(edge: Int, mm: Double): PointWithNormal{
@@ -14,8 +16,11 @@ interface IFigurePath: IFigure {
     fun path(edge:Int):IFigurePath
     fun startPoint():Vec2
     fun endPoint():Vec2
-    fun take(startMM:Double, endMM:Double):IFigure
-    fun duplicationAtNormal(h: Double): IFigure
+    fun take(startMM:Double, endMM:Double):Figure
+    fun duplicationAtNormal(h: Double): Figure
+    fun rect(): BoundingRectangle
+    fun toFigure(): Figure
+    fun transform(matrix: Matrix): IFigurePath
 }
 
 class PointWithNormal(

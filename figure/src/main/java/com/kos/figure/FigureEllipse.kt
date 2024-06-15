@@ -24,7 +24,7 @@ open class FigureEllipse(
     val segmentSweep: Double = 360.0,
 ) : Figure(), IFigurePath, Approximation {
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
+    override fun crop(k: Double, cropSide: CropSide): Figure {
         //Todo: Правильно отрезать
         return if (radius <= 0) FigureEmpty else when (cropSide) {
             CropSide.LEFT -> {
@@ -116,7 +116,10 @@ open class FigureEllipse(
     }
 
 
-    override fun transform(matrix: Matrix): Figure {
+    override fun transform(matrix: Matrix): FigureEllipse {
+
+
+
         // Todo: вычисление поворота и радиуса неправильное
         val r = matrix.map(Vec2(radius, radiusMinor))
         return FigureEllipse(
@@ -137,7 +140,7 @@ open class FigureEllipse(
         g.restore()
     }
 
-    protected fun calculateSegments(s1: Double, e1: Double): IFigure {
+    protected fun calculateSegments(s1: Double, e1: Double): Figure {
         //Todo:
         var ls = segmentSweep
         if (ls < 0) ls += 360.0
@@ -188,7 +191,7 @@ open class FigureEllipse(
                 segmentSweep = normalizeAngle(min(atE, stE)),
             )
 
-            return FigureList(listOf(f1, f2))
+            return FigurePath(listOf(f1, f2))
         }
     }
 
@@ -351,7 +354,7 @@ open class FigureEllipse(
         return center + Vec2(radius * cos(t), radiusMinor * sin(t)).rotate(rotation)
     }
 
-    override fun duplicationAtNormal(h: Double): IFigure {
+    override fun duplicationAtNormal(h: Double): Figure {
         return FigureEllipse(
             center = center,
             radius = radius+h,
@@ -362,7 +365,7 @@ open class FigureEllipse(
         )
     }
 
-    override fun take(startMM: Double, endMM: Double): IFigure {
+    override fun take(startMM: Double, endMM: Double): Figure {
         val st = startMM/pathLength()
         val end = endMM/pathLength()
         //Todo: Вычислить правильный сегмент
@@ -375,6 +378,8 @@ open class FigureEllipse(
             segmentSweep = segmentSweep*(end-st)
         )
     }
+
+    override fun toFigure(): Figure = this
 
 }
 
