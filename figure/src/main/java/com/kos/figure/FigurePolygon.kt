@@ -1,6 +1,7 @@
 package com.kos.figure
 
 import vectors.BoundingRectangle
+import vectors.Matrix
 import vectors.Vec2
 
 abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath {
@@ -13,7 +14,7 @@ abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath {
 
     override fun crop(k: Double, cropSide: CropSide): IFigure {
         if (points.size < 2) {
-            return Empty
+            return FigureEmpty
         }
 
         val predicate = when (cropSide) {
@@ -28,7 +29,7 @@ abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath {
         }//end when
 
         if (points.all { !predicate(it) })
-            return Empty
+            return FigureEmpty
 
         return this
     }
@@ -47,6 +48,12 @@ abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath {
     override fun rotate(angle: Double): FigurePolygon {
         return create(points.map { p ->
             p.rotate(angle)
+        })
+    }
+
+    override fun transform(matrix: Matrix): Figure {
+        return create(points.map { p ->
+            matrix.map(p)
         })
     }
 

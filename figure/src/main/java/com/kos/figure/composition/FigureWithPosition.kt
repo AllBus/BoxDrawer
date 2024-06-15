@@ -13,7 +13,7 @@ class FigureWithPosition(
     val positions: List<PositionOnFigure>,
     /** Если true рисует части вне positions если false рисует части внутри positions*/
     val isDrop: Boolean,
-) : Figure() {
+) : IFigure {
 
     val groupedPositions = positions.groupBy { it.edge }.mapValues { v ->
         v.value.sortedBy { it.offset }
@@ -63,11 +63,6 @@ class FigureWithPosition(
 
     override val count: Int
         get() = 1
-
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
-        // TODO
-        return this
-    }
 
     override fun list(): List<Figure> {
         return emptyList()

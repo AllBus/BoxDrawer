@@ -7,49 +7,6 @@ import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
 
-
-interface IFigure {
-
-    val count: Int
-    fun crop(k: Double, cropSide: CropSide): IFigure
-    fun list(): List<Figure>
-    fun rect(): BoundingRectangle
-
-    fun translate(translateX: Double, translateY: Double): IFigure
-    fun rotate(angle: Double): IFigure
-    fun rotate(angle: Double, rotateCenter: Vec2): IFigure
-    fun draw(g: IFigureGraphics)
-
-    fun print(): String
-
-    /** Список фигур внутри этой фигуры */
-    fun collection(): List<IFigure>
-    fun name(): String
-
-    val transform: Matrix
-
-    companion object {
-        fun list(figure: IFigure): List<IFigure> {
-            return listOf(figure) + figure.collection().flatMap { list(it) }
-        }
-
-        fun tree(figure: IFigure): List<FigureInfo> {
-            val mt = Matrix.identity
-            mt *= figure.transform
-            return tree(figure, null, mt)
-        }
-
-        fun tree(figure: IFigure, parent: FigureInfo?, matrix: Matrix): List<FigureInfo> {
-            val nm = matrix.copyWithTransform(figure.transform)
-            val tek = FigureInfo(figure, parent, matrix)
-            return listOf(tek) +
-                    figure.collection().flatMap { f ->
-                        tree(f, tek, nm)
-                    }
-        }
-    }
-}
-
 class FigureInfo(
     val figure: IFigure,
     val parent: FigureInfo?,
@@ -82,28 +39,22 @@ abstract class Figure : IFigure {
     override val transform: Matrix
         get() = Matrix.identity
 
-    override fun translate(translateX: Double, translateY: Double): IFigure {
-        return FigureTranslate(this, Vec2(translateX, translateY))
-    }
+    abstract fun translate(translateX: Double, translateY: Double): Figure
 
-    override fun rotate(angle: Double): IFigure {
-        return FigureRotate(this, angle, Vec2.Zero)
-    }
+    abstract fun rotate(angle: Double): Figure
 
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
-        return FigureRotate(this, angle, rotateCenter)
-    }
+    abstract fun rotate(angle: Double, rotateCenter: Vec2): Figure
 
-    companion object {
-        val Empty = FigureEmpty
-    }
+    abstract fun transform(matrix: Matrix): Figure
+
+    abstract fun crop(k: Double, cropSide: CropSide): IFigure
 }
 
 interface Approximation {
     fun approximate(pointCount: Int): List<List<Vec2>>
 }
 
-object FigureEmpty : IFigure, IFigurePath {
+object FigureEmpty : Figure(), IFigurePath {
     override fun positionInPath(delta: Double): PointWithNormal {
         return PointWithNormal.EMPTY
     }
@@ -153,11 +104,13 @@ object FigureEmpty : IFigure, IFigurePath {
 
     override fun rect(): BoundingRectangle = BoundingRectangle.Empty
 
-    override fun translate(translateX: Double, translateY: Double): IFigure = this
+    override fun translate(translateX: Double, translateY: Double) = this
 
-    override fun rotate(angle: Double): IFigure = this
+    override fun rotate(angle: Double) = this
 
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure = this
+    override fun rotate(angle: Double, rotateCenter: Vec2) = this
+
+    override fun transform(matrix: Matrix): Figure = this
 
     override fun draw(g: IFigureGraphics) {}
     override fun print(): String {

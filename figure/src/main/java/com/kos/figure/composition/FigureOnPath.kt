@@ -20,10 +20,6 @@ class FigureOnPath(
     val angle: Double,
     var pivot: Vec2,
 ) : IFigure {
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
-        // TODO
-        return this
-    }
 
     override fun list(): List<Figure> {
         return figure.list()
@@ -36,48 +32,6 @@ class FigureOnPath(
         return BoundingRectangle(
             pr.min - fr.min,
             pr.max + fr.max,
-        )
-    }
-
-    override fun translate(translateX: Double, translateY: Double): IFigure {
-        return FigureOnPath(
-            figure = figure,
-            path = path,//.translate(translateX, translateY),
-            count = count,
-            distanceInPercent = distanceInPercent,
-            startOffsetInPercent = startOffsetInPercent,
-            reverse = reverse,
-            useNormal = useNormal,
-            angle = angle,
-            pivot = pivot,
-        )
-    }
-
-    override fun rotate(angle: Double): IFigure {
-        return FigureOnPath(
-            figure = figure,
-            path = path,//.rotate(angle),
-            count = count,
-            distanceInPercent = distanceInPercent,
-            startOffsetInPercent = startOffsetInPercent,
-            reverse = reverse,
-            useNormal = useNormal,
-            angle = this.angle + angle,
-            pivot = pivot,
-        )
-    }
-
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
-        return FigureOnPath(
-            figure = figure,
-            path = path ,//.rotate(angle, rotateCenter),
-            count = count,
-            distanceInPercent = distanceInPercent,
-            startOffsetInPercent = startOffsetInPercent,
-            reverse = reverse,
-            useNormal = useNormal,
-            angle = this.angle + angle,
-            pivot = pivot,
         )
     }
 

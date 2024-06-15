@@ -1,6 +1,10 @@
-package com.kos.figure
+package com.kos.figure.algorithms
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.FigureBezier
+import com.kos.figure.FigureEmpty
+import com.kos.figure.FigureList
+import com.kos.figure.IFigure
 import vectors.Vec2
 
 class FigureBezierList(val points: List<List<Vec2>>) {

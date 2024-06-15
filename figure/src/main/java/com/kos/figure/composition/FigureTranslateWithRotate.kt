@@ -22,30 +22,6 @@ class FigureTranslateWithRotate(
         return figure.rect().translate(offset)
     }
 
-    override fun translate(translateX: Double, translateY: Double): IFigure {
-        return FigureTranslateWithRotate(
-            figure,
-            offset + Vec2(translateX, translateY),
-            angleInDegrees
-        )
-    }
-
-    override fun rotate(angle: Double): IFigure {
-        return FigureTranslateWithRotate(
-            figure,
-            offset,
-            this.angleInDegrees + angle
-        )
-    }
-
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
-        return FigureTranslateWithRotate(
-            figure.rotate(angle, rotateCenter),
-            offset,
-            angle
-        )
-    }
-
     override fun draw(g: IFigureGraphics) {
         g.save()
         g.translate(offset.x, offset.y)

@@ -28,9 +28,9 @@ class FigureCircle(
     segmentSweep = segmentSweep
 ) {
     override fun crop(k: Double, cropSide: CropSide): IFigure {
-        return if (radius <= 0) Empty else when (cropSide) {
+        return if (radius <= 0) FigureEmpty else when (cropSide) {
             CropSide.LEFT -> {
-                if (center.x + radius <= k) return Empty
+                if (center.x + radius <= k) return FigureEmpty
                 if (center.x - radius >= k) return this
                 val s = (k - center.x) / radius
                 val s1 = acos(s) * 180 / PI
@@ -40,7 +40,7 @@ class FigureCircle(
 
             CropSide.RIGHT -> {
                 if (center.x + radius <= k) return this
-                if (center.x - radius >= k) return Empty
+                if (center.x - radius >= k) return FigureEmpty
                 val s = (k - center.x) / radius
                 val s1 = acos(s) * 180 / PI
                 val s2 = -s1
@@ -48,7 +48,7 @@ class FigureCircle(
             }
 
             CropSide.TOP -> {
-                if (center.y + radius <= k) return Empty
+                if (center.y + radius <= k) return FigureEmpty
                 if (center.y - radius >= k) return this
                 val s = (center.y - k) / radius
                 val s1 = asin(s) * 180 / PI
@@ -58,7 +58,7 @@ class FigureCircle(
 
             CropSide.BOTTOM -> {
                 if (center.y + radius <= k) return this
-                if (center.y - radius >= k) return Empty
+                if (center.y - radius >= k) return FigureEmpty
                 val s = (center.y - k) / radius
                 val s1 = asin(s) * 180 / PI
                 val s2 = 180.0 - s1

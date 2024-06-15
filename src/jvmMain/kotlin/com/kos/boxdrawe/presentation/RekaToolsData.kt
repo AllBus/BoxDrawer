@@ -2,6 +2,7 @@ package com.kos.boxdrawe.presentation
 
 import androidx.compose.runtime.mutableStateOf
 import com.kos.figure.Figure
+import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
@@ -54,8 +55,8 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
             RekaEndStorona(DegreesMemoryKey(DoubleMemoryKey(90.0))),
         ))
     })
-    private val rekaFigure = MutableStateFlow<IFigure>(Figure.Empty)
-    private val rekaPodoshva = MutableStateFlow<IFigure>(Figure.Empty)
+    private val rekaFigure = MutableStateFlow<IFigure>(FigureEmpty)
+    private val rekaPodoshva = MutableStateFlow<IFigure>(FigureEmpty)
     var current: MutableStateFlow<RectBlockPosition> = MutableStateFlow(
         RectBlockPosition(
             reka = topReka.value,

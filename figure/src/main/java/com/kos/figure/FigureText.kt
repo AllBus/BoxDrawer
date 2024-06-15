@@ -4,9 +4,10 @@ import com.kos.drawer.IFigureGraphics
 import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslate
 import vectors.BoundingRectangle
+import vectors.Matrix
 import vectors.Vec2
 
-class FigureText(val text:String): Figure() {
+class FigureText(val text:String, transform : Matrix = Matrix.identity): Figure() {
     override val count: Int
         get() = 1
 
@@ -16,23 +17,43 @@ class FigureText(val text:String): Figure() {
     }
 
     override fun rect(): BoundingRectangle {
-        return BoundingRectangle(Vec2.Zero, Vec2.Zero)
+        return BoundingRectangle(transform.map(Vec2.Zero) , transform.map(Vec2.Zero) )
     }
 
-    override fun translate(translateX: Double, translateY: Double): IFigure {
-        return FigureTranslate(this, Vec2(translateX, translateY))
+    override fun translate(translateX: Double, translateY: Double): FigureText {
+        val m = Matrix()
+        m.setFrom(transform)
+        m.translate(translateX.toFloat(), translateY.toFloat())
+        return FigureText(text, m)
     }
 
-    override fun rotate(angle: Double): IFigure {
-        return FigureRotate(this, angle, Vec2.Zero)
+    override fun rotate(angle: Double): FigureText {
+        val m = Matrix()
+        m.setFrom(transform)
+        m.rotateZ(angle.toFloat())
+        return FigureText(text, m)
     }
 
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
-        return FigureRotate(this, angle, rotateCenter)
+    override fun rotate(angle: Double, rotateCenter: Vec2): FigureText {
+        val m = Matrix()
+        m.setFrom(transform)
+        m.translate(rotateCenter.x.toFloat(), rotateCenter.y.toFloat())
+        m.rotateZ(angle.toFloat())
+        m.translate(-rotateCenter.x.toFloat(), -rotateCenter.y.toFloat())
+        return FigureText(text, m)
+    }
+
+    override fun transform(matrix: Matrix): FigureText {
+        val m = Matrix()
+        m.setFrom(transform)
+        m.timesAssign(matrix)
+        return FigureText(text, m)
     }
 
     override fun draw(g: IFigureGraphics) {
-        g.drawText(text)
+        g.transform(transform) {
+            g.drawText(text)
+        }
     }
 
     override fun print(): String {

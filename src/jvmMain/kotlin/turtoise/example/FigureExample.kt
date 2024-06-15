@@ -15,7 +15,7 @@ object FigureExample {
         val dr = FigureList(listOf(
             FigureEllipse(Vec2(0.0, 0.0), 50.0, 40.0, 0.0),
             FigureEllipse(Vec2(120.0, 0.0), 50.0, 40.0, 0.0).crop(120-50+100*0.2, CropSide.LEFT),
-            FigureEllipse(Vec2(240.0, 0.0), 50.0, 40.0, 0.0).crop(240-50+100*0.4, CropSide.LEFT).crop(100*0.4, CropSide.TOP),
+            FigureEllipse(Vec2(240.0, 0.0), 50.0, 40.0, 0.0).crop(240-50+100*0.4, CropSide.LEFT), //.crop(100*0.4, CropSide.TOP),
             FigureEllipse(Vec2(360.0, 0.0), 50.0, 40.0, 0.0).crop(360-50+100*0.6, CropSide.LEFT),
             FigureEllipse(Vec2(480.0, 0.0), 50.0, 40.0, 0.0).crop(480-50+100*0.8, CropSide.LEFT),
             FigureEllipse(Vec2(600.0, 0.0), 50.0, 40.0, 0.0).crop(600-50+100*0.9, CropSide.LEFT),

@@ -269,8 +269,8 @@ private fun Editor(
 
                 AnimatedVisibility(
                     tabIndex.value == BoxDrawerToolBar.TAB_TOOLS && !checkboxEditor.value ||
-                            tabIndex.value == BoxDrawerToolBar.TAB_DXF ||
-                    tabIndex.value == BoxDrawerToolBar.TAB_SOFT
+                            tabIndex.value == BoxDrawerToolBar.TAB_DXF
+                    //tabIndex.value == BoxDrawerToolBar.TAB_SOFT
                     ,
                     enter = expandHorizontally(
                         expandFrom = Alignment.Start

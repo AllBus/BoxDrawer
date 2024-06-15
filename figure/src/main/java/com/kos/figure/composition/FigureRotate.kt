@@ -24,28 +24,6 @@ class FigureRotate(
         return figure.rect()
     }
 
-    override fun translate(translateX: Double, translateY: Double): IFigure {
-        return FigureTranslate(this,
-            Vec2(translateX, translateY)
-        )
-    }
-
-    override fun rotate(angle: Double): IFigure {
-        return FigureRotate(
-            figure.rotate(angle),
-            this.angle,
-            pivot
-        )
-    }
-
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
-        return FigureRotate(
-            figure.rotate(angle, rotateCenter),
-            this.angle,
-            pivot
-        )
-    }
-
     override fun draw(g: IFigureGraphics) {
         g.save()
         g.rotate(angle,  pivot)

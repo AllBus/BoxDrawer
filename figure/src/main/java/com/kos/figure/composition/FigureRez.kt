@@ -21,11 +21,6 @@ class FigureRez(
     override val count: Int
         get() = 1
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
-        //Todo
-        return this
-    }
-
     override fun list(): List<Figure> {
         return emptyList()
     }
@@ -35,21 +30,6 @@ class FigureRez(
             Vec2(0.0, 0.0),
             Vec2(countx * delta, county * (dlina + soedinenie) + soedinenie)
         )
-    }
-
-    override fun translate(translateX: Double, translateY: Double): IFigure {
-        return FigureRez(
-            startPoint + Vec2(translateX, translateY),
-            countx, county, delta, dlina, soedinenie, firstSmall
-        )
-    }
-
-    override fun rotate(angle: Double): IFigure {
-        return FigureRotate(this, angle, Vec2.Zero)
-    }
-
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
-        return FigureRotate(this, angle, rotateCenter)
     }
 
     override fun draw(g: IFigureGraphics) {

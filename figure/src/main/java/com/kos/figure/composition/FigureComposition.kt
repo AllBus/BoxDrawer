@@ -16,28 +16,12 @@ abstract class FigureComposition : IFigure {
     override val count: Int
         get() = figure.count
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
-        return  this
-    }
-
     override fun list(): List<Figure> {
         return figure.list()
     }
 
     override fun rect(): BoundingRectangle {
         return figure.rect()
-    }
-
-    override fun translate(translateX: Double, translateY: Double): IFigure {
-        return create( figure.translate(translateX, translateY))
-    }
-
-    override fun rotate(angle: Double): IFigure {
-        return create( figure.rotate(angle))
-    }
-
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
-        return create(figure.rotate(angle, rotateCenter))
     }
 
     override fun collection(): List<IFigure> {

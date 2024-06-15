@@ -1,7 +1,7 @@
 package turtoise
 
 import com.kos.figure.FigureBezier
-import com.kos.figure.FigureBezierList
+import com.kos.figure.algorithms.FigureBezierList
 import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline

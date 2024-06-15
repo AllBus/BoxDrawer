@@ -17,7 +17,7 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
 
     override fun crop(k: Double, cropSide: CropSide): IFigure {
         if (points.size < 2) {
-            return Empty
+            return FigureEmpty
         }
         return cropLine(k, cropSide);
     }
@@ -31,7 +31,7 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
 
                 val r = max(points[0].x, points[1].x);
                 if (r < k)
-                    return Empty
+                    return FigureEmpty
 
                 val c = calcYPosition(points[1], points[0], k);
 
@@ -48,7 +48,7 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
                 }
                 val r = max(points[0].y, points[1].y);
                 if (r < k)
-                    return Empty
+                    return FigureEmpty
 
                 val c = calcXPosition(points[1], points[0], k);
 
@@ -65,7 +65,7 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
                 }
                 val r = min(points[0].x, points[1].x);
                 if (r > k)
-                    return Empty
+                    return FigureEmpty
 
                 val c = calcYPosition(points[1], points[0], k)
 
@@ -82,7 +82,7 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
                 }
                 val r = min(points[0].y, points[1].y);
                 if (r > k)
-                    return Empty
+                    return FigureEmpty
 
                 val c = calcXPosition(points[1], points[0], k);
 

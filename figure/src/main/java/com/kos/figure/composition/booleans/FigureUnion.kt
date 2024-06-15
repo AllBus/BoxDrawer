@@ -3,6 +3,7 @@ package com.kos.figure.composition.booleans
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.Approximation
 import com.kos.figure.Figure
+import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import com.kos.figure.algorithms.UnionFigure
 import com.kos.figure.composition.FigureComposition
@@ -30,8 +31,8 @@ open class FigureUnion(
     protected open fun recalculate(): IFigure {
         val newFigure: IFigure = when {
             figure1 == figure2 -> figure1
-            figure1 == Figure.Empty -> figure2
-            figure2 == Figure.Empty -> figure1
+            figure1 == FigureEmpty -> figure2
+            figure2 == FigureEmpty -> figure1
             else -> {
                 return UnionFigure.union(
                     approximations(figure1) + approximations(figure2),

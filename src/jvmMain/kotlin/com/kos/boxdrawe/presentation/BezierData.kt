@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
+import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureList
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureOnPath
@@ -50,9 +51,9 @@ class BezierData(override val tools: Tools): SaveFigure {
 
     val currentDistance = mutableDoubleStateOf(1.0)
 
-    val figure = mutableStateOf<IFigure>(Figure.Empty)
+    val figure = mutableStateOf<IFigure>(FigureEmpty)
 
-    private val pathFigure = mutableStateOf<IFigure>(Figure.Empty)
+    private val pathFigure = mutableStateOf<IFigure>(FigureEmpty)
 
     val pathRast = NumericTextFieldState(0.01) { redraw() }
     val pathOffset = NumericTextFieldState(0.0) { redraw() }

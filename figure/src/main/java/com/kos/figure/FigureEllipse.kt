@@ -2,6 +2,7 @@ package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
+import vectors.Matrix
 import vectors.Vec2
 import java.text.DecimalFormat
 import kotlin.math.PI
@@ -25,9 +26,9 @@ open class FigureEllipse(
 
     override fun crop(k: Double, cropSide: CropSide): IFigure {
         //Todo: Правильно отрезать
-        return if (radius <= 0) Empty else when (cropSide) {
+        return if (radius <= 0) FigureEmpty else when (cropSide) {
             CropSide.LEFT -> {
-                if (center.x + radius <= k) return Empty
+                if (center.x + radius <= k) return FigureEmpty
                 if (center.x - radius >= k) return this
                 val s = (k - center.x) / radius
                 val s1 = acos(s) * 180 / PI
@@ -37,7 +38,7 @@ open class FigureEllipse(
 
             CropSide.RIGHT -> {
                 if (center.x + radius <= k) return this
-                if (center.x - radius >= k) return Empty
+                if (center.x - radius >= k) return FigureEmpty
                 val s = (k - center.x) / radius
                 val s1 = acos(s) * 180 / PI
                 val s2 = -s1
@@ -45,7 +46,7 @@ open class FigureEllipse(
             }
 
             CropSide.TOP -> {
-                if (center.y + radius <= k) return Empty
+                if (center.y + radius <= k) return FigureEmpty
                 if (center.y - radius >= k) return this
                 val s = (center.y - k) / radius
                 val s1 = asin(s) * 180 / PI
@@ -55,7 +56,7 @@ open class FigureEllipse(
 
             CropSide.BOTTOM -> {
                 if (center.y + radius <= k) return this
-                if (center.y - radius >= k) return Empty
+                if (center.y - radius >= k) return FigureEmpty
                 val s = (center.y - k) / radius
                 val s1 = asin(s) * 180 / PI
                 val s2 = 180.0 - s1
@@ -81,7 +82,7 @@ open class FigureEllipse(
         )
     }
 
-    override fun translate(translateX: Double, translateY: Double): IFigure {
+    override fun translate(translateX: Double, translateY: Double): FigureEllipse {
         return create(
             center = center + Vec2(translateX, translateY),
             radius = radius,
@@ -92,7 +93,7 @@ open class FigureEllipse(
         )
     }
 
-    override fun rotate(angle: Double): IFigure {
+    override fun rotate(angle: Double): FigureEllipse {
         return create(
             center = center.rotate(angle),
             radius = radius,
@@ -103,7 +104,7 @@ open class FigureEllipse(
         )
     }
 
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
+    override fun rotate(angle: Double, rotateCenter: Vec2): FigureEllipse {
         return FigureEllipse(
             center = (center - rotateCenter).rotate(angle) + rotateCenter,
             radius = radius,
@@ -113,6 +114,21 @@ open class FigureEllipse(
             segmentSweep = segmentSweep
         )
     }
+
+
+    override fun transform(matrix: Matrix): Figure {
+        // Todo: вычисление поворота и радиуса неправильное
+        val r = matrix.map(Vec2(radius, radiusMinor))
+        return FigureEllipse(
+            center = matrix.map(center),
+            radius = r.x,
+            radiusMinor = r.y,
+            rotation = rotation,
+            segmentStart = segmentStart,
+            segmentSweep = segmentSweep
+        )
+    }
+
 
     override fun draw(g: IFigureGraphics) {
         g.save()
@@ -146,7 +162,7 @@ open class FigureEllipse(
                 return this
 
             if (atS >= stE || atE <= stS)
-                return Empty;
+                return FigureEmpty;
 
             val f1 = create(
                 center = center,

@@ -13,6 +13,7 @@ import com.jsevy.jdxf.DXFColor
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.box.*
 import com.kos.figure.Figure
+import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,7 @@ import vectors.Vec2
 
 class BoxData(override val tools: ITools): SaveFigure {
 
-    val figures = MutableStateFlow<IFigure>(Figure.Empty)
+    val figures = MutableStateFlow<IFigure>(FigureEmpty)
 
     val selectZigTopId = mutableIntStateOf(PazExt.PAZ_NONE)
     val selectZigBottomId = mutableIntStateOf(PazExt.PAZ_HOLE)

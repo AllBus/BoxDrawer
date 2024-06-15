@@ -1,9 +1,8 @@
 package com.kos.boxdrawer.detal.grid
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.jsevy.jdxf.DXFColor
-import com.kos.figure.FigureBezierList
+import com.kos.figure.algorithms.FigureBezierList
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
@@ -11,7 +10,6 @@ import com.kos.figure.composition.FigureColor
 import turtoise.DrawerSettings
 import turtoise.FigureCreator
 import turtoise.FigureCreator.next
-import turtoise.Tortoise
 import vectors.Vec2
 import java.util.Stack
 import kotlin.math.abs

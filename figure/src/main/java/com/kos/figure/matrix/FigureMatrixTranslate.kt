@@ -14,25 +14,10 @@ abstract class FigureMatrix() : IFigure {
     override val count: Int
         get() = 0
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
-        return this
-    }
-
     override fun rect(): BoundingRectangle {
         return BoundingRectangle.Empty
     }
 
-    override fun translate(translateX: Double, translateY: Double): IFigure {
-        return this
-    }
-
-    override fun rotate(angle: Double): IFigure {
-        return this
-    }
-
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
-        return this
-    }
 
     override fun print(): String {
         return ""

@@ -1,6 +1,7 @@
 package turtoise.rect
 
 import com.kos.figure.Figure
+import com.kos.figure.FigureEmpty
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import turtoise.DrawerSettings
@@ -35,6 +36,6 @@ class RekaAlgorithm(
         return reka?.let{ r ->
             val result = RekaCad.createFigure(r, state.xy, state.angle, memory)
             FigurePolyline(result.points, close = true)
-        } ?: Figure.Empty
+        } ?: FigureEmpty
     }
 }

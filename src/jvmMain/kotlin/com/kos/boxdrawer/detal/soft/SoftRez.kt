@@ -8,6 +8,7 @@ import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureArray
 import com.kos.figure.composition.FigureRez
+import com.kos.figure.composition.FigureTranslate
 import vectors.Vec2
 import kotlin.math.abs
 
@@ -77,10 +78,10 @@ class SoftRez {
 //        )
 
         if (xCount <= 0 || (yCount <= 0 && !fit))
-            return Figure.Empty
+            return FigureEmpty
 
         if (form.count == 0)
-            return Figure.Empty
+            return FigureEmpty
 
         val rr = form.rect()
 
@@ -91,12 +92,12 @@ class SoftRez {
         var sh = 0.0
         var scaleY = 1.0
 
-        if (sw <= 0) return Figure.Empty
+        if (sw <= 0) return FigureEmpty
 
         if (fit) {
             scaleY = scaleX
             if (rr.width == 0.0) {
-                return Figure.Empty
+                return FigureEmpty
             }
             sh = sw * rr.height / rr.width
         } else {
@@ -105,25 +106,25 @@ class SoftRez {
             scaleY = if (rr.height <= 1) 1.0 else sh / rr.height
         }
 
-        if (sh < 0.001 && sdy < 0.001) return Figure.Empty
+        if (sh < 0.001 && sdy < 0.001) return FigureEmpty
 
         val trX = -rr.min.x
         val trY = -rr.min.y
 
         var j = 0
 
-        val fa = form.translate(trX, trY)
+        val fa =  FigureTranslate(form , Vec2(trX, trY)) //form.translate(trX, trY)
 
         val dy = (sh * 0.5) + sdy
 
         if (sww < 0.01 || dy < 0.01)
-            return Figure.Empty
+            return FigureEmpty
 
         var y = -0.5 * sh
         while (y < h) {
             val fy = when {
-                y < sdy -> fa.crop(-y / scaleY, CropSide.BOTTOM);
-                y + sh > h -> fa.crop((h - y) / scaleY, CropSide.TOP);
+               // y < sdy -> fa.crop(-y / scaleY, CropSide.BOTTOM);
+             //   y + sh > h -> fa.crop((h - y) / scaleY, CropSide.TOP);
                 else -> fa
             }
 
@@ -133,7 +134,7 @@ class SoftRez {
 
             val (ff1, xs) = if (x1<sdx) {
                 Pair(
-                    fy.crop((-x1) / scaleX, CropSide.LEFT),
+                 fy, //  fy.crop((-x1) / scaleX, CropSide.LEFT),
                     x1 + sww
                 )
             } else
@@ -145,7 +146,7 @@ class SoftRez {
 
             val ffe =
             if (x2+sw > w){
-                fy.crop((w - x2) / scaleX, CropSide.RIGHT)
+               fy // fy.crop((w - x2) / scaleX, CropSide.RIGHT)
             } else
                 fy
 

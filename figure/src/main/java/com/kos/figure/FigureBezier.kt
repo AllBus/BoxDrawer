@@ -1,11 +1,10 @@
 package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.algorithms.FigureBezierList
 import vectors.Vec2
-import vectors.Vec2.Companion.casteljau
 import vectors.Vec2.Companion.casteljauLine
 import vectors.Vec2.Companion.getCubicRoots
-import java.nio.DoubleBuffer
 
 private const val DEFAULT_STEP_SIZE = 1000
 
@@ -48,7 +47,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
         }
 
         if (figures.isEmpty())
-            return Empty
+            return FigureEmpty
         return FigureBezierList(figures.toList()).toFigure()
     }
 

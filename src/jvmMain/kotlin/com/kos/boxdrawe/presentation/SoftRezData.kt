@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.soft.SoftRez
 import com.kos.figure.Figure
+import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
 import com.kos.figure.IFigure
@@ -15,11 +16,11 @@ import vectors.Vec2
 class SoftRezData(override val tools: ITools, val tortoise: TortoiseData) : SaveFigure {
     val sr = SoftRez()
 
-    var baseFigure: IFigure = Figure.Empty
+    var baseFigure: IFigure = FigureEmpty
 
     override suspend fun createFigure(): IFigure = drawRez(baseFigure)
 
-    val figures = MutableStateFlow<IFigure>(Figure.Empty)
+    val figures = MutableStateFlow<IFigure>(FigureEmpty)
 
     fun drawRez(figure: IFigure): IFigure {
         baseFigure = figure

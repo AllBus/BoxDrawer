@@ -18,6 +18,7 @@ import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.composition.FigureArray
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureOnPath
+import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslateWithRotate
 import org.jetbrains.skia.Color
 import turtoise.memory.TortoiseMemory
@@ -125,7 +126,7 @@ abstract class TortoiseBase {
         val s = (0 until com.size).mapNotNull { index ->
             com.takeBlock(index)
         }.map { block ->
-            figureList(block, ds, maxStackSize, memory, runner) ?: Figure.Empty
+            figureList(block, ds, maxStackSize, memory, runner) ?: FigureEmpty
             //?.list()
             //?.filterIsInstance(Approximation::class.java)
             // .orEmpty()
@@ -220,11 +221,15 @@ abstract class TortoiseBase {
         val angle = builder.angle
 
         builder.add(
+            FigureRotate(
             FigureCreator.rectangle(
                 -width2 + c2.x, -height2 + c2.y, width2 + c2.x, height2 + c2.y,
                 enableSmooth = smoothSize != 0.0,
                 smoothSize = smoothSize,
-            ).rotate(angle)
+            ),
+                angle,
+                Vec2.Zero
+            )
         )
     }
 
@@ -444,9 +449,9 @@ abstract class TortoiseBase {
                             )
                         }
                     }
-            } ?: Figure.Empty
+            } ?: FigureEmpty
         } else
-            return Figure.Empty
+            return FigureEmpty
     }
 
     fun figureGroups(
@@ -458,7 +463,7 @@ abstract class TortoiseBase {
     ): IFigure {
         val block = commands.takeBlock(0)
         if (commands.size < 2) {
-            return Figure.Empty
+            return FigureEmpty
         }
 
         return figureList(block, ds, maxStackSize, memory, runner)?.let { f ->

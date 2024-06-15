@@ -12,6 +12,7 @@ import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.figure.CropSide
 import com.kos.figure.Figure
+import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import turtoise.TortoiseProgram
@@ -20,8 +21,8 @@ import turtoise.TortoiseState
 import turtoise.parser.TortoiseParser
 
 class TortoiseData(override val tools: ITools) : SaveFigure {
-    val figures = MutableStateFlow<IFigure>(Figure.Empty)
-    val fig = mutableStateOf<IFigure>(Figure.Empty)
+    val figures = MutableStateFlow<IFigure>(FigureEmpty)
+    val fig = mutableStateOf<IFigure>(FigureEmpty)
     val helpText = mutableStateOf(AnnotatedString(""))
 
     val matrix = mutableStateOf(Matrix())
@@ -126,11 +127,11 @@ class TortoiseData(override val tools: ITools) : SaveFigure {
         return dr
     }
 
-    fun drop(dropValueX: Float, dropValueY: Float) {
-        figures.value =
-            fig.value.crop(dropValueX.toDouble(), CropSide.BOTTOM)
-                .crop(dropValueY.toDouble(), CropSide.LEFT)
-    }
+//    fun drop(dropValueX: Float, dropValueY: Float) {
+//        figures.value =
+//            fig.value.crop(dropValueX.toDouble(), CropSide.BOTTOM)
+//                .crop(dropValueY.toDouble(), CropSide.LEFT)
+//    }
 
 
     private val helpSeparator = charArrayOf('\n', '\r')

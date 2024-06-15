@@ -19,7 +19,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
 
     override fun crop(k: Double, cropSide: CropSide): IFigure {
         if (points.size < 2) {
-            return Empty
+            return FigureEmpty
         }
         return cropPolyline(k, cropSide);
     }

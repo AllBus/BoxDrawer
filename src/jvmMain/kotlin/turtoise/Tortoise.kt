@@ -14,6 +14,7 @@ import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
 import com.jsevy.jdxf.DXFColor
+import com.kos.figure.FigureEmpty
 import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 import java.util.Stack
@@ -351,8 +352,8 @@ class Tortoise() : TortoiseSplash() {
                     val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
                     builder.addProduct(
                         FigureUnion(
-                            s.firstOrNull() ?: Figure.Empty,
-                            s.getOrNull(1) ?: Figure.Empty,
+                            s.firstOrNull() ?: FigureEmpty,
+                            s.getOrNull(1) ?: FigureEmpty,
                             ds.appoximationSize
                         )
                     )
@@ -363,8 +364,8 @@ class Tortoise() : TortoiseSplash() {
                     val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
                     builder.addProduct(
                         FigureIntersect(
-                            s.firstOrNull() ?: Figure.Empty,
-                            s.getOrNull(1) ?: Figure.Empty,
+                            s.firstOrNull() ?: FigureEmpty,
+                            s.getOrNull(1) ?: FigureEmpty,
                             ds.appoximationSize
                         )
                     )
@@ -374,8 +375,8 @@ class Tortoise() : TortoiseSplash() {
                     val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
                     builder.addProduct(
                         FigureDiff(
-                            s.firstOrNull() ?: Figure.Empty,
-                            s.getOrNull(1) ?: Figure.Empty,
+                            s.firstOrNull() ?: FigureEmpty,
+                            s.getOrNull(1) ?: FigureEmpty,
                             ds.appoximationSize
                         )
                     )
@@ -385,8 +386,8 @@ class Tortoise() : TortoiseSplash() {
                     val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
                     builder.addProduct(
                         FigureSymDiff(
-                            s.firstOrNull() ?: Figure.Empty,
-                            s.getOrNull(1) ?: Figure.Empty,
+                            s.firstOrNull() ?: FigureEmpty,
+                            s.getOrNull(1) ?: FigureEmpty,
                             ds.appoximationSize
                         )
                     )

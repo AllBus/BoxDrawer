@@ -23,10 +23,6 @@ class FigureArray(
     override val count: Int
         get() = 1
 
-    override fun crop(k: Double, cropSide: CropSide): IFigure {
-        return this //FigureArray(figure.crop(k, cropSide), startPoint, distance, size)
-    }
-
     override fun list(): List<Figure> {
         return figure.list() + figureStart?.list().orEmpty() + figureEnd?.list().orEmpty()
     }
@@ -46,31 +42,6 @@ class FigureArray(
     }
 
     val endPoint get() = startPoint + distance * (columns + 1).toDouble()
-
-
-    override fun translate(translateX: Double, translateY: Double): IFigure {
-        return FigureArray(
-            figure, startPoint + Vec2(translateX, translateY),
-            distance, columns, rows, angle,
-            scaleX, scaleY, figureStart, figureEnd
-        )
-    }
-
-    override fun rotate(angle: Double): IFigure {
-        return FigureArray(
-            figure, startPoint,
-            distance, columns, rows, angle + this.angle,
-            scaleX, scaleY, figureStart, figureEnd
-        )
-    }
-
-    override fun rotate(angle: Double, rotateCenter: Vec2): IFigure {
-        return FigureArray(
-            figure, startPoint,
-            distance, columns, rows, angle + this.angle,
-            scaleX, scaleY, figureStart, figureEnd
-        )
-    }
 
     override fun draw(g: IFigureGraphics) {
         g.save()
