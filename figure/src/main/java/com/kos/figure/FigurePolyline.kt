@@ -194,7 +194,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
         return listOf(points)
     }
 
-    override fun path(edge: Int): IFigure {
+    override fun path(edge: Int): IFigurePath {
         if (0 <= edge && edge < points.size - 1) {
             val pred = points[edge]
             val next = points[edge + 1]
@@ -254,7 +254,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
                         res.add(ins)
                     }
                 }
-                if (isClose()){
+                if (isClose()) {
                     res.add(res.first())
                 } else {
                     val n2 = Vec2.normal(pred, next)
@@ -264,5 +264,46 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation 
                 return FigurePolyline(res)
             } else
                 return FigureEmpty
+    }
+
+    override fun take(startMM: Double, endMM: Double): IFigure {
+        val e1 = edgeAtPosition(startMM)
+        val e2 = edgeAtPosition(endMM)
+
+
+        val a1 = if (e1 >= 0 && e1 < edgeCount()) {
+            val a = points[e1]
+            val b = points[e1 + 1]
+            val d = Vec2.distance(a, b)
+            if (d <= 0.0)
+                points.subList(0, e1)
+            else
+                points.subList(0, e1) + Vec2.lerp(a, b, startMM / d)
+        } else emptyList()
+
+        val a2 = if (e2 >= 0 && e2 < edgeCount()) {
+            val a = points[e2]
+            val b = points[e2 + 1]
+            val d = Vec2.distance(a, b)
+            if (d <= 0.0)
+                points.drop(e2)
+            else
+                listOf(Vec2.lerp(a, b, endMM / d)) + points.drop(e2)
+
+        } else emptyList()
+
+        return FigureList(
+            listOfNotNull(
+                if (a1.isNotEmpty()) FigurePolyline(a1) else null,
+                if (a2.isNotEmpty()) FigurePolyline(a2) else null
+            )
+        )
+    }
+
+    fun edgeAtPosition(mm: Double): Int {
+        if (mm < 0) return -1
+        if (mm > pathLength())
+            return edgeCount() + 1
+        return length.indexOfLast { it <= mm }
     }
 }

@@ -321,7 +321,7 @@ open class FigureEllipse(
 
     override fun edgeCount(): Int = 1
 
-    override fun path(edge: Int): IFigure {
+    override fun path(edge: Int): IFigurePath {
         return this
     }
 
@@ -345,6 +345,21 @@ open class FigureEllipse(
             segmentSweep = segmentSweep
         )
     }
+
+    override fun take(startMM: Double, endMM: Double): IFigure {
+        val st = startMM/pathLength()
+        val end = endMM/pathLength()
+        //Todo: Вычислить правильный сегмент
+        return FigureEllipse(
+            center = center,
+            radius = radius,
+            radiusMinor = radiusMinor,
+            rotation = rotation,
+            segmentStart = segmentStart+segmentSweep*st,
+            segmentSweep = segmentSweep*(end-st)
+        )
+    }
+
 }
 
 

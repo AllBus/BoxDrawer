@@ -62,6 +62,6 @@ class FigureBezierList(val points: List<List<Vec2>>) {
         if (points.size == 1)
             return FigureBezier(points[0])
         else
-            return FigureList(points.map { p -> FigureBezier(p) })
+            return FigureList(points.filter { it.size>=4 }.map { p -> FigureBezier(p) })
     }
 }

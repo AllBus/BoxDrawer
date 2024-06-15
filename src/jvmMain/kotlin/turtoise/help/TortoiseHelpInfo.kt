@@ -466,67 +466,77 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             )
         )
     ),
-        helpName(
-            TortoiseCommand.TURTOISE_SPLASH,
-            listOf(
-                HelpData(
-                    "length (figure) (variable+)",
-                    "поместить длину каждого пути figure в переменные variable"
-                ),
-                HelpData(
-                    "board (variable)",
-                    "поместить толщину доски в переменную variable"
-                ),
-                HelpData(
-                    "arc (radius pointStart pointEnd)+",
-                    "Нарисовать дугу заданного радиуса radius через две точки"
-                ),
-                HelpData(
-                    "tooth h w ",
-                    "Нарисовать зуб"
-                ),
-                HelpData(
-                    "toothr h w",
-                    "Нарисовать зуб в обратную сторону"
-                ),
-                HelpData(
-                    "line (x y)+",
-                    "Нарисовать линию задавая сдвиг относительно предудыщей точки"
-                ),
-                HelpData(
-                    "rline r x y",
-                    "Нарисовать скругление радиуса r текущей линии к точке x y "
-                ),
-                HelpData(
-                    "rez width height delta dlina soedinenie isFirstSmall",
-                    "Нарисовать мягкий рез"
-                ),
-                HelpData(
-                    "r",
-                    "Включить опцию рисования зигзагов в обратном направлении"
-                ),
-                HelpData(
-                    "f",
-                    "Включить опцию рисования зигзагов в прямом направлении"
-                ),
-                HelpData(
-                    "paz (figure) (edge delta le he)+",
-                    "Нарисовать пазы вдоль пути figure"
-                ),
-                HelpData(
-                    "stena (figure) (h w) (edge he)*",
-                    "Нарисовать стены воль пути"
-                ),
-                HelpData(
-                    "o (figure) h+",
-                    "Нарисовать фигуру сдвунутую на h от текущей фигуры"
-                ),
-                HelpData(
-                    "print [text] | (variable)",
-                    "Написать текст или значение переменной"
-                ),
-            )
-        )
+        helpForSplash()
 
+    )
+
+    private fun helpForSplash() = helpName(
+        TortoiseCommand.TURTOISE_SPLASH,
+        listOf(
+            HelpData(
+                "length (figure) (variable+)",
+                "поместить длину каждого пути figure в переменные variable"
+            ),
+            HelpData(
+                "board (variable)",
+                "поместить толщину доски в переменную variable"
+            ),
+            HelpData(
+                "arc (radius pointStart pointEnd)+",
+                "Нарисовать дугу заданного радиуса radius через две точки"
+            ),
+            HelpData(
+                "tooth h w ",
+                "Нарисовать зуб"
+            ),
+            HelpData(
+                "toothr h w",
+                "Нарисовать зуб в обратную сторону"
+            ),
+            HelpData(
+                "line (x y)+",
+                "Нарисовать линию задавая сдвиг относительно предудыщей точки"
+            ),
+            HelpData(
+                "rline r x y",
+                "Нарисовать скругление радиуса r текущей линии к точке x y "
+            ),
+            HelpData(
+                "rez width height delta dlina soedinenie isFirstSmall",
+                "Нарисовать мягкий рез"
+            ),
+            HelpData(
+                "r",
+                "Включить опцию рисования зигзагов в обратном направлении"
+            ),
+            HelpData(
+                "f",
+                "Включить опцию рисования зигзагов в прямом направлении"
+            ),
+            HelpData(
+                "paz (figure) (edge delta le he)+",
+                "Нарисовать пазы вдоль пути figure"
+            ),
+            HelpData(
+                "drop (figure) (edge offset width bias)+",
+                "Нарисовать часть пути за исключением кусочков"
+            ),
+            HelpData(
+                "take (figure) (edge offset width bias)+",
+                "Нарисовать часть пути только из заданных кусочков"
+            ),
+            HelpData(
+                "stena (figure) (h w) (edge he)*",
+                "Нарисовать стены воль пути"
+            ),
+            HelpData(
+                "o (figure) h+",
+                "Нарисовать фигуру сдвунутую на h от текущей фигуры"
+            ),
+            HelpData(
+                "print [text] | (variable)",
+                "Написать текст или значение переменной"
+            ),
+        )
     )
 }

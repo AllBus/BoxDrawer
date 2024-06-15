@@ -11,6 +11,8 @@ import com.kos.figure.FigureText
 import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
 import com.kos.figure.composition.FigureColor
+import com.kos.figure.composition.FigureWithPosition
+import com.kos.figure.composition.PositionOnFigure
 import org.jetbrains.skia.Color
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.MemoryKey
@@ -40,7 +42,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                 com.takeBlock(1)?.let { block ->
                     figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
                         val variables = com.takeBlock(2)?.inner.orEmpty()
-                        f.list().filterIsInstance(IFigurePath::class.java).zip(variables) { p, v ->
+                        collectPaths(f).zip(variables) { p, v ->
                             memory.assign(v.argument, p.pathLength())
                         }
                     }
@@ -136,7 +138,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                 /* (Figure) (edge delta le he)* */
                 com.takeBlock(1)?.let { block ->
                     figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
-                        val paths = f.list().filterIsInstance(IFigurePath::class.java)
+                        val paths = collectPaths(f)
                         val v = (2 until com.size).mapNotNull { j ->
                             com.takeBlock(j)?.let { item ->
                                 val e = memory.value(item.get(0) ?: MemoryKey.ZERO, 0.0)
@@ -175,7 +177,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                 /* (Figure) he (edge he)* */
                 com.takeBlock(1)?.let { block ->
                     figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
-                        val paths = f.list().filterIsInstance(IFigurePath::class.java)
+                        val paths = collectPaths(f)
                         val (h , we) = com.takeBlock(2)?.let { item ->
                             val h = (item.get(0)?.let{ im -> memory.value(im, 0.0)}?: 10.0)
                             val w = (item.get(1)?.let { im ->
@@ -222,7 +224,7 @@ abstract class TortoiseSplash : TortoiseBase() {
             "o" -> {
                 com.takeBlock(1)?.let { block ->
                     figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
-                        val paths = f.list().filterIsInstance(IFigurePath::class.java)
+                        val paths = collectPaths(f)
                         if (paths.isNotEmpty()) {
                             (2 until com.size).map { ind ->
                                 val h = com.takeBlock(ind)?.let { item ->
@@ -245,7 +247,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                 /* (figure) (m e x y) (r e+) */
                 com.takeBlock(1)?.let { block ->
                     figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
-                         f.list().filterIsInstance(FigurePolygon::class.java).firstOrNull()?.let {
+                         collectPolygons(f).firstOrNull()?.let {
                             path ->
                             val points = path.points.toMutableList()
                             (2 until com.size).mapNotNull { j ->
@@ -276,6 +278,65 @@ abstract class TortoiseSplash : TortoiseBase() {
                             }
                             builder.addProduct(path.create(points.toList()))
                         }
+                    }
+                }
+            }
+            "drop" -> {
+                com.takeBlock(1)?.let { block ->
+                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                        val paths = collectPaths(f)
+                        val edges = (2 until com.size).mapNotNull { j ->
+                            com.takeBlock(j)?.let { item ->
+                                val e = valueAt(item, 0, memory).toInt()
+                                val x = valueAt(item, 1, memory)
+                                val wi = valueAt(item, 2, memory, 15.0)
+                                val bias = valueAt(item, 3, memory, 0.5)
+                                PositionOnFigure(e, x, wi ,bias)
+                            }
+                        }
+
+                        var currentEdge = 0
+                        val fg = paths.mapIndexed{ i, p ->
+                            val pe = p.edgeCount()
+                           val f = FigureWithPosition(p,
+                            edges.filter { it.edge>= currentEdge && it.edge< pe+currentEdge }.map{
+                                it.copy(edge= it.edge-currentEdge)
+                            },
+                               true,)
+                            currentEdge+=pe
+                            f
+                        }
+                        builder.addProduct(FigureList(fg))
+                    }
+                }
+            }
+            "take" -> {
+                com.takeBlock(1)?.let { block ->
+                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                        val paths = collectPaths(f)
+                        val edges = (2 until com.size).mapNotNull { j ->
+                            com.takeBlock(j)?.let { item ->
+                                val e = valueAt(item, 0, memory).toInt()
+                                val x = valueAt(item, 1, memory)
+                                val wi = valueAt(item, 2, memory, 15.0)
+                                val bias = valueAt(item, 3, memory, 0.5)
+                                PositionOnFigure(e, x, wi ,bias)
+                            }
+                        }
+
+                        var currentEdge = 0
+                        val fg = paths.mapIndexed{ i, p ->
+                            val pe = p.edgeCount()
+                            val f = FigureWithPosition(p,
+                                edges.filter { it.edge>= currentEdge && it.edge< pe+currentEdge }.map{
+                                    it.copy(edge= it.edge-currentEdge)
+                                },
+                                false
+                            )
+                            currentEdge+=pe
+                            f
+                        }
+                        builder.addProduct(FigureList(fg))
                     }
                 }
             }

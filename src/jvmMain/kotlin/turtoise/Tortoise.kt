@@ -4,7 +4,6 @@ import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
-import com.kos.figure.FigureSpline
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.booleans.FigureDiff
@@ -325,26 +324,6 @@ class Tortoise() : TortoiseSplash() {
 
                     if (points.size > 1) {
                         builder.add(FigureBezier(points.toList()))
-                    }
-                }
-
-                TortoiseCommand.TURTOISE_SPLINE -> {
-                    builder.saveLine()
-
-                    val angle = state.angle
-
-                    val points = mutableListOf<Vec2>()
-                    points.add(state.xy)
-                    for (d in 1..com.size - 2 step 2) {
-                        val xy = Vec2(
-                            com[d + 0, memory],
-                            com[d + 1, memory]
-                        ).rotate(angle) + state.xy
-                        points.add(xy)
-                        state.moveTo(xy)
-                    }
-                    if (points.size > 1) {
-                        builder.add(FigureSpline(points.toList()))
                     }
                 }
 

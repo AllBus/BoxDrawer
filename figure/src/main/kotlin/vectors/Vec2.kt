@@ -153,6 +153,10 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             return K
         }
 
+        fun casteljauLine(p: List<Vec2>, ts: Double, te:Double): List<Vec2> {
+            return casteljauLine( casteljauLine(p, te).first, if (te>0.0) ts/te else 0.0).second
+        }
+
         fun casteljauLine(p: List<Vec2>, t: Double): Pair<List<Vec2>, List<Vec2>> {
             val A = p[0]
             val B = p[1]

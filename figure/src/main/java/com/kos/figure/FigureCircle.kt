@@ -134,7 +134,24 @@ class FigureCircle(
         })
     }
 
-    override fun duplicationAtNormal(h: Double): IFigure {
+    override fun duplicationAtNormal(h: Double): FigureCircle {
         return FigureCircle(center, radius+h, segmentStart, segmentSweep)
+    }
+
+    override fun take(startMM: Double, endMM: Double): IFigure {
+        val pe = pathLength()
+        if (pe<=0)
+            return FigureEmpty
+        val st = startMM/pe
+        val en = endMM/pe
+
+        val ste = st.coerceIn(0.0, 1.0)
+        val end = en.coerceIn(0.0, 1.0)
+        return FigureCircle(
+            center = center,
+            radius = radius,
+            segmentStart = segmentStart+segmentSweep*ste,
+            segmentSweep = segmentSweep*(end-ste)
+        )
     }
 }

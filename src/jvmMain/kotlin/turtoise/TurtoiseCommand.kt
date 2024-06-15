@@ -59,7 +59,7 @@ interface TortoiseCommand {
             return when (c) {
                 TURTOISE_ZIGZAG -> "TURTOISE_ZIGZAG"
                 TURTOISE_VERTICAL -> "TURTOISE_VERTICAL"
-                TURTOISE_SPLINE -> "TURTOISE_SPLINE"
+              //  TURTOISE_SPLINE -> "TURTOISE_SPLINE"
                 TURTOISE_RECTANGLE -> "TURTOISE_RECTANGLE"
                 TURTOISE_POLYLINE -> "TURTOISE_POLYLINE"
                 TURTOISE_MOVE -> "TURTOISE_MOVE"
@@ -106,7 +106,7 @@ interface TortoiseCommand {
         const val TURTOISE_IF_FIGURE = 'F'
         const val TURTOISE_3D = 'd'
         const val TURTOISE_VERTICAL = 'v'
-        const val TURTOISE_SPLINE = 's'
+       // const val TURTOISE_SPLINE = 's'
         const val TURTOISE_RECTANGLE = 'x'
         const val TURTOISE_TRIANGLE = 't'
         const val TURTOISE_ROUND_RECTANGLE = 'r'

@@ -2,7 +2,7 @@ package com.kos.figure
 
 import vectors.Vec2
 
-interface IFigurePath {
+interface IFigurePath: IFigure {
     fun positionInPath(delta: Double): PointWithNormal
     fun positionInPath(edge: Int, delta: Double): PointWithNormal
     fun positionInPathAtMM(edge: Int, mm: Double): PointWithNormal{
@@ -11,9 +11,10 @@ interface IFigurePath {
     fun pathLength():Double
     fun pathLength(edge: Int):Double
     fun edgeCount():Int
-    fun path(edge:Int):IFigure
+    fun path(edge:Int):IFigurePath
     fun startPoint():Vec2
     fun endPoint():Vec2
+    fun take(startMM:Double, endMM:Double):IFigure
     fun duplicationAtNormal(h: Double): IFigure
 }
 

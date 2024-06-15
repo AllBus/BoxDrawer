@@ -2,8 +2,10 @@ package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
 import vectors.Vec2
+import vectors.Vec2.Companion.casteljau
 import vectors.Vec2.Companion.casteljauLine
 import vectors.Vec2.Companion.getCubicRoots
+import java.nio.DoubleBuffer
 
 private const val DEFAULT_STEP_SIZE = 1000
 
@@ -173,10 +175,10 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
         return (length.getOrNull(edge)?:0.0) - (length.getOrNull(edge-1)?:0.0)
     }
 
-    override fun path(edge: Int): IFigure {
-        if (edge>=0 && edge*3+4< points.size) {
+    override fun path(edge: Int): IFigurePath {
+        if (edge>=0 && edge*3+4<= points.size) {
             val p = points.subList(edge * 3, edge * 3 + 4)
-            return  FigureBezier(p)
+            return FigureBezier(p)
         }
 
         return FigureEmpty
@@ -194,6 +196,51 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
             )
         }
         return FigureBezierList(l).toFigure()
+    }
+
+    override fun take(startMM: Double, endMM: Double): IFigure {
+        val pe = pathLength()
+        if (pe<=0.0)
+            return FigureEmpty
+
+        if (points.size == 4) {
+            val a = (startMM / pe).coerceIn(0.0, 1.0)
+            val b = (endMM / pe).coerceIn(0.0, 1.0)
+
+            val sec = Vec2.casteljauLine(points.subList(0, 4), a, b)
+            return FigureBezier(sec)
+        }else {
+            // Todo: Добавить для многосегментной линии
+            val e1 = edgeAtPosition(startMM)
+            val e2 = edgeAtPosition(endMM)
+
+            val startB = if (e1>=0 && e1< edgeCount()) points.subList(0, (1+3*(e1))) else emptyList()
+            val endB = if (e2>=0 && e2 < edgeCount()) points.subList(1+3*(e2), points.size) else emptyList()
+
+            val a =if (e1>=0 && e1< edgeCount()){
+                val st = startMM-length[e1-1] /pathLength(e1)
+                 Vec2.casteljauLine(points.subList(3*(e1), 3*(e1)+4 ),st ).first
+            } else emptyList()
+
+            val b = if (e2>=0 && e2 < edgeCount()) {
+                val en = endMM - length[e2 - 1] / pathLength(e2)
+                Vec2.casteljauLine(points.subList(3 * (e2), 3 * (e2) + 4), en).second
+            } else emptyList()
+
+            val l = listOf(
+                startB,
+                a,
+                b,
+                endB)
+            return FigureBezierList(l).toFigure()
+        }
+    }
+
+    fun edgeAtPosition(mm:Double):Int{
+        if (mm<0) return -1
+        if (mm > pathLength())
+            return edgeCount()+1
+        return length.indexOfLast { it <= mm }
     }
 }
 

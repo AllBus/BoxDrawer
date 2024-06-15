@@ -126,17 +126,34 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
         return if (points.size >= 2) return Vec2.distance(points[0], points[1]) else 0.0
     }
 
-    override fun pathLength(edge:Int): Double {
+    override fun pathLength(edge: Int): Double {
         return if (points.size >= 2) return Vec2.distance(points[0], points[1]) else 0.0
     }
 
-    override fun path(edge: Int): IFigure {
+    override fun path(edge: Int): IFigurePath {
         return this
     }
 
-    override fun duplicationAtNormal(h: Double): IFigure {
+    override fun duplicationAtNormal(h: Double): IFigurePath {
         val s = positionInPath(0.0)
         val e = positionInPath(1.0)
-        return FigureLine(points[0]+ s.normal*h, points[1]+e.normal*h)
+        return FigureLine(points[0] + s.normal * h, points[1] + e.normal * h)
+    }
+
+    override fun take(startMM: Double, endMM: Double): IFigurePath {
+        val a = points[0]
+        val b = points[1]
+        val d = Vec2.distance(a, b)
+
+        if (d <= 0.0)
+            return FigureEmpty
+
+        val sm = startMM.coerceIn(0.0, d)
+        val em = endMM.coerceIn(0.0, d)
+
+        return FigureLine(
+            Vec2.lerp(a, b, sm / d),
+            Vec2.lerp(a, b, em / d)
+        )
     }
 }

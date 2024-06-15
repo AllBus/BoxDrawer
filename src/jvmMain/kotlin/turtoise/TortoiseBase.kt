@@ -9,6 +9,7 @@ import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureLine
 import com.kos.figure.FigureList
+import com.kos.figure.FigurePolygon
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
@@ -335,7 +336,7 @@ abstract class TortoiseBase {
                         center = builder.state.xy,
                         radius = r,
                         segmentStart = com.take(d + 0, 0.0, memory) - builder.state.a,
-                        segmentSweep = com.take(d + 1, 360.0, memory) - builder.state.a,
+                        segmentSweep = com.take(d + 1, 360.0, memory),
                     )
                 )
             }
@@ -461,7 +462,7 @@ abstract class TortoiseBase {
         }
 
         return figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
-            val paths = f.list().filterIsInstance(IFigurePath::class.java)
+            val paths = collectPaths(f)
             FigureList(if (paths.isNotEmpty()) {
                 (1 until commands.size step 2).flatMap {
                     val positions = commands.takeBlock(it)
@@ -574,6 +575,12 @@ abstract class TortoiseBase {
             builder.addPoint()
         }
     }
+
+    protected fun collectPolygons(f: IFigure) : List<FigurePolygon> =
+        f.list().filterIsInstance(FigurePolygon::class.java)
+
+    protected fun collectPaths(f: IFigure) : List<IFigurePath> =
+        f.list().filterIsInstance(IFigurePath::class.java)
 
     abstract fun draw(
         commands: TortoiseBlock,
