@@ -1,4 +1,4 @@
-package com.kos.boxdrawe.widget.display
+package com.kos.boxdrawer.presentation.display
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi

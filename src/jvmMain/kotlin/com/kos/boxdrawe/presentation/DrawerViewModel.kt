@@ -2,6 +2,7 @@ package com.kos.boxdrawe.presentation
 
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.figure.FigureEmpty
+import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +16,7 @@ import java.awt.datatransfer.Transferable
 class DrawerViewModel {
 
     private val noneFigure = MutableStateFlow(FigureEmpty).asStateFlow()
-    private val _selectedItem = MutableStateFlow(emptyList<IFigure>())
+    private val _selectedItem = MutableStateFlow(emptyList<FigureInfo>())
 
     val tools = Tools()
     val tortoise = TortoiseData(tools)
@@ -45,7 +46,7 @@ class DrawerViewModel {
         }
     }
 
-    val selectedItem: StateFlow<List<IFigure>> get() = _selectedItem
+    val selectedItem: StateFlow<List<FigureInfo>> get() = _selectedItem
 
 //    @OptIn(ExperimentalCoroutinesApi::class)
 //    val selectedItem: Flow<List<IFigure>> = tabIndex.flatMapLatest { tab ->
@@ -124,7 +125,7 @@ class DrawerViewModel {
         }
     }
 
-    fun setSelected(figures: List<IFigure>) {
+    fun setSelected(figures: List<FigureInfo>) {
         _selectedItem.value = figures
     }
 

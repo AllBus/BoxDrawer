@@ -1,4 +1,4 @@
-package com.kos.boxdrawer.presentation
+package com.kos.boxdrawer.presentation.template
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

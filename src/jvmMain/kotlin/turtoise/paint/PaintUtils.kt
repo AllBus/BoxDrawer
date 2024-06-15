@@ -2,19 +2,24 @@ package turtoise.paint
 
 import com.kos.figure.Figure
 import com.kos.figure.FigureCircle
+import com.kos.figure.FigureInfo
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
+import vectors.Matrix
 import vectors.Vec2
 
 object PaintUtils {
 
-    fun findFiguresAtCursor(position: Vec2, eps: Double, figures: List<IFigure>): List<IFigure> {
+    fun findFiguresAtCursor(transform:Matrix, position: Vec2, eps: Double, figures: List<IFigure>): List<FigureInfo> {
         return figures.flatMap { f ->
+            val mt = transform.copyWithTransform(f.transform)
+            val pt = f.transform * position
             listOfNotNull(
-                f.takeIf { check(position, eps, f) }
-            ) +
-                    findFiguresAtCursor(f.transform * position, eps, f.collection())
+                f.takeIf { check(position, eps, f) }?.let{
+                    FigureInfo(it, null, transform)
+                }
+            ) + findFiguresAtCursor(mt , pt, eps, f.collection())
         }
     }
 

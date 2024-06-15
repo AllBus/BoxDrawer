@@ -73,7 +73,7 @@ class FigureList(
     }
 
     override fun name(): String {
-        return "List"
+        return "Список"
     }
 
     override val transform: Matrix

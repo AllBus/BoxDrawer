@@ -1,4 +1,4 @@
-package com.kos.boxdrawe.widget.tabbar
+package com.kos.boxdrawer.presentation.tabbar
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -23,7 +23,6 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.kos.boxdrawe.presentation.DxfToolsData
 import com.kos.boxdrawe.presentation.ToolsData
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericUpDown
@@ -31,11 +30,9 @@ import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.TabContentModifier
-import com.kos.boxdrawe.widget.showLoadFileChooser
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.metricMM
 import com.kos.boxdrawer.generated.resources.toolsButtonCopyCode
-import com.kos.boxdrawer.generated.resources.toolsButtonOpenFile
 import com.kos.boxdrawer.generated.resources.toolsCheckBoxTemplateEditor
 import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsBoardLabel
 import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsBoardWeight

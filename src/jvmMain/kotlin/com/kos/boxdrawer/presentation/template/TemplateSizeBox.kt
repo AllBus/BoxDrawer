@@ -1,4 +1,4 @@
-package com.kos.boxdrawer.presentation
+package com.kos.boxdrawer.presentation.template
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable

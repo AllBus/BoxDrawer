@@ -1,4 +1,4 @@
-package com.kos.boxdrawe.widget.display
+package com.kos.boxdrawer.presentation.display
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.IntSize
 import com.kos.boxdrawe.drawer.drawFigures
 import com.kos.boxdrawe.widget.toOffset
 import com.kos.boxdrawe.widget.toVec2
+import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
 import vectors.Vec2
 import kotlin.math.exp
@@ -42,7 +43,7 @@ fun DisplayTortoise(
     matrix: State<Matrix>,
     enableMatrix: Boolean,
     figures: IFigure,
-    selectedItem: State<List<IFigure>>,
+    selectedItem: State<List<FigureInfo>>,
     onStateChange: (String) -> Unit,
     onPress: (Vec2, Int, Float) -> Unit
 ) {

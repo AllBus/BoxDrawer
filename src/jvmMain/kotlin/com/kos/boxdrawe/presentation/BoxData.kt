@@ -4,6 +4,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.getTextAfterSelection
+import androidx.compose.ui.text.input.getTextBeforeSelection
 import com.jsevy.jdxf.DXFColor
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.box.*
@@ -22,6 +27,8 @@ class BoxData(override val tools: ITools): SaveFigure {
     val selectZigTopId = mutableIntStateOf(PazExt.PAZ_NONE)
     val selectZigBottomId = mutableIntStateOf(PazExt.PAZ_HOLE)
     val selectZigEdgeId = mutableIntStateOf(PazExt.PAZ_PAZ)
+
+
 
     fun boxFigures(line: String, outVariant: BoxCad.EOutVariant): BoxAlgorithm {
 
@@ -81,7 +88,7 @@ class BoxData(override val tools: ITools): SaveFigure {
     }
 
     override suspend fun createFigure(): IFigure {
-        val line = text.value
+        val line = text.value.text
         val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.COLUMN)
         val ds = tools.ds()
         return FigureColor(
@@ -92,14 +99,14 @@ class BoxData(override val tools: ITools): SaveFigure {
     }
 
     suspend fun print():String{
-        val line = text.value
+        val line = text.value.text
         val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.COLUMN)
 
         return alg.commandLine()
     }
 
     fun redrawBox(){
-        createBox(text.value)
+        createBox(text.value.text)
     }
 
     val width = NumericTextFieldState(100.0) { redrawBox() }
@@ -113,7 +120,7 @@ class BoxData(override val tools: ITools): SaveFigure {
     var insideChecked = mutableStateOf(false)
     var polkiInChecked = mutableStateOf(false)
     var alternative = mutableStateOf(true)
-    val text = mutableStateOf("")
+    val text = mutableStateOf(TextFieldValue(""))
 
     val edgeFL = NumericTextFieldState(0.0) { redrawBox() }
     val edgeBL = NumericTextFieldState(0.0) { redrawBox() }
@@ -129,6 +136,30 @@ class BoxData(override val tools: ITools): SaveFigure {
     val weightZigState = ZigZagState({redrawBox()})
     val polkaZigState = ZigZagState({redrawBox()})
     val polkaPolZigState = ZigZagState({redrawBox()})
+
+
+    val boxListener = object: BoxSimpleListener {
+        override fun clearSelect() {
+            text.value = text.value.copy(selection = TextRange(text.value.text.length))
+        }
+
+        override fun updateLine(decimal: Double, H: Boolean, C: Boolean, E: Boolean) {
+            val polka = "$decimal${if (H) " h" else ""}${if (C) " c" else ""}${if (E) " e" else ""}\n"
+
+            val tv = text.value
+            val ntext =
+                tv.getTextBeforeSelection(tv.text.length) +
+                AnnotatedString(polka) +
+                tv.getTextAfterSelection(tv.text.length)
+
+            text.value = tv.copy(
+                annotatedString = ntext,
+                selection = TextRange(tv.selection.min, tv.selection.min + polka.length)
+            )
+            redrawBox()
+        }
+
+    }
 
     companion object {
         fun boxFigures(alg: BoxAlgorithm, ds: DrawerSettings): IFigure {
@@ -171,4 +202,9 @@ class ZigZagState(val redrawBox: () -> Unit){
             enable =enable.value
         )
     }
+}
+
+interface BoxSimpleListener {
+    fun clearSelect()
+    fun updateLine(decimal: Double, H: Boolean, C: Boolean, E: Boolean)
 }

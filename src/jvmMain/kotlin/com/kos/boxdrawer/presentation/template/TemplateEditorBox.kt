@@ -1,4 +1,4 @@
-package com.kos.boxdrawer.presentation
+package com.kos.boxdrawer.presentation.template
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -21,10 +21,8 @@ import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SimpleEditText
-import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateInfo
-import com.kos.boxdrawer.template.editor.TemplateEditorForm
 import kotlin.reflect.KFunction3
 
 @Composable

@@ -23,7 +23,7 @@
     <string name="boxPreviewStyle">Альтернативное расположение</string>
     <string name="metricMM">мм</string>
     <string name="metricCount">шт</string>
-    <string name="metricPercent">%%</string>
+    <string name="metricPercent">%</string>
     <string name="metricCell">ячеек</string>
     <string name="rezTitleArea">Область</string>
     <string name="rezAreaWidth">Длина</string>

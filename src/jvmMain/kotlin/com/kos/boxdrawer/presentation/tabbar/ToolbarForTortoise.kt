@@ -1,4 +1,4 @@
-package com.kos.boxdrawe.widget.tabbar
+package com.kos.boxdrawer.presentation.tabbar
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
@@ -6,11 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -19,18 +15,12 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.TortoiseData
 import com.kos.boxdrawe.widget.EditTextField
-import com.kos.boxdrawe.widget.EditTextField2
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.TabContentModifier
 import com.kos.boxdrawer.generated.resources.Res
-import com.kos.boxdrawer.generated.resources.metricMM
 import com.kos.boxdrawer.generated.resources.toolsButtonCopyProgram
-import com.kos.boxdrawer.generated.resources.toolsButtonOpenFile
 import com.kos.boxdrawer.generated.resources.tortoiseFigureField
-import com.kos.boxdrawer.presentation.EditPosition
-import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
-import com.kos.boxdrawer.template.TemplateMemory
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 

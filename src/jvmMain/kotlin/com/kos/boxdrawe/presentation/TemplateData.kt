@@ -10,6 +10,7 @@ import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.boxdrawer.template.TemplateMemoryItem
 import com.kos.boxdrawer.template.editor.TemplateEditorForm
 import com.kos.figure.FigureEmpty
+import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -22,9 +23,10 @@ import turtoise.TortoiseState
 import turtoise.memory.TwoBlockTortoiseMemory
 import turtoise.paint.PaintUtils
 import turtoise.parser.TortoiseParserStackBlock
+import vectors.Matrix
 import vectors.Vec2
 
-class TemplateData(override val tools: ITools, val selectedItem: MutableStateFlow<List<IFigure>>) : SaveFigure {
+class TemplateData(override val tools: ITools, val selectedItem: MutableStateFlow<List<FigureInfo>>) : SaveFigure {
     private val templater = TemplateCreator
     private val emptyAlgorithm = TemplateAlgorithm(
         "",
@@ -183,7 +185,7 @@ class TemplateData(override val tools: ITools, val selectedItem: MutableStateFlo
 
     suspend fun onPress(point: Vec2, button: Int, scale: Float) {
         val figure = currentFigure.value
-        val result = PaintUtils.findFiguresAtCursor(point, 1.0, listOf(figure))
+        val result = PaintUtils.findFiguresAtCursor(Matrix.identity, point, 1.0, listOf(figure))
         selectedItem.value = result
     }
 

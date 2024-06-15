@@ -1,4 +1,4 @@
-package com.kos.boxdrawer.presentation
+package com.kos.boxdrawer.presentation.template
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
@@ -7,26 +7,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
-import com.kos.boxdrawe.widget.NumericUpDown
-import com.kos.boxdrawer.template.TemplateGeneratorListener
+import com.kos.boxdrawe.widget.NumericUpDownLine
+import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItem
-import com.kos.boxdrawer.template.TemplateItemInt
 import turtoise.parser.TortoiseParserStackItem
 
 @Composable
-fun TemplateIntBox(
+fun TemplateNumericBox(
     form: TemplateItem,
     block: TortoiseParserStackItem?,
     prefix: String,
-    templateGenerator: TemplateGeneratorListener
+    templateGenerator: TemplateGeneratorSimpleListener
 ) {
     val input =
-        remember(prefix) {
+        remember("$prefix") {
             NumericTextFieldState(
-                templateGenerator.get(prefix).firstOrNull()?.toDoubleOrNull() ?: block?.doubleValue(
+                value = templateGenerator.get(prefix).firstOrNull()?.toDoubleOrNull() ?: block?.doubleValue(
                     1,
                     0.0
-                ) ?: 0.0, 0
+                ) ?: 0.0,
+                minValue = -1000000.0,
             ) { v ->
                 templateGenerator.put(
                     prefix,
@@ -40,6 +40,6 @@ fun TemplateIntBox(
             singleLine = true,
             modifier = Modifier.align(alignment = Alignment.CenterVertically)
         )
-        NumericUpDown("", "", input, modifier = Modifier.weight(1f))
+        NumericUpDownLine("", "", input, modifier = Modifier.weight(1f))
     }
 }

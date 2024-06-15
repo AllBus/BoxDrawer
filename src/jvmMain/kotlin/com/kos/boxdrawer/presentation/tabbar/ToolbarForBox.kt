@@ -1,4 +1,4 @@
-package com.kos.boxdrawe.widget.tabbar
+package com.kos.boxdrawer.presentation.tabbar
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -12,9 +12,9 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.BoxData
-import com.kos.boxdrawe.presentation.ZigZagState
 import com.kos.boxdrawe.widget.*
 import com.kos.boxdrawe.widget.model.ButtonData
 import com.kos.boxdrawer.detal.box.PazExt
@@ -95,7 +95,7 @@ fun ToolbarForBox(vm: BoxData) {
 @Composable
 private fun ToolbarBoxRowThree(
     vm: BoxData,
-    text: MutableState<String>,
+    text: MutableState<TextFieldValue>,
     modifier: Modifier,
 ) {
     var insideChecked by remember { vm.insideChecked }
@@ -129,7 +129,7 @@ private fun ToolbarBoxRowThree(
                 vm.redrawBox()
             },
         )
-        EditText(title = stringResource(Res.string.boxPolki), value = text, enabled = true) { vm.createBox(it) }
+        EditTextField(title = stringResource(Res.string.boxPolki), value = text, enabled = true, { vm.createBox(it.text) }, {})
     }
 }
 

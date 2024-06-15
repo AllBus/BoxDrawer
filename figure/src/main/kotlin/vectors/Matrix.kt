@@ -2,6 +2,8 @@ package vectors
 
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sin
 
 @kotlin.jvm.JvmInline
@@ -19,6 +21,153 @@ value class Matrix(
         values[(row * 4) + column] = v
     }
 
+    fun copyWithTransform(m: Matrix): Matrix {
+        val nm = Matrix(this.values.copyOf())
+        nm.timesAssign(m)
+        return nm
+    }
+
+    /**
+     * Does the 3D transform on [point] and returns the `x` and `y` values in an [Offset].
+     */
+    fun map(point: Vec2): Vec2 {
+        val x = point.x
+        val y = point.y
+        val z = this[0, 3] * x + this[1, 3] * y + this[3, 3]
+        val inverseZ = 1 / z
+        val pZ = if (inverseZ.isFinite()) inverseZ else 0.0
+
+        return Vec2(
+            x = pZ * (this[0, 0] * x + this[1, 0] * y + this[3, 0]),
+            y = pZ * (this[0, 1] * x + this[1, 1] * y + this[3, 1])
+        )
+    }
+
+
+    /**
+     * Multiply this matrix by [m] and assign the result to this matrix.
+     */
+    operator fun timesAssign(m: Matrix) {
+        val v00 = dot(this, 0, m, 0)
+        val v01 = dot(this, 0, m, 1)
+        val v02 = dot(this, 0, m, 2)
+        val v03 = dot(this, 0, m, 3)
+        val v10 = dot(this, 1, m, 0)
+        val v11 = dot(this, 1, m, 1)
+        val v12 = dot(this, 1, m, 2)
+        val v13 = dot(this, 1, m, 3)
+        val v20 = dot(this, 2, m, 0)
+        val v21 = dot(this, 2, m, 1)
+        val v22 = dot(this, 2, m, 2)
+        val v23 = dot(this, 2, m, 3)
+        val v30 = dot(this, 3, m, 0)
+        val v31 = dot(this, 3, m, 1)
+        val v32 = dot(this, 3, m, 2)
+        val v33 = dot(this, 3, m, 3)
+        this[0, 0] = v00
+        this[0, 1] = v01
+        this[0, 2] = v02
+        this[0, 3] = v03
+        this[1, 0] = v10
+        this[1, 1] = v11
+        this[1, 2] = v12
+        this[1, 3] = v13
+        this[2, 0] = v20
+        this[2, 1] = v21
+        this[2, 2] = v22
+        this[2, 3] = v23
+        this[3, 0] = v30
+        this[3, 1] = v31
+        this[3, 2] = v32
+        this[3, 3] = v33
+    }
+
+    override fun toString(): String {
+        return """
+            |${this[0, 0]} ${this[0, 1]} ${this[0, 2]} ${this[0, 3]}|
+            |${this[1, 0]} ${this[1, 1]} ${this[1, 2]} ${this[1, 3]}|
+            |${this[2, 0]} ${this[2, 1]} ${this[2, 2]} ${this[2, 3]}|
+            |${this[3, 0]} ${this[3, 1]} ${this[3, 2]} ${this[3, 3]}|
+        """.trimIndent()
+    }
+
+    /**
+     * Invert `this` Matrix.
+     */
+    fun invert() {
+        val a00 = this[0, 0]
+        val a01 = this[0, 1]
+        val a02 = this[0, 2]
+        val a03 = this[0, 3]
+        val a10 = this[1, 0]
+        val a11 = this[1, 1]
+        val a12 = this[1, 2]
+        val a13 = this[1, 3]
+        val a20 = this[2, 0]
+        val a21 = this[2, 1]
+        val a22 = this[2, 2]
+        val a23 = this[2, 3]
+        val a30 = this[3, 0]
+        val a31 = this[3, 1]
+        val a32 = this[3, 2]
+        val a33 = this[3, 3]
+        val b00 = a00 * a11 - a01 * a10
+        val b01 = a00 * a12 - a02 * a10
+        val b02 = a00 * a13 - a03 * a10
+        val b03 = a01 * a12 - a02 * a11
+        val b04 = a01 * a13 - a03 * a11
+        val b05 = a02 * a13 - a03 * a12
+        val b06 = a20 * a31 - a21 * a30
+        val b07 = a20 * a32 - a22 * a30
+        val b08 = a20 * a33 - a23 * a30
+        val b09 = a21 * a32 - a22 * a31
+        val b10 = a21 * a33 - a23 * a31
+        val b11 = a22 * a33 - a23 * a32
+        val det =
+            (b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06)
+        if (det == 0.0f) {
+            return
+        }
+        val invDet = 1.0f / det
+        this[0, 0] = ((a11 * b11 - a12 * b10 + a13 * b09) * invDet)
+        this[0, 1] = ((-a01 * b11 + a02 * b10 - a03 * b09) * invDet)
+        this[0, 2] = ((a31 * b05 - a32 * b04 + a33 * b03) * invDet)
+        this[0, 3] = ((-a21 * b05 + a22 * b04 - a23 * b03) * invDet)
+        this[1, 0] = ((-a10 * b11 + a12 * b08 - a13 * b07) * invDet)
+        this[1, 1] = ((a00 * b11 - a02 * b08 + a03 * b07) * invDet)
+        this[1, 2] = ((-a30 * b05 + a32 * b02 - a33 * b01) * invDet)
+        this[1, 3] = ((a20 * b05 - a22 * b02 + a23 * b01) * invDet)
+        this[2, 0] = ((a10 * b10 - a11 * b08 + a13 * b06) * invDet)
+        this[2, 1] = ((-a00 * b10 + a01 * b08 - a03 * b06) * invDet)
+        this[2, 2] = ((a30 * b04 - a31 * b02 + a33 * b00) * invDet)
+        this[2, 3] = ((-a20 * b04 + a21 * b02 - a23 * b00) * invDet)
+        this[3, 0] = ((-a10 * b09 + a11 * b07 - a12 * b06) * invDet)
+        this[3, 1] = ((a00 * b09 - a01 * b07 + a02 * b06) * invDet)
+        this[3, 2] = ((-a30 * b03 + a31 * b01 - a32 * b00) * invDet)
+        this[3, 3] = ((a20 * b03 - a21 * b01 + a22 * b00) * invDet)
+    }
+
+    /**
+     * Resets the `this` to the identity matrix.
+     */
+    fun reset() {
+        for (c in 0..3) {
+            for (r in 0..3) {
+                this.set(r, c, if (c == r) 1f else 0f)
+            }
+        }
+    }
+
+    /** Sets the entire matrix to the matrix in [matrix]. */
+    fun setFrom(matrix: Matrix) {
+        for (i in 0..15) {
+            values[i] = matrix.values[i]
+        }
+    }
+
+    /**
+     * Applies a [degrees] rotation around X to `this`.
+     */
     fun rotateX(degrees: Float) {
         val c = cos(degrees * PI / 180.0).toFloat()
         val s = sin(degrees * PI / 180.0).toFloat()
@@ -167,27 +316,28 @@ value class Matrix(
         this[3, 3] = t4
     }
 
-
-    operator fun times(vector: Vec2): Vec2 {
-        return Vec2(
-            get(0, 0) * vector.x +
-                    get(0, 1) * vector.y +
-                    get(0, 2) * 1 +
-                    get(0, 3) * 1,
-            get(1, 0) * vector.x +
-                    get(1, 1) * vector.y +
-                    get(1, 2) * 1 +
-                    get(1, 3) * 1,
-        )
-    }
-
-
     private fun dot(m1: Matrix, row: Int, m2: Matrix, column: Int): Float {
         return m1[row, 0] * m2[0, column] +
                 m1[row, 1] * m2[1, column] +
                 m1[row, 2] * m2[2, column] +
                 m1[row, 3] * m2[3, column]
     }
+
+    operator fun times(vector: Vec2): Vec2 {
+        return this.map(vector)
+//        return Vec2(
+//            get(0, 0) * vector.x +
+//                    get(0, 1) * vector.y +
+//                    get(0, 2) * 1 +
+//                    get(0, 3) * 1,
+//            get(1, 0) * vector.x +
+//                    get(1, 1) * vector.y +
+//                    get(1, 2) * 1 +
+//                    get(1, 3) * 1,
+//        )
+    }
+
+
 
     companion object {
         val identity = Matrix()
@@ -199,10 +349,10 @@ value class Matrix(
          */
         fun translate(tx: Double, ty: Double): Matrix = Matrix(
             floatArrayOf(
-                1f, 0f, 0f, tx.toFloat(),
-                0f, 1f, 0f, ty.toFloat(),
+                1f, 0f, 0f,0f,
+                0f, 1f, 0f, 0f,
                 0f, 0f, 1f, 0f,
-                0f, 0f, 0f, 1f
+                tx.toFloat(), ty.toFloat(), 0f, 1f
             )
         )
 
@@ -228,7 +378,19 @@ value class Matrix(
                 0f, 0f, 0f, 1f
             )
         )
+
     }
 
-
+    /** Whether the given matrix is the identity matrix. */
+    fun isIdentity(): Boolean {
+        for (row in 0..3) {
+            for (column in 0..3) {
+                val expected = if (row == column) 1f else 0f
+                if (this[row, column] != expected) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
 }

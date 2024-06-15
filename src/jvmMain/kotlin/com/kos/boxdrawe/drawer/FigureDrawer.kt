@@ -1,16 +1,19 @@
 package com.kos.boxdrawe.drawer
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.rememberTextMeasurer
 import com.kos.boxdrawe.themes.ThemeColors
+import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
 import vectors.Vec2
 
 
-fun DrawScope.drawFigures(figureLine: IFigure, selectedItem: List<IFigure>, measurer: TextMeasurer) {
+fun DrawScope.drawFigures(figureLine: IFigure, selectedItem: List<FigureInfo>, measurer: TextMeasurer) {
 
     val penColor = Color.Gray
     val style = Stroke(width = Stroke.HairlineWidth)
@@ -21,7 +24,12 @@ fun DrawScope.drawFigures(figureLine: IFigure, selectedItem: List<IFigure>, meas
 
     drawer.penColor = ThemeColors.selectedFigureColor
     selectedItem.forEach {
-        it.draw(drawer)
+        withTransform({
+            val m = Matrix(it.transform.values.copyOf())
+            transform(m)
+        }) {
+            it.figure.draw(drawer)
+        }
     }
 
     val bound = figureLine.rect()

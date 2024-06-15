@@ -1,4 +1,4 @@
-package com.kos.boxdrawe.widget.tabbar
+package com.kos.boxdrawer.presentation.tabbar
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

@@ -1,4 +1,4 @@
-package com.kos.boxdrawer.presentation
+package com.kos.boxdrawer.presentation.template
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
@@ -10,11 +10,10 @@ import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateItem
-import com.kos.boxdrawer.template.TemplateItemRect
 import turtoise.parser.TortoiseParserStackItem
 
 @Composable
-fun TemplateRectBox(
+fun TemplateTripleBox(
     form: TemplateItem,
     block: TortoiseParserStackItem?,
     prefix: String,
@@ -22,7 +21,7 @@ fun TemplateRectBox(
 ) {
     val input1 = remember("$prefix.1") {
         NumericTextFieldState(
-            value =templateGenerator.get(prefix).getOrNull(0)?.toDoubleOrNull() ?: block?.doubleValue(
+            value = templateGenerator.get(prefix).getOrNull(0)?.toDoubleOrNull() ?: block?.doubleValue(
                 1,
                 0.0
             ) ?: 0.0,
@@ -68,22 +67,6 @@ fun TemplateRectBox(
             )
         }
     }
-    val input4 = remember("$prefix.4") {
-        NumericTextFieldState(
-            value = templateGenerator.get(prefix).getOrNull(3)?.toDoubleOrNull() ?: block?.doubleValue(
-                4,
-                0.0
-            ) ?: 0.0,
-            minValue = -1000000.0,
-        ) { v ->
-            templateGenerator.put(
-                prefix,
-                4,
-                form.argumentCount,
-                v.toString()
-            )
-        }
-    }
     Row() {
         Label(
             form.title,
@@ -93,6 +76,5 @@ fun TemplateRectBox(
         NumericUpDown("", "", input1, modifier = Modifier.weight(1f))
         NumericUpDown("", "", input2, modifier = Modifier.weight(1f))
         NumericUpDown("", "", input3, modifier = Modifier.weight(1f))
-        NumericUpDown("", "", input4, modifier = Modifier.weight(1f))
     }
 }

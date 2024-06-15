@@ -7,8 +7,12 @@ data class BoundingRectangle(val min: Vec2, val max: Vec2) {
     val width: Double get() = max.x - min.x
     val height: Double get() = max.y - min.y
 
-    val centerX = (min.x + max.x )/2
-    val centerY = (min.y + max.y )/2
+    val centerX = (min.x + max.x) / 2
+    val centerY = (min.y + max.y) / 2
+
+    override fun toString(): String {
+        return "$min : $max"
+    }
 
     fun union(rect: BoundingRectangle): BoundingRectangle {
 
@@ -27,9 +31,18 @@ data class BoundingRectangle(val min: Vec2, val max: Vec2) {
 
     fun scale(scaleX: Double, scaleY: Double): BoundingRectangle {
         return BoundingRectangle(
-            Vec2(min.x*scaleX, min.y*scaleY) ,
-            Vec2(max.x*scaleX, max.y*scaleY) ,
+            Vec2(min.x * scaleX, min.y * scaleY),
+            Vec2(max.x * scaleX, max.y * scaleY),
         )
+    }
+
+    fun transform(transform: Matrix): BoundingRectangle {
+        val a = Vec2(min.x, max.y)
+        val b = Vec2(max.x, min.y)
+        val c = min
+        val d = max
+        val points: List<Vec2> = listOf(a, b, c, d).map { transform * it }
+        return apply(points)
     }
 
     constructor(center: Vec2, radius: Double) : this(
@@ -59,7 +72,12 @@ data class BoundingRectangle(val min: Vec2, val max: Vec2) {
         }
 
         @Suppress("unused")
-        fun apply(center: Vec2, radius: Double, minorRadius: Double, rotation: Double): BoundingRectangle {
+        fun apply(
+            center: Vec2,
+            radius: Double,
+            minorRadius: Double,
+            rotation: Double
+        ): BoundingRectangle {
             val maxRadius = max(radius, minorRadius)
             return BoundingRectangle(center, maxRadius)
         }

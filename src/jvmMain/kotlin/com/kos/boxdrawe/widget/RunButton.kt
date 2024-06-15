@@ -38,3 +38,22 @@ fun RunButtonPreview(){
         RunButton("Нарисовать\nдеталь",){}
     }
 }
+
+@Composable
+fun ToggleButton(
+    modifier: Modifier = Modifier,
+    titleOff:String,
+    titleOn:String,
+    checked:Boolean,
+    onClick: (Boolean) -> Unit,
+) = Button(
+    onClick = { onClick(!checked) },
+    modifier = Modifier.composed { modifier }
+) {
+    Text(
+        text = if (checked) titleOn else titleOff,
+        modifier = Modifier,
+        textAlign = TextAlign.Center,
+    )
+
+}

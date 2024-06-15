@@ -5,6 +5,7 @@ import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.figure.FigureExtractor
 import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureEmpty
+import com.kos.figure.FigureInfo
 import com.kos.figure.FigureList
 import com.kos.figure.FigurePolygon
 import com.kos.figure.IFigure
@@ -17,6 +18,7 @@ import org.kabeja.dxf.DXFDocument
 import org.kabeja.parser.DXFParser
 import org.kabeja.parser.ParserBuilder
 import turtoise.paint.PaintUtils
+import vectors.Matrix
 import vectors.Vec2
 import java.io.File
 import java.io.FileInputStream
@@ -57,10 +59,10 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         point: Vec2,
         button: Int,
         scale: Float,
-        selectedItem: MutableStateFlow<List<IFigure>>
+        selectedItem: MutableStateFlow<List<FigureInfo>>
     ) {
         val figure = currentFigure.value
-        val result = PaintUtils.findFiguresAtCursor(point, 1.0, listOf(figure))
+        val result = PaintUtils.findFiguresAtCursor(Matrix.identity, point, 1.0, listOf(figure))
         selectedItem.value = result
     }
 

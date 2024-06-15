@@ -10,9 +10,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Matrix
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
-import com.kos.boxdrawe.widget.display.DisplayBezier
-import com.kos.boxdrawe.widget.display.DisplayGrid
-import com.kos.boxdrawe.widget.display.DisplayTortoise
+import com.kos.boxdrawer.presentation.display.DisplayBezier
+import com.kos.boxdrawer.presentation.display.DisplayGrid
+import com.kos.boxdrawer.presentation.display.DisplayTortoise
+import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
 
@@ -26,7 +27,7 @@ fun DisplayBox(
     stateText: MutableState<String>,
     alternative: MutableState<Boolean>,
     vm: State<DrawerViewModel>,
-    selectedItem: State<List<IFigure>>,
+    selectedItem: State<List<FigureInfo>>,
 ) {
     val coroutineScope = rememberCoroutineScope()
 

@@ -6,7 +6,7 @@ import com.kos.figure.IFigure
 import vectors.Matrix
 import vectors.Vec2
 import kotlin.math.PI
-import vectors.BoundingRectangle as BoundingRectangle1
+import vectors.BoundingRectangle
 
 class FigureTranslateWithRotate(
     override val figure: IFigure,
@@ -18,7 +18,7 @@ class FigureTranslateWithRotate(
         return FigureTranslateWithRotate(figure, offset, angleInDegrees)
     }
 
-    override fun rect(): BoundingRectangle1 {
+    override fun rect(): BoundingRectangle {
         return figure.rect().translate(offset)
     }
 

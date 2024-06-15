@@ -1,19 +1,24 @@
-package com.kos.boxdrawer.presentation
+package com.kos.boxdrawer.presentation.template
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.themes.ThemeColors
+import com.kos.boxdrawe.widget.CircleBox
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
-import com.kos.boxdrawe.widget.NumericUpDownLine
+import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItem
 import turtoise.parser.TortoiseParserStackItem
 
 @Composable
-fun TemplateNumericBox(
+fun TemplateAngleBox(
     form: TemplateItem,
     block: TortoiseParserStackItem?,
     prefix: String,
@@ -40,6 +45,12 @@ fun TemplateNumericBox(
             singleLine = true,
             modifier = Modifier.align(alignment = Alignment.CenterVertically)
         )
-        NumericUpDownLine("", "", input, modifier = Modifier.weight(1f))
+        NumericUpDown("", "", input, modifier = Modifier.weight(1f))
+        CircleBox(
+            modifier = Modifier.weight(0.5f).height(32.dp)
+                .background(ThemeColors.inputBackgroundState(true))
+        ) { current, change, start ->
+            input.update(input.decimal + change)
+        }
     }
 }
