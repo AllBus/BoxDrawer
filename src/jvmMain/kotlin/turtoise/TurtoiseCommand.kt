@@ -80,6 +80,8 @@ interface TortoiseCommand {
                 TURTOISE_LOAD -> "TURTOISE_LOAD"
                 TURTOISE_PEEK -> "TURTOISE_PEEK"
                 TURTOISE_METHOD_NAME -> "TURTOISE_METHOD_NAME"
+                TURTOISE_ARRAY -> "TURTOISE_ARRAY"
+                TURTOISE_3D -> "TURTOISE_3D"
                 //  TURTOISE_METHOD_RUN -> "TURTOISE_METHOD_RUN"
                 TURTOISE_LOOP -> "TURTOISE_LOOP"
                 TURTOISE_END_LOOP -> "TURTOISE_END_LOOP"
@@ -107,6 +109,7 @@ interface TortoiseCommand {
         const val TURTOISE_FIGURE = 'f'
         const val TURTOISE_IF_FIGURE = 'F'
         const val TURTOISE_3D = 'd'
+        const val TURTOISE_ARRAY = 'A'
         const val TURTOISE_VERTICAL = 'v'
        // const val TURTOISE_SPLINE = 's'
         const val TURTOISE_RECTANGLE = 'x'

@@ -134,6 +134,47 @@ abstract class TortoiseBase {
         return s
     }
 
+    protected fun figureArray(
+        com: TortoiseCommand,
+        memory: TortoiseMemory,
+        figure: IFigure,
+        state: TortoiseState,
+    ): IFigure {
+        val ft = com.takeBlock(1)?.let { a -> a as? TortoiseParserStackBlock }
+            ?.let { a ->
+
+                val c = a.getBlockAtName("c")
+                val r = a.getBlockAtName("r")
+                val s = a.getBlockAtName("s")
+                val m = (a.getBlockAtName("m")?.let { item ->
+                    Vec2(
+                        memory.value(item.get(1).orEmpty(), 0.0),
+                        memory.value(item.get(2).orEmpty(), 0.0),
+                    )
+                } ?: Vec2.Zero)
+
+                val columns = memory.value(c?.get(1).orEmpty(), 1.0).toInt()
+                val rows = memory.value(r?.get(1).orEmpty(), 1.0).toInt()
+                val scaleX = memory.value(s?.get(1).orEmpty(), 1.0)
+                val scaleY = memory.value(s?.get(2).orEmpty(), scaleX)
+                val distance = Vec2(
+                    memory.value(c?.get(2).orEmpty(), 1.0),
+                    memory.value(r?.get(2).orEmpty(), 1.0),
+                )
+
+                FigureArray(
+                    figure = figure,
+                    startPoint = m,
+                    distance = distance,
+                    columns = columns,
+                    rows = rows,
+                    angle = state.angle,
+                    scaleX = scaleX,
+                    scaleY = scaleY,
+                )
+            } ?: figure
+        return ft
+    }
 
     protected fun figure3d(
         com: TortoiseCommand,
@@ -154,9 +195,11 @@ abstract class TortoiseBase {
             )
         }
 
-        mf.rotateX(memory.value(angles?.get(0) ?: MemoryKey.ZERO, 0.0).toFloat())
-        mf.rotateY(memory.value(angles?.get(1) ?: MemoryKey.ZERO, 0.0).toFloat())
-        mf.rotateZ(memory.value(angles?.get(2) ?: MemoryKey.ZERO, 0.0).toFloat())
+        angles?.let {
+            mf.rotateX(memory.value(angles.get(0) ?: MemoryKey.ZERO, 0.0).toFloat())
+            mf.rotateY(memory.value(angles.get(1) ?: MemoryKey.ZERO, 0.0).toFloat())
+            mf.rotateZ(memory.value(angles.get(2) ?: MemoryKey.ZERO, 0.0).toFloat())
+        }
 
 
         val f3d = if (mf.isIdentity())

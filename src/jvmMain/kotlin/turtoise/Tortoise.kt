@@ -489,6 +489,15 @@ class Tortoise() : TortoiseSplash() {
                         )
                     }
                 }
+                TortoiseCommand.TURTOISE_ARRAY -> {
+                    val block = com.takeBlock(0)
+                    val f = figureList(block, ds, maxStackSize, memory, runner)
+                    f?.let { g ->
+                        builder.addProduct(
+                            figureArray(com, memory, g, state)
+                        )
+                    }
+                }
 
                 TortoiseCommand.TURTOISE_SAVE -> {
                     stateStack.push(TortoiseState().from(state))
