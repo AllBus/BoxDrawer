@@ -22,7 +22,7 @@ open class FigureEllipse(
     val rotation: Double,
     val segmentStart: Double = 0.0,
     val segmentSweep: Double = 360.0,
-) : Figure(), IFigurePath, Approximation {
+) : Figure(), IFigurePath, FigureWithApproximation {
 
     override fun crop(k: Double, cropSide: CropSide): Figure {
         //Todo: Правильно отрезать
@@ -117,16 +117,30 @@ open class FigureEllipse(
 
 
     override fun transform(matrix: Matrix): FigureEllipse {
-
-
-
         // Todo: вычисление поворота и радиуса неправильное
-        val r = matrix.map(Vec2(radius, radiusMinor))
+
+        val a = matrix[0, 0].toDouble()
+        val b = matrix[0, 1].toDouble()
+        val c = matrix[1, 0].toDouble()
+        val d = matrix[1, 1].toDouble()
+        var delta = a * d - b * c;
+        val newRot = if (a != 0.0 || b != 0.0) {
+            val r = Math.sqrt(a * a + b * b)
+            if (b > 0.0) Math.acos(a / r) else -Math.acos(a / r)
+        } else if (c != 0.0 || d != 0.0) {
+            val s = Math.sqrt(c * c + d * d);
+            Math.PI / 2.0 - (if (d > 0.0) Math.acos(-c / s) else -Math.acos(c / s))
+        } else
+        {
+            0.0
+        }
+
+
         return FigureEllipse(
             center = matrix.map(center),
-            radius = r.x,
-            radiusMinor = r.y,
-            rotation = rotation,
+            radius = radius*matrix[0,0],
+            radiusMinor = radiusMinor*matrix[1,1],
+            rotation = rotation+newRot*180.0/Math.PI,
             segmentStart = segmentStart,
             segmentSweep = segmentSweep
         )

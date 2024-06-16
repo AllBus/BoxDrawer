@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.getSelectedText
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -128,6 +129,9 @@ fun App(vm: State<DrawerViewModel>) {
                                 rotateValueY.value,
                                 rotateValueZ.value
                             )
+                        },
+                        onPickSelected = {
+                            vm.value.tortoise.text.value.getSelectedText().toString()
                         }
                     )
 
@@ -169,6 +173,7 @@ private fun Editor(
     figureList: State<List<FigureInfo>>,
     selectedItem: State<List<FigureInfo>>,
     onRotateDisplay : () -> Unit,
+    onPickSelected : () -> String
 ) {
     Box(
         modifier = modifier.fillMaxSize()
@@ -185,7 +190,7 @@ private fun Editor(
                         ),
 
                         ) {
-                        EditPosition(tortoiseListener)
+                        EditPosition(tortoiseListener, onPickSelected)
                     }
                     Text(
                         text = helpText,

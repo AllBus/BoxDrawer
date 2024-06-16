@@ -14,11 +14,14 @@ import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
 import com.jsevy.jdxf.DXFColor
+import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEmpty
 import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 import java.util.Stack
+import kotlin.math.abs
 import kotlin.math.min
+import kotlin.math.sign
 
 private const val MAX_REGULAR_POLYGON_EDGES = 500
 
@@ -235,6 +238,17 @@ class Tortoise() : TortoiseSplash() {
 //                    }
                 }
 
+                TortoiseCommand.TURTOISE_VARIABLES -> {
+                    variablesSplash(
+                        builder = builder,
+                        com = com,
+                        ds = ds,
+                        maxStackSize = maxStackSize,
+                        memory = memory,
+                        runner = runner,
+                    )
+                }
+
 
                 TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {
                     builder.saveLine()
@@ -347,7 +361,32 @@ class Tortoise() : TortoiseSplash() {
                         state.moveTo(points.last())
                     }
                 }
+                TortoiseCommand.TURTOISE_ARC -> {
+                    builder.saveLine()
+                    val c2 = state.xy
+                    val angle = state.angle
+                    val r = com[0, memory]
+                    val a = com[1, memory] // deg
+                    val cir = com[2, memory] // deg
 
+                    val center = c2+Vec2(0.0,r).rotate(angle)
+                    val np = center + Vec2(0.0, -r ).rotate(angle+sign(r)*Math.toRadians(a))
+                    if ( a == 0.0) {
+                        //nothing
+                    } else
+                    {
+                        if (r< 0.0){
+                            builder.add(FigureCircle(center, abs(r), np, c2))
+                        } else {
+                            builder.add(FigureCircle(center, abs(r), c2, np))
+                        }
+                    }
+                    if (cir>0.0) {
+                        builder.add(FigureCircle(center, cir))
+                    }
+                    state.moveTo(np)
+                    state.a+= sign(r)*a
+                }
                 TortoiseCommand.TURTOISE_UNION -> {
                     val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
                     builder.addProduct(
@@ -423,7 +462,6 @@ class Tortoise() : TortoiseSplash() {
                 TortoiseCommand.TURTOISE_MOVE_TO -> {
                     state.moveTo(Vec2(com[0, memory], com[1, memory]))
                 }
-
 
                 TortoiseCommand.TURTOISE_MATRIX_TRANSLATE -> {
                     builder.add(FigureMatrixTranslate(com[0, memory], com[1, memory]))

@@ -54,6 +54,8 @@ interface Approximation {
     fun approximate(pointCount: Int): List<List<Vec2>>
 }
 
+interface FigureWithApproximation: IFigure,  Approximation
+
 object FigureEmpty : Figure(), IFigurePath {
     override fun positionInPath(delta: Double): PointWithNormal {
         return PointWithNormal.EMPTY

@@ -72,6 +72,7 @@ interface TortoiseCommand {
                 TURTOISE_BEZIER -> "TURTOISE_BEZIER"
                 TURTOISE_ANGLE -> "TURTOISE_ANGLE"
                 TURTOISE_ANGLE_ADD -> "TURTOISE_ANGLE_ADD"
+                TURTOISE_ARC -> "TURTOISE_ARC"
                 TURTOISE_SPLIT -> "TURTOISE_SPLIT"
                 TURTOISE_CLEAR -> "TURTOISE_CLEAR"
                 TURTOISE_CLOSE -> "TURTOISE_CLOSE"
@@ -96,6 +97,7 @@ interface TortoiseCommand {
                 TURTOISE_IF_FIGURE -> "TURTOISE_IF_FIGURE"
                 TURTOISE_GROUP -> "TURTOISE_GROUP"
                 TURTOISE_SPLASH -> "TURTOISE_SPLASH"
+                TURTOISE_VARIABLES -> "TURTOISE_VARIABLES"
                 else -> c.toString()
             }
         }
@@ -123,6 +125,7 @@ interface TortoiseCommand {
         const val TURTOISE_PATH = 'P'
         const val TURTOISE_ANGLE = 'a'
         const val TURTOISE_ANGLE_ADD = 'q'
+        const val TURTOISE_ARC = 'R'
         const val TURTOISE_SPLIT = '|'
         const val TURTOISE_CLEAR = '!'
         const val TURTOISE_CLOSE = '`'
@@ -135,7 +138,7 @@ interface TortoiseCommand {
         const val TURTOISE_LOOP = '>'
         const val TURTOISE_END_LOOP = '<'
         const val TURTOISE_MOVE_TO = 'M'
-        const val TURTOISE_MATRIX_ROTATE = 'R'
+        const val TURTOISE_MATRIX_ROTATE = 'J'
         const val TURTOISE_MATRIX_TRANSLATE = 'T'
         const val TURTOISE_MATRIX_SCALE = 'S'
         const val TURTOISE_MEMORY_ASSIGN = '='
@@ -146,6 +149,7 @@ interface TortoiseCommand {
         const val TURTOISE_SYMDIFF = 'Y'
         const val TURTOISE_GROUP = 'g'
         const val TURTOISE_SPLASH = '/'
+        const val TURTOISE_VARIABLES = '^'
 
         fun Move(x: Double) = DoubleTortoiseCommand(TURTOISE_MOVE, x)
         fun Move(x: String) = SmallTortoiseCommand(TURTOISE_MOVE, x)

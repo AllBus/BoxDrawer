@@ -33,21 +33,43 @@ class TortoiseData(override val tools: ITools) : SaveFigure {
     val editorListener = object : TemplateGeneratorSimpleListener {
         val memory = TemplateMemory()
         override fun put(arg: String, index: Int, count: Int, value: String) {
-            if (count > 1) {
-                memory.put(arg, index, count, value)
-                recalc()
-            } else {
-                put(arg, value)
+            if (arg == "pos"){
+                reposition(value)
+            }else {
+                if (count > 1) {
+                    memory.put(arg, index, count, value)
+                    recalc()
+                } else {
+                    put(arg, value)
+                }
             }
         }
 
         override fun put(arg: String, value: String) {
-            memory.put(arg, value)
-            recalc()
+            if (arg == "pos"){
+                reposition(value)
+            }else {
+                memory.put(arg, value)
+                recalc()
+            }
         }
 
         override fun get(arg: String): List<String> {
             return memory.get(arg)
+        }
+
+        fun reposition(value:String){
+            val f = " $value"
+            val tv = text.value
+            val ntext =
+                tv.getTextBeforeSelection(tv.text.length) + AnnotatedString(f) + tv.getTextAfterSelection(
+                    tv.text.length
+                )
+            text.value = tv.copy(
+                annotatedString = ntext,
+                selection = TextRange(tv.selection.min, tv.selection.min + f.length)
+            )
+            createTortoise()
         }
 
         fun recalc() {

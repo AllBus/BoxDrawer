@@ -27,6 +27,23 @@ class FigureCircle(
     segmentStart = segmentStart,
     segmentSweep = segmentSweep
 ) {
+    companion object {
+        private fun calcSweep(startArc: Vec2, endArc:Vec2): Double {
+            val ea = endArc.angle
+            val sa = startArc.angle
+            if (sa > ea)
+                return  Math.toDegrees(sa-ea)-360
+           return  Math.toDegrees(sa-ea)
+        }
+    }
+
+    constructor(center:Vec2, radius:Double, startArc: Vec2, endArc:Vec2): this(
+        center, radius, -Math.toDegrees((startArc-center).angle),
+       calcSweep(startArc-center, endArc-center)
+    ){
+        println("$segmentStart to $segmentSweep")
+    }
+
     override fun crop(k: Double, cropSide: CropSide): Figure {
         return if (radius <= 0) FigureEmpty else when (cropSide) {
             CropSide.LEFT -> {

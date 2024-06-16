@@ -8,7 +8,7 @@ import vectors.Vec2.Companion.getCubicRoots
 
 private const val DEFAULT_STEP_SIZE = 1000
 
-class FigureBezier(points: List<Vec2>) : FigurePolygon(points), Approximation {
+class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApproximation {
     override fun create(points: List<Vec2>): FigurePolygon {
         return FigureBezier(points)
     }

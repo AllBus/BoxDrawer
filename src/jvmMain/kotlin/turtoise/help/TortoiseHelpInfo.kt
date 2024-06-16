@@ -21,13 +21,25 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             listOf(
                 HelpData(
                     "x y a xa ya",
-                    "переместить позицию",
+                    "переместить позицию относительно текущей",
                     listOf(
                         HelpDataParam("x", "расстояние по оси x"),
                         HelpDataParam("y", "расстояние по оси y"),
                         HelpDataParam("a", "поворот в градусах"),
                         HelpDataParam("xa", "расстояние по оси x после поворота"),
                         HelpDataParam("ya", "расстояние по оси y после поворота"),
+                    )
+                )
+            )
+        ),
+        helpName(TortoiseCommand.TURTOISE_MOVE_TO,
+            listOf(
+                HelpData(
+                    "x y",
+                    "поставить позицию в указанных координатах",
+                    listOf(
+                        HelpDataParam("x", "координата по оси x"),
+                        HelpDataParam("y", "координата по оси y"),
                     )
                 )
             )
@@ -71,11 +83,23 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     )
                 )
             )
-        ), helpName(
+        ),
+        helpName(
+            TortoiseCommand.TURTOISE_SPLIT,
+            "",
+            "Завершить рисование текущей фигуры и начать новую"
+        ),
+        helpName(
             TortoiseCommand.TURTOISE_CLEAR,
             "",
             "Сбросить позицию на начало координат и поворот на 0"
-        ), helpName(
+        ),
+        helpName(
+            TortoiseCommand.TURTOISE_CLOSE,
+            "",
+            "закрыть многоугольник"
+        ),
+        helpName(
             TortoiseCommand.TURTOISE_LINE,
             "d+",
             "нарисовать длиной d. Последующие значения ресуют перпендикулярно"
@@ -89,11 +113,6 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             TortoiseCommand.TURTOISE_LINE_WITH_ANGLE,
             "d a d +",
             "Построение полилинии задаётся длина линии и угол между ними"
-        ),
-        helpName(
-            TortoiseCommand.TURTOISE_CLOSE,
-            "",
-            "закрыть многоугольник"
         ),
         helpName(
             TortoiseCommand.TURTOISE_VERTICAL,
@@ -132,7 +151,23 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     )
                 )
             )
-        ), helpName(
+        ),helpName(
+            TortoiseCommand.TURTOISE_ARC,
+            listOf(
+                HelpData(
+                    "r angle circle?",
+                    "Дуга из текущей точки радиуса r заданной угла",
+                    listOf(
+                        HelpDataParam("r", "радиус дуги, если отрицательный то закруглении в другом направлении"),
+                        HelpDataParam("angle", "угол дуги"),
+                        HelpDataParam("circle", "Добавить окружность в центре дуги"),
+                    )
+                )
+            )
+        ),
+
+
+        helpName(
             TortoiseCommand.TURTOISE_RECTANGLE,
             "w h?",
             "прямоугольник шириной w и высотой h. Если h не задан, то квадрат"
@@ -466,12 +501,13 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             )
         )
     ),
-        helpForSplash()
+        helpForSplash(),
+        helpForVariablesSplash(),
 
     )
 
-    private fun helpForSplash() = helpName(
-        TortoiseCommand.TURTOISE_SPLASH,
+    private fun helpForVariablesSplash() = helpName(
+        TortoiseCommand.TURTOISE_VARIABLES,
         listOf(
             HelpData(
                 "length (figure) (variable+)",
@@ -481,6 +517,17 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                 "board (variable)",
                 "поместить толщину доски в переменную variable"
             ),
+            HelpData(
+                "pos (x y a)",
+                "поместить текущую позицию и поворот в переменные x y a соответственно"
+            ),
+        )
+    )
+
+    private fun helpForSplash() = helpName(
+        TortoiseCommand.TURTOISE_SPLASH,
+        listOf(
+
             HelpData(
                 "arc (radius pointStart pointEnd)+",
                 "Нарисовать дугу заданного радиуса radius через две точки"
@@ -536,6 +583,10 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             HelpData(
                 "print [text] | (variable)",
                 "Написать текст или значение переменной"
+            ),
+            HelpData(
+                "printс x",
+                "Написать текущую координату"
             ),
         )
     )

@@ -7,7 +7,7 @@ import vectors.Vec2.Companion.calcYPosition
 import kotlin.math.max
 import kotlin.math.min
 
-class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points) {
+class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points), FigureWithApproximation {
 
     constructor(a: Vec2, b: Vec2) : this(listOf(a, b))
 
@@ -118,6 +118,10 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
 
     override fun name(): String {
         return "Линия"
+    }
+
+    override fun approximate(pointCount: Int): List<List<Vec2>> {
+        return listOf(points)
     }
 
     override fun edgeCount(): Int = 1

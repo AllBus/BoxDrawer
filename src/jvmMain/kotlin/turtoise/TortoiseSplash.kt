@@ -28,7 +28,8 @@ abstract class TortoiseSplash : TortoiseBase() {
 
     protected var printFormat = DecimalFormat("0.####")
 
-    protected fun figuresSplash(
+
+    protected fun variablesSplash(
         builder: TortoiseBuilder,
         com: TortoiseCommand,
         ds: DrawerSettings,
@@ -49,12 +50,63 @@ abstract class TortoiseSplash : TortoiseBase() {
                 }
             }
 
+            "pos",
+            "position" -> {
+                val variables = com.takeBlock(1)?.inner.orEmpty()
+                variables.getOrNull(0)?.let { v ->
+                    memory.assign(v.argument, builder.state.x)
+                }
+                variables.getOrNull(1)?.let { v ->
+                    memory.assign(v.argument, builder.state.y)
+                }
+                variables.getOrNull(2)?.let { v ->
+                    memory.assign(v.argument, builder.state.a)
+                }
+            }
+
             "board" -> {
                 val variables = com.takeBlock(1)?.inner.orEmpty()
                 variables.firstOrNull()?.let { v ->
                     memory.assign(v.argument, ds.boardWeight)
                 }
             }
+
+            "print" -> {
+                /* [text] | (variable) */
+                val text = (1 until com.size).mapNotNull { i -> com.takeBlock(i) }.map { block ->
+                    if (block is TortoiseParserStackBlock && block.skobka != '(') {
+                        block.innerLine
+                    } else {
+                        printFormat.format(memory.value(block.argument, 0.0))
+                    }
+                }.joinToString(" ")
+                builder.addProduct(FigureText(text))
+            }
+
+            "printcoord",
+            "printc",
+            "coord",
+            "coordinate",
+            "print_coord",
+            "print_coordinate" -> {
+                builder.addProduct(FigureText(builder.xy.toString()))
+            }
+
+            else -> {}
+        }
+    }
+
+
+    protected fun figuresSplash(
+        builder: TortoiseBuilder,
+        com: TortoiseCommand,
+        ds: DrawerSettings,
+        maxStackSize: Int,
+        memory: TortoiseMemory,
+        runner: TortoiseRunner,
+    ) {
+        val command = com.takeBlock(0)?.name?.name
+        when (command) {
 
             "arc" -> {
                 /* (radius pointStart pointEnd)+ */
@@ -100,11 +152,13 @@ abstract class TortoiseSplash : TortoiseBase() {
 
             "rline",
             "roundline" -> {
-
-                val (rest, aap) = roundLine(com, memory)
+                /* r ax ay */
+                builder.saveLine()
+                val (rest, aap, aaa) = roundLine(com, memory)
 
                 builder.addProduct(FigureList(rest))
                 builder.state.move(aap.x, aap.y)
+                builder.state.a = aaa
             }
 
             "rez" -> {
@@ -352,6 +406,14 @@ abstract class TortoiseSplash : TortoiseBase() {
                 }.joinToString(" ")
                 builder.addProduct(FigureText(text))
             }
+            "printcoord",
+            "printc",
+            "coord",
+            "coordinate",
+            "print_coord",
+            "print_coordinate" -> {
+                builder.addProduct(FigureText(builder.xy.toString()))
+            }
 
             else -> {
             }
@@ -361,7 +423,8 @@ abstract class TortoiseSplash : TortoiseBase() {
     private fun roundLine(
         com: TortoiseCommand,
         memory: TortoiseMemory
-    ): Pair<MutableList<IFigure>, Vec2> {
+    ): Triple<List<IFigure>, Vec2, Double> {
+        /* r ax ay */
         val cr = Vec2.Zero
         val rest = mutableListOf<IFigure>()
 
@@ -372,7 +435,7 @@ abstract class TortoiseSplash : TortoiseBase() {
         val ll = if (com.size > 4) com[i + 3, memory] else null
         val aa = Vec2(ax, ay)
 
-        val aap = if (r > 0) {
+        val (aap, angle) = if (r > 0) {
             val preda = sign(ay) * 90
             val cc = Vec2(0.0, sign(ay) * r)
 
@@ -395,7 +458,7 @@ abstract class TortoiseSplash : TortoiseBase() {
             }
 
             rest += FigureCircle(cr + cc, r, preda, -alp * 180 / PI)
-            ap
+            Pair(ap , (ap-p).angle*180/ PI)
         } else {
             val ap = if (ll == null) {
                 aa
@@ -406,8 +469,9 @@ abstract class TortoiseSplash : TortoiseBase() {
             if (ap != Vec2.Zero) {
                 rest += FigureLine(cr, ap + cr)
             }
-            ap
+            Pair(ap , ap.angle*180/ PI)
+
         }
-        return Pair(rest, aap)
+        return Triple(rest, aap, angle)
     }
 }

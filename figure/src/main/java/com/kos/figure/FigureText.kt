@@ -66,7 +66,7 @@ class FigureText(val text:String, transform : Matrix = Matrix.identity): IFigure
     }
 
     override fun collection(): List<IFigure> {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 
     override fun name(): String {
@@ -74,5 +74,5 @@ class FigureText(val text:String, transform : Matrix = Matrix.identity): IFigure
     }
 
     override val transform: Matrix
-        get() = TODO("Not yet implemented")
+        get() = Matrix.identity
 }

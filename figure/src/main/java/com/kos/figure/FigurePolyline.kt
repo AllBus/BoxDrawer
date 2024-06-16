@@ -5,7 +5,7 @@ import vectors.Vec2
 import vectors.Vec2.Companion.coordForX
 import vectors.Vec2.Companion.coordForY
 
-class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), Approximation {
+class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWithApproximation {
 
     constructor(points: List<Vec2>, close: Boolean) : this(
         if (close) (points + listOfNotNull(points.firstOrNull()))
