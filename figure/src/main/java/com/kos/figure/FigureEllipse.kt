@@ -1,6 +1,7 @@
 package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.collections.FigurePath
 import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
@@ -106,7 +107,7 @@ open class FigureEllipse(
 
     override fun rotate(angle: Double, rotateCenter: Vec2): FigureEllipse {
         return FigureEllipse(
-            center = (center - rotateCenter).rotate(angle) + rotateCenter,
+            center = (center + rotateCenter).rotate(angle) - rotateCenter,
             radius = radius,
             radiusMinor = radiusMinor,
             rotation = (rotation + angle) % (2 * PI),
@@ -209,7 +210,7 @@ open class FigureEllipse(
         }
     }
 
-    private fun normalizeAngle(angle: Double): Double {
+    protected fun normalizeAngle(angle: Double): Double {
         return (angle % 360 + 360) % 360
     }
 

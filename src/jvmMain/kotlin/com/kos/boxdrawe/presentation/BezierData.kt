@@ -3,10 +3,9 @@ package com.kos.boxdrawe.presentation
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
-import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureOnPath
 import kotlinx.coroutines.flow.MutableStateFlow

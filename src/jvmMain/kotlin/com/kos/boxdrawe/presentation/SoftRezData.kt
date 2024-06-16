@@ -3,12 +3,10 @@ package com.kos.boxdrawe.presentation
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.soft.SoftRez
-import com.kos.figure.Figure
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureLine
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.IFigure
-import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslateWithRotate
 import kotlinx.coroutines.flow.MutableStateFlow
 import vectors.Vec2

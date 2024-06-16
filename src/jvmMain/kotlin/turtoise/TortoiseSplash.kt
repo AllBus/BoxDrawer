@@ -4,12 +4,10 @@ import com.jsevy.jdxf.DXFColor
 import com.kos.boxdrawer.detal.soft.SoftRez
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureLine
-import com.kos.figure.FigureList
-import com.kos.figure.FigurePolygon
+import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.FigureText
 import com.kos.figure.IFigure
-import com.kos.figure.IFigurePath
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureWithPosition
 import com.kos.figure.composition.PositionOnFigure
@@ -60,7 +58,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                     memory.assign(v.argument, builder.state.y)
                 }
                 variables.getOrNull(2)?.let { v ->
-                    memory.assign(v.argument, builder.state.a)
+                    memory.assign(v.argument, builder.state.angleInDegrees)
                 }
             }
 
@@ -158,7 +156,7 @@ abstract class TortoiseSplash : TortoiseBase() {
 
                 builder.addProduct(FigureList(rest))
                 builder.state.move(aap.x, aap.y)
-                builder.state.a = aaa
+                builder.state.angleInDegrees = aaa
             }
 
             "rez" -> {

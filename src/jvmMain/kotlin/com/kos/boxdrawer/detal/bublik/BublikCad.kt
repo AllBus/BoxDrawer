@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Matrix
 import com.kos.boxdrawe.presentation.BublikPaz
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import turtoise.DrawerSettings

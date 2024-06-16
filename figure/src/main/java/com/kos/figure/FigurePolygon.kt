@@ -59,7 +59,7 @@ abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath {
 
     override fun rotate(angle: Double, rotateCenter: Vec2): FigurePolygon {
         return create(points.map { p ->
-            (p-rotateCenter).rotate(angle)+rotateCenter
+            (p+rotateCenter).rotate(angle)-rotateCenter
         })
     }
 

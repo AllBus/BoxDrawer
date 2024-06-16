@@ -1,13 +1,11 @@
 package turtoise.rect
 
-import com.jsevy.jdxf.DXFColor
 import com.kos.boxdrawe.presentation.RectBlockPosition
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureLine
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor
-import org.jetbrains.skia.Color
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.DegreesMemoryKey
 import turtoise.memory.keys.MemoryKey

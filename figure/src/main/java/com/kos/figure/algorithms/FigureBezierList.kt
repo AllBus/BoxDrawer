@@ -4,9 +4,7 @@ import com.kos.drawer.IFigureGraphics
 import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureList
-import com.kos.figure.FigurePath
-import com.kos.figure.IFigure
+import com.kos.figure.collections.FigurePath
 import vectors.Vec2
 
 class FigureBezierList(val points: List<List<Vec2>>) {

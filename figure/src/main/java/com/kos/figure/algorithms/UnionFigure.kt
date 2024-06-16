@@ -2,7 +2,7 @@ package com.kos.figure.algorithms
 
 import com.kos.figure.Approximation
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import org.locationtech.jts.geom.Coordinate

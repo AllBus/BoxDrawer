@@ -1,9 +1,10 @@
-package com.kos.figure
+package com.kos.figure.collections
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.Figure
+import com.kos.figure.IFigure
 import vectors.BoundingRectangle
 import vectors.Matrix
-import vectors.Vec2
 
 class FigureList(
     private val figures: List<IFigure>

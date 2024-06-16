@@ -60,7 +60,7 @@ class DxfFileAlgorithm(
         return FigureTranslate(
             FigureRotate(
                 figure,
-                state.a,
+                state.angleInDegrees,
                 Vec2.Zero
             ),
             state.xy

@@ -1,6 +1,6 @@
 package turtoise
 
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.IFigure
 import turtoise.memory.TortoiseMemory
 import turtoise.parser.TortoiseParser

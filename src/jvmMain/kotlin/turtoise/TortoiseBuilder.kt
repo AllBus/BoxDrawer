@@ -60,6 +60,6 @@ class TortoiseBuilder(
 
     fun addProduct(figure: IFigure) {
         if (figure !is FigureEmpty)
-            add(FigureTranslateWithRotate(figure, state.xy, state.a))
+            add(FigureTranslateWithRotate(figure, state.xy, state.angleInDegrees))
     }
 }

@@ -16,7 +16,7 @@ class Figure3dTransform(val m: Matrix, val figure: IFigure) : FigureMatrix() {
     }
 
     override fun print(): String {
-        return "3dTransform"
+        return "d (${m[3,0]} ${m[3,1]} ${m[3,2]})() (${figure.print()})"
     }
 
     override val transform: Matrix

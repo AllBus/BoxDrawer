@@ -88,6 +88,14 @@ class FigureCircle(
         return BoundingRectangle(center, radius)
     }
 
+    override fun rotate(angle: Double): FigureEllipse {
+        return FigureCircle(center.rotate(angle), radius, normalizeAngle(segmentStart-Math.toDegrees(angle)), segmentSweep)
+    }
+
+    override fun rotate(angle: Double, rotateCenter: Vec2): FigureEllipse {
+        return FigureCircle((center + rotateCenter).rotate(angle) - rotateCenter, radius, normalizeAngle(segmentStart-Math.toDegrees(angle)), segmentSweep)
+    }
+
     override fun create(
         center: Vec2,
         radius: Double,
@@ -105,10 +113,6 @@ class FigureCircle(
         } else {
             g.drawArc(center, radius, radiusMinor, segmentStart, segmentSweep)
         }
-    }
-
-    private fun normalizeAngle(angle: Double): Double {
-        return (angle % 360 + 360) % 360
     }
 
     override fun print(): String {

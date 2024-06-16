@@ -82,10 +82,9 @@ class FigureArray(
     }
 
     override fun print(): String {
-        //Todo: need print arguments
-        return "M ${startPoint.x} ${startPoint.y} a ${angle}" +
-                "d (${figure.print()}) " +
-                "(c ($columns ${distance.x}) (r $rows ${distance.y}) (s ${scaleX} ${scaleY}))" +
+        return "a $angle"+
+                "A (${figure.print()}) " +
+                "((c $columns ${distance.x}) (r $rows ${distance.y}) (s ${scaleX} ${scaleY}) (m ${startPoint.x} ${startPoint.y}))" +
                 ""
     }
 

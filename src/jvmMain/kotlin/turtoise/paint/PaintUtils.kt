@@ -5,13 +5,23 @@ import com.kos.figure.FigureCircle
 import com.kos.figure.FigureInfo
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
+import com.kos.figure.collections.SimpleFigure
+import com.kos.figure.composition.FigureRotate
+import com.kos.figure.composition.FigureTranslate
+import com.kos.figure.composition.FigureTranslateWithRotate
+import turtoise.TortoiseState
 import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
 
 object PaintUtils {
 
-    fun findFiguresAtCursor(transform:Matrix, position: Vec2, eps: Double, figures: List<IFigure>): List<FigureInfo> {
+    fun findFiguresAtCursor(
+        transform: Matrix,
+        position: Vec2,
+        eps: Double,
+        figures: List<IFigure>
+    ): List<FigureInfo> {
         return figures.flatMap { f ->
             if (f.hasTransform) {
                 val mt = transform.copyWithTransform(f.transform)
@@ -19,17 +29,17 @@ object PaintUtils {
                 val posp = ptf * position
 
                 listOfNotNull(
-                    f.takeIf { check(posp, eps, f) }?.let{
+                    f.takeIf { check(posp, eps, f) }?.let {
                         FigureInfo(it, null, transform)
                     }
-                ) + findFiguresAtCursor(mt , posp, eps, f.collection())
+                ) + findFiguresAtCursor(mt, posp, eps, f.collection())
 
             } else {
                 listOfNotNull(
-                    f.takeIf { check(position, eps, f) }?.let{
+                    f.takeIf { check(position, eps, f) }?.let {
                         FigureInfo(it, null, transform)
                     }
-                ) + findFiguresAtCursor(transform , position, eps, f.collection())
+                ) + findFiguresAtCursor(transform, position, eps, f.collection())
             }
         }
     }
@@ -54,6 +64,7 @@ object PaintUtils {
                     false
                 b
             }
+
             else -> false
         }
     }
@@ -83,5 +94,48 @@ object PaintUtils {
             if (intersect) inside = !inside;
         }
         return inside
+    }
+
+    fun onlyFigures(figure: IFigure): SimpleFigure {
+        val state = TortoiseState()
+        return SimpleFigure(onlyFigures(figure, state))
+    }
+
+    fun onlyFigures(figure: IFigure, state: TortoiseState): List<Figure> {
+        val res = when (figure) {
+            is Figure -> return listOf(figure.rotate(state.angle).translate(state.x, state.y))
+            else -> {
+                val newState = if (figure.hasTransform) {
+                    val nm = TortoiseState().from(state)
+                    when (figure) {
+                        is FigureTranslate -> {
+                            nm.move(figure.offset)
+                            nm
+                        }
+
+                        is FigureRotate -> {
+                            nm.move(figure.pivot)
+                            nm.angleInDegrees += figure.angle
+                            nm.move(-figure.pivot)
+                            nm
+                        }
+
+                        is FigureTranslateWithRotate -> {
+                            nm.move(figure.offset)
+                            nm.angleInDegrees += figure.angleInDegrees
+                            nm
+                        }
+
+                        else ->
+                            return emptyList()
+                    }
+                } else state
+
+                figure.collection().flatMap { f ->
+                    onlyFigures(f, newState)
+                }
+            }
+        }
+        return res
     }
 }

@@ -1,14 +1,13 @@
 package com.kos.boxdrawer.detal.soft
 
 import com.kos.figure.CropSide
-import com.kos.figure.Figure
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
+import com.kos.figure.collections.FigureList
 import com.kos.figure.composition.FigureArray
 import com.kos.figure.composition.FigureRez
-import com.kos.figure.composition.FigureTranslate
+import turtoise.paint.PaintUtils
 import vectors.Vec2
 import kotlin.math.abs
 
@@ -24,42 +23,46 @@ class SoftRez {
         firstSmall: Boolean
     ): IFigure {
 
-        if (delta< 0.1)
+        if (delta < 0.1)
             return FigureEmpty
 
         val width = abs(widthF)
         val height = abs(heightF)
 
-        val coord = Vec2(if (widthF<0) -width else 0.0 , if (heightF<0) -height else 0.0)
+        val coord = Vec2(if (widthF < 0) -width else 0.0, if (heightF < 0) -height else 0.0)
 
-        val count = (width/delta).toInt()
+        val count = (width / delta).toInt()
 
-        if (count<=0|| count > 1000)
+        if (count <= 0 || count > 1000)
             return FigureEmpty
-        val dn = width/ count
-        val countw = ((height-soedinenie) / (dlina + soedinenie)).toInt()
-        if (countw<=0 || countw > 1000)
+        val dn = width / count
+        val countw = ((height - soedinenie) / (dlina + soedinenie)).toInt()
+        if (countw <= 0 || countw > 1000)
             return FigureEmpty
-        val dw =  (height-soedinenie)/ countw
-        return FigureRez(coord, count, countw, dn, dw-soedinenie, soedinenie, firstSmall)
+        val dw = (height - soedinenie) / countw
+        return FigureRez(coord, count, countw, dn, dw - soedinenie, soedinenie, firstSmall)
     }
 
     fun drawRectangle(
         w: Double, h: Double,
-    ):IFigure{
-         return FigurePolyline(
-                listOf(
-                    Vec2(0.0, 0.0),
-                    Vec2(w, 0.0),
-                    Vec2(w, h),
-                    Vec2(0.0, h),
-                    Vec2(0.0, 0.0),
-                )
+    ): IFigure {
+        return FigurePolyline(
+            listOf(
+                Vec2(0.0, 0.0),
+                Vec2(w, 0.0),
+                Vec2(w, h),
+                Vec2(0.0, h),
+                Vec2(0.0, 0.0),
             )
+        )
     }
 
     fun drawRect(
-        w: Double, h: Double, sdx: Double, sdy: Double, xCount: Int, yCount: Int, fit: Boolean, form: IFigure,
+        w: Double, h: Double,
+        sdx: Double, sdy: Double,
+        xCount: Int, yCount: Int,
+        fit: Boolean,
+        form: IFigure,
     ): IFigure {
 
 
@@ -113,7 +116,7 @@ class SoftRez {
 
         var j = 0
 
-        val fa =  FigureTranslate(form , Vec2(trX, trY)) //form.translate(trX, trY)
+        val fa = PaintUtils.onlyFigures(form).translate(trX, trY)
 
         val dy = (sh * 0.5) + sdy
 
@@ -123,8 +126,8 @@ class SoftRez {
         var y = -0.5 * sh
         while (y < h) {
             val fy = when {
-               // y < sdy -> fa.crop(-y / scaleY, CropSide.BOTTOM);
-             //   y + sh > h -> fa.crop((h - y) / scaleY, CropSide.TOP);
+                y < sdy -> fa.crop(-y / scaleY, CropSide.BOTTOM);
+                y + sh > h -> fa.crop((h - y) / scaleY, CropSide.TOP);
                 else -> fa
             }
 
@@ -132,37 +135,37 @@ class SoftRez {
 
             val x1 = sdx + (j % 2) * -0.5 * (sww)
 
-            val (ff1, xs) = if (x1<sdx) {
+            val (ff1, xs) = if (x1 < sdx) {
                 Pair(
-                 fy, //  fy.crop((-x1) / scaleX, CropSide.LEFT),
+                    fy.crop((-x1) / scaleX, CropSide.LEFT),
                     x1 + sww
                 )
             } else
-                Pair(null,x1)
+                Pair(null, x1)
 
             // количество целых элементов в линии
-            val sx = ((w-xs)/sww ).toInt()
-            val x2 = xs+sx*sww
+            val sx = ((w - xs) / sww).toInt()
+            val x2 = xs + sx * sww
 
             val ffe =
-            if (x2+sw > w){
-               fy // fy.crop((w - x2) / scaleX, CropSide.RIGHT)
-            } else
-                fy
+                if (x2 + sw > w) {
+                    fy.crop((w - x2) / scaleX, CropSide.RIGHT)
+                } else
+                    fy
 
-            if (sx>0){
+            if (sx > 0) {
                 res.add(
                     FigureArray(
-                    fy, Vec2(x1, y),
-                    distance = Vec2(sww, 0.0),
-                    columns = sx,
-                    rows = 1,
-                    angle = 0.0,
-                    scaleX = scaleX,
-                    scaleY = scaleY,
-                    figureStart = ff1,
-                    figureEnd = ffe
-                )
+                        fy, Vec2(x1, y),
+                        distance = Vec2(sww, 0.0),
+                        columns = sx,
+                        rows = 1,
+                        angle = 0.0,
+                        scaleX = scaleX,
+                        scaleY = scaleY,
+                        figureStart = ff1,
+                        figureEnd = ffe
+                    )
                 )
             }
 

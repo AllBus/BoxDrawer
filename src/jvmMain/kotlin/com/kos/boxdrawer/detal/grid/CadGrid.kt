@@ -3,7 +3,7 @@ package com.kos.boxdrawer.detal.grid
 import androidx.compose.ui.graphics.toArgb
 import com.jsevy.jdxf.DXFColor
 import com.kos.figure.algorithms.FigureBezierList
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor

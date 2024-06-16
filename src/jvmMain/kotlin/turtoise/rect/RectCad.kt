@@ -1,9 +1,8 @@
 package turtoise.rect
 
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.IFigure
 import turtoise.FigureCreator
-import turtoise.Tortoise
 import vectors.Vec2
 
 @Deprecated("")

@@ -1,18 +1,16 @@
 package com.kos.boxdrawe.presentation
 
-import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.figure.FigureExtractor
 import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureInfo
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolygon
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureArray
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureComposition
-import com.kos.figure.matrix.FigureMatrixScale
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.kabeja.dxf.DXFDocument
 import org.kabeja.parser.DXFParser

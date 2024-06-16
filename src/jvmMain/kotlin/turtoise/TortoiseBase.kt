@@ -2,13 +2,10 @@ package turtoise
 
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.isIdentity
-import com.kos.boxdrawer.detal.soft.SoftRez
-import com.kos.figure.Figure
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureLine
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolygon
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
@@ -16,14 +13,11 @@ import com.kos.figure.IFigurePath
 import com.kos.figure.PointWithNormal
 import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.composition.FigureArray
-import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureOnPath
 import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslateWithRotate
-import org.jetbrains.skia.Color
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.MemoryKey
-import turtoise.memory.keys.MemoryKey.Companion.ZERO
 import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 import turtoise.parser.TortoiseParser
 import turtoise.parser.TortoiseParserStackBlock
@@ -31,11 +25,9 @@ import turtoise.parser.TortoiseParserStackItem
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.acos
-import kotlin.math.asin
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.min
-import kotlin.math.sign
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -383,7 +375,7 @@ abstract class TortoiseBase {
                     FigureCircle(
                         center = builder.state.xy,
                         radius = r,
-                        segmentStart = com.take(d + 0, 0.0, memory) - builder.state.a,
+                        segmentStart = com.take(d + 0, 0.0, memory) - builder.state.angleInDegrees,
                         segmentSweep = com.take(d + 1, 360.0, memory),
                     )
                 )

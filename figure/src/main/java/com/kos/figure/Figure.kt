@@ -32,10 +32,6 @@ abstract class Figure : IFigure {
 
     override fun collection(): List<IFigure> = emptyList()
 
-    override fun name(): String {
-        return this.javaClass.name
-    }
-
     override val transform: Matrix
         get() = Matrix.identity
 

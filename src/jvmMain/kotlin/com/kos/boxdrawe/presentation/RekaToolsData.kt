@@ -1,9 +1,8 @@
 package com.kos.boxdrawe.presentation
 
 import androidx.compose.runtime.mutableStateOf
-import com.kos.figure.Figure
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor

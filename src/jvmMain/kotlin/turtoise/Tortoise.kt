@@ -1,8 +1,7 @@
 package turtoise
 
-import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor
@@ -61,7 +60,7 @@ class Tortoise() : TortoiseSplash() {
                 TortoiseCommand.TURTOISE_MOVE -> {
                     state.move(com[0, memory], com[1, memory])
                     if (com.size>=3) {
-                        state.a += com[2, memory]
+                        state.angleInDegrees += com[2, memory]
                         if (com.size>3) {
                             state.move(com[3, memory], com[4, memory])
                         }
@@ -82,17 +81,17 @@ class Tortoise() : TortoiseSplash() {
 
                 TortoiseCommand.TURTOISE_ANGLE -> {
                     if (com.size == 2) {
-                        state.a = calculateAngle(com[0, memory], com[1, memory])
+                        state.angleInDegrees = calculateAngle(com[0, memory], com[1, memory])
                     } else {
-                        state.a = com.value(memory)
+                        state.angleInDegrees = com.value(memory)
                     }
                 }
 
                 TortoiseCommand.TURTOISE_ANGLE_ADD -> {
                     if (com.size == 2) {
-                        state.a += calculateAngle(com[0, memory], com[1, memory])
+                        state.angleInDegrees += calculateAngle(com[0, memory], com[1, memory])
                     } else {
-                        state.a += com.value(memory)
+                        state.angleInDegrees += com.value(memory)
                     }
                 }
 
@@ -120,15 +119,15 @@ class Tortoise() : TortoiseSplash() {
                     }
                     state.move(v)
                     builder.add(state.xy)
-                    val currentAngle = state.a;
+                    val currentAngle = state.angleInDegrees;
                     for (d in 1 until com.size step 2) {
                         val a2 = com[d, memory]
                         val di = com[d + 1, memory]
-                        state.a = currentAngle + a2;
+                        state.angleInDegrees = currentAngle + a2;
                         state.move(di);
                         builder.add(state.xy)
                     }
-                    state.a = currentAngle;
+                    state.angleInDegrees = currentAngle;
                 }
 
                 TortoiseCommand.TURTOISE_LINE_PERPENDICULAR -> {
@@ -385,7 +384,7 @@ class Tortoise() : TortoiseSplash() {
                         builder.add(FigureCircle(center, cir))
                     }
                     state.moveTo(np)
-                    state.a+= sign(r)*a
+                    state.angleInDegrees+= sign(r)*a
                 }
                 TortoiseCommand.TURTOISE_UNION -> {
                     val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)

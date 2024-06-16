@@ -1,7 +1,7 @@
 package turtoise
 
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.IFigure
 import turtoise.memory.BlockTortoiseMemory
 import turtoise.memory.SimpleTortoiseMemory

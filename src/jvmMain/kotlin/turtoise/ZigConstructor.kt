@@ -1,7 +1,7 @@
 package turtoise
 
 import com.kos.figure.FigureLine
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureArray
 import vectors.Vec2

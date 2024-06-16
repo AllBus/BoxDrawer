@@ -1,6 +1,8 @@
-package com.kos.figure
+package com.kos.figure.collections
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.CropSide
+import com.kos.figure.Figure
 import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
@@ -29,7 +31,9 @@ class FigurePath(val figures: List<Figure>): Figure() {
     override fun crop(k: Double, cropSide: CropSide): Figure {
         return FigurePath( figures.map { it.crop(k, cropSide) })
     }
-/*
+
+
+    /*
     private val length: List<Double> by lazy { calculateLength() }
     private val edges: List<Int> by lazy { calculateEdges() }
 
@@ -95,6 +99,12 @@ class FigurePath(val figures: List<Figure>): Figure() {
     }
 
  */
+    override val count: Int
+        get() = figures.size
+
+    override fun list(): List<Figure> {
+        return figures.flatMap { it.list() }
+    }
 
     override fun rect(): BoundingRectangle {
         return BoundingRectangle.union( figures.map { it.rect() })
@@ -109,6 +119,6 @@ class FigurePath(val figures: List<Figure>): Figure() {
     }
 
     override fun name(): String {
-        return super.name()
+        return "Путь"
     }
 }

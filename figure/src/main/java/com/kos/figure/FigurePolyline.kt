@@ -1,6 +1,7 @@
 package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.collections.FigurePath
 import vectors.Vec2
 import vectors.Vec2.Companion.coordForX
 import vectors.Vec2.Companion.coordForY

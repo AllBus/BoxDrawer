@@ -77,5 +77,6 @@ interface IFigure {
 
             return l + figure.collection().flatMap { f -> approximation(f, nm) }
         }
+
     }
 }

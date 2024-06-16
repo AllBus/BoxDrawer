@@ -3,7 +3,7 @@ package turtoise.example
 import com.kos.figure.CropSide
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEllipse
-import com.kos.figure.FigureList
+import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import vectors.Vec2
