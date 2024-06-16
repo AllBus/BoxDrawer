@@ -93,7 +93,7 @@ fun ToolbarForSoft(vm: SoftRezData) {
                 },
             )
             if (isInSize){
-                NumericUpDown(stringResource(Res.string.rezLength), stringResource(Res.string.metricMM), lineLength)
+                NumericUpDownLine(stringResource(Res.string.rezLength), stringResource(Res.string.metricMM), lineLength)
                 RunCheckBox(
                     checked = firstSmall,
                     title = stringResource(Res.string.rezCheckFirstKine),

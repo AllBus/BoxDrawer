@@ -39,6 +39,9 @@ abstract class Figure : IFigure {
     override val transform: Matrix
         get() = Matrix.identity
 
+    override val hasTransform: Boolean
+        get() = false
+
     abstract fun translate(translateX: Double, translateY: Double): Figure
 
     abstract fun rotate(angle: Double): Figure
@@ -48,6 +51,7 @@ abstract class Figure : IFigure {
     abstract fun transform(matrix: Matrix): Figure
 
     abstract fun crop(k: Double, cropSide: CropSide): Figure
+
 }
 
 interface Approximation {

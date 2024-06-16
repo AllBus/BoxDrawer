@@ -100,4 +100,6 @@ class FigureRez(
     override val transform: Matrix
         get() = Matrix.identity
 
+    override val hasTransform: Boolean
+        get() = false
 }

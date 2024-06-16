@@ -26,4 +26,7 @@ class FigureColor(val color: Int,
     override fun name(): String {
         return "Цвет[$dxfColor](${color.toHexString()})"
     }
+
+    override val hasTransform: Boolean
+        get() = false
 }

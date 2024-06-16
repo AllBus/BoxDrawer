@@ -185,7 +185,7 @@ class TemplateData(override val tools: ITools, val selectedItem: MutableStateFlo
 
     suspend fun onPress(point: Vec2, button: Int, scale: Float) {
         val figure = currentFigure.value
-        val result = PaintUtils.findFiguresAtCursor(Matrix.identity, point, 1.0, listOf(figure))
+        val result = PaintUtils.findFiguresAtCursor(Matrix(), point, 1.0, listOf(figure))
         selectedItem.value = result
     }
 

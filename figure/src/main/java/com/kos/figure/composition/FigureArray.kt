@@ -96,4 +96,7 @@ class FigureArray(
     override fun name(): String = "Array(${columns}x$rows)"
     override val transform: Matrix
         get() = Matrix.identity
+
+    override val hasTransform: Boolean
+        get() = false
 }

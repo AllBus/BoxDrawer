@@ -13,13 +13,24 @@ object PaintUtils {
 
     fun findFiguresAtCursor(transform:Matrix, position: Vec2, eps: Double, figures: List<IFigure>): List<FigureInfo> {
         return figures.flatMap { f ->
-            val mt = transform.copyWithTransform(f.transform)
-            val pt = f.transform * position
-            listOfNotNull(
-                f.takeIf { check(position, eps, f) }?.let{
-                    FigureInfo(it, null, transform)
-                }
-            ) + findFiguresAtCursor(mt , pt, eps, f.collection())
+            if (f.hasTransform) {
+                val mt = transform.copyWithTransform(f.transform)
+                val ptf = f.transform.getInvert()
+                val posp = ptf * position
+
+                listOfNotNull(
+                    f.takeIf { check(posp, eps, f) }?.let{
+                        FigureInfo(it, null, transform)
+                    }
+                ) + findFiguresAtCursor(mt , posp, eps, f.collection())
+
+            } else {
+                listOfNotNull(
+                    f.takeIf { check(position, eps, f) }?.let{
+                        FigureInfo(it, null, transform)
+                    }
+                ) + findFiguresAtCursor(transform , position, eps, f.collection())
+            }
         }
     }
 

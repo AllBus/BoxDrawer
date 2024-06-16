@@ -22,6 +22,8 @@ class Figure3dTransform(val m: Matrix, val figure: IFigure) : FigureMatrix() {
     override val transform: Matrix
         get() = m
 
+    override val hasTransform: Boolean
+        get() = true
 
     override fun name(): String {
         return "3dTransform"

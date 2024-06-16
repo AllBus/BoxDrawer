@@ -44,5 +44,8 @@ class FigureTranslate(
 
     override val transform: Matrix
         get() = Matrix.translate(offset.x, offset.y)
+
+    override val hasTransform: Boolean
+        get() = true
 }
 

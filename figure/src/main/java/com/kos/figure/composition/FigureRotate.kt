@@ -53,4 +53,7 @@ class FigureRotate(
             m.translate(-pivot.x.toFloat(), -pivot.y.toFloat())
             return m
         }
+
+    override val hasTransform: Boolean
+        get() = true
 }

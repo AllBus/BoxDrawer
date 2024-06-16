@@ -16,6 +16,8 @@ object ThemeColors {
     val tabBackground = Color.LightGray
     val figureListBorder = Color(0xff49463A)
     val figureListBackground = Color(0x90DDD7C3)
+    val figureListTextColor =  Color(0xFFFFFFFF)
+    val figureListTransformColor = Color(0xFFFFDD66)
     val selectedFigureColor = Color(0xff6BFF60)
     val figureListItemShape = RoundedCornerShape(4.dp)
     val editorBackground = Color(0x30FFFFFF)

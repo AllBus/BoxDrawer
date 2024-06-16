@@ -82,7 +82,8 @@ private fun LazyListScope.FigureItems(
                 text = figure.figure.name(),
                 maxLines = 3,
                 overflow = TextOverflow.Clip,
-                textAlign = TextAlign.End
+                textAlign = TextAlign.End,
+                color = if (figure.figure.hasTransform) ThemeColors.figureListTransformColor else ThemeColors.figureListTextColor
             )
 //            Text(
 //                text = figure.transform.values.joinToString(" ")

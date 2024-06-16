@@ -61,4 +61,7 @@ open class FigureUnion(
     override fun approximate(pointCount: Int): List<List<Vec2>> {
         return (figure as? Approximation)?.approximate(pointCount) ?: emptyList()
     }
+
+    override val hasTransform: Boolean
+        get() = false
 }

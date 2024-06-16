@@ -19,6 +19,7 @@ interface IFigure {
     fun name(): String
 
     val transform: Matrix
+    val hasTransform: Boolean
 
     companion object {
         fun list(figure: IFigure): List<IFigure> {

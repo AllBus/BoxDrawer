@@ -30,6 +30,9 @@ abstract class FigureMatrix() : IFigure {
     override fun collection(): List<IFigure> {
         return emptyList()
     }
+
+    override val hasTransform: Boolean
+        get() = true
 }
 
 /**

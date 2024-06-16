@@ -15,8 +15,10 @@ class FigureText(val text:String, transform : Matrix = Matrix.identity): IFigure
         return emptyList()
     }
 
+    override val hasTransform: Boolean
+        get() = false
 
-//    override fun crop(k: Double, cropSide: CropSide): Figure {
+    //    override fun crop(k: Double, cropSide: CropSide): Figure {
 //        // TODO
 //        return this
 //    }

@@ -331,7 +331,7 @@ open class FigureEllipse(
     }
 
     override fun name(): String {
-        return "Эллипс ${digitFormatter.format(radius)} : ${digitFormatter.format(radiusMinor)} - ${digitFormatter.format(segmentStart)} : ${digitFormatter.format(segmentSweep)}"
+        return "Эллипс ${digitFormatter.format(radius)} x ${digitFormatter.format(radiusMinor)} : ${digitFormatter.format(segmentStart)} x ${digitFormatter.format(segmentSweep)}"
     }
 
     override fun approximate(pointCount: Int): List<List<Vec2>> {

@@ -51,5 +51,8 @@ class FigureTranslateWithRotate(
             m.rotateZ(angleInDegrees.toFloat())
             return m
         }
+
+    override val hasTransform: Boolean
+        get() = true
 }
 

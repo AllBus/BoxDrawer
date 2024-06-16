@@ -39,6 +39,9 @@ class FigureRing(
     override val transform: Matrix
         get() = Matrix.identity
 
+    override val hasTransform: Boolean
+        get() = false
+
     override fun approximate(pointCount: Int): List<List<Vec2>> {
         if (figures.isEmpty()) {
             return emptyList()
