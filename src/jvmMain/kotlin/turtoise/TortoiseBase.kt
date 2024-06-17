@@ -496,6 +496,7 @@ abstract class TortoiseBase {
         memory: TortoiseMemory,
         runner: TortoiseRunner,
     ): IFigure {
+        /* (figure) (edge delta*) (f) + */
         val block = commands.takeBlock(0)
         if (commands.size < 2) {
             return FigureEmpty

@@ -228,7 +228,7 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "(@program args?)",
                     "Рисовать фигуру которая записана в строке начинающейся с @program\n",
                     listOf(
-                        HelpDataParam("@program", "назвиние програмы рисования фигур"),
+                        HelpDataParam("@program", "название програмы рисования фигур"),
                         HelpDataParam(
                             "args",
                             "ноль или несколько значений которые передаются фигуре\n каждое значение записывается как (name value) где"
@@ -259,7 +259,7 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                             "expression",
                             "Если значение вычисления выражение больше 0.5 будет рисовать фигуру иначе нет"
                         ),
-                        HelpDataParam("@program", "назвиние програмы рисования фигур"),
+                        HelpDataParam("@program", "название програмы рисования фигур"),
                         HelpDataParam(
                             "args",
                             "ноль или несколько значений которые передаются фигуре\n каждое значение записывается как (name value) где"
@@ -283,7 +283,31 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     )
                 )
             )
+        ), helpName(
+            TortoiseCommand.TURTOISE_GROUP,
+            listOf(
+                HelpData(
+                    "(path) (edge delta*) (f) + ",
+                    "Рисовать фигуры f в доль кривой path",
+                    listOf(
+                        HelpDataParam(
+                            "path",
+                            "Пуь в доль которого рисуем фигуры"
+                        ),
+                        HelpDataParam("edge", "Номер стороны в путь path начинается с 0"),
+                        HelpDataParam(
+                            "delta",
+                            "расстояние от начала линии в дмапазоне от 0 до 1 (конец линии).\n Может бть несколько"
+                        ),
+                        HelpDataParam(
+                            "f",
+                            "Фиггура рисуемая в указанной позиции (здаётся по правилам рисования фигур)"
+                        ),
+                    )
+                ),
+            )
         ),
+
         helpName(
             TortoiseCommand.TURTOISE_PATH,
             listOf(

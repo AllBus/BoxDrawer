@@ -68,13 +68,13 @@ class Tortoise() : TortoiseSplash() {
                 }
 
                 TortoiseCommand.TURTOISE_HORIZONTAL -> {
-                    builder.startPoint()
+                    builder.startPoint() //+
                     state.x += com.value(memory)
                     builder.add(state.xy)
                 }
 
                 TortoiseCommand.TURTOISE_VERTICAL -> {
-                    builder.startPoint()
+                    builder.startPoint()//+
                     state.y += com.value(memory)
                     builder.add(state.xy)
                 }
@@ -95,7 +95,7 @@ class Tortoise() : TortoiseSplash() {
                     }
                 }
 
-                TortoiseCommand.TURTOISE_LINE -> {
+                TortoiseCommand.TURTOISE_LINE -> {//+
                     val v = com.value(memory)
                     if (v != 0.0) {
                         builder.startPoint()
@@ -112,7 +112,7 @@ class Tortoise() : TortoiseSplash() {
                     }
                 }
 
-                TortoiseCommand.TURTOISE_LINE_WITH_ANGLE -> {
+                TortoiseCommand.TURTOISE_LINE_WITH_ANGLE -> {//+
                     val v = com.value(memory)
                     if (v != 0.0) {
                         builder.startPoint()
@@ -130,16 +130,16 @@ class Tortoise() : TortoiseSplash() {
                     state.angleInDegrees = currentAngle;
                 }
 
-                TortoiseCommand.TURTOISE_LINE_PERPENDICULAR -> {
+                TortoiseCommand.TURTOISE_LINE_PERPENDICULAR -> {//+
                     state.move90(com.value(memory))
                     builder.add(state.xy)
                 }
 
-                TortoiseCommand.TURTOISE_CLOSE -> {
+                TortoiseCommand.TURTOISE_CLOSE -> { // -
                     builder.closeLine()
                 }
 
-                TortoiseCommand.TURTOISE_SPLIT -> {
+                TortoiseCommand.TURTOISE_SPLIT -> { // -
                     builder.saveLine()
                 }
 
@@ -195,6 +195,7 @@ class Tortoise() : TortoiseSplash() {
                 }
 
                 TortoiseCommand.TURTOISE_GROUP -> {
+                    /* (figure) (edge delta*) (f) + */
                     builder.addProduct(figureGroups(com, ds, maxStackSize, memory, runner))
                 }
 
@@ -218,7 +219,7 @@ class Tortoise() : TortoiseSplash() {
                     )
                 }
 
-                TortoiseCommand.TURTOISE_SPLASH -> {
+                TortoiseCommand.TURTOISE_SPLASH -> { //+
                     figuresSplash(
                         builder = builder,
                         com = com,
@@ -249,7 +250,7 @@ class Tortoise() : TortoiseSplash() {
                 }
 
 
-                TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {
+                TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {//-
                     builder.saveLine()
 
                     val zigWidth = com.take(2, state.zigWidth, memory)
@@ -287,7 +288,7 @@ class Tortoise() : TortoiseSplash() {
                 }
 
                 TortoiseCommand.TURTOISE_ZIGZAG -> {
-                    builder.startPoint()
+                    builder.startPoint()//+
 
                     FigureCreator.zigzag(
                         points = builder.result,
@@ -307,7 +308,7 @@ class Tortoise() : TortoiseSplash() {
                 }
 
                 TortoiseCommand.TURTOISE_BEZIER -> {
-                    builder.saveLine()
+                    builder.saveLine()//+
 
                     val angle = state.angle
 
@@ -342,7 +343,7 @@ class Tortoise() : TortoiseSplash() {
                 }
 
                 TortoiseCommand.TURTOISE_POLYLINE -> {
-                    builder.saveLine()
+                    builder.saveLine()//+
                     val c2 = state.xy
                     val angle = state.angle
 
@@ -361,7 +362,7 @@ class Tortoise() : TortoiseSplash() {
                     }
                 }
                 TortoiseCommand.TURTOISE_ARC -> {
-                    builder.saveLine()
+                    builder.saveLine()//+
                     val c2 = state.xy
                     val angle = state.angle
                     val r = com[0, memory]

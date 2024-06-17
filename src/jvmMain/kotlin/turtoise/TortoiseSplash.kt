@@ -120,7 +120,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                 builder.addProduct(figures)
             }
 
-            "tooth" -> {
+            "tooth" -> {//+
                 builder.startPoint()
                 if (builder.state.zigParam.reverse) {
                     toothreverse(builder, com, memory)
@@ -129,7 +129,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                 }
             }
 
-            "toothr" -> {
+            "toothr" -> {//+
                 builder.startPoint()
                 if (builder.state.zigParam.reverse) {
                     tooth(builder, com, memory)
@@ -138,7 +138,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                 }
             }
 
-            "line" -> {
+            "line" -> {//+
                 builder.startPoint()
                 for (i in 1 until com.size step 2) {
                     val a = com[i, memory]
@@ -150,6 +150,8 @@ abstract class TortoiseSplash : TortoiseBase() {
 
             "rline",
             "roundline" -> {
+                //-
+                //Todo: Не все случаи Не зависит от поворота
                 /* r ax ay */
                 builder.saveLine()
                 val (rest, aap, aaa) = roundLine(com, memory)
