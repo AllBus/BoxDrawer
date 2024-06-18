@@ -62,4 +62,10 @@ class TortoiseBuilder(
         if (figure !is FigureEmpty)
             add(FigureTranslateWithRotate(figure, state.xy, state.angleInDegrees))
     }
+
+    fun addPolyline(points:List<Vec2>, isClose:Boolean = false){
+        val xy = xy
+        val angle = angle
+        add(FigurePolyline(points.map{ xy+it.rotate(angle)}, true))
+    }
 }

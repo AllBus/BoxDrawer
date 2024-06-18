@@ -27,15 +27,16 @@ class SplashDiamond : ISplashDetail {
         com: TortoiseCommand,
         figureExtractor: TortoiseFigureExtractor
     ) {
-        val diagonalLong = com.take(1, 0.0, figureExtractor.memory)
-        val diagonalShort = com.take(2, diagonalLong, figureExtractor.memory)
+        val diagonalShort = com.take(1, 0.0, figureExtractor.memory)
+        val diagonalLong = com.take(2, diagonalShort, figureExtractor.memory)
+
         val apoint = listOf<Vec2>(
             Vec2(0.0, diagonalLong / 2),
             Vec2(diagonalShort / 2, 0.0),
             Vec2(0.0, -diagonalLong / 2),
             Vec2(-diagonalShort / 2, 0.0)
         )
-        builder.addProduct(FigurePolyline(apoint, true))
+        builder.addPolyline(apoint, true)
     }
 
 }
@@ -69,7 +70,7 @@ class SplashDiamondAngle : ISplashDetail {
             Vec2(0.0, -diagonalLong / 2),
             Vec2(-diagonalShort / 2, 0.0)
         )
-        builder.addProduct(FigurePolyline(apoint, true))
+        builder.addPolyline(apoint, true)
     }
 }
 
@@ -103,6 +104,6 @@ class SplashParallelogram : ISplashDetail {
             Vec2(d, h),
             Vec2(0.0, 0.0)
         )
-        builder.addProduct(FigurePolyline(apoint, true))
+        builder.addPolyline(apoint, true)
     }
 }
