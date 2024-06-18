@@ -1,14 +1,18 @@
 package turtoise
 
 import com.kos.figure.FigureBezier
+import com.kos.figure.FigureCircle
+import com.kos.figure.FigureEmpty
 import com.kos.figure.algorithms.FigureBezierList
 import com.kos.figure.FigureLine
 import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import vectors.Vec2
+import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.sqrt
 import kotlin.math.truncate
 
 object FigureCreator {
@@ -294,5 +298,20 @@ object FigureCreator {
         )
 
         return FigurePolyline(points)
+    }
+
+    fun arcInTwoPoint(p: Vec2, z: Vec2, radius: Double): IFigure {
+        val distance2 = Vec2.distance(p, z) / 2
+        return if (radius >= distance2) {
+            val hyp = sqrt(radius * radius - distance2 * distance2)
+            val pza = (z - p).angle
+            val h2 = (p + z) / 2.0 + Vec2(0.0, hyp).rotate(pza)
+
+            val b = (z - h2).angle
+            val a = (p - h2).angle
+            //      println("$r $p $z $h2 $a $b")
+            FigureCircle(-h2, radius, a * 180 / PI, (b - a) * 180 / PI)
+        } else
+            FigureEmpty
     }
 }

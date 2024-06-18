@@ -16,6 +16,7 @@ import com.kos.figure.composition.FigureArray
 import com.kos.figure.composition.FigureOnPath
 import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslateWithRotate
+import turtoise.TortoiseFigureExtractor.Companion.positionInPath
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.MemoryKey
 import turtoise.memory.keys.MemoryKey.Companion.orEmpty
@@ -457,7 +458,7 @@ abstract class TortoiseBase {
         }
 
         return figureList(block, figureExtractor)?.let { f ->
-            val paths = collectPaths(f)
+            val paths = figureExtractor.collectPaths(f)
             FigureList(if (paths.isNotEmpty()) {
                 (1 until commands.size step 2).flatMap {
                     val positions = commands.takeBlock(it)
@@ -487,92 +488,6 @@ abstract class TortoiseBase {
                 emptyList<IFigure>()
             ) + f
         } ?: FigureEmpty
-    }
-
-    protected fun positionInPath(paths: List<IFigurePath>, edge: Int, delta: Double): PointWithNormal? {
-        var e = edge
-        for ( p in paths){
-            if (p.edgeCount()> e){
-                return when {
-                    delta in 0.0..1.0 -> {
-                        p.positionInPath(e, delta)
-                    }
-                    delta > 1.0 -> {
-                        p.positionInPathAtMM(e, delta)
-                    }
-                    else -> {
-                        p.positionInPathAtMM(e, p.pathLength(e) -delta)
-                    }
-                }
-            } else {
-                e -= p.edgeCount()
-            }
-        }
-        return null
-    }
-
-    protected fun pathAtIndex(paths: List<IFigurePath>, edge: Int): IFigurePath {
-        var e = edge
-        for ( p in paths){
-            if (p.edgeCount()> e){
-                return p.path(e)
-            } else {
-                e -= p.edgeCount()
-            }
-        }
-        return FigureEmpty
-    }
-
-    protected fun arcInTwoPoint(p: Vec2, z: Vec2, radius: Double): IFigure {
-        val distance2 = Vec2.distance(p, z) / 2
-        return if (radius >= distance2) {
-            val hyp = sqrt(radius * radius - distance2 * distance2)
-            val pza = (z - p).angle
-            val h2 = (p + z) / 2.0 + Vec2(0.0, hyp).rotate(pza)
-
-            val b = (z - h2).angle
-            val a = (p - h2).angle
-            //      println("$r $p $z $h2 $a $b")
-            FigureCircle(-h2, radius, a * 180 / PI, (b - a) * 180 / PI)
-        } else
-            FigureEmpty
-    }
-
-    protected fun toothreverse(
-        builder: TortoiseBuilder,
-        com: TortoiseCommand,
-        memory: TortoiseMemory,
-    ) {
-        for (i in 1 until com.size step 2) {
-            val a = com[i, memory]
-            val b = com[i + 1, memory]
-            builder.state.move(0.0, -b)
-            builder.addPoint()
-            builder.state.move(a, b)
-            builder.addPoint()
-        }
-    }
-
-    protected fun tooth(
-        builder: TortoiseBuilder,
-        com: TortoiseCommand,
-        memory: TortoiseMemory,
-    ) {
-        for (i in 1 until com.size step 2) {
-            val a = com[i, memory]
-            val b = com[i + 1, memory]
-            builder.state.move(a, -b)
-            builder.addPoint()
-            builder.state.move(0.0, b)
-            builder.addPoint()
-        }
-    }
-
-    protected fun collectPolygons(f: IFigure) : List<FigurePolygon> =
-        f.list().filterIsInstance(FigurePolygon::class.java)
-
-    protected fun collectPaths(f: IFigure) : List<IFigurePath> {
-        return IFigure.path(f)
     }
 
     abstract fun draw(
