@@ -17,9 +17,7 @@ import turtoise.memory.keys.MemoryKey
 import turtoise.parser.TortoiseParserStackBlock
 import vectors.Vec2
 import java.text.DecimalFormat
-import kotlin.math.PI
-import kotlin.math.asin
-import kotlin.math.sign
+import kotlin.math.*
 
 
 abstract class TortoiseSplash : TortoiseBase() {
@@ -405,6 +403,45 @@ abstract class TortoiseSplash : TortoiseBase() {
                     }
                 }.joinToString(" ")
                 builder.addProduct(FigureText(text))
+                }
+            "diamond"-> {
+
+                val diagonalLong = com.take(1, 0.0, memory)
+                val diagonalShort = com.take(2, 0.0, memory)
+                val apoint = listOf<Vec2>(
+                    Vec2(0.0, diagonalLong / 2),
+                    Vec2(diagonalShort / 2, 0.0),
+                    Vec2(0.0, -diagonalLong / 2),
+                    Vec2(-diagonalShort / 2, 0.0)
+                )
+                builder.addProduct(FigurePolyline(apoint, true))
+            }
+                "diamondAngle"->{
+                    val d = com.take(1, 0.0, memory)
+                    val alpha = com.take(2, 0.0, memory)
+                    val diagonalLong = (2*d* cos(alpha*PI/180/2))
+                    val diagonalShort = (2*d* sin(alpha*PI/180/2))
+                    val apoint = listOf<Vec2>(
+                        Vec2(0.0, diagonalLong / 2),
+                        Vec2(diagonalShort / 2, 0.0),
+                        Vec2(0.0, -diagonalLong / 2),
+                        Vec2(-diagonalShort / 2, 0.0)
+                    )
+                    builder.addProduct(FigurePolyline(apoint, true))
+                }
+            "parallelogramm" ->{
+                val storona = com.take(1, 0.0, memory)
+                val povorot = com.take(2, 0.0, memory)
+                val storonaDlinnaya = com.take(3, 0.0, memory)
+                val h = -storona *sin (povorot*PI/180)
+                val d = storona * cos(povorot*PI/180)
+                val apoint = listOf<Vec2>(
+                    Vec2(storonaDlinnaya, 0.0),
+                    Vec2(storonaDlinnaya + d, h),
+                    Vec2(d, h),
+                    Vec2(0.0, 0.0)
+                )
+                builder.addProduct(FigurePolyline(apoint, true))
             }
             "printcoord",
             "printc",
