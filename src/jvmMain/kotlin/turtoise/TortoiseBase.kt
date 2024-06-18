@@ -104,21 +104,16 @@ abstract class TortoiseBase {
                 )
             )
         }
-
     }
-
 
     protected fun polylineFromCommand(
         com: TortoiseCommand,
-        ds: DrawerSettings,
-        maxStackSize: Int,
-        memory: TortoiseMemory,
-        runner: TortoiseRunner
+        figureExtractor: TortoiseFigureExtractor,
     ): List<IFigure> {
         val s = (0 until com.size).mapNotNull { index ->
             com.takeBlock(index)
         }.map { block ->
-            figureList(block, ds, maxStackSize, memory, runner) ?: FigureEmpty
+            figureList(block, figureExtractor) ?: FigureEmpty
             //?.list()
             //?.filterIsInstance(Approximation::class.java)
             // .orEmpty()
@@ -385,66 +380,28 @@ abstract class TortoiseBase {
 
     protected fun figureList(
         block: TortoiseParserStackItem?,
-        ds: DrawerSettings,
-        maxStackSize: Int,
-        memory: TortoiseMemory,
-        runner: TortoiseRunner,
+        figureExtractor: TortoiseFigureExtractor,
     ): IFigure? {
-        val f = block?.let { b ->
-            val l = TortoiseParser.parseSimpleLine(block)
-            val st = TortoiseState()
-
-            val n = block.name.name
-            if (n.startsWith("@")) {
-                runner.figure(
-                    algName = n.drop(1),
-                    ds = ds,
-                    state = st,
-                    maxStackSize = maxStackSize,
-                    arguments = block
-                )
-
-            } else {
-                FigureList(
-                    l.commands(l.names.first(), ds).flatMap { c ->
-                        draw(
-                            commands = c,
-                            state = st,
-                            ds = ds,
-                            maxStackSize = maxStackSize - 1,
-                            memory = memory,
-                            runner = runner,
-                        )
-                    }
-                )
-            }
-
-        }
-        return f
+        return figureExtractor.figure(block)
     }
 
     protected fun figuresOnPath(
         com: TortoiseCommand,
-        ds: DrawerSettings,
-        maxStackSize: Int,
-        memory: TortoiseMemory,
-        runner: TortoiseRunner,
+        figureExtractor: TortoiseFigureExtractor,
     ): IFigure {
+        val memory = figureExtractor.memory
         val block = com.takeBlock(0)
         val blockFigure = com.takeBlock(2)
         val blockProperties = com.takeBlock(1)
         val count = (blockProperties?.get(0) ?: MemoryKey.ZERO).toDoubleOrNull()?.toInt()
             ?: 0 //com.take(0, 2.0, memory).toInt()
         if (count > 0) {
-            return figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+            return figureList(block, figureExtractor)?.let { f ->
                 f.list().filterIsInstance(IFigurePath::class.java).firstOrNull()
                     ?.let { path ->
                         figureList(
                             blockFigure,
-                            ds,
-                            maxStackSize,
-                            memory,
-                            runner
+                            figureExtractor,
                         )?.let { figure ->
                             FigureOnPath(
                                 figure = figure,
@@ -491,10 +448,7 @@ abstract class TortoiseBase {
 
     fun figureGroups(
         commands: TortoiseCommand,
-        ds: DrawerSettings,
-        maxStackSize: Int,
-        memory: TortoiseMemory,
-        runner: TortoiseRunner,
+        figureExtractor: TortoiseFigureExtractor,
     ): IFigure {
         /* (figure) (edge delta*) (f) + */
         val block = commands.takeBlock(0)
@@ -502,7 +456,7 @@ abstract class TortoiseBase {
             return FigureEmpty
         }
 
-        return figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+        return figureList(block, figureExtractor)?.let { f ->
             val paths = collectPaths(f)
             FigureList(if (paths.isNotEmpty()) {
                 (1 until commands.size step 2).flatMap {
@@ -510,15 +464,12 @@ abstract class TortoiseBase {
                     val figures = commands.takeBlock(it + 1)
                     val resf: List<IFigure> = figureList(
                         figures,
-                        ds,
-                        maxStackSize,
-                        memory,
-                        runner
+                        figureExtractor
                     )?.let { figure ->
                         positions?.inner?.getOrNull(0)?.let { edgeMem ->
-                            val edge = memory.value(edgeMem.value, 0.0).toInt()
+                            val edge = figureExtractor.memory.value(edgeMem.value, 0.0).toInt()
                             positions?.inner.orEmpty().drop(1).map { pos ->
-                                memory.value(pos.value, 0.0)
+                                figureExtractor.memory.value(pos.value, 0.0)
                             }.mapNotNull { delta ->
                                 positionInPath(paths, edge, delta)?.let { p ->
                                     FigureTranslateWithRotate(
@@ -627,9 +578,6 @@ abstract class TortoiseBase {
     abstract fun draw(
         commands: TortoiseBlock,
         state: TortoiseState,
-        ds: DrawerSettings,
-        maxStackSize: Int,
-        memory: TortoiseMemory,
-        runner: TortoiseRunner,
+        figureExtractor:TortoiseFigureExtractor,
     ): List<IFigure>
 }

@@ -1,9 +1,12 @@
 package turtoise
 
+import com.jsevy.jdxf.DXFColor
 import com.kos.figure.FigureBezier
-import com.kos.figure.collections.FigureList
+import com.kos.figure.FigureCircle
+import com.kos.figure.FigureEmpty
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
+import com.kos.figure.collections.FigureList
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.booleans.FigureDiff
 import com.kos.figure.composition.booleans.FigureIntersect
@@ -12,10 +15,6 @@ import com.kos.figure.composition.booleans.FigureUnion
 import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
-import com.jsevy.jdxf.DXFColor
-import com.kos.figure.FigureCircle
-import com.kos.figure.FigureEmpty
-import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 import java.util.Stack
 import kotlin.math.abs
@@ -29,12 +28,9 @@ class Tortoise() : TortoiseSplash() {
     override fun draw(
         commands: TortoiseBlock,
         state: TortoiseState,
-        ds: DrawerSettings,
-        maxStackSize: Int,
-        memory: TortoiseMemory,
-        runner: TortoiseRunner,
+        figureExtractor: TortoiseFigureExtractor,
     ): List<IFigure> {
-        if (maxStackSize <= 0)
+        if (figureExtractor.isStackOverflow())
             return emptyList()
 
         val le = commands.size
@@ -46,7 +42,7 @@ class Tortoise() : TortoiseSplash() {
         var stack: TortoiseStack? = null
         val stateStack = Stack<TortoiseState>()
         var cancel = false
-
+        val memory = figureExtractor.memory
 
 
         while (i < le && !cancel) {
@@ -59,9 +55,9 @@ class Tortoise() : TortoiseSplash() {
 
                 TortoiseCommand.TURTOISE_MOVE -> {
                     state.move(com[0, memory], com[1, memory])
-                    if (com.size>=3) {
+                    if (com.size >= 3) {
                         state.angleInDegrees += com[2, memory]
-                        if (com.size>3) {
+                        if (com.size > 3) {
                             state.move(com[3, memory], com[4, memory])
                         }
                     }
@@ -173,7 +169,7 @@ class Tortoise() : TortoiseSplash() {
                     val s = (0 until com.size).mapNotNull { index ->
                         com.takeBlock(index)
                     }.mapNotNull { block ->
-                        figureList(block, ds, maxStackSize, memory, runner)
+                        figureList(block, figureExtractor)
                     }
                     if (s.isNotEmpty()) {
                         builder.addProduct(
@@ -188,7 +184,7 @@ class Tortoise() : TortoiseSplash() {
                 TortoiseCommand.TURTOISE_IF_FIGURE -> {
                     if (com.value(memory) > 0.5) {
                         val block = com.takeBlock(1)
-                        figureList(block, ds, maxStackSize, memory, runner)?.let { g ->
+                        figureList(block, figureExtractor)?.let { g ->
                             builder.addProduct(g)
                         }
                     }
@@ -196,13 +192,13 @@ class Tortoise() : TortoiseSplash() {
 
                 TortoiseCommand.TURTOISE_GROUP -> {
                     /* (figure) (edge delta*) (f) + */
-                    builder.addProduct(figureGroups(com, ds, maxStackSize, memory, runner))
+                    builder.addProduct(figureGroups(com, figureExtractor))
                 }
 
                 TortoiseCommand.TURTOISE_COLOR -> {
                     val color = com.value(memory).toInt()
                     val block = com.takeBlock(1)
-                    figureList(block, ds, maxStackSize, memory, runner)?.let { g ->
+                    figureList(block, figureExtractor)?.let { g ->
                         builder.addProduct(
                             FigureColor(
                                 color = DXFColor.getRgbColor(color),
@@ -215,7 +211,7 @@ class Tortoise() : TortoiseSplash() {
 
                 TortoiseCommand.TURTOISE_PATH -> {
                     builder.addProduct(
-                        figuresOnPath(com, ds, maxStackSize, memory, runner)
+                        figuresOnPath(com, figureExtractor)
                     )
                 }
 
@@ -223,10 +219,7 @@ class Tortoise() : TortoiseSplash() {
                     figuresSplash(
                         builder = builder,
                         com = com,
-                        ds = ds,
-                        maxStackSize = maxStackSize,
-                        memory = memory,
-                        runner = runner,
+                        figureExtractor = figureExtractor,
                     )
 //                    if (sp !is FigureEmpty) {
 //                        res.add(
@@ -242,10 +235,7 @@ class Tortoise() : TortoiseSplash() {
                     variablesSplash(
                         builder = builder,
                         com = com,
-                        ds = ds,
-                        maxStackSize = maxStackSize,
-                        memory = memory,
-                        runner = runner,
+                        figureExtractor = figureExtractor,
                     )
                 }
 
@@ -254,10 +244,10 @@ class Tortoise() : TortoiseSplash() {
                     builder.saveLine()
 
                     val zigWidth = com.take(2, state.zigWidth, memory)
-                    val board = com.take(3, ds.boardWeight, memory)
+                    val board = com.take(3, figureExtractor.ds.boardWeight, memory)
 
                     val block = com.takeBlock(0)
-                    val f = figureList(block, ds, maxStackSize, memory, runner)
+                    val f = figureList(block, figureExtractor)
                     val zf = f ?: FigureCreator.zigFigure(
                         hz = com.take(4, 0.0, memory),
                         bz1x = com.take(5, board / 2, memory),
@@ -300,7 +290,7 @@ class Tortoise() : TortoiseSplash() {
                         ),
                         angle = state.angle,
                         param = state.zigParam,
-                        boardWeight = com.take(3, ds.boardWeight, memory)
+                        boardWeight = com.take(3, figureExtractor.ds.boardWeight, memory)
                     )
 
                     state.moveTo(builder.result.last());
@@ -361,6 +351,7 @@ class Tortoise() : TortoiseSplash() {
                         state.moveTo(points.last())
                     }
                 }
+
                 TortoiseCommand.TURTOISE_ARC -> {
                     builder.saveLine()//+
                     val c2 = state.xy
@@ -369,65 +360,65 @@ class Tortoise() : TortoiseSplash() {
                     val a = com[1, memory] // deg
                     val cir = com[2, memory] // deg
 
-                    val center = c2+Vec2(0.0,r).rotate(angle)
-                    val np = center + Vec2(0.0, -r ).rotate(angle+sign(r)*Math.toRadians(a))
-                    if ( a == 0.0) {
+                    val center = c2 + Vec2(0.0, r).rotate(angle)
+                    val np = center + Vec2(0.0, -r).rotate(angle + sign(r) * Math.toRadians(a))
+                    if (a == 0.0) {
                         //nothing
-                    } else
-                    {
-                        if (r< 0.0){
+                    } else {
+                        if (r < 0.0) {
                             builder.add(FigureCircle(center, abs(r), np, c2))
                         } else {
                             builder.add(FigureCircle(center, abs(r), c2, np))
                         }
                     }
-                    if (cir>0.0) {
+                    if (cir > 0.0) {
                         builder.add(FigureCircle(center, cir))
                     }
                     state.moveTo(np)
-                    state.angleInDegrees+= sign(r)*a
+                    state.angleInDegrees += sign(r) * a
                 }
+
                 TortoiseCommand.TURTOISE_UNION -> {
-                    val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
+                    val s = polylineFromCommand(com, figureExtractor)
                     builder.addProduct(
                         FigureUnion(
                             s.firstOrNull() ?: FigureEmpty,
                             s.getOrNull(1) ?: FigureEmpty,
-                            ds.appoximationSize
+                            figureExtractor.ds.appoximationSize
                         )
                     )
                     //  res.add(UnionFigure.union(s.flatten()))
                 }
 
                 TortoiseCommand.TURTOISE_INTERSECT -> {
-                    val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
+                    val s = polylineFromCommand(com, figureExtractor)
                     builder.addProduct(
                         FigureIntersect(
                             s.firstOrNull() ?: FigureEmpty,
                             s.getOrNull(1) ?: FigureEmpty,
-                            ds.appoximationSize
+                            figureExtractor.ds.appoximationSize
                         )
                     )
                 }
 
                 TortoiseCommand.TURTOISE_DIFF -> {
-                    val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
+                    val s = polylineFromCommand(com, figureExtractor)
                     builder.addProduct(
                         FigureDiff(
                             s.firstOrNull() ?: FigureEmpty,
                             s.getOrNull(1) ?: FigureEmpty,
-                            ds.appoximationSize
+                            figureExtractor.ds.appoximationSize
                         )
                     )
                 }
 
                 TortoiseCommand.TURTOISE_SYMDIFF -> {
-                    val s = polylineFromCommand(com, ds, maxStackSize, memory, runner)
+                    val s = polylineFromCommand(com, figureExtractor)
                     builder.addProduct(
                         FigureSymDiff(
                             s.firstOrNull() ?: FigureEmpty,
                             s.getOrNull(1) ?: FigureEmpty,
-                            ds.appoximationSize
+                            figureExtractor.ds.appoximationSize
                         )
                     )
                 }
@@ -481,7 +472,7 @@ class Tortoise() : TortoiseSplash() {
 
                 TortoiseCommand.TURTOISE_3D -> {
                     val block = com.takeBlock(2)
-                    val f = figureList(block, ds, maxStackSize, memory, runner)
+                    val f = figureList(block, figureExtractor)
 
                     f?.let { g ->
                         builder.addProduct(
@@ -489,9 +480,10 @@ class Tortoise() : TortoiseSplash() {
                         )
                     }
                 }
+
                 TortoiseCommand.TURTOISE_ARRAY -> {
                     val block = com.takeBlock(0)
-                    val f = figureList(block, ds, maxStackSize, memory, runner)
+                    val f = figureList(block, figureExtractor)
                     f?.let { g ->
                         builder.addProduct(
                             figureArray(com, memory, g, state)

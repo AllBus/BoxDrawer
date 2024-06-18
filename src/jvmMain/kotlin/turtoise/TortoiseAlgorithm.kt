@@ -1,8 +1,7 @@
 package turtoise
 
-import com.kos.figure.collections.FigureList
 import com.kos.figure.IFigure
-import turtoise.memory.TortoiseMemory
+import com.kos.figure.collections.FigureList
 import turtoise.parser.TortoiseParser
 import turtoise.parser.TortoiseParserStackItem
 
@@ -20,21 +19,14 @@ interface TortoiseAlgorithm {
 
     fun draw(
         name: String,
-        ds: DrawerSettings,
         state: TortoiseState,
-        memory: TortoiseMemory,
-        runner: TortoiseRunner,
-        maxStackSize: Int,
+        figureExtractor: TortoiseFigureExtractor,
     ): IFigure {
         return FigureList(
-            commands(name, ds).flatMap { block ->
-                runner.tortoise.draw(
-                    commands = block,
+            commands(name, figureExtractor.ds).flatMap { block ->
+                figureExtractor.tortoiseDraw(
+                    block = block,
                     state = state,
-                    ds = ds,
-                    maxStackSize = maxStackSize - 1,
-                    memory = memory,
-                    runner = runner
                 )
             }
         )

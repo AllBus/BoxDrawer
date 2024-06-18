@@ -11,6 +11,7 @@ import org.kabeja.parser.ParserBuilder
 import turtoise.DrawerSettings
 import turtoise.TortoiseAlgorithm
 import turtoise.TortoiseBlock
+import turtoise.TortoiseFigureExtractor
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
 import turtoise.memory.TortoiseMemory
@@ -51,11 +52,8 @@ class DxfFileAlgorithm(
 
     override fun draw(
         name: String,
-        ds: DrawerSettings,
         state: TortoiseState,
-        memory: TortoiseMemory,
-        runner: TortoiseRunner,
-        maxStackSize: Int
+        figureExtractor: TortoiseFigureExtractor,
     ): IFigure {
         return FigureTranslate(
             FigureRotate(

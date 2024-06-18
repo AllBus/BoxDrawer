@@ -28,16 +28,14 @@ abstract class TortoiseSplash : TortoiseBase() {
     protected fun variablesSplash(
         builder: TortoiseBuilder,
         com: TortoiseCommand,
-        ds: DrawerSettings,
-        maxStackSize: Int,
-        memory: TortoiseMemory,
-        runner: TortoiseRunner,
+        figureExtractor: TortoiseFigureExtractor,
     ) {
         val command = com.takeBlock(0)?.name?.name
+        val memory = figureExtractor.memory
         when (command) {
             "length" -> {
                 com.takeBlock(1)?.let { block ->
-                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                    figureList(block, figureExtractor)?.let { f ->
                         val variables = com.takeBlock(2)?.inner.orEmpty()
                         collectPaths(f).zip(variables) { p, v ->
                             memory.assign(v.argument, p.pathLength())
@@ -63,7 +61,7 @@ abstract class TortoiseSplash : TortoiseBase() {
             "board" -> {
                 val variables = com.takeBlock(1)?.inner.orEmpty()
                 variables.firstOrNull()?.let { v ->
-                    memory.assign(v.argument, ds.boardWeight)
+                    memory.assign(v.argument, figureExtractor.ds.boardWeight)
                 }
             }
 
@@ -96,12 +94,10 @@ abstract class TortoiseSplash : TortoiseBase() {
     protected fun figuresSplash(
         builder: TortoiseBuilder,
         com: TortoiseCommand,
-        ds: DrawerSettings,
-        maxStackSize: Int,
-        memory: TortoiseMemory,
-        runner: TortoiseRunner,
+        figureExtractor: TortoiseFigureExtractor,
     ) {
         val command = com.takeBlock(0)?.name?.name
+        val memory = figureExtractor.memory
         when (command) {
 
             "arc" -> {
@@ -189,7 +185,7 @@ abstract class TortoiseSplash : TortoiseBase() {
             "paz" -> {
                 /* (Figure) (edge delta le he)* */
                 com.takeBlock(1)?.let { block ->
-                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                    figureList(block, figureExtractor)?.let { f ->
                         val paths = collectPaths(f)
                         val v = (2 until com.size).mapNotNull { j ->
                             com.takeBlock(j)?.let { item ->
@@ -205,8 +201,8 @@ abstract class TortoiseSplash : TortoiseBase() {
                                     val d = memory.value(item.get(1) ?: MemoryKey.ZERO, 0.0)
                                     val zigle = item.get(2)?.let { memory.value(it, 15.0) } ?: 15.0
                                     val zighe =
-                                        item.get(3)?.let { memory.value(it, ds.boardWeight) }
-                                            ?: ds.boardWeight
+                                        item.get(3)?.let { memory.value(it, figureExtractor.ds.boardWeight) }
+                                            ?: figureExtractor.ds.boardWeight
                                     positionInPath(paths, e.toInt(), d)?.let { pos ->
                                         FigurePolyline(
                                             listOf(
@@ -228,15 +224,15 @@ abstract class TortoiseSplash : TortoiseBase() {
             "stena" -> {
                 /* (Figure) he (edge he)* */
                 com.takeBlock(1)?.let { block ->
-                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                    figureList(block, figureExtractor)?.let { f ->
                         val paths = collectPaths(f)
                         val (h , we) = com.takeBlock(2)?.let { item ->
                             val h = (item.get(0)?.let{ im -> memory.value(im, 0.0)}?: 10.0)
                             val w = (item.get(1)?.let { im ->
-                                memory.value(im, ds.boardWeight)
-                            }?: ds.boardWeight)
+                                memory.value(im, figureExtractor.ds.boardWeight)
+                            }?: figureExtractor.ds.boardWeight)
                             h to w
-                        } ?: (10.0 to ds.boardWeight)
+                        } ?: (10.0 to figureExtractor.ds.boardWeight)
 
                         val heights = (3 until com.size).mapNotNull { j ->
                             com.takeBlock(j)?.let { item ->
@@ -275,13 +271,13 @@ abstract class TortoiseSplash : TortoiseBase() {
 
             "o" -> {
                 com.takeBlock(1)?.let { block ->
-                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                    figureList(block, figureExtractor)?.let { f ->
                         val paths = collectPaths(f)
                         if (paths.isNotEmpty()) {
                             (2 until com.size).map { ind ->
                                 val h = com.takeBlock(ind)?.let { item ->
-                                    valueAt(item, 0, memory, ds.boardWeight)
-                                } ?: ds.boardWeight
+                                    valueAt(item, 0, memory, figureExtractor.ds.boardWeight)
+                                } ?: figureExtractor.ds.boardWeight
 
                                 builder.addProduct(
                                     FigureList(
@@ -298,7 +294,7 @@ abstract class TortoiseSplash : TortoiseBase() {
             "edit", "e" -> {
                 /* (figure) (m e x y) (r e+) */
                 com.takeBlock(1)?.let { block ->
-                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                    figureList(block, figureExtractor)?.let { f ->
                          collectPolygons(f).firstOrNull()?.let {
                             path ->
                             val points = path.points.toMutableList()
@@ -335,7 +331,7 @@ abstract class TortoiseSplash : TortoiseBase() {
             }
             "drop" -> {
                 com.takeBlock(1)?.let { block ->
-                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                    figureList(block, figureExtractor)?.let { f ->
                         val paths = collectPaths(f)
                         val edges = (2 until com.size).mapNotNull { j ->
                             com.takeBlock(j)?.let { item ->
@@ -364,7 +360,7 @@ abstract class TortoiseSplash : TortoiseBase() {
             }
             "take" -> {
                 com.takeBlock(1)?.let { block ->
-                    figureList(block, ds, maxStackSize, memory, runner)?.let { f ->
+                    figureList(block, figureExtractor)?.let { f ->
                         val paths = collectPaths(f)
                         val edges = (2 until com.size).mapNotNull { j ->
                             com.takeBlock(j)?.let { item ->
@@ -433,7 +429,7 @@ abstract class TortoiseSplash : TortoiseBase() {
                 val storona = com.take(1, 0.0, memory)
                 val povorot = com.take(2, 0.0, memory)
                 val storonaDlinnaya = com.take(3, 0.0, memory)
-                val h = -storona *sin (povorot*PI/180)
+                val h = -storona * sin(povorot*PI/180)
                 val d = storona * cos(povorot*PI/180)
                 val apoint = listOf<Vec2>(
                     Vec2(storonaDlinnaya, 0.0),

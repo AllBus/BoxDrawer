@@ -7,6 +7,7 @@ import com.kos.figure.IFigure
 import turtoise.DrawerSettings
 import turtoise.TortoiseAlgorithm
 import turtoise.TortoiseBlock
+import turtoise.TortoiseFigureExtractor
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
 import turtoise.parser.TortoiseParserStackBlock
@@ -27,14 +28,11 @@ class RekaAlgorithm(
 
     override fun draw(
         name: String,
-        ds: DrawerSettings,
         state: TortoiseState,
-        memory: TortoiseMemory,
-        runner: TortoiseRunner,
-        maxStackSize: Int
+        figureExtractor: TortoiseFigureExtractor,
     ): IFigure {
         return reka?.let{ r ->
-            val result = RekaCad.createFigure(r, state.xy, state.angle, memory)
+            val result = RekaCad.createFigure(r, state.xy, state.angle, figureExtractor.memory)
             FigurePolyline(result.points, close = true)
         } ?: FigureEmpty
     }

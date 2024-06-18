@@ -4,6 +4,7 @@ import com.kos.figure.IFigure
 import turtoise.DrawerSettings
 import turtoise.TortoiseAlgorithm
 import turtoise.TortoiseBlock
+import turtoise.TortoiseFigureExtractor
 import turtoise.parser.TortoiseParser.asDouble
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
@@ -29,13 +30,11 @@ class BoxAlgorithm(
 
     override fun draw(
         name: String,
-        ds: DrawerSettings,
         state: TortoiseState,
-        memory: TortoiseMemory,
-        runner: TortoiseRunner,
-        maxStackSize: Int
+        figureExtractor: TortoiseFigureExtractor,
     ): IFigure {
 
+        val ds = figureExtractor.ds
         val bwi = boxInfo.width - ds.boardWeight * 2
         val bwe = boxInfo.weight - ds.boardWeight * 2
         val upWidth = if (polkiIn) ds.boardWeight else 0.0

@@ -1,6 +1,5 @@
 package com.kos.boxdrawe.presentation
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateForm
@@ -17,6 +16,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import turtoise.TemplateAlgorithm
+import turtoise.TortoiseFigureExtractor
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
@@ -26,7 +26,10 @@ import turtoise.parser.TortoiseParserStackBlock
 import vectors.Matrix
 import vectors.Vec2
 
-class TemplateData(override val tools: ITools, val selectedItem: MutableStateFlow<List<FigureInfo>>) : SaveFigure {
+class TemplateData(
+    override val tools: ITools,
+    val selectedItem: MutableStateFlow<List<FigureInfo>>
+) : SaveFigure {
     private val templater = TemplateCreator
     private val emptyAlgorithm = TemplateAlgorithm(
         "",
@@ -75,7 +78,16 @@ class TemplateData(override val tools: ITools, val selectedItem: MutableStateFlo
         selectedItem.value = emptyList()
         //  dxfPreview.value = false
         currentFigure.value =
-            algorithm.value.draw("", tools.ds(), TortoiseState(), m, runner, 10)
+            algorithm.value.draw(
+                name = "",
+                state = TortoiseState(),
+                figureExtractor = TortoiseFigureExtractor(
+                    ds = tools.ds(),
+                    maxStackSize = 10,
+                    memory = m,
+                    runner = runner,
+                )
+            )
     }
 
     val templateGenerator = object : TemplateGeneratorListener {
@@ -160,7 +172,12 @@ class TemplateData(override val tools: ITools, val selectedItem: MutableStateFlo
 
     suspend fun print(): String {
         if (checkboxEditor.value) {
-            return TemplateAlgorithm.constructBlock(figureName.value, templateEditor.value.form, memory, figureLine.value)
+            return TemplateAlgorithm.constructBlock(
+                figureName.value,
+                templateEditor.value.form,
+                memory,
+                figureLine.value
+            )
 
         } else {
 
@@ -189,5 +206,5 @@ class TemplateData(override val tools: ITools, val selectedItem: MutableStateFlo
         selectedItem.value = result
     }
 
-   // val selectedItem = MutableStateFlow<List<IFigure>>(emptyList())
+    // val selectedItem = MutableStateFlow<List<IFigure>>(emptyList())
 }
