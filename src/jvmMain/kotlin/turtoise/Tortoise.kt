@@ -182,7 +182,7 @@ class Tortoise() : TortoiseSplash() {
                 }
 
                 TortoiseCommand.TURTOISE_IF_FIGURE -> {
-                    if (com.value(memory) > 0.5) {
+                    if (com.value(memory) > 0.0) {
                         val block = com.takeBlock(1)
                         figureList(block, figureExtractor)?.let { g ->
                             builder.addProduct(g)

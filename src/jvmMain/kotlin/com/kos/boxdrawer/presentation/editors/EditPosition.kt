@@ -1,35 +1,46 @@
 package com.kos.boxdrawer.presentation.editors
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDropDown
-import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.onClick
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.DropdownMenuState
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kos.boxdrawe.icons.Expand
 import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawer.presentation.template.TemplateAngleBox
-import com.kos.boxdrawer.presentation.template.TemplateNumericBox
 import com.kos.boxdrawer.presentation.template.TemplateSizeBox
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItemAngle
-import com.kos.boxdrawer.template.TemplateItemNumeric
 import com.kos.boxdrawer.template.TemplateItemSize
+import turtoise.help.HelpInfoCommand
+import turtoise.help.TortoiseHelpInfo
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun EditPosition(listener: TemplateGeneratorSimpleListener, onPickSelected : () -> String) {
     val expanded = remember{ mutableStateOf(false) }
@@ -96,6 +107,44 @@ fun EditPosition(listener: TemplateGeneratorSimpleListener, onPickSelected : () 
                 }
                 Row() {
                     NumericUpDownLine("", "", inputPos, modifier = Modifier.weight(1f))
+                }
+
+
+                val commands = remember { TortoiseHelpInfo().commandList }
+                val expandedMenuState = remember { DropdownMenuState() }
+
+                val selectedFigure =  remember{ mutableStateOf(commands.firstOrNull()?: HelpInfoCommand("", emptyList())) }
+                Text(
+                    AnnotatedString(
+                        selectedFigure.value.name
+                    ) + AnnotatedString(" ")+
+                            AnnotatedString(selectedFigure.value.data.firstOrNull()?.argument.orEmpty(),
+                                SpanStyle(
+                                    color = Color(0xFF26A530),
+                                ) )
+                    ,
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        expandedMenuState.status = DropdownMenuState.Status.Open(Offset.Zero)
+                    }.padding(4.dp)
+                )
+                DropdownMenu(
+                    state = expandedMenuState,
+                ){
+                    commands.forEach { com ->
+                        DropdownMenuItem(onClick = {
+                            selectedFigure.value = com
+                            expandedMenuState.status = DropdownMenuState.Status.Closed
+                        }){
+                            Text(com.name,
+                                fontSize = 14.sp,)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(com.data.firstOrNull()?.description.orEmpty(),
+
+                                fontSize = 12.sp,
+                                lineHeight = 14.sp
+                                )
+                        }
+                    }
                 }
             }
         }

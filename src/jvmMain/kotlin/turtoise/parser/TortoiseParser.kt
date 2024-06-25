@@ -144,15 +144,15 @@ object TortoiseParser {
 
         val le = a.length
 
-        fun appendValues(top: TortoiseParserStackBlock, start: Int, end:Int){
+        fun appendValues(top: TortoiseParserStackBlock, start: Int, end: Int) {
             val d = if (start >= end) "" else a.substring(start, end)
             top.add(d.split(' ').filter { v -> v.isNotEmpty() })
         }
 
-        fun parseLine(position:Int, top: TortoiseParserStackBlock): Int{
+        fun parseLine(position: Int, top: TortoiseParserStackBlock): Int {
             var i = position
             var startPos = position
-            while(i< le){
+            while (i < le) {
                 val c = a[i]
                 when (c) {
                     '(',
@@ -164,15 +164,16 @@ object TortoiseParser {
                             skobka = c
                         )
                         top.add(next)
-                        startPos = parseLine(i+1, next)
+                        startPos = parseLine(i + 1, next)
                         i = startPos
                         continue
                     }
+
                     ')',
                     ']',
                     '}' -> {
                         appendValues(top, startPos, i)
-                        return i+1
+                        return i + 1
                     }
                 }
                 i++
@@ -327,48 +328,54 @@ object TortoiseParser {
         )
     }
 
-    fun helpName(text: Char, arguments: String, description: String): HelpInfoCommand {
-        return helpName(text.toString(), arguments, description)
-    }
-
+    //    fun helpName(text: Char, arguments: String, description: String): HelpInfoCommand {
+//        return helpName(text.toString(), arguments, description)
+//    }
+//
     fun helpName(text: String, arguments: String, description: String): HelpInfoCommand {
-
-        val sb = AnnotatedString.Builder()
-        sb.append(helpName(text))
-        sb.append(" ")
-        sb.append(helpArgument(arguments))
-        //sb.append(" ")
-        sb.append(helpDescr(" - " + description))
-        sb.appendLine()
-
         return HelpInfoCommand(
-            name = text,
-            text = sb.toAnnotatedString()
+            text, listOf(
+                HelpData(
+                    arguments, description
+                )
+            )
         )
+//        val sb = AnnotatedString.Builder()
+//        sb.append(helpName(text))
+//        sb.append(" ")
+//        sb.append(helpArgument(arguments))
+//        //sb.append(" ")
+//        sb.append(helpDescr(" - " + description))
+//        sb.appendLine()
+//
+//        return HelpInfoCommand(
+//            name = text,
+//            text = sb.toAnnotatedString()
+//        )
     }
-
-    fun helpName(text: String, args: List<HelpData>):HelpInfoCommand {
-        val sb = AnnotatedString.Builder()
-        args.forEach { argument ->
-            sb.append(helpName(text))
-            sb.append(" ")
-            sb.append(helpArgument(argument.argument))
-            sb.append(helpDescr(" - " + argument.description))
-            sb.appendLine()
-            argument.params.forEach { param ->
-                sb.append("    ")
-                sb.append(helpParam(param.name))
-                sb.append(" - ")
-                sb.append(helpDescr(param.description))
-                sb.appendLine()
-            }
-        }
-
-        return HelpInfoCommand(
-            name = text,
-            text = sb.toAnnotatedString()
-        )
-    }
+//
+//    fun helpName(text: String, args: List<HelpData>):HelpInfoCommand {
+//        val sb = AnnotatedString.Builder()
+//        args.forEach { argument ->
+//            sb.append(helpName(text))
+//            sb.append(" ")
+//            sb.append(helpArgument(argument.argument))
+//            sb.append(helpDescr(" - " + argument.description))
+//            sb.appendLine()
+//            argument.params.forEach { param ->
+//                sb.append("    ")
+//                sb.append(helpParam(param.name))
+//                sb.append(" - ")
+//                sb.append(helpDescr(param.description))
+//                sb.appendLine()
+//            }
+//        }
+//
+//        return HelpInfoCommand(
+//            name = text,
+//            text = sb.toAnnotatedString()
+//        )
+//    }
 
     fun helpArgument(text: String): AnnotatedString {
         return AnnotatedString(

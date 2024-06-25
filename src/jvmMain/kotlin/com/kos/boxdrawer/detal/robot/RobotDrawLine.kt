@@ -131,10 +131,10 @@ class RobotDrawLine(): IRobotCommand  {
         }
 
         override val names: List<String>
-            get() = listOf("line")
+            get() = listOf("lime")
 
         override fun help(): HelpInfoCommand {
-            return HelpInfoCommand("", AnnotatedString(""))
+            return HelpInfoCommand("lime", emptyList())
         }
 
     }
