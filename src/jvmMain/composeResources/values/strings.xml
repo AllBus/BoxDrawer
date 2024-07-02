@@ -3,10 +3,10 @@
     <string name="app_name">Рисовалка коробок</string>
     <string name="createFileButton">Нарисовать деталь</string>
     <string name="copyFileButton">Скопировать деталь</string>
-    <string name="rekaAlertClearSuccess">"Очистить"</string>
-    <string name="rekaAlertClearCancel">"Отмена"</string>
-    <string name="rekaAlertClearTitle">"Очистить текущую фигуру?"</string>
-    <string name="rekaAlertClearText">"Текущая фигура будет утеряна. Продолжить?"</string>
+    <string name="rekaAlertClearSuccess">Очистить</string>
+    <string name="rekaAlertClearCancel">Отмена</string>
+    <string name="rekaAlertClearTitle">Очистить текущую фигуру?</string>
+    <string name="rekaAlertClearText">Текущая фигура будет утеряна. Продолжить?</string>
     <string name="rekaPoints">Точки</string>
     <string name="rekaPadding">Отступ</string>
     <string name="rekaGroupShift">Сдвиг</string>
@@ -46,7 +46,7 @@
     <string name="gridRoundEdges">Количество</string>
     <string name="gridCellsInHorizontal">горизонталь</string>
     <string name="gridCellsInVertical">вертикаль</string>
-    <string name="gridCheckInnerFrom">Внутрение квадраты</string>
+    <string name="gridCheckInnerFrom">Внутренние квадраты</string>
     <string name="gridInnerFormSize">Сторона</string>
     <string name="gridInnerFormCornerRadius">Радиус</string>
     <string name="gridCheckPreview">Предпросмотр</string>
@@ -68,7 +68,7 @@
     <string name="bezierNewLineButton">Создать линию</string>
     <string name="bezierFigureLabel">Разместить вдоль линии</string>
     <string name="bezierFigureDistance">Расстояние</string>
-    <string name="bezierFigurePadding">Отсуп</string>
+    <string name="bezierFigurePadding">Отступ</string>
     <string name="bezierFigureCount">Количество</string>
     <string name="bezierFigure">Фигура</string>
     <string name="dxfScaleColor">Цвет DXF</string>

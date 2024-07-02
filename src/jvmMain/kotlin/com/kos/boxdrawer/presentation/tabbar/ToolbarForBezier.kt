@@ -1,9 +1,7 @@
 package com.kos.boxdrawer.presentation.tabbar
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -11,19 +9,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.BezierData
-import com.kos.boxdrawe.widget.EditText
-import com.kos.boxdrawe.widget.Label
-import com.kos.boxdrawe.widget.NumericUpDown
-import com.kos.boxdrawe.widget.RunButton
-import com.kos.boxdrawe.widget.SaveToFileButton
-import com.kos.boxdrawe.widget.SegmentDoubleButton
-import com.kos.boxdrawe.widget.SimpleEditText
-import com.kos.boxdrawe.widget.TabContentModifier
+import com.kos.boxdrawe.widget.*
 import com.kos.boxdrawe.widget.model.ButtonDoubleData
+import com.kos.boxdrawer.generated.resources.*
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.bezierFigure
 import com.kos.boxdrawer.generated.resources.bezierFigureCount
@@ -103,7 +96,7 @@ fun ToolbarForBezier(vm: BezierData) {
                 }
             }
         }
-
+Box(Modifier.width(2.dp).fillMaxHeight().background(color = Color( 0xff007f7f)) )
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
@@ -113,7 +106,21 @@ fun ToolbarForBezier(vm: BezierData) {
             NumericUpDown(stringResource(Res.string.bezierFigureCount), stringResource(Res.string.metricMM), pathCount)
             EditText(title = stringResource(Res.string.bezierFigure), value = pathFigure, enabled = true) { vm.createFigure(it) }
         }
+        Column(
+            modifier = Modifier.weight(weight = 1f, fill = true)
+        ) {
+            val nomerSegment = remember { NumericTextFieldState(0.0, 0){} }
 
+
+            Row {
+                RunButton("Добавить сегмент") {
+                    coroutineScope.launch {
+                        vm.addSegment(nomerSegment.decimal.toInt())
+                    }
+                }
+                NumericUpDownLine("",  "", nomerSegment, enabled = true)
+            }
+        }
 
     }
 }

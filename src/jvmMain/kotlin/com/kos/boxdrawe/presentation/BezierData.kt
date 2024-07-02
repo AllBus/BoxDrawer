@@ -283,6 +283,11 @@ class BezierData(override val tools: Tools): SaveFigure {
         cList.value =  list + listOf(p, p*2.0, p*3.0).map { it + f }
         redraw()
     }
+    fun addSegment(list: List <Vec2>, index: Int){
+        val sdvinem =list.map {it-list[0]+c1.value[index*3]}.drop(1)
+        cList.value = c1.value.take(index*3+1)+ sdvinem+c1.value.drop(index*3+1)
+        redraw()
+    }
 
     fun deleteStart(){
         if (c1.value.size>4) {
@@ -318,6 +323,11 @@ class BezierData(override val tools: Tools): SaveFigure {
             commands = c.map { it.second },
             algorithms = (k+a).toMap()
         )
+    }
+
+    fun addSegment(index: Int) {
+val spisokPoints = c1.value.drop(index*3).take(4)
+        return addSegment(spisokPoints, index)
     }
 
 }
