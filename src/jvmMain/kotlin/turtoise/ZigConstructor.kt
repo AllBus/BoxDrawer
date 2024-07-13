@@ -94,7 +94,13 @@ object ZigConstructor {
 
 
         val distance = deltaV - zigzagWidthV
-        val count = truncate(width / deltaV).toInt()
+        val countA = truncate(width / deltaV).toInt()
+
+        val count = if (zig.fromCorner && (width - deltaV * countA > zigzagWidthV)){
+                countA+1
+        } else {
+            countA
+        }
 
         var offset: Double = (width - deltaV * count + distance) / 2 * bot
 

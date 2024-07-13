@@ -45,9 +45,10 @@ class SplashRoad() : ISplashDetail {
                                     count = 2, //com.take(4, 2.0, figureExtractor.memory).toInt(),
                                     outStyle = BoxAlgorithm.parseOutVariant(st?.innerLine),
                                     zigzagInfo = ZigzagInfo(
-                                        figureExtractor.valueAt(zig,0, 15.0),
-                                        figureExtractor.valueAt(zig,1, 35.0),
-                                        figureExtractor.valueAt(zig,2, figureExtractor.ds.boardWeight),
+                                        width = figureExtractor.valueAt(zig,0, 15.0),
+                                        delta = figureExtractor.valueAt(zig,1, 35.0),
+                                        height = figureExtractor.valueAt(zig,2, figureExtractor.ds.boardWeight),
+                                        fromCorner = true,
                                     )
                                 ),
                                 figureExtractor.ds

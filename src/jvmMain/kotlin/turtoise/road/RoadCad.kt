@@ -7,7 +7,6 @@ import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
 import com.kos.figure.composition.Figure3dTransform
-import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureTranslate
 import com.kos.figure.composition.FigureTranslateWithRotate
 import turtoise.DrawerSettings
@@ -64,7 +63,7 @@ object RoadCad {
 
         val szihe = ZigzagInfo(
             width = 5.0,
-            delta = 15.0,
+            delta = 10.0,
             height = ds.boardWeight,
         )
 
@@ -83,6 +82,8 @@ object RoadCad {
         val topFigures = mutableListOf<FigureCoord>()
         val simFigures = mutableListOf<IFigure>()
 
+        val h = ds.boardWeight
+
 
         if (!line.isClose() && rp.startHeight>0.0) {
             result += FigureLine(Vec2.Zero, lpoints.first())
@@ -90,12 +91,39 @@ object RoadCad {
 
             result += FigureLine(pl, Vec2(pl.x, 0.0))
 
-            result += FigureLine(Vec2.Zero, Vec2(pl.x, 0.0))
+            result += ZigConstructor.zigZag(
+                origin = Vec2.Zero,
+                width = pl.x,
+                zig =  ziIn ,
+                angle = 0.0,
+                param = dp,
+                zigzagFigure = zagFigure,
+                lineInfo = lineInfo,
+            )
+
+            topFigures += FigureCoord(
+                Vec2.Zero,
+                rotateX = 90.0,
+                rotateY = 0.0,
+                sdvig = Vec2(0.0, rp.width+h),
+                createTopBar(
+                    tp1 = Vec2(0.0, h),
+                    tp2 = Vec2(0.0, rp.width-h),
+                    tp3 = Vec2(pl.x, rp.width-h),
+                    tp4 = Vec2(pl.x, h),
+                    width = pl.x,
+                    zigzagInfo = zihe,
+                    drawingParam = dp,
+                    zigFigure = zigFigure,
+                    lineInfo = lineInfo,
+                    zigReverseFigure = zigReverseFigure
+                )
+            )
         }
 
         var delp = 0.0
         var delm= 0.0
-        val h = ds.boardWeight
+
         var pl = lpoints.first()
         val lp = lpoints.drop(1)
         var drl = 0.0
@@ -128,7 +156,7 @@ object RoadCad {
                 ).map { it.rotate(a) + pl }, true
             )
 
-            val small =  (w-lineInfo.startOffset-lineInfo.endOffset < 15f)
+            val small =  (w-lineInfo.startOffset-lineInfo.endOffset < zihe.width)
 
             // Линия
             val f = ZigConstructor.zigZag(
@@ -149,43 +177,28 @@ object RoadCad {
             val tp4 = Vec2(wd, h)
             val tp3 = Vec2(wd, rp.width-h)
 
+            val li = LineInfo(
+                lineInfo.startOffset - drl,
+                lineInfo.endOffset - drr
+            )
+
             topFigures +=
                 FigureCoord(
                     pl,
                     rotateX = 90.0,
                     rotateY = Math.toDegrees(a),
-                    center = Vec2(w/2.0, rp.width/2.0),
-                    size = Vec2(wrr, rp.width),
                     sdvig = tt,
-                    FigureList(
-                        listOf(
-                            FigureLine(tp1, tp2),
-                            ZigConstructor.zigZag(
-                                origin = tp2,
-                                width = wrr,
-                                zig =  if (small) szihe else zihe,
-                                angle = 0.0,
-                                param = dp,
-                                zigzagFigure = if (small) szigFigure else zigFigure,
-                                lineInfo = LineInfo(
-                                    lineInfo.startOffset - drl,
-                                    lineInfo.endOffset - drr
-                                ),
-                            ),
-                            FigureLine(tp3, tp4),
-                            ZigConstructor.zigZag(
-                                origin = tp1,
-                                width = wrr,
-                                zig = if (small) szihe else zihe,
-                                angle = 0.0,
-                                param = dp.copy(reverse = true),
-                                zigzagFigure = if (small) szigReverseFigure else  zigReverseFigure,
-                                lineInfo = LineInfo(
-                                    lineInfo.startOffset - drl,
-                                    lineInfo.endOffset - drr
-                                ),
-                            )
-                        )
+                    createTopBar(
+                        tp1 = tp1,
+                        tp2 = tp2,
+                        tp3 = tp3,
+                        tp4 = tp4,
+                        width = wrr,
+                        zigzagInfo = if (small) szihe else zihe,
+                        drawingParam = dp,
+                        zigFigure = if (small) szigFigure else zigFigure,
+                        lineInfo = li,
+                        zigReverseFigure = if (small) szigReverseFigure else zigReverseFigure
                     )
 
 
@@ -268,6 +281,42 @@ object RoadCad {
         )
     }
 
+    private fun createTopBar(
+        tp1: Vec2,
+        tp2: Vec2,
+        tp3: Vec2,
+        tp4: Vec2,
+        width: Double,
+        drawingParam: DrawingParam,
+        lineInfo: LineInfo,
+        zigzagInfo: ZigzagInfo,
+        zigFigure: IFigure,
+        zigReverseFigure: IFigure
+    ) = FigureList(
+        listOf(
+            FigureLine(tp1, tp2),
+            ZigConstructor.zigZag(
+                origin = tp2,
+                width = width,
+                zig =  zigzagInfo,
+                angle = 0.0,
+                param = drawingParam,
+                zigzagFigure = zigFigure,
+                lineInfo = lineInfo,
+            ),
+            FigureLine(tp3, tp4),
+            ZigConstructor.zigZag(
+                origin = tp1,
+                width = width,
+                zig = zigzagInfo,
+                angle = 0.0,
+                param = drawingParam.copy(reverse = true),
+                zigzagFigure = zigReverseFigure,
+                lineInfo = lineInfo,
+            )
+        )
+    )
+
     val FRONT = 1
     val BACK = 2
 }
@@ -285,8 +334,6 @@ class FigureCoord(
     val position: Vec2,
     val rotateX: Double,
     val rotateY: Double,
-    val center: Vec2,
-    val size:Vec2,
     val sdvig:Vec2,
     val figure: IFigure,
 )
