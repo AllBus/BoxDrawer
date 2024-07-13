@@ -12,6 +12,8 @@ class FigureTranslate(
     val offset: Vec2,
 ) : FigureComposition(), Approximation {
 
+    constructor(offset: Vec2, figure: IFigure): this(figure, offset)
+
     override fun create(figure: IFigure): FigureComposition {
         return FigureTranslate(figure, offset)
     }

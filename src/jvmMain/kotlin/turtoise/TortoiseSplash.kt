@@ -1,8 +1,11 @@
 package turtoise
 
 import com.kos.boxdrawer.detal.splash.ISplashDetail
+import com.kos.figure.FigurePolyline
 import com.kos.figure.FigureText
 import turtoise.parser.TortoiseParserStackBlock
+import turtoise.road.RoadCad
+import turtoise.road.RoadProperties
 import java.text.DecimalFormat
 
 
@@ -79,7 +82,6 @@ abstract class TortoiseSplash : TortoiseBase() {
             "f" -> {
                 builder.state.zigParam = builder.state.zigParam.copy(reverse = false)
             }
-
             else -> {}
         }
     }

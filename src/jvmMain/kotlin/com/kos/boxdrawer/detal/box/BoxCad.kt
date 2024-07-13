@@ -647,15 +647,18 @@ object BoxCad {
 
         val holeW = zigW.copy(
             width = zigW.width - drawerSettings.holeDrop,
+            drop = drawerSettings.holeDrop
         )
 
         val holeH = zigH.copy(
             width = zigH.width - drawerSettings.holeDrop,
-            height = if (zigH.height == 0.0) bw else zigH.height
+            height = if (zigH.height == 0.0) bw else zigH.height,
+            drop = drawerSettings.holeDrop
         )
 
         val holeWe = zigWe.copy(
             width = zigWe.width - drawerSettings.holeDrop,
+            drop = drawerSettings.holeDrop
         )
 
         val resultMap = mutableMapOf<Int, MutableList<IFigure>>()

@@ -72,6 +72,26 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
 
         val Zero = Vec2(0.0, 0.0)
 
+        /**
+         * in radians
+         */
+        fun angle(a: Vec2, b: Vec2): Double {
+            return (b-a).angle
+        }
+
+
+        /**
+         * in radians
+         */
+        fun angle(a: Vec2, b: Vec2, c :Vec2): Double {
+            val ang = atan2(c.y - b.y, c.x - b.x) -
+                    atan2(a.y - b.y, a.x - b.x)
+            return if (ang<0.0)
+                ang+Math.PI*2
+            else
+                ang
+        }
+
         fun distance(a: Vec2, b: Vec2): Double {
             return hypot((a.x - b.x), (a.y - b.y))
         }

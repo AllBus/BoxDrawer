@@ -11,6 +11,7 @@ import com.kos.boxdrawer.detal.splash.SplashObruch
 import com.kos.boxdrawer.detal.splash.SplashParallelogram
 import com.kos.boxdrawer.detal.splash.SplashPaz
 import com.kos.boxdrawer.detal.splash.SplashPrintCoordinate
+import com.kos.boxdrawer.detal.splash.SplashRoad
 import com.kos.boxdrawer.detal.splash.SplashRoundLine
 import com.kos.boxdrawer.detal.splash.SplashSoftRez
 import com.kos.boxdrawer.detal.splash.SplashStena
@@ -39,6 +40,7 @@ object SplashMap {
         SplashDiamond(),
         SplashDiamondAngle(),
         SplashParallelogram(),
+        SplashRoad()
     )
     val splashes: Map<String, ISplashDetail> = splashList.flatMap { s -> s.names.map { it to s } }.toMap()
 }

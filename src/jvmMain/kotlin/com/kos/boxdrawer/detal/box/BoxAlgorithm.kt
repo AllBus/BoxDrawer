@@ -120,6 +120,7 @@ class BoxAlgorithm(
                 )
         }
 
+
         fun parseOutVariant(text: String?): BoxCad.EOutVariant {
             return when (text?.lowercase()) {
                 "a" -> BoxCad.EOutVariant.ALTERNATIVE
