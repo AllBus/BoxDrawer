@@ -24,6 +24,7 @@ object ThemeColors {
 
     val bezierPointTangent = Color(0xAA00B563)
     val bezierPoint = Color(0xAA808080)
+    val bezierSelectedPoint = Color(0xAA6EFF00)
     val bezierPointSelect = Color(0xAA00C609)
     val bezierPointButton = Color(0xAAFFD800)
 

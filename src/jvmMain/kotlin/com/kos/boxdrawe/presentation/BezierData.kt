@@ -1,24 +1,25 @@
 package com.kos.boxdrawe.presentation
 
 import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureEmpty
-import com.kos.figure.collections.FigureList
 import com.kos.figure.IFigure
+import com.kos.figure.collections.FigureList
 import com.kos.figure.composition.FigureOnPath
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
-import turtoise.parser.TortoiseParser
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
+import turtoise.parser.TortoiseParser
 import vectors.Vec2
 import kotlin.math.atan2
 
-class BezierData(override val tools: Tools): SaveFigure {
+class BezierData(override val tools: Tools) : SaveFigure {
 
     private val cList = MutableStateFlow(
         listOf(
@@ -49,6 +50,7 @@ class BezierData(override val tools: Tools): SaveFigure {
     }
 
     val currentDistance = mutableDoubleStateOf(1.0)
+    val lastSelectedPoint = mutableIntStateOf(-1)
 
     val figure = mutableStateOf<IFigure>(FigureEmpty)
 
@@ -94,49 +96,49 @@ class BezierData(override val tools: Tools): SaveFigure {
 //            angle = 0.0,
 //            pivot = Vec2.Zero
 //        )
-        figure.value = FigureList( listOf( fb, fp ))
+        figure.value = FigureList(listOf(fb, fp))
     }
 
-    override suspend fun createFigure(): IFigure= figure.value
+    override suspend fun createFigure(): IFigure = figure.value
 
     fun print(): String {
         var st = c1.value.first()
         return "b ${
             c1.value.drop(1).flatMapIndexed { i, v ->
                 val r = listOf(v.x - st.x, v.y - st.y)
-                if ((i+1) % 3 == 0) st = v
+                if ((i + 1) % 3 == 0) st = v
                 r
             }.joinToString(" ")
         }"
     }
 
-    fun newBezier(){
+    fun newBezier() {
         cList.value = listOf(
             Vec2(0.0, 0.0), Vec2(80.0, 20.0), Vec2(20.0, 80.0), Vec2(100.0, 100.0),
         )
         redraw()
     }
 
-    fun newBezier(line:String){
-         var pred = Vec2.Zero
+    fun newBezier(line: String) {
+        var pred = Vec2.Zero
         println(line)
-         val p = line
-            .split(' ', ',', ';', '(', ')', '[', ']', ':' )
+        val p = line
+            .split(' ', ',', ';', '(', ')', '[', ']', ':')
             .filter { it.isNotEmpty() }
             .mapNotNull {
                 println(it)
                 it.toDoubleOrNull()
             }
-            .windowed( 2, 2){ l -> Vec2(l[0], l[1])  }
-            .windowed(3,3){ l->
+            .windowed(2, 2) { l -> Vec2(l[0], l[1]) }
+            .windowed(3, 3) { l ->
                 val r = l.map {
-                    it+pred
+                    it + pred
                 }
-                pred =  r.last()
+                pred = r.last()
                 println(r)
                 r
             }.flatten()
-        cList.value = listOf(Vec2.Zero)+p
+        cList.value = listOf(Vec2.Zero) + p
         redraw()
     }
 
@@ -153,20 +155,20 @@ class BezierData(override val tools: Tools): SaveFigure {
         val r = c1.value
         if (index >= 0 && index < r.size) {
 
-            val p = when (index % 3){
-                0  -> 0
+            val p = when (index % 3) {
+                0 -> 0
                 1 -> -2
                 2 -> 2
                 else -> 0
             }
-            if (p!= 0){
-                val pp = index+p
-                val p3 = index+p/2
-                if (pp>= 0 && pp < r.size){
+            if (p != 0) {
+                val pp = index + p
+                val p3 = index + p / 2
+                if (pp >= 0 && pp < r.size) {
                     val d = Vec2.distance(r[p3], r[pp])
-                    val a = r[p3]-newPosition
+                    val a = r[p3] - newPosition
                     val d2 = Vec2.distance(r[p3], newPosition)
-                    if (d2>0.0) {
+                    if (d2 > 0.0) {
                         val position2 = r[p3] + a * d / d2
                         cList.value = r.mapIndexed { i, vec ->
                             if (i == index) newPosition else
@@ -187,16 +189,16 @@ class BezierData(override val tools: Tools): SaveFigure {
         val r = c1.value
         if (index >= 0 && index < r.size) {
 
-            val p = when (index % 3){
-                0  -> 0
+            val p = when (index % 3) {
+                0 -> 0
                 1 -> -2
                 2 -> 2
                 else -> 0
             }
-            if (p!= 0){
-                val pp = index+p
-                val p3 = index+p/2
-                if (pp>= 0 && pp < r.size){
+            if (p != 0) {
+                val pp = index + p
+                val p3 = index + p / 2
+                if (pp >= 0 && pp < r.size) {
 
                     val n2 = r[pp] - r[p3]
                     val n1 = r[p3] - r[index]
@@ -205,9 +207,9 @@ class BezierData(override val tools: Tools): SaveFigure {
                     val t1 = atan2(n1.y, n1.x)
                     val tn = atan2(nn.y, nn.x)
 
-                    val dn = tn-t1
+                    val dn = tn - t1
 
-                    val position2 = r[p3]+ n2.rotate(dn)
+                    val position2 = r[p3] + n2.rotate(dn)
 
                     cList.value = r.mapIndexed { i, vec ->
                         if (i == index) newPosition else
@@ -227,25 +229,25 @@ class BezierData(override val tools: Tools): SaveFigure {
     fun movePointLine(index: Int) {
         val r = c1.value
         if (index >= 0 && index < r.size) {
-            val p = when (index % 3){
-                0  -> 0
+            val p = when (index % 3) {
+                0 -> 0
                 1 -> 1
                 2 -> -1
                 else -> 0
             }
 
-            if (p!= 0){
-                val st = index-p
-                val ep = index+2*p
-                val c1 = Vec2.lerp(r[st], r[ep],0.25)
-                val c2 = Vec2.lerp(r[st], r[ep],0.75)
+            if (p != 0) {
+                val st = index - p
+                val ep = index + 2 * p
+                val c1 = Vec2.lerp(r[st], r[ep], 0.25)
+                val c2 = Vec2.lerp(r[st], r[ep], 0.75)
                 val pp = index + p
                 cList.value = r.mapIndexed { i, vec ->
                     if (i == index) c1 else
                         if (i == pp) c2 else
                             vec
                 }
-                 redraw()
+                redraw()
             }
         }
     }
@@ -264,7 +266,7 @@ class BezierData(override val tools: Tools): SaveFigure {
         }
 
         cList.value =
-            listOf(p*3.0, p*2.0, p ).map { it + f } + list
+            listOf(p * 3.0, p * 2.0, p).map { it + f } + list
         redraw()
     }
 
@@ -280,24 +282,37 @@ class BezierData(override val tools: Tools): SaveFigure {
             Vec2(100.0, 0.0)
         }
 
-        cList.value =  list + listOf(p, p*2.0, p*3.0).map { it + f }
-        redraw()
-    }
-    fun addSegment(list: List <Vec2>, index: Int){
-        val sdvinem =list.map {it-list[0]+c1.value[index*3]}.drop(1)
-        cList.value = c1.value.take(index*3+1)+ sdvinem+c1.value.drop(index*3+1)
+        cList.value = list + listOf(p, p * 2.0, p * 3.0).map { it + f }
         redraw()
     }
 
-    fun deleteStart(){
-        if (c1.value.size>4) {
+    fun addSegment(list: List<Vec2>, index: Int) {
+        if (list.size<4)
+            return
+
+        val c1v = c1.value
+        if (index*3>c1v.size || index<0)
+            return
+
+        val p1 = c1v[index * 3]-list.first()
+        val sdvinem = list.map { it + p1}
+
+        val ap = sdvinem.last()-sdvinem.first()
+
+        cList.value = c1v.take(index * 3 + 1) + sdvinem.drop(1) +
+                c1v.drop(index * 3 + 1).map { it + ap }
+        redraw()
+    }
+
+    fun deleteStart() {
+        if (c1.value.size > 4) {
             cList.value = c1.value.drop(3)
             redraw()
         }
     }
 
-    fun deleteEnd(){
-        if (c1.value.size>4) {
+    fun deleteEnd() {
+        if (c1.value.size > 4) {
             cList.value = c1.value.dropLast(3)
             redraw()
         }
@@ -305,7 +320,7 @@ class BezierData(override val tools: Tools): SaveFigure {
 
     fun createFigure(lines: String) {
         val program = tortoiseProgram(lines)
-        val t = TortoiseRunner( program)
+        val t = TortoiseRunner(program)
         val state = TortoiseState()
         val dr = t.draw(state, tools.ds())
         pathFigure.value = dr
@@ -321,13 +336,27 @@ class BezierData(override val tools: Tools): SaveFigure {
         val k = tools.algorithms()
         return TortoiseProgram(
             commands = c.map { it.second },
-            algorithms = (k+a).toMap()
+            algorithms = (k + a).toMap()
         )
     }
 
-    fun addSegment(index: Int) {
-val spisokPoints = c1.value.drop(index*3).take(4)
-        return addSegment(spisokPoints, index)
+    fun addSegment(index: Int, insertIndex:Int) {
+        val spisokPoints = c1.value.drop(index * 3).take(4)
+        return addSegment(spisokPoints, insertIndex/3)
+    }
+
+    fun removeSegment(pointIndex:Int){
+        val index = pointIndex/3
+        val c1v = c1.value
+        if (index*3>c1v.size || index<0)
+            return
+
+        val di = index * 3 + 3
+        val ap = if (di< c1v.size) { c1v[di]-c1v[index * 3] } else Vec2.Zero
+
+        cList.value =  c1v.take(index * 3 + 1) +
+                c1v.drop(di+1).map { it - ap }
+        redraw()
     }
 
 }

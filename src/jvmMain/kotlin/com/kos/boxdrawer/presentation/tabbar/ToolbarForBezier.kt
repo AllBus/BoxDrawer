@@ -96,7 +96,6 @@ fun ToolbarForBezier(vm: BezierData) {
                 }
             }
         }
-Box(Modifier.width(2.dp).fillMaxHeight().background(color = Color( 0xff007f7f)) )
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
@@ -115,10 +114,17 @@ Box(Modifier.width(2.dp).fillMaxHeight().background(color = Color( 0xff007f7f)) 
             Row {
                 RunButton("Добавить сегмент") {
                     coroutineScope.launch {
-                        vm.addSegment(nomerSegment.decimal.toInt())
+                        vm.addSegment(nomerSegment.decimal.toInt(), vm.lastSelectedPoint.value)
                     }
                 }
                 NumericUpDownLine("",  "", nomerSegment, enabled = true)
+            }
+            Row{
+                RunButton("Удалить сегмент") {
+                    coroutineScope.launch {
+                        vm.removeSegment(vm.lastSelectedPoint.value)
+                    }
+                }
             }
         }
 

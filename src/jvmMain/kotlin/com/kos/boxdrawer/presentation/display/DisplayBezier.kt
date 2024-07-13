@@ -67,6 +67,7 @@ fun DisplayBezier(
     val cst = vm.startActionPos.collectAsState(Vec2.Zero)
     val cen = vm.endActionPos.collectAsState(Vec2.Zero)
     val currentDistance = remember { vm.currentDistance }
+    val lastSelectedPoint = remember { vm.lastSelectedPoint }
 
     val selectIndex = remember { mutableIntStateOf(-1) }
     val selectedType = remember { mutableIntStateOf(0) }
@@ -112,6 +113,7 @@ fun DisplayBezier(
             (it.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.value.toVec2() / scale.toDouble()
         // if (it.button == PointerButton.Primary) {
         selectIndex.value = indexOfPoint(c1.value, sp, 20.0)
+        lastSelectedPoint.value =  selectIndex.value
         /// }
 
         if (selectIndex.value < 0) {
@@ -211,7 +213,12 @@ fun DisplayBezier(
 
                 bezier.forEachIndexed { i, c ->
                     val color = if (selectIndex.value == i) ThemeColors.bezierPointSelect else
-                        if (i % 3 == 0) ThemeColors.bezierPoint else ThemeColors.bezierPointTangent
+                        if (i % 3 == 0) {
+                            if (i == lastSelectedPoint.value)
+                                ThemeColors.bezierSelectedPoint
+                            else
+                                ThemeColors.bezierPoint
+                        } else ThemeColors.bezierPointTangent
                     this.drawCircle(color, radius = 10f / scale, center = c.toOffset())
                 }
 
