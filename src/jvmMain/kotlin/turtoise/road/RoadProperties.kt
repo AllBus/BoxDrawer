@@ -10,5 +10,6 @@ class RoadProperties(
     val outStyle: BoxCad.EOutVariant,
     val zigzagInfo: ZigzagInfo,
     val connectStyle: EBoardConnectStyle,
+    val isHoleLine: Boolean,
 )
 

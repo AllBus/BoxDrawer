@@ -67,6 +67,7 @@ class SplashRoad() : ISplashDetail {
                                     connectStyle = BoxAlgorithm.parseConnectVariant(
                                         stl.substring(1,2)
                                     ),
+                                    isHoleLine = stl.substring(2,3) in "ho"
                                 ),
                                 ds = ds
                             ), acc

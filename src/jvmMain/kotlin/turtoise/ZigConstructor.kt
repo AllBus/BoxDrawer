@@ -1,5 +1,6 @@
 package turtoise
 
+import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureLine
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
@@ -9,6 +10,108 @@ import vectors.Vec2
 import kotlin.math.truncate
 
 object ZigConstructor {
+
+    fun holes(
+        origin: Vec2,
+        width: Double,
+        zig: ZigzagInfo,
+        angle: Double,
+        param: DrawingParam,
+        zigzagFigure: IFigure,
+        lineInfo: LineInfo,
+    ): IFigure{
+        val bot = if (param.back) -1 else 1
+        val z = 0.0
+        val angleV = angle
+
+        /* Зигзаг выключен нарисуем прямую */
+        if (!zig.enable ||
+            (width<= lineInfo.startOffset+lineInfo.endOffset)
+        ) {
+            return FigureEmpty
+        }
+
+        val resultList = mutableListOf<IFigure>()
+        val spoint = if (lineInfo.startOffset != 0.0) {
+            val st = Vec2(lineInfo.startOffset * bot, z).rotate(angleV)+ origin
+            st
+        } else
+            origin
+
+        val zi = holes(
+            origin = spoint,
+            width = width - lineInfo.startOffset - lineInfo.endOffset,
+            zig = zig,
+            angle = angle,
+            param = param,
+            zigzagFigure = zigzagFigure
+        )
+
+        resultList += zi
+
+        return FigureList(resultList.toList())
+    }
+
+    fun holes(
+        origin: Vec2,
+        width: Double,
+        zig: ZigzagInfo,
+        angle: Double,
+        param: DrawingParam,
+        zigzagFigure: IFigure,
+    ): IFigure {
+        val bot = if (param.back) -1 else 1
+        val z = 0.0
+        val angleV = angle
+
+        /* Зигзаг выключен нарисуем прямую */
+        if (!zig.enable) {
+            return FigureEmpty
+        }
+        val zigzagWidthV = zig.width
+        var deltaV = zig.delta
+
+        if (deltaV > width) {
+            deltaV = width
+        }
+        if (zigzagWidthV+zig.drop > deltaV) {
+            /* Места недостаточно даже для одного зигзага */
+            return FigureEmpty
+        }
+
+        val distance = deltaV - zigzagWidthV
+        val countA = truncate(width / deltaV).toInt()
+
+        val count = if (zig.fromCorner && (width - deltaV * countA > zigzagWidthV)){
+            countA+1
+        } else {
+            countA
+        }
+
+        var offset: Double = (width - deltaV * count + distance) / 2 * bot
+        deltaV *= bot.toDouble()
+        if (count > 10000) {
+            /*  слишком много зигзагов. */
+            return FigureEmpty
+        }
+
+        offset += 0.0
+        val points = mutableListOf<IFigure>()
+        points+=FigureArray(
+            figure = zigzagFigure,
+            startPoint = Vec2(offset, z).rotate(angleV) + origin,
+            distance = Vec2(deltaV, 0.0),
+            columns = count,
+            rows = 1,
+            angle = angleV * 180 / Math.PI,
+
+            )
+
+        return FigureList(points.toList())
+    }
+
+
+
 
     fun zigZag(
         origin: Vec2,

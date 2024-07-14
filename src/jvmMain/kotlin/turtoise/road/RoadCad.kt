@@ -38,6 +38,22 @@ object RoadCad {
         )
     }
 
+    fun simpleHole(zihe: ZigzagInfo, reverse: Boolean = false): IFigure {
+        val offset = 0.0
+        val z = 0.0
+        val weight = (if (reverse) -1 else 1) * zihe.height
+        val zw = zihe.width
+        return FigurePolyline(
+            listOf(
+                Vec2(offset, z),
+                Vec2(offset, z + weight),
+                Vec2(offset + zw, z + weight),
+                Vec2(offset + zw, z),
+                Vec2(offset, z),
+            )
+        )
+    }
+
     fun createKrishka(
         pred: Vec2,
         cur: Vec2,
@@ -86,6 +102,16 @@ object RoadCad {
             angle = a,
             param = dp,
             zigzagFigure = if (small) drawInfo.szagFigure else drawInfo.zagFigure,
+            lineInfo = drawInfo.lineInfo,
+        )
+
+        outResult.holeResult += ZigConstructor.holes(
+            origin = pl,
+            width = w,
+            zig = if (small) drawInfo.sziIn else drawInfo.ziIn,
+            angle = a,
+            param = dp,
+            zigzagFigure = if (small) drawInfo.sholeFigure else drawInfo.holeFigure,
             lineInfo = drawInfo.lineInfo,
         )
 
@@ -184,7 +210,7 @@ object RoadCad {
         val p1 = line.points.first() + Vec2(0.0, rp.startHeight)
         val lpoints = line.points.map { it - p1 }
 
-        val drawInfo = RoadDrawInfo(ds, rp.zigzagInfo, ::simpleZigZag)
+        val drawInfo = RoadDrawInfo(ds, rp.zigzagInfo, ::simpleZigZag, ::simpleHole)
 
         val result: RoadCadResult = RoadCadResult()
 
@@ -363,12 +389,19 @@ object RoadCad {
         delp: Double,
         delm: Double
     ): List<IFigure> {
+        val backEdge =  FigureList(
+            if (rp.isHoleLine)
+                result.holeResult.toList()
+            else
+                result.result.toList()
+        )
+
         val res = when (rp.outStyle) {
             EOutVariant.COLUMN -> {
                 result.result.toList() +
                         FigureTranslate(
                             Vec2(0.0, -(delp - delm + rp.startHeight)),
-                            FigureList(result.result.toList())
+                            backEdge
                         )
 
             }
@@ -378,7 +411,7 @@ object RoadCad {
                 result.result.toList() +
                         FigureTranslate(
                             Vec2(0.0, -(delp - delm + rp.startHeight)),
-                            FigureList(result.result.toList())
+                            backEdge
                         )
 
             }
@@ -392,12 +425,10 @@ object RoadCad {
                         result.result.toList()
                     ),
                     Figure3dTransform(
-                        vectors.Matrix(mm.values), FigureList(
-                            result.result.toList()
-                        )
+                        vectors.Matrix(mm.values),
+                        backEdge
                     )
                 )
-
             }
         }
         return res
@@ -454,7 +485,8 @@ class FigureCoord(
 class RoadDrawInfo(
     val ds: DrawerSettings,
     val zihe: ZigzagInfo,
-    val simpleZigZag: (ZigzagInfo, Boolean) -> IFigure
+    val simpleZigZag: (ZigzagInfo, Boolean) -> IFigure,
+    val simpleHole: (ZigzagInfo, Boolean) -> IFigure
 ) {
     val lineInfo = LineInfo(
         startOffset = abs(ds.boardWeight),
@@ -486,10 +518,14 @@ class RoadDrawInfo(
     val szigFigure = simpleZigZag(szihe, false)
     val szigReverseFigure = simpleZigZag(szihe, true)
     val szagFigure = simpleZigZag(sziIn, false)
+
+    val sholeFigure = simpleHole(sziIn, false)
+    val holeFigure = simpleHole(ziIn, false)
 }
 
 class RoadCadResult {
     val result = mutableListOf<IFigure>()
+    val holeResult = mutableListOf<IFigure>()
     val topFigures = mutableListOf<FigureCoord>()
     val simFigures = mutableListOf<IFigure>()
 
