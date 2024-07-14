@@ -63,8 +63,7 @@ fun ToolbarForBezier(vm: BezierData) {
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            Label("${c1.value}")
-            SegmentDoubleButton(selectedId, buttons, onClick = { index ->
+            SegmentDoubleButton(selectedId, buttons, lines = 2, onClick = { index ->
                 selectedId.value = index
                 if (selectedId.value >= 0) {
                     vm.currentDistance.value = buttons[selectedId.value].value
@@ -83,9 +82,6 @@ fun ToolbarForBezier(vm: BezierData) {
                     bezierText.value = t
                 }
             }
-            Spacer(
-                Modifier.height(40.dp)
-            )
             RunButton(stringResource(Res.string.bezierNewLineButton)) {
                 coroutineScope.launch {
                     val text = bezierText.value

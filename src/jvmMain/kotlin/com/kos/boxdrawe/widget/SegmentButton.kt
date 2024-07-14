@@ -2,6 +2,7 @@ package com.kos.boxdrawe.widget
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -16,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.widget.model.ButtonData
 import com.kos.boxdrawe.widget.model.ButtonDoubleData
@@ -24,24 +26,25 @@ import com.kos.boxdrawe.widget.model.ButtonDoubleData
 fun SegmentButton(
     selectId: State<Int>,
     buttons: List<ButtonData>,
-    modifier : Modifier = Modifier,
-    onClick: (Int)-> Unit
-    ) {
+    modifier: Modifier = Modifier,
+    onClick: (Int) -> Unit
+) {
 
     Row(
         modifier = modifier
     ) {
-        buttons.forEach{  btn ->
+        buttons.forEach { btn ->
             Button(
                 modifier = Modifier.weight(1f),
-                onClick ={ onClick(btn.id) },
+                onClick = { onClick(btn.id) },
                 shape = RectangleShape,
                 border = if (btn.id == selectId.value) {
                     BorderStroke(4.dp, MaterialTheme.colors.onPrimary)
                 } else null,
                 contentPadding = PaddingValues(0.dp)
-            ){
-                Icon(painter = btn.icon,
+            ) {
+                Icon(
+                    painter = btn.icon,
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
                 )
@@ -54,24 +57,32 @@ fun SegmentButton(
 fun SegmentDoubleButton(
     selectId: State<Int>,
     buttons: List<ButtonDoubleData>,
-    modifier : Modifier = Modifier,
-    onClick: (Int)-> Unit
+    modifier: Modifier = Modifier,
+    lines: Int = 1,
+    onClick: (Int) -> Unit,
 ) {
-    Row(
-        modifier = modifier
-    ) {
-        buttons.forEach{  btn ->
-            Button(
-                modifier = Modifier.weight(1f),
-                onClick ={ onClick(btn.id) },
-                shape = RectangleShape,
-                border = if (btn.id == selectId.value) {
-                    BorderStroke(4.dp, MaterialTheme.colors.onPrimary)
-                } else null,
-            ){
-                Text(
-                    btn.text
-                )
+    val le = (buttons.size - 1) / lines + 1
+    Column(Modifier.semantics(mergeDescendants = true) { }) {
+        buttons.windowed(le, le, true).forEach { btns ->
+            Row(
+                modifier = modifier
+            ) {
+                btns.forEach { btn ->
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        onClick = { onClick(btn.id) },
+                        shape = RectangleShape,
+                        border = if (btn.id == selectId.value) {
+                            BorderStroke(4.dp, MaterialTheme.colors.onPrimary)
+                        } else null,
+                        contentPadding = PaddingValues(4.dp, 4.dp)
+                    ) {
+                        Text(
+                            btn.text,
+                            maxLines = 1,
+                        )
+                    }
+                }
             }
         }
     }
@@ -80,7 +91,7 @@ fun SegmentDoubleButton(
 @Preview
 @Composable
 private fun SegmentButtonPreview() = MaterialTheme {
-    val selectId = remember{ mutableStateOf(0) }
+    val selectId = remember { mutableStateOf(0) }
     val zigVariants = listOf(
         ButtonData(0, painterResource("drawable/act_hole.png")),
         ButtonData(1, painterResource("drawable/act_line.png")),
