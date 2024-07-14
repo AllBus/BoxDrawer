@@ -18,6 +18,7 @@ import turtoise.LineInfo
 import turtoise.ZigConstructor
 import turtoise.ZigzagInfo
 import vectors.Vec2
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
@@ -45,20 +46,28 @@ object RoadCad {
         rp: RoadProperties,
         drawInfo: RoadDrawInfo,
         state: RoadCadState,
+        longLine: RoadLongLineState,
         outResult: RoadCadResult
     ): RoadCadState {
         val pl = pred
         val w = Vec2.distance(pl, cur)
         val a = Vec2.angle(pl, cur)
 
-        val drr = boardOtstup(next, cur, pl, boardHeight)
+        val drrv = boardOtstup(next, cur, pl, boardHeight)
+        val uss = if (longLine.lastLine)
+            boardUstupLong(next, cur, pl, boardHeight)
+        else
+            boardUstup(next, cur, pl, boardHeight)
+
+        val dl = state.drl
+        val dr = if (longLine.longEnd) uss else drrv
 
         outResult.simFigures += FigurePolyline(
             listOf(
-                Vec2(state.drl, 0.0),
-                Vec2(w - drr, 0.0),
-                Vec2(w - drr, boardHeight),
-                Vec2(state.drl, boardHeight)
+                Vec2(dl, 0.0),
+                Vec2(w - dr, 0.0),
+                Vec2(w - dr, drawInfo.zihe.height),
+                Vec2(dl, drawInfo.zihe.height)
             ).map { it.rotate(a) + pl }, true
         )
 
@@ -81,16 +90,17 @@ object RoadCad {
         )
 
         //Верхняя крышка
-        val wd = w - drr
-        val wrr = w - state.drl - drr
-        val tp1 = Vec2(state.drl, boardHeight)
-        val tp2 = Vec2(state.drl, rp.width - boardHeight)
+        val wd = w - dr
+        val wrr = w - dl - dr
+        val tp1 = Vec2(dl, boardHeight)
+        val tp2 = Vec2(dl, rp.width - boardHeight)
         val tp4 = Vec2(wd, boardHeight)
         val tp3 = Vec2(wd, rp.width - boardHeight)
 
+        // Уменьшить отступы на ширину на которую уменьшина ширина крышки
         val li = LineInfo(
-            drawInfo.lineInfo.startOffset - state.drl,
-            drawInfo.lineInfo.endOffset - drr
+            drawInfo.lineInfo.startOffset - dl,
+            drawInfo.lineInfo.endOffset - dr
         )
 
         outResult.topFigures +=
@@ -113,9 +123,9 @@ object RoadCad {
                 )
             )
         return RoadCadState(
-            drl = drr,
-            tt = state.tt + Vec2(w, 0.0)
-        )
+            drl = if (longLine.nextLongStart) uss else drrv,
+            tt = state.tt + Vec2(w, 0.0),
+         )
     }
 
     private fun boardOtstup(
@@ -133,8 +143,38 @@ object RoadCad {
         return drr
     }
 
-    fun build(line: FigurePolyline, rp: RoadProperties, ds: DrawerSettings): IFigure {
+    private fun boardUstup(
+        next: Vec2,
+        cur: Vec2,
+        pred: Vec2,
+        boardHeight: Double
+    ): Double {
+        val ang = Vec2.angle(next, cur, pred)
 
+        val drr = if (ang > 0.01 && ang <= Math.PI/2) {
+             boardHeight * cos(ang) / sin(ang)
+        } else if (ang > 0.01 && ang < Math.PI) {
+            val alpha = ang - Math.PI / 2
+            boardHeight * (1 - sin(alpha)) / cos(alpha)
+        } else 0.0
+        return drr
+    }
+
+    private fun boardUstupLong(
+        next: Vec2,
+        cur: Vec2,
+        pred: Vec2,
+        boardHeight: Double
+    ): Double {
+        val ang = Vec2.angle(next, cur, pred)
+
+        val drr = if (ang > 0.01 && ang <= Math.PI/2) {
+            boardHeight * cos(ang) / sin(ang)
+        } else 0.0
+        return drr
+    }
+
+    fun build(line: FigurePolyline, rp: RoadProperties, ds: DrawerSettings): IFigure {
         val dp = DrawingParam(
             reverse = false,
             back = false,
@@ -148,12 +188,11 @@ object RoadCad {
 
         val result: RoadCadResult = RoadCadResult()
 
-        val h = ds.boardWeight
+        val h = abs( ds.boardWeight)
 
         if (line.isClose() && lpoints.size < 3) {
             return FigureEmpty
         }
-
 
         if (!line.isClose() && rp.startHeight > 0.0) {
             result += FigureLine(Vec2.Zero, lpoints.first())
@@ -196,11 +235,26 @@ object RoadCad {
 
         var pl = lpoints.first()
         val lp = lpoints.drop(1)
-        var state = RoadCadState(
-            drl = if (line.isClose()) boardOtstup(lp[0], pl, lp[lp.size - 2], h)
-            else boardOtstup(lp[0], pl, Vec2(pl.x, 0.0), h),
-            tt = Vec2(0.0, h * 2)
+
+        val (aa,b, c) = if (line.isClose()) Triple(lp[0], pl, lp[lp.size - 2]) else Triple(lp[0], pl, Vec2(pl.x, 0.0))
+
+        val drrv = boardOtstup(aa, b, c, h)
+        val uss = boardUstupLong(aa, b, c, h)
+
+        var longLine = RoadLongLineState(
+            longStart = if (!line.isClose()) true else (isLongStart(rp)),
+            longEnd = isLongEnd(rp),
+            nextLongStart = isLongStart(rp),
+            lastLine = false,
         )
+
+        var state = RoadCadState(
+            drl = if (longLine.longStart) uss else drrv,
+            tt = Vec2(0.0, h * 2),
+        )
+
+        var isFirst = true
+
         lp.forEachIndexed { i, cur ->
             delp = max(delp, cur.y)
             delm = min(delm, cur.y)
@@ -211,6 +265,12 @@ object RoadCad {
                 if (line.isClose()) {
                     lp[0]
                 } else {
+                    longLine = RoadLongLineState(
+                        longStart = isLongStart(rp),
+                        longEnd = true,
+                        nextLongStart = true,
+                        lastLine = true,
+                    )
                     Vec2(cur.x, 0.0)
                 }
             }
@@ -221,8 +281,20 @@ object RoadCad {
                 rp,
                 drawInfo,
                 state,
+                longLine,
                 result
             )
+
+            if (isFirst){
+                longLine = RoadLongLineState(
+                    longStart = isLongStart(rp),
+                    longEnd = isLongEnd(rp),
+                    nextLongStart = isLongStart(rp),
+                    lastLine = false,
+                )
+                isFirst = false
+            }
+
 
             pl = cur
 
@@ -248,6 +320,12 @@ object RoadCad {
             res + tops +sim
         )
     }
+
+    private fun isLongEnd(rp: RoadProperties) =
+        rp.connectStyle == EBoardConnectStyle.NONE || rp.connectStyle == EBoardConnectStyle.LONG_SECOND
+
+    private fun isLongStart(rp: RoadProperties) =
+        rp.connectStyle == EBoardConnectStyle.NONE || rp.connectStyle == EBoardConnectStyle.LONG_FIRST
 
     private fun outTopFigures(
         result: RoadCadResult,
@@ -365,15 +443,6 @@ object RoadCad {
     val BACK = 2
 }
 
-class RoadProperties(
-    val width: Double,
-    val startHeight: Double,
-    val count: Int,
-    val outStyle: EOutVariant,
-    val zigzagInfo: ZigzagInfo,
-
-    )
-
 class FigureCoord(
     val position: Vec2,
     val rotateX: Double,
@@ -388,8 +457,8 @@ class RoadDrawInfo(
     val simpleZigZag: (ZigzagInfo, Boolean) -> IFigure
 ) {
     val lineInfo = LineInfo(
-        startOffset = ds.boardWeight,
-        endOffset = ds.boardWeight,
+        startOffset = abs(ds.boardWeight),
+        endOffset =  abs(ds.boardWeight),
     )
 
     val ziIn = zihe.copy(
@@ -432,4 +501,11 @@ class RoadCadResult {
 class RoadCadState(
     val drl: Double,
     val tt: Vec2,
+)
+
+class RoadLongLineState(
+    val longStart:Boolean,
+    val longEnd: Boolean,
+    val nextLongStart:Boolean,
+    val lastLine: Boolean,
 )

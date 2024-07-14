@@ -1,9 +1,9 @@
 package com.kos.boxdrawer.detal.splash
 
 import com.kos.boxdrawer.detal.box.BoxAlgorithm
-import com.kos.boxdrawer.detal.box.BoxCad
 import com.kos.figure.FigurePolyline
 import com.kos.figure.composition.FigureTranslate
+import turtoise.BlockTortoiseReader
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
@@ -18,7 +18,7 @@ class SplashRoad() : ISplashDetail {
         get() = listOf("road")
 
     override fun help(): HelpData = HelpData(
-        "road (figure) (w h) (zw zd zh) (v)",
+        "road (figure) (w h) (zw zd zh) (ve) (ds)",
         "Построить дорогу"
     )
 
@@ -35,23 +35,40 @@ class SplashRoad() : ISplashDetail {
                     val a = com.takeBlock(2)
                     val zig = com.takeBlock(3)
                     val st = com.takeBlock(4)
+                    val dcc = com.takeBlock(5)
+                    val ds = BlockTortoiseReader.readDrawerSettings(
+                        dcc,
+                        figureExtractor.memory,
+                        figureExtractor.ds
+                    )
+                    val stl = st?.innerLine.orEmpty()+"   "
+
                     builder.addProduct(
                         FigureTranslate(
                             RoadCad.build(
-                                f,
-                                RoadProperties(
-                                    width = figureExtractor.valueAt(a,0, 10.0) ,
-                                    startHeight = figureExtractor.valueAt(a,1, 10.0),
+                                line = f,
+                                rp = RoadProperties(
+                                    width = figureExtractor.valueAt(a, 0, 10.0),
+                                    startHeight = figureExtractor.valueAt(a, 1, 10.0),
                                     count = 2, //com.take(4, 2.0, figureExtractor.memory).toInt(),
-                                    outStyle = BoxAlgorithm.parseOutVariant(st?.innerLine),
+                                    outStyle = BoxAlgorithm.parseOutVariant(
+                                        stl.substring(0,1)
+                                    ),
                                     zigzagInfo = ZigzagInfo(
-                                        width = figureExtractor.valueAt(zig,0, 15.0),
-                                        delta = figureExtractor.valueAt(zig,1, 35.0),
-                                        height = figureExtractor.valueAt(zig,2, figureExtractor.ds.boardWeight),
+                                        width = figureExtractor.valueAt(zig, 0, 15.0),
+                                        delta = figureExtractor.valueAt(zig, 1, 35.0),
+                                        height = figureExtractor.valueAt(
+                                            zig,
+                                            2,
+                                            ds.boardWeight,
+                                        ),
                                         fromCorner = true,
-                                    )
+                                    ),
+                                    connectStyle = BoxAlgorithm.parseConnectVariant(
+                                        stl.substring(1,2)
+                                    ),
                                 ),
-                                figureExtractor.ds
+                                ds = ds
                             ), acc
                         ),
                     )

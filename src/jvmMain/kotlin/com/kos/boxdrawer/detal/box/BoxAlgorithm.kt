@@ -13,6 +13,7 @@ import turtoise.parser.TortoiseParserStackItem
 import turtoise.ZigzagInfo
 import turtoise.memory.keys.MemoryKey
 import turtoise.memory.TortoiseMemory
+import turtoise.road.EBoardConnectStyle
 
 class BoxAlgorithm(
     val boxInfo: BoxInfo,
@@ -127,6 +128,16 @@ class BoxAlgorithm(
                 "c" -> BoxCad.EOutVariant.COLUMN
                 "v" -> BoxCad.EOutVariant.VOLUME
                 else -> BoxCad.EOutVariant.ALTERNATIVE
+            }
+        }
+
+        fun parseConnectVariant(text: String?): EBoardConnectStyle {
+            return when (text?.lowercase()) {
+                "e" -> EBoardConnectStyle.EQUAL
+                "f" -> EBoardConnectStyle.LONG_FIRST
+                "s" -> EBoardConnectStyle.LONG_SECOND
+                "n" -> EBoardConnectStyle.NONE
+                else -> EBoardConnectStyle.EQUAL
             }
         }
 
