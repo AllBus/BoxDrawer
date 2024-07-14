@@ -18,7 +18,7 @@ class SplashRoad() : ISplashDetail {
         get() = listOf("road")
 
     override fun help(): HelpData = HelpData(
-        "road (figure) w h v",
+        "road (figure) (w h) (zw zd zh) (v)",
         "Построить дорогу"
     )
 
