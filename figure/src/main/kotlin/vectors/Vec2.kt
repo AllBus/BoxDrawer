@@ -120,7 +120,7 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
                 Vec2.Zero
             } else {
                 val ba = (b - a) / d
-                Vec2(-ba.y, ba.x)
+                Vec2(ba.y, -ba.x)
             }
         }
 

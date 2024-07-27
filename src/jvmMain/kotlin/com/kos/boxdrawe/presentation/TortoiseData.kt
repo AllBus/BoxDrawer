@@ -3,6 +3,7 @@ package com.kos.boxdrawe.presentation
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Matrix
+import androidx.compose.ui.res.useResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -19,8 +20,9 @@ import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
 import turtoise.parser.TortoiseParser
+import java.io.File
 
-class TortoiseData(override val tools: ITools) : SaveFigure {
+class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
     val figures = MutableStateFlow<IFigure>(FigureEmpty)
     val fig = mutableStateOf<IFigure>(FigureEmpty)
     val helpText = mutableStateOf(AnnotatedString(""))
@@ -199,6 +201,24 @@ class TortoiseData(override val tools: ITools) : SaveFigure {
         m.rotateY(y)
         m.rotateZ(z)
         matrix.value = m
+    }
+
+    override fun saveState() {
+        try {
+            File("settings/tortoise.txt").bufferedWriter(Charsets.UTF_8).use { output ->
+                val lines = text.value.text
+                output.write(lines)
+                output.flush()
+            }
+        }catch (_:Exception){}
+    }
+
+    override fun loadState() {
+        try {
+            File("settings/tortoise.txt").bufferedReader(Charsets.UTF_8).use { output ->
+                text.value = text.value.copy( output.readText())
+            }
+        }catch (_:Exception){}
     }
 
 }

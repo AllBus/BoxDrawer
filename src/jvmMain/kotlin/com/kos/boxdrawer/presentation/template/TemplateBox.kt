@@ -22,6 +22,7 @@ import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.TemplateGeneratorListener
+import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.boxdrawer.template.TemplateItem
 import com.kos.boxdrawer.template.TemplateItemAngle
@@ -99,6 +100,72 @@ fun TemplateFormBox(
 }
 
 @Composable
+fun TemplateSimpleItemBox(
+    item: TemplateItem,
+    inner: TortoiseParserStackItem?,
+    newPrefix: String,
+    templateGenerator: TemplateGeneratorSimpleListener,
+) {
+    when (item) {
+        is TemplateItemNumeric -> TemplateNumericBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemAngle -> TemplateAngleBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemSize -> TemplateSizeBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemRect -> TemplateRectBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemTriple -> TemplateTripleBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemInt -> TemplateIntBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemString -> TemplateStringBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+
+        is TemplateItemCheck -> TemplateCheckBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+    }
+}
+
+@Composable
 fun TemplateItemBox(
     item: TemplateItem,
     block: TortoiseParserStackItem?,
@@ -119,71 +186,25 @@ fun TemplateItemBox(
                     isEdit = isEdit,
                 )
 
-                is TemplateItemNumeric -> TemplateNumericBox(
-                    form = item,
-                    block = inner,
-                    prefix = newPrefix,
-                    templateGenerator = templateGenerator
-                )
-
-                is TemplateItemAngle -> TemplateAngleBox(
-                    form = item,
-                    block = inner,
-                    prefix = newPrefix,
-                    templateGenerator = templateGenerator
-                )
-
-                is TemplateItemSize -> TemplateSizeBox(
-                    form = item,
-                    block = inner,
-                    prefix = newPrefix,
-                    templateGenerator = templateGenerator
-                )
-
-                is TemplateItemRect -> TemplateRectBox(
-                    form = item,
-                    block = inner,
-                    prefix = newPrefix,
-                    templateGenerator = templateGenerator
-                )
-
-                is TemplateItemTriple -> TemplateTripleBox(
-                    form = item,
-                    block = inner,
-                    prefix = newPrefix,
-                    templateGenerator = templateGenerator
-                )
-
-                is TemplateItemInt -> TemplateIntBox(
-                    form = item,
-                    block = inner,
-                    prefix = newPrefix,
-                    templateGenerator = templateGenerator
-                )
-
-                is TemplateItemString -> TemplateStringBox(
-                    form = item,
-                    block = inner,
-                    prefix = newPrefix,
-                    templateGenerator = templateGenerator
-                )
-
-                is TemplateItemCheck -> TemplateCheckBox(
-                    form = item,
-                    block = inner,
-                    prefix = newPrefix,
-                    templateGenerator = templateGenerator
-                )
-
                 is TemplateItemLabel -> TemplateLabelBox(form = item)
-
                 is TemplateItemMulti -> TemplateItemMultiBox(
                     form = item,
                     block = inner,
                     prefix = newPrefix,
                     templateGenerator = templateGenerator,
                 )
+
+                else -> {
+                    TemplateSimpleItemBox(
+                        item,
+                        inner,
+                        newPrefix,
+                        templateGenerator
+                    )
+                }
             }
+
+
         }
         if (isEdit) {
             TemplateFormEditRemove(

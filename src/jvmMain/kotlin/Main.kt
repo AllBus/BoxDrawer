@@ -72,6 +72,7 @@ fun calcZoom(value: Float): Float {
 
 fun main(args: Array<String>) {
 
+  //  val component = DaggerAppComponent.builder()
     val viewModel = DrawerViewModel()
     application {
         try {
@@ -82,7 +83,10 @@ fun main(args: Array<String>) {
         val model = remember { mutableStateOf(viewModel) }
 
         Window(
-            onCloseRequest = ::exitApplication,
+            onCloseRequest = {
+                model.value.saveState()
+                exitApplication()
+            },
             icon = painterResource( "drawable/robot.ico"),
             title = stringResource(Res.string.app_name),
         ) {

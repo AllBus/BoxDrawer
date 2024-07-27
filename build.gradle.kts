@@ -97,11 +97,13 @@ kotlin {
             implementation("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}")
             implementation("org.locationtech.jts:jts-core:1.19.0")
             implementation("io.github.windedge.table:table-m3:0.1.8")
-
+            implementation( "com.google.dagger:dagger:2.51.1")
+            compileOnly( "com.google.dagger:dagger-compiler:2.51.1")
+            compileOnly( "com.google.dagger:dagger-compiler:2.51.1")
             implementation(project(":figure"))
             implementation(project(":dxfprinter"))
             implementation(project(":commonMain"))
-
+         //   implementation("androidx.compose.material3:material3:1.2.1")
 
             // implementation("com.groupdocs:groupdocs-comparison:22.3")
         }

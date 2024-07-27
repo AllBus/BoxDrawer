@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawer.template.TemplateGeneratorListener
+import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItem
 import turtoise.parser.TortoiseParserStackItem
 
@@ -13,7 +14,7 @@ fun TemplateCheckBox(
     form: TemplateItem,
     block: TortoiseParserStackItem?,
     prefix: String,
-    templateGenerator: TemplateGeneratorListener
+    templateGenerator: TemplateGeneratorSimpleListener
 ) {
     val checkState = remember("$prefix") {
         mutableStateOf(

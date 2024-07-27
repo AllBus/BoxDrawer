@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import com.kos.boxdrawer.template.TemplateGeneratorListener
+import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItem
 import turtoise.parser.TortoiseParserStackItem
 
@@ -19,7 +20,7 @@ fun TemplateStringBox(
     form: TemplateItem,
     block: TortoiseParserStackItem?,
     prefix: String,
-    templateGenerator: TemplateGeneratorListener
+    templateGenerator: TemplateGeneratorSimpleListener
 ) {
     val text = remember("$prefix") {
         mutableStateOf(

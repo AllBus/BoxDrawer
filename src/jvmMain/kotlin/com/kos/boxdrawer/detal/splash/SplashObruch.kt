@@ -1,10 +1,12 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.figure.collections.FigureList
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 
 class SplashObruch:ISplashDetail {
     override val names: List<String>
@@ -12,7 +14,19 @@ class SplashObruch:ISplashDetail {
 
     override fun help(): HelpData =  HelpData(
         "o (figure) h+",
-        "Нарисовать фигуру сдвунутую на h от текущей фигуры"
+        "Нарисовать фигуру сдвунутую на h от текущей фигуры",
+        listOf(
+            HelpDataParam(
+                "figure",
+                "Фигура",
+                FIELD_FIGURE
+            ),
+            HelpDataParam(
+                "h",
+                ""
+            ),
+
+        )
     )
 
     override fun draw(

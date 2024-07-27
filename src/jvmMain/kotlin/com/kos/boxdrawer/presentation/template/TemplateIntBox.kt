@@ -9,6 +9,7 @@ import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawer.template.TemplateGeneratorListener
+import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItem
 import turtoise.parser.TortoiseParserStackItem
 
@@ -17,7 +18,7 @@ fun TemplateIntBox(
     form: TemplateItem,
     block: TortoiseParserStackItem?,
     prefix: String,
-    templateGenerator: TemplateGeneratorListener
+    templateGenerator: TemplateGeneratorSimpleListener
 ) {
     val input =
         remember(prefix) {

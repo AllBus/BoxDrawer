@@ -7,6 +7,7 @@ import com.kos.boxdrawer.detal.splash.SplashDiamondAngle
 import com.kos.boxdrawer.detal.splash.SplashDrop
 import com.kos.boxdrawer.detal.splash.SplashEdit
 import com.kos.boxdrawer.detal.splash.SplashLine
+import com.kos.boxdrawer.detal.splash.SplashNormal
 import com.kos.boxdrawer.detal.splash.SplashObruch
 import com.kos.boxdrawer.detal.splash.SplashParallelogram
 import com.kos.boxdrawer.detal.splash.SplashPaz
@@ -40,7 +41,8 @@ object SplashMap {
         SplashDiamond(),
         SplashDiamondAngle(),
         SplashParallelogram(),
-        SplashRoad()
+        SplashRoad(),
+        SplashNormal(),
     )
     val splashes: Map<String, ISplashDetail> = splashList.flatMap { s -> s.names.map { it to s } }.toMap()
 }

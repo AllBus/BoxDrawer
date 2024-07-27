@@ -1,6 +1,7 @@
 package com.kos.boxdrawer.detal.splash
 
 import com.kos.boxdrawer.detal.box.BoxAlgorithm
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.figure.FigurePolyline
 import com.kos.figure.composition.FigureTranslate
 import turtoise.BlockTortoiseReader
@@ -9,6 +10,7 @@ import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.ZigzagInfo
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 import turtoise.road.RoadCad
 import turtoise.road.RoadProperties
 import vectors.Vec2
@@ -19,7 +21,42 @@ class SplashRoad() : ISplashDetail {
 
     override fun help(): HelpData = HelpData(
         "road (figure) (w h) (zw zd zh) (ve) (ds)",
-        "Построить дорогу"
+        "Построить дорогу",
+        listOf(
+            HelpDataParam(
+                "figure",
+                "Фигура",
+                FIELD_FIGURE
+            ),
+            HelpDataParam(
+                "w",
+                ""
+            ),
+            HelpDataParam(
+                "h",
+                ""
+            ),
+            HelpDataParam(
+                "zw",
+                ""
+            ),
+            HelpDataParam(
+                "zd",
+                ""
+            ),
+            HelpDataParam(
+                "zh",
+                ""
+            ),
+            HelpDataParam(
+                "ve",
+                ""
+            ),
+            HelpDataParam(
+                "ds",
+                ""
+            ),
+        )
     )
 
     override fun draw(

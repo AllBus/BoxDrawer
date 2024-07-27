@@ -1,9 +1,11 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 import vectors.Vec2
 
 class SplashEdit : ISplashDetail {
@@ -12,7 +14,30 @@ class SplashEdit : ISplashDetail {
 
     override fun help(): HelpData = HelpData(
         "edit (figure) (m x y a)* (r e+)",
-        "Редактировать фигуру"
+        "Редактировать фигуру",
+        listOf(
+            HelpDataParam(
+                "figure",
+                "Фигура",
+                FIELD_FIGURE
+            ),
+            HelpDataParam(
+                "x",
+                ""
+            ),
+            HelpDataParam(
+                "y",
+                ""
+            ),
+            HelpDataParam(
+                "a",
+                ""
+            ),
+            HelpDataParam(
+                "e",
+                ""
+            ),
+        )
     )
 
     override fun draw(

@@ -1,9 +1,11 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 
 class SplashLine: ISplashDetail {
     override val names: List<String>
@@ -11,7 +13,18 @@ class SplashLine: ISplashDetail {
 
     override fun help(): HelpData =  HelpData(
         "line (x y)+",
-        "Нарисовать линию задавая сдвиг относительно предудыщей точки"
+        "Нарисовать линию задавая сдвиг относительно предудыщей точки",
+        listOf(
+
+            HelpDataParam(
+                "x",
+                ""
+            ),
+            HelpDataParam(
+                "y",
+                ""
+            ),
+        )
     )
 
     override fun draw(

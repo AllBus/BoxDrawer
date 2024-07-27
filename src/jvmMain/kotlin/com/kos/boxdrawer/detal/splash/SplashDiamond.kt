@@ -1,10 +1,14 @@
 package com.kos.boxdrawer.detal.splash
 
-import com.kos.figure.FigurePolyline
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.cos
@@ -19,7 +23,17 @@ class SplashDiamond : ISplashDetail {
 
     override fun help(): HelpData = HelpData(
         "diamond dx dy",
-        "Построить ромб по двум диагоналям"
+        "Построить ромб по двум диагоналям",
+                listOf(
+                    HelpDataParam(
+                        "dx",
+                        "Диагональ по оси x", FIELD_2
+                    ),
+                    HelpDataParam(
+                        "dy",
+                        "Диагональ по оси y", FIELD_NONE
+                    ),
+                )
     )
 
     override fun draw(
@@ -52,7 +66,17 @@ class SplashDiamondAngle : ISplashDetail {
 
     override fun help(): HelpData = HelpData(
         "diamond_angle d a",
-        "Построить ромб по стороне и углу"
+        "Построить ромб по стороне и углу",
+        listOf(
+            HelpDataParam(
+                "d",
+                "Сторона", FIELD_1
+            ),
+            HelpDataParam(
+                "a",
+                "Угол", FIELD_ANGLE
+            ),
+        )
     )
 
     override fun draw(
@@ -84,7 +108,21 @@ class SplashParallelogram : ISplashDetail {
 
     override fun help(): HelpData = HelpData(
         "par d a b",
-        "Построить ромб по двум сторонам углу между ними"
+        "Построить параллелограмм по двум сторонам углу между ними",
+        listOf(
+            HelpDataParam(
+                "d",
+                "Сторона", FIELD_1
+            ),
+            HelpDataParam(
+                "a",
+                "Угол", FIELD_ANGLE
+            ),
+            HelpDataParam(
+                "b",
+                "Сторона", FIELD_1
+            ),
+        )
     )
 
     override fun draw(

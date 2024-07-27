@@ -11,7 +11,7 @@ interface SaveFigure {
 
     val tools: ITools
 
-    suspend  fun save(fileName: String) {
+    suspend fun save(fileName: String) {
         tools.saveFigures(File(fileName), createFigure())
         tools.updateChooserDir(fileName)
     }
@@ -21,4 +21,6 @@ interface SaveFigure {
         tools.saveFigures(tmp, createFigure())
         return FigureTransferable(tmp)
     }
+
+
 }

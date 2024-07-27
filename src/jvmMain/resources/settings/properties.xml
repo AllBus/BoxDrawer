@@ -4,8 +4,8 @@
         <DrawerSettings
                 boardWeight="3.0"
                 holeWeight="2.8"
-                zigDrop="0.3"
-                holeDrop="0.3"
+                zigDrop="0.4"
+                holeDrop="0.4"
                 holeDropHeight="0.0"
                 holeOffset="2.0"
                 name="3mm 2/2"
@@ -23,8 +23,8 @@
       <DrawerSettings
               boardWeight="4.0"
               holeWeight="3.8"
-              zigDrop="0.3"
-              holeDrop="0.3"
+              zigDrop="0.4"
+              holeDrop="0.4"
               holeDropHeight="0.0"
               holeOffset="2.0"
               name="4mm 2/2"

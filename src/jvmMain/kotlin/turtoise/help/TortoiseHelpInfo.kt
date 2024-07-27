@@ -1,6 +1,14 @@
 package turtoise.help
 
 import androidx.compose.ui.text.AnnotatedString
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_3
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
 import turtoise.SplashMap
 import turtoise.TortoiseCommand
 import turtoise.parser.TortoiseParser
@@ -15,8 +23,8 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
         )
     }
 
-    fun helpName(text: Char, args: List<HelpData>): HelpInfoCommand {
-        return HelpInfoCommand("$text", args)
+    fun helpName(text: Char, args: List<HelpData>, description:String = ""): HelpInfoCommand {
+        return HelpInfoCommand("$text", args, description)
     }
 
     override val name: String = ""
@@ -29,11 +37,11 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "x y a xa ya",
                     "переместить позицию относительно текущей",
                     listOf(
-                        HelpDataParam("x", "расстояние по оси x"),
-                        HelpDataParam("y", "расстояние по оси y"),
-                        HelpDataParam("a", "поворот в градусах"),
-                        HelpDataParam("xa", "расстояние по оси x после поворота"),
-                        HelpDataParam("ya", "расстояние по оси y после поворота"),
+                        HelpDataParam("x", "расстояние по оси x", FIELD_2),
+                        HelpDataParam("y", "расстояние по оси y", FIELD_NONE),
+                        HelpDataParam("a", "поворот в градусах", FIELD_ANGLE),
+                        HelpDataParam("xa", "расстояние по оси x после поворота", FIELD_2),
+                        HelpDataParam("ya", "расстояние по оси y после поворота", FIELD_NONE),
                     )
                 )
             )
@@ -45,8 +53,8 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "x y",
                     "поставить позицию в указанных координатах",
                     listOf(
-                        HelpDataParam("x", "координата по оси x"),
-                        HelpDataParam("y", "координата по оси y"),
+                        HelpDataParam("x", "координата по оси x", FIELD_2),
+                        HelpDataParam("y", "координата по оси y", FIELD_NONE),
                     )
                 )
             )
@@ -58,15 +66,15 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "a",
                     "повернуть направление движение на угол a",
                     listOf(
-                        HelpDataParam("a", "угол в градусах"),
+                        HelpDataParam("a", "угол в градусах", FIELD_ANGLE),
                     )
                 ),
                 HelpData(
                     "x y",
                     "повернуть направление движение в направлении радиус-вектора x y",
                     listOf(
-                        HelpDataParam("x", "координата радиус-вектора по оси x"),
-                        HelpDataParam("y", "координата радиус-вектора расстояние по оси y"),
+                        HelpDataParam("x", "координата радиус-вектора по оси x", FIELD_2),
+                        HelpDataParam("y", "координата радиус-вектора расстояние по оси y", FIELD_NONE),
                     )
                 )
             )
@@ -78,15 +86,15 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "a",
                     "повернуть направление движение относительно текущего угла на угол a",
                     listOf(
-                        HelpDataParam("a", "угол в градусах"),
+                        HelpDataParam("a", "угол в градусах", FIELD_ANGLE),
                     )
                 ),
                 HelpData(
                     "x y",
                     "повернуть направление движение относительно текущего угла на направлении радиус-вектора x y",
                     listOf(
-                        HelpDataParam("x", "координата радиус-вектора по оси x"),
-                        HelpDataParam("y", "координата радиус-вектора расстояние по оси y"),
+                        HelpDataParam("x", "координата радиус-вектора по оси x", FIELD_2),
+                        HelpDataParam("y", "координата радиус-вектора расстояние по оси y", FIELD_NONE),
                     )
                 )
             )
@@ -113,7 +121,8 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         HelpDataParam("d", "Длина прямой"),
                     )
                 )
-            )
+            ),
+            "Прямая линия"
         ),
         helpName(
             TortoiseCommand.TURTOISE_POLYLINE,
@@ -122,8 +131,8 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "x y +",
                     "Построение полилинии по координатам относительно текущей",
                     listOf(
-                        HelpDataParam("x", "координата точки угла по оси x"),
-                        HelpDataParam("y", "координата точки угла по оси y"),
+                        HelpDataParam("x", "координата точки угла по оси x", FIELD_2),
+                        HelpDataParam("y", "координата точки угла по оси y", FIELD_NONE),
                     )
                 )
             )
@@ -136,10 +145,11 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "Построение полилинии задаётся длина линии и угол между ними",
                     listOf(
                         HelpDataParam("d", "Длина стороны"),
-                        HelpDataParam("a", "Угол поворта для следующей стороны"),
+                        HelpDataParam("a", "Угол поворта для следующей стороны", FIELD_ANGLE),
                     )
                 )
-            )
+            ),
+            "Построение полилинии"
         ),
         helpName(
             TortoiseCommand.TURTOISE_VERTICAL,
@@ -151,7 +161,9 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         HelpDataParam("y", "Длина линии"),
                     )
                 )
-            )
+            ),
+            "вертикальная прямая"
+
         ),
         helpName(
             TortoiseCommand.TURTOISE_HORIZONTAL,
@@ -163,7 +175,8 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         HelpDataParam("x", "Длина линии"),
                     )
                 )
-            )
+            ),
+            "горизонтальная прямая"
 
         ),
         helpName(
@@ -174,11 +187,12 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "круг радиуса r",
                     listOf(
                         HelpDataParam("r", "радиус"),
-                        HelpDataParam("sa", "Задаёт начало дуги в градусах"),
-                        HelpDataParam("wa", "Задаёт длину дуги в градусах"),
+                        HelpDataParam("sa", "Задаёт начало дуги в градусах", FIELD_ANGLE),
+                        HelpDataParam("wa", "Задаёт длину дуги в градусах", FIELD_ANGLE),
                     )
                 )
-            )
+            ),
+            "круг"
         ),
         helpName(
             TortoiseCommand.TURTOISE_ELLIPSE,
@@ -187,13 +201,14 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "rx ry (sa wa)*",
                     "эллипс с радиусами rx и ry",
                     listOf(
-                        HelpDataParam("rx", "радиус по оси x"),
-                        HelpDataParam("ry", "радиус по оси y"),
-                        HelpDataParam("sa", "Задаёт начало дуги в градусах"),
-                        HelpDataParam("wa", "Задаёт длину дуги в градусах"),
+                        HelpDataParam("rx", "радиус по оси x", FIELD_2),
+                        HelpDataParam("ry", "радиус по оси y", FIELD_NONE),
+                        HelpDataParam("sa", "Задаёт начало дуги в градусах", FIELD_ANGLE),
+                        HelpDataParam("wa", "Задаёт длину дуги в градусах", FIELD_ANGLE),
                     )
                 )
-            )
+            ),
+            "эллипс"
         ),
         helpName(
             TortoiseCommand.TURTOISE_ARC,
@@ -206,11 +221,12 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                             "r",
                             "радиус дуги, если отрицательный то закруглении в другом направлении"
                         ),
-                        HelpDataParam("angle", "угол дуги"),
+                        HelpDataParam("angle", "угол дуги", FIELD_ANGLE),
                         HelpDataParam("circle", "Добавить окружность в центре дуги"),
                     )
                 )
-            )
+            ),
+            "Дуга"
         ),
 
 
@@ -221,11 +237,12 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "w h?",
                     "Прямоугольник шириной w и высотой h. Если h не задан, то квадрат",
                     listOf(
-                        HelpDataParam("w", "Ширина прямоугольника"),
-                        HelpDataParam("h", "Высота прямоугольника. Если не задан, то квадрат"),
+                        HelpDataParam("w", "Ширина прямоугольника", FIELD_2),
+                        HelpDataParam("h", "Высота прямоугольника. Если не задан, то квадрат", FIELD_NONE),
                     )
                 )
-            )
+            ),
+            "Прямоугольник"
         ),
         helpName(
             TortoiseCommand.TURTOISE_ROUND_RECTANGLE,
@@ -234,25 +251,27 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "w h r",
                     "Прямоугольник шириной w и высотой h cо скруглённми углами радиуса r",
                     listOf(
-                        HelpDataParam("w", "Ширина прямоугольника"),
-                        HelpDataParam("h", "Высота прямоугольника"),
+                        HelpDataParam("w", "Ширина прямоугольника", FIELD_2),
+                        HelpDataParam("h", "Высота прямоугольника", FIELD_NONE),
                         HelpDataParam("r", "радиус кругления углов"),
                     )
                 )
-            )
+            ),
+            "Прямоугольник cо скруглённми углами"
         ),
         helpName(
             TortoiseCommand.TURTOISE_REGULAR_POLYGON,
             listOf(
                 HelpData(
                     "n r",
-                    "Многоугольник радиуса r с числом сторон n",
+                    "Правильный многоугольник радиуса r с числом сторон n",
                     listOf(
-                        HelpDataParam("n", "числом сторон"),
+                        HelpDataParam("n", "числом сторон", FIELD_INT),
                         HelpDataParam("r", "радиус"),
                     )
                 )
-            )
+            ),
+            "Правильный многоугольник"
         ),
         helpName(
             TortoiseCommand.TURTOISE_ZIGZAG,
@@ -322,26 +341,27 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "(@program args?)",
                     "Рисовать фигуру которая записана в строке начинающейся с @program\n",
                     listOf(
-                        HelpDataParam("@program", "название програмы рисования фигур"),
+                        HelpDataParam("@program", "название програмы рисования фигур", FIELD_FIGURE),
                         HelpDataParam(
                             "args",
-                            "ноль или несколько значений которые передаются фигуре\n каждое значение записывается как (name value) где"
+                            "ноль или несколько значений которые передаются фигуре\n каждое значение записывается как (name value) где", FIELD_NONE
                         ),
                         HelpDataParam(
                             "name",
-                            "название переменной обращение в описании фиугры к которой происходит через ."
+                            "название переменной обращение в описании фиугры к которой происходит через .", FIELD_NONE
                         ),
-                        HelpDataParam("value", "значение подставляемое всместо переменной"),
+                        HelpDataParam("value", "значение подставляемое всместо переменной", FIELD_NONE),
                     )
                 ),
                 HelpData(
                     "(tortoise)",
                     "Рисовать фигуру которая записана в строке по правилам черепашки",
                     listOf(
-                        HelpDataParam("tortoise", "Строка черепашьих команд"),
+                        HelpDataParam("tortoise", "Строка черепашьих команд", FIELD_TEXT),
                     )
                 )
-            )
+            ),
+            "Фигура"
         ),
         helpName(
             TortoiseCommand.TURTOISE_IF_FIGURE,
@@ -352,18 +372,18 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam(
                             "expression",
-                            "Если значение вычисления выражение больше 0.0 будет рисовать фигуру иначе нет"
+                            "Если значение вычисления выражение больше 0.0 будет рисовать фигуру иначе нет", FIELD_TEXT
                         ),
-                        HelpDataParam("@program", "название програмы рисования фигур"),
+                        HelpDataParam("@program", "название програмы рисования фигур", FIELD_FIGURE),
                         HelpDataParam(
                             "args",
-                            "ноль или несколько значений которые передаются фигуре\n каждое значение записывается как (name value) где"
+                            "ноль или несколько значений которые передаются фигуре\n каждое значение записывается как (name value) где", FIELD_NONE
                         ),
                         HelpDataParam(
                             "name",
-                            "название переменной обращение в описании фиугры к которой происходит через ."
+                            "название переменной обращение в описании фиугры к которой происходит через .", FIELD_NONE
                         ),
-                        HelpDataParam("value", "значение подставляемое всместо переменной"),
+                        HelpDataParam("value", "значение подставляемое всместо переменной", FIELD_NONE),
                     )
                 ),
                 HelpData(
@@ -372,12 +392,13 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam(
                             "expression",
-                            "Если значение вычисления выражение больше 0.5 будет рисовать фигуру иначе нет"
+                            "Если значение вычисления выражение больше 0.5 будет рисовать фигуру иначе нет", FIELD_TEXT
                         ),
-                        HelpDataParam("tortoise", "Строка черепашьих команд"),
+                        HelpDataParam("tortoise", "Строка черепашьих команд", FIELD_TEXT),
                     )
                 )
-            )
+            ),
+            "Условие для рисования фигуры"
         ),
         helpName(
             TortoiseCommand.TURTOISE_GROUP,
@@ -388,7 +409,7 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam(
                             "path",
-                            "Пуь в доль которого рисуем фигуры"
+                            "Пуь в доль которого рисуем фигуры", FIELD_FIGURE
                         ),
                         HelpDataParam("edge", "Номер стороны в путь path начинается с 0"),
                         HelpDataParam(
@@ -397,7 +418,7 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         ),
                         HelpDataParam(
                             "f",
-                            "Фиггура рисуемая в указанной позиции (здаётся по правилам рисования фигур)"
+                            "Фигура рисуемая в указанной позиции (здаётся по правилам рисования фигур)", FIELD_FIGURE
                         ),
                     )
                 ),
@@ -413,11 +434,11 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam(
                             "path",
-                            "фигура вдоль которой будут располагться другие фигуры"
+                            "фигура вдоль которой будут располагться другие фигуры", FIELD_FIGURE
                         ),
                         HelpDataParam(
                             "count",
-                            "Количество фигкур вдоль пути"
+                            "Количество фигкур вдоль пути", FIELD_INT
                         ),
                         HelpDataParam(
                             "distance",
@@ -429,27 +450,27 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         ),
                         HelpDataParam(
                             "angle",
-                            "Угол расположения элементов"
+                            "Угол расположения элементов", FIELD_ANGLE
                         ),
                         HelpDataParam(
                             "normal",
-                            "Располагать копии по нормали относительно к пути"
+                            "Располагать копии по нормали относительно к пути", FIELD_CHECK
                         ),
                         HelpDataParam(
                             "px",
-                            "Точка вращения копии по оси x"
+                            "Точка вращения копии по оси x", FIELD_2
                         ),
                         HelpDataParam(
                             "py",
-                            "Точка вращения копии по оси y"
+                            "Точка вращения копии по оси y", FIELD_NONE
                         ),
                         HelpDataParam(
                             "reverse",
-                            "Располагать копии в обратном порядке"
+                            "Располагать копии в обратном порядке", FIELD_CHECK
                         ),
                         HelpDataParam(
                             "figure",
-                            "Фигура, копии которой распологаются вдоль пути"
+                            "Фигура, копии которой распологаются вдоль пути", FIELD_FIGURE
                         ),
                     )
                 ),
@@ -457,7 +478,7 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "(tortoise)",
                     "Рисовать фигуру которая записана в строке по правилам черепашки",
                     listOf(
-                        HelpDataParam("tortoise", "Строка черепашьих команд"),
+                        HelpDataParam("tortoise", "Строка черепашьих команд", FIELD_TEXT),
                     )
                 )
             )
@@ -467,9 +488,13 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             listOf(
                 HelpData(
                     "c commands* <",
-                    "выполнить c раз команды между > <"
+                    "выполнить c раз команды между > <",
+                    listOf(
+                        HelpDataParam("c", "количество повторений", FIELD_INT)
+                    )
                 )
-            )
+            ),
+            "Повторение"
         ),
         helpName(
             TortoiseCommand.TURTOISE_MEMORY_ASSIGN,
@@ -478,11 +503,12 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "var arg*",
                     "присвоить переменной var сумму значений arg",
                     listOf(
-                        HelpDataParam("var", "Название переменной"),
-                        HelpDataParam("arg", "Значение которое будет сохранено в переменную"),
+                        HelpDataParam("var", "Название переменной", FIELD_TEXT),
+                        HelpDataParam("arg", "Значение которое будет сохранено в переменную", FIELD_TEXT),
                     )
                 )
-            )
+            ),
+            "Присвоение"
         ),
         helpName(
             '@',
@@ -490,7 +516,8 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                 HelpData(
                     "var", "подставить значение переменной var. Пишется слитно"
                 )
-            )
+            ),
+            "Подстановка значения переменной"
         ),
         helpName(
             TortoiseCommand.TURTOISE_UNION,
@@ -501,15 +528,16 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam(
                             "figure1",
-                            "Первый многоугольник для объединения"
+                            "Первый многоугольник для объединения", FIELD_FIGURE
                         ),
                         HelpDataParam(
                             "figure2",
-                            "Второй многоугольник для объединения"
+                            "Второй многоугольник для объединения", FIELD_FIGURE
                         ),
                     )
                 )
-            )
+            ),
+            "Объединение мнгогоугольников"
         ),
         helpName(
             TortoiseCommand.TURTOISE_INTERSECT,
@@ -520,15 +548,16 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam(
                             "figure1",
-                            "Первый многоугольник для пересечения"
+                            "Первый многоугольник для пересечения", FIELD_FIGURE
                         ),
                         HelpDataParam(
                             "figure2",
-                            "Второй многоугольник для пересечения"
+                            "Второй многоугольник для пересечения", FIELD_FIGURE
                         ),
                     )
                 )
-            )
+            ),
+            "Пересечение мнгогоугольников"
         ),
         helpName(
             TortoiseCommand.TURTOISE_DIFF,
@@ -539,15 +568,16 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam(
                             "figure1",
-                            "Первый многоугольник для разности"
+                            "Первый многоугольник для разности", FIELD_FIGURE
                         ),
                         HelpDataParam(
                             "figure2",
-                            "Второй многоугольник для разности"
+                            "Второй многоугольник для разности", FIELD_FIGURE
                         ),
                     )
                 )
-            )
+            ),
+            "Разность мнгогоугольников"
         ),
 
         helpName(
@@ -559,15 +589,16 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam(
                             "figure1",
-                            "Первый многоугольник для разности"
+                            "Первый многоугольник для разности", FIELD_FIGURE
                         ),
                         HelpDataParam(
                             "figure2",
-                            "Второй многоугольник для разности"
+                            "Второй многоугольник для разности", FIELD_FIGURE
                         ),
                     )
                 )
-            )
+            ),
+            "Симметричная разность мнгогоугольников"
         ),
         helpName(
             TortoiseCommand.TURTOISE_COLOR,
@@ -578,15 +609,16 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam(
                             "color",
-                            "Индекс цвета в таблице dxf"
+                            "Индекс цвета в таблице dxf", FIELD_INT
                         ),
                         HelpDataParam(
                             "figure",
-                            "Фигура рисуется по правилам фигур"
+                            "Фигура рисуется по правилам фигур", FIELD_FIGURE
                         ),
                     )
                 )
-            )
+            ),
+            "Цвет для фигуры"
         ),
 
         helpInfo3dTransform(),
@@ -605,23 +637,23 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                 listOf(
                     HelpDataParam(
                         "figure",
-                        "Фигура рисуется по правилам фигур"
+                        "Фигура рисуется по правилам фигур", FIELD_FIGURE
                     ),
                     HelpDataParam(
                         "c * *",
-                        "Количество повторений по оси x и дистанция"
+                        "Количество повторений по оси x и дистанция", FIELD_2
                     ),
                     HelpDataParam(
                         "r * *",
-                        "Количество повторений по оси y и дистанция"
+                        "Количество повторений по оси y и дистанция", FIELD_2
                     ),
                     HelpDataParam(
                         "s * *",
-                        "Масштабирование по осям x и y"
+                        "Масштабирование по осям x и y", FIELD_2
                     ),
                     HelpDataParam(
                         "m * *",
-                        "Начальная точка по осям x и y"
+                        "Начальная точка по осям x и y", FIELD_2
                     ),
                 )
             )
@@ -637,47 +669,47 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                 listOf(
                     HelpDataParam(
                         "figure",
-                        "Фигура рисуется по правилам фигур"
+                        "Фигура рисуется по правилам фигур", FIELD_FIGURE
                     ),
                     HelpDataParam(
                         "x",
-                        "Сдвиг по оси x до вращения"
+                        "Сдвиг по оси x до вращения", FIELD_3
                     ),
                     HelpDataParam(
                         "y",
-                        "Сдвиг по оси y до вращения"
+                        "Сдвиг по оси y до вращения", FIELD_NONE
                     ),
                     HelpDataParam(
                         "z",
-                        "Сдвиг по оси z до вращения"
+                        "Сдвиг по оси z до вращения", FIELD_NONE
                     ),
                     HelpDataParam(
                         "ax",
-                        "Поворот вокруг оси x в градусах"
+                        "Поворот вокруг оси x в градусах", FIELD_ANGLE
                     ),
                     HelpDataParam(
                         "ay",
-                        "Поворот вокруг оси y в градусах"
+                        "Поворот вокруг оси y в градусах", FIELD_ANGLE
                     ),
                     HelpDataParam(
                         "az",
-                        "Поворот вокруг оси z в градусах"
+                        "Поворот вокруг оси z в градусах", FIELD_ANGLE
                     ),
                     HelpDataParam(
                         "c * *",
-                        "Количество повторений по оси x и дистанция"
+                        "Количество повторений по оси x и дистанция", FIELD_2,
                     ),
                     HelpDataParam(
                         "r * *",
-                        "Количество повторений по оси y и дистанция"
+                        "Количество повторений по оси y и дистанция", FIELD_2,
                     ),
                     HelpDataParam(
                         "s * *",
-                        "Масштабирование по осям x и y"
+                        "Масштабирование по осям x и y", FIELD_2
                     ),
                     HelpDataParam(
                         "m * *",
-                        "Начальная точка по осям x и y"
+                        "Начальная точка по осям x и y", FIELD_2
                     ),
                 )
             )
@@ -689,15 +721,45 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
         listOf(
             HelpData(
                 "length (figure) (variable+)",
-                "поместить длину каждого пути figure в переменные variable"
+                "поместить длину каждого пути figure в переменные variable",
+                listOf(
+                    HelpDataParam(
+                        "figure",
+                        "Масштабирование по осям x и y", FIELD_FIGURE
+                    ),
+                    HelpDataParam(
+                        "variable",
+                        "Масштабирование по осям x и y", FIELD_TEXT
+                    ),
+                )
             ),
             HelpData(
                 "board (variable)",
-                "поместить толщину доски в переменную variable"
+                "поместить толщину доски в переменную variable",
+                listOf(
+                    HelpDataParam(
+                        "variable",
+                        "Масштабирование по осям x и y", FIELD_TEXT
+                    ),
+                )
             ),
             HelpData(
                 "pos (x y a)",
-                "поместить текущую позицию и поворот в переменные x y a соответственно"
+                "поместить текущую позицию и поворот в переменные x y a соответственно",
+                listOf(
+                    HelpDataParam(
+                        "x",
+                        "поместить текущую позицию x", FIELD_TEXT
+                    ),
+                    HelpDataParam(
+                        "y",
+                        "поместить текущую позицию y", FIELD_TEXT
+                    ),
+                    HelpDataParam(
+                        "a",
+                        "поместить текущий поворот", FIELD_TEXT
+                    ),
+                )
             ),
             HelpData(
                 "r",
@@ -707,12 +769,13 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                 "f",
                 "Включить опцию рисования зигзагов в прямом направлении"
             ),
-        )
+        ),
+        "Вычисления и переменные"
     )
 
     private fun helpForSplash() = helpName(
         TortoiseCommand.TURTOISE_SPLASH,
-        SplashMap.splashList.map { it.help() }
-
+        SplashMap.splashList.map { it.help() },
+        "Действия над фигурами"
     )
 }

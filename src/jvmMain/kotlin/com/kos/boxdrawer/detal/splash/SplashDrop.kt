@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.figure.IFigurePath
 import com.kos.figure.collections.FigureList
 import com.kos.figure.composition.FigureWithPosition
@@ -8,6 +9,7 @@ import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 
 open class SplashDrop : ISplashDetail {
     override val names: List<String>
@@ -15,7 +17,30 @@ open class SplashDrop : ISplashDetail {
 
     override fun help(): HelpData =  HelpData(
         "drop (figure) (edge offset width bias)+",
-        "Нарисовать часть пути за исключением кусочков"
+        "Нарисовать часть пути за исключением кусочков",
+        listOf(
+            HelpDataParam(
+                "figure",
+                "Фигура",
+                FIELD_FIGURE
+            ),
+            HelpDataParam(
+                "edge",
+                ""
+            ),
+            HelpDataParam(
+                "offset",
+                ""
+            ),
+            HelpDataParam(
+                "width",
+                ""
+            ),
+            HelpDataParam(
+                "bias",
+                ""
+            ),
+        )
     )
 
     override fun draw(
@@ -72,7 +97,30 @@ class SplashTake: SplashDrop(){
 
     override fun help(): HelpData = HelpData(
         "take (figure) (edge offset width bias)+",
-        "Нарисовать часть пути только из заданных кусочков"
+        "Нарисовать часть пути только из заданных кусочков",
+        listOf(
+            HelpDataParam(
+                "figure",
+                "Фигура",
+                FIELD_FIGURE
+            ),
+            HelpDataParam(
+                "edge",
+                ""
+            ),
+            HelpDataParam(
+                "offset",
+                ""
+            ),
+            HelpDataParam(
+                "width",
+                ""
+            ),
+            HelpDataParam(
+                "bias",
+                ""
+            ),
+        )
     )
 
     override fun isDrop(): Boolean = false

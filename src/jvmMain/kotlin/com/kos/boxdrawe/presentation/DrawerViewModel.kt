@@ -113,8 +113,14 @@ class DrawerViewModel {
     }
 
     fun loadSettings() {
-        tools.loadSettings()
+        tools.loadState()
         options.selectSettings(tools.ds())
+        tortoise.loadState()
+     }
+
+    fun saveState(){
+        tortoise.saveState()
+        tools.saveState()
     }
 
     suspend fun onPress(point: Vec2, button: Int, scale: Float) {
@@ -128,6 +134,8 @@ class DrawerViewModel {
     fun setSelected(figures: List<FigureInfo>) {
         _selectedItem.value = figures
     }
+
+
 
 }
 

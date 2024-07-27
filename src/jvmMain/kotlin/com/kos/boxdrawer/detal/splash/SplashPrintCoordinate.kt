@@ -18,7 +18,7 @@ class SplashPrintCoordinate:ISplashDetail {
         )
 
     override fun help() = HelpData(
-    "printс x",
+    "printс",
     "Написать текущую координату"
     )
 

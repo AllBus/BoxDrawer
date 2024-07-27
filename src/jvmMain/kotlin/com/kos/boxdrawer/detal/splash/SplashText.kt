@@ -1,10 +1,13 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
 import com.kos.figure.FigureText
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 import turtoise.parser.TortoiseParserStackBlock
 import java.text.DecimalFormat
 
@@ -16,7 +19,14 @@ open class SplashText: ISplashDetail {
 
     override fun help(): HelpData =    HelpData(
         "print [text] | (variable)",
-        "Написать текст или значение переменной"
+        "Написать текст или значение переменной",
+        listOf(
+            HelpDataParam(
+                "text",
+                "Выводимый текст",
+                FIELD_TEXT
+            ),
+        )
     )
     override fun draw(
         builder: TortoiseBuilder,

@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureLine
 import com.kos.figure.IFigure
@@ -8,6 +9,7 @@ import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 import kotlin.math.PI
@@ -23,7 +25,21 @@ class SplashRoundLine: ISplashDetail {
 
     override fun help(): HelpData = HelpData(
         "rline r x y",
-        "Нарисовать скругление радиуса r текущей линии к точке x y "
+        "Нарисовать скругление радиуса r текущей линии к точке x y ",
+        listOf(
+            HelpDataParam(
+                "r",
+                ""
+            ),
+            HelpDataParam(
+                "x",
+                ""
+            ),
+            HelpDataParam(
+                "y",
+                ""
+            ),
+        )
     )
 
     override fun draw(

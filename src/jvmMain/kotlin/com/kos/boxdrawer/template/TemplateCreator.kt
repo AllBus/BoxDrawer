@@ -1,5 +1,17 @@
 package com.kos.boxdrawer.template
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_3
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_4
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FORM
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_LABEL
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_MULTI
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
 import turtoise.parser.TortoiseParser
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
@@ -63,54 +75,56 @@ object TemplateCreator {
         if (argument.isEmpty())
             return null
         return when (name) {
-            "2", "size", "point", "offset" -> TemplateItemSize(
+
+            FIELD_1, "float", "double", "mumeric", "decimal" -> TemplateItemNumeric(
+                title = title,
+                argumentName = argument,
+            )
+            FIELD_2, "size", "point", "offset" -> TemplateItemSize(
                 title = title,
                 argumentName = argument,
             )
 
-            "4", "rect" -> TemplateItemRect(
+            FIELD_4, "rect" -> TemplateItemRect(
                 title = title,
                 argumentName = argument,
             )
 
-            "1", "float", "double", "mumeric", "decimal" -> TemplateItemNumeric(
+            FIELD_INT -> TemplateItemInt(
                 title = title,
                 argumentName = argument,
             )
 
-            "int" -> TemplateItemInt(
+            FIELD_3, "triple", "triangle", "coord" -> TemplateItemTriple(
                 title = title,
                 argumentName = argument,
             )
 
-            "3", "triple", "triangle", "coord" -> TemplateItemTriple(
+            FIELD_ANGLE, "angle", "degree" -> TemplateItemAngle(
                 title = title,
                 argumentName = argument,
             )
 
-            "a", "angle", "degree" -> TemplateItemAngle(
+            FIELD_CHECK, "chekbox", "switch" -> TemplateItemCheck(
                 title = title,
                 argumentName = argument,
             )
 
-            "check", "chekbox", "switch" -> TemplateItemCheck(
+            FIELD_FIGURE, "string" , FIELD_TEXT -> TemplateItemString(
                 title = title,
                 argumentName = argument,
             )
 
-            "string" , "text" -> TemplateItemString(
+            FIELD_LABEL -> TemplateItemLabel(
                 title = title,
                 argumentName = argument,
             )
 
-            "label" -> TemplateItemLabel(
-                title = title,
-                argumentName = argument,
-            )
-
-            "form" -> block?.let { b -> createForm(b) }
-            "multi" -> block?.let { b -> createMulti(b) }
+            FIELD_FORM -> block?.let { b -> createForm(b) }
+            FIELD_MULTI -> block?.let { b -> createMulti(b) }
             else -> null
         }
     }
+
+
 }

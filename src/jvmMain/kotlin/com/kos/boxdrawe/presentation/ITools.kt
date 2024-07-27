@@ -33,7 +33,7 @@ interface ITools {
     fun updateChooserDir(fileName: String)
 }
 
-class Tools() : ITools {
+class Tools() : ITools, SavableData {
 
     private val drawingSettings = mutableStateOf(DrawerSettings())
 
@@ -43,7 +43,7 @@ class Tools() : ITools {
 
     val figureList = mutableStateOf<List<Pair<String, TortoiseAlgorithm>>>(emptyList())
 
-    val lastSelectDir = MutableStateFlow<File>(File(""))
+    private val lastSelectDir = MutableStateFlow<File>(File(""))
 
     override fun updateChooserDir(fileName: String) {
         File(fileName).parentFile?.let { p ->
@@ -122,6 +122,24 @@ class Tools() : ITools {
 
     fun selectFigure(index: Int) {
         //  currentFigure.value = figureList.value.getOrNull(index)?.second.?:FigureEmpty
+    }
+
+    override fun saveState() {
+        try {
+            File("settings/select_dir.txt").bufferedWriter(Charsets.UTF_8).use { output ->
+                output.write(lastSelectDir.value.absolutePath)
+                output.flush()
+            }
+        }catch (_:Exception){}
+    }
+
+    override fun loadState() {
+        loadSettings()
+        try {
+            File("settings/select_dir.txt").bufferedReader(Charsets.UTF_8).use { input ->
+                lastSelectDir.value = File(input.readLine()?:"")
+            }
+        }catch (_:Exception){}
     }
 
 }

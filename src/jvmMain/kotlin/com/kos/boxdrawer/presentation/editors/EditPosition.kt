@@ -9,12 +9,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.onClick
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.DropdownMenuState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -33,10 +34,15 @@ import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawer.presentation.template.TemplateAngleBox
+import com.kos.boxdrawer.presentation.template.TemplateItemBox
+import com.kos.boxdrawer.presentation.template.TemplateSimpleItemBox
 import com.kos.boxdrawer.presentation.template.TemplateSizeBox
+import com.kos.boxdrawer.template.TemplateCreator
+import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItemAngle
 import com.kos.boxdrawer.template.TemplateItemSize
+import turtoise.help.HelpData
 import turtoise.help.HelpInfoCommand
 import turtoise.help.TortoiseHelpInfo
 
@@ -70,12 +76,6 @@ fun EditPosition(listener: TemplateGeneratorSimpleListener, onPickSelected : () 
                     null, "a",
                     listener,
                 )
-                TemplateSizeBox(
-                    TemplateItemSize("x y", "axy"),
-                    null, "axy",
-                    listener,
-                )
-
 
                 val inputPos =
                     remember("pos") {
@@ -95,15 +95,6 @@ fun EditPosition(listener: TemplateGeneratorSimpleListener, onPickSelected : () 
                         val t=  onPickSelected()
                         inputPos.update(t)
                     })
-//                    ImageButton(
-//                        Icons.Rounded.Edit,
-//                        modifier = Modifier.focusable(false),
-//                        enabled = true
-//                    ){
-//                        val t=  onPickSelected()
-//                        println("pick "+t)
-//                        inputPos.update(t)
-//                    }
                 }
                 Row() {
                     NumericUpDownLine("", "", inputPos, modifier = Modifier.weight(1f))
@@ -112,13 +103,15 @@ fun EditPosition(listener: TemplateGeneratorSimpleListener, onPickSelected : () 
 
                 val commands = remember { TortoiseHelpInfo().commandList }
                 val expandedMenuState = remember { DropdownMenuState() }
+                val subMenuExpand = remember { DropdownMenuState() }
 
                 val selectedFigure =  remember{ mutableStateOf(commands.firstOrNull()?: HelpInfoCommand("", emptyList())) }
-                Text(
+                val selectedCommandData = remember{ mutableStateOf(HelpData("", ""))}
+                    Text(
                     AnnotatedString(
                         selectedFigure.value.name
                     ) + AnnotatedString(" ")+
-                            AnnotatedString(selectedFigure.value.data.firstOrNull()?.argument.orEmpty(),
+                            AnnotatedString(selectedCommandData.value.argument.orEmpty(),
                                 SpanStyle(
                                     color = Color(0xFF26A530),
                                 ) )
@@ -127,24 +120,104 @@ fun EditPosition(listener: TemplateGeneratorSimpleListener, onPickSelected : () 
                         expandedMenuState.status = DropdownMenuState.Status.Open(Offset.Zero)
                     }.padding(4.dp)
                 )
-                DropdownMenu(
-                    state = expandedMenuState,
-                ){
-                    commands.forEach { com ->
-                        DropdownMenuItem(onClick = {
-                            selectedFigure.value = com
-                            expandedMenuState.status = DropdownMenuState.Status.Closed
-                        }){
-                            Text(com.name,
-                                fontSize = 14.sp,)
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(com.data.firstOrNull()?.description.orEmpty(),
 
-                                fontSize = 12.sp,
-                                lineHeight = 14.sp
-                                )
-                        }
+                CommandMenu(expandedMenuState, commands){ com ->
+                    selectedFigure.value = com
+                    selectedCommandData.value = com.data.firstOrNull()?: HelpData("", "")
+                    if (selectedFigure.value.data.size>1) {
+                        subMenuExpand.status = DropdownMenuState.Status.Open(Offset.Zero)
                     }
+                }
+                Text(AnnotatedString(selectedCommandData.value.description),
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        subMenuExpand.status = DropdownMenuState.Status.Open(Offset.Zero)
+                    }.padding(4.dp)
+                )
+
+                DropDownMenuCommandData(selectedFigure.value, subMenuExpand){ f, d ->
+                    selectedCommandData.value = d
+                }
+
+                CommandModel(selectedFigure, selectedCommandData,  listener)
+            }
+        }
+    }
+}
+
+@Composable
+fun CommandModel(
+    selectedFigure: MutableState<HelpInfoCommand>,
+    selectedCommandData: MutableState<HelpData>,
+    listener: TemplateGeneratorSimpleListener
+) {
+    Column {
+        selectedCommandData.value.params.forEach { param ->
+            TemplateCreator.createItem(param.kind, param.name, param.name, null)?.let { item ->
+                TemplateSimpleItemBox(
+                    item,
+                    null,
+                    selectedFigure.value.name + "/",
+                    listener
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CommandMenu(
+    expandedMenuState: DropdownMenuState,
+    commands: List<HelpInfoCommand>,
+    onSelect: (HelpInfoCommand) -> Unit
+) {
+    DropdownMenu(
+        state = expandedMenuState,
+    ) {
+        commands.forEach { com ->
+            DropdownMenuItem(onClick = {
+                expandedMenuState.status = DropdownMenuState.Status.Closed
+                onSelect(com)
+            }) {
+                Text(
+                    com.name,
+                    modifier = Modifier.width(32.dp),
+                    fontSize = 14.sp,
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    com.description.takeIf { it.isNotEmpty() }?: com.data.firstOrNull()?.description.orEmpty(),
+
+                    fontSize = 12.sp,
+                    lineHeight = 14.sp
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DropDownMenuCommandData(info: HelpInfoCommand,
+                            expandedMenuState:DropdownMenuState,
+                            onSelect: (HelpInfoCommand, HelpData
+) -> Unit){
+    DropdownMenu(
+        state = expandedMenuState,
+    ){
+        info.data.forEach { com ->
+            DropdownMenuItem(onClick = {
+                expandedMenuState.status = DropdownMenuState.Status.Closed
+                onSelect(info, com)
+            }){
+                Column {
+                    Text(
+                        com.argument,
+                        fontSize = 14.sp,
+                    )
+                    Text(
+                        com.description,
+                        fontSize = 12.sp,
+                        lineHeight = 14.sp
+                    )
                 }
             }
         }

@@ -1,9 +1,11 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 import turtoise.memory.TortoiseMemory
 
 open class SplashTooth : ISplashDetail {
@@ -12,7 +14,18 @@ open class SplashTooth : ISplashDetail {
 
     override fun help(): HelpData = HelpData(
         "tooth h w ",
-        "Нарисовать зуб"
+        "Нарисовать зуб",
+        listOf(
+            HelpDataParam(
+                "h",
+                "",
+
+                ),
+            HelpDataParam(
+                "w",
+                "",
+            ),
+        )
     )
 
     override fun draw(
@@ -66,7 +79,19 @@ class SplashToothReverse : SplashTooth() {
 
     override fun help(): HelpData = HelpData(
         "toothr h w",
-        "Нарисовать зуб в обратную сторону"
+        "Нарисовать зуб в обратную сторону",
+        listOf(
+            HelpDataParam(
+                "h",
+                "",
+
+                ),
+            HelpDataParam(
+                "w",
+                "",
+
+                ),
+        )
     )
 
     override fun draw(

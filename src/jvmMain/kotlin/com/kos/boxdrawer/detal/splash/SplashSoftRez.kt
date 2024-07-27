@@ -1,10 +1,13 @@
 package com.kos.boxdrawer.detal.splash
 
 import com.kos.boxdrawer.detal.soft.SoftRez
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 
 class SplashSoftRez: ISplashDetail {
     override val names: List<String>
@@ -12,7 +15,33 @@ class SplashSoftRez: ISplashDetail {
 
     override fun help(): HelpData =  HelpData(
         "rez width height delta dlina soedinenie isFirstSmall",
-        "Нарисовать мягкий рез"
+        "Нарисовать мягкий рез",
+        listOf(
+            HelpDataParam(
+                "width",
+                ""
+            ),
+            HelpDataParam(
+                "height",
+                ""
+            ),
+            HelpDataParam(
+                "delta",
+                ""
+            ),
+            HelpDataParam(
+                "dlina",
+                ""
+            ),
+            HelpDataParam(
+                "soedinenie",
+                ""
+            ),
+            HelpDataParam(
+                "isFirstSmall",
+                "", FIELD_CHECK
+            ),
+        )
     )
 
     override fun draw(

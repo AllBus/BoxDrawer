@@ -1,11 +1,14 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.figure.collections.FigureList
+import dagger.multibindings.IntoSet
 import turtoise.FigureCreator.arcInTwoPoint
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 import turtoise.memory.keys.MemoryKey
 import vectors.Vec2
 
@@ -16,7 +19,21 @@ class SplashArc : ISplashDetail {
     override fun help(): HelpData {
         return HelpData(
             "arc (radius pointStart pointEnd)+",
-            "Нарисовать дугу заданного радиуса radius через две точки"
+            "Нарисовать дугу заданного радиуса radius через две точки",
+            listOf(
+                HelpDataParam(
+                    "radius",
+                    "Радиус"
+                ),
+                HelpDataParam(
+                    "pointStart",
+                    "Точка начала"
+                ),
+                HelpDataParam(
+                    "pointEnd",
+                    "Точка конца"
+                ),
+            )
         )
     }
 

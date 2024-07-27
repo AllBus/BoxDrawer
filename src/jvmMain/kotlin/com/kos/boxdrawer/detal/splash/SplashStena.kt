@@ -1,11 +1,13 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.figure.FigurePolyline
 import com.kos.figure.collections.FigureList
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 import vectors.Vec2
 
 class SplashStena: ISplashDetail {
@@ -13,8 +15,31 @@ class SplashStena: ISplashDetail {
         get() = listOf("stena")
 
     override fun help(): HelpData =  HelpData(
-        "stena (Figure) (he we) (edge he)*",
-        "Нарисовать стенки вдоль пути Figure"
+        "stena (Figure) (he we) (edge hee)*",
+        "Нарисовать стенки вдоль пути Figure",
+        listOf(
+            HelpDataParam(
+                "figure",
+                "Фигура",
+                FIELD_FIGURE
+            ),
+            HelpDataParam(
+                "he",
+                ""
+            ),
+            HelpDataParam(
+                "we",
+                ""
+            ),
+            HelpDataParam(
+                "edge",
+                ""
+            ),
+            HelpDataParam(
+                "hee",
+                ""
+            ),
+        )
     )
 
     override fun draw(

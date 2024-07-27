@@ -1,6 +1,7 @@
 package com.kos.boxdrawer.detal.splash
 
 import com.jsevy.jdxf.DXFColor
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.figure.FigurePolyline
 import com.kos.figure.collections.FigureList
 import com.kos.figure.composition.FigureColor
@@ -11,6 +12,7 @@ import turtoise.TortoiseFigureExtractor
 import turtoise.TortoiseFigureExtractor.Companion.pathAtIndex
 import turtoise.TortoiseFigureExtractor.Companion.positionInPath
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
 import turtoise.memory.keys.MemoryKey
 import vectors.Vec2
 import kotlin.math.PI
@@ -21,7 +23,30 @@ class SplashPaz: ISplashDetail {
 
     override fun help(): HelpData =  HelpData(
         "paz (figure) (edge delta le he)+",
-        "Нарисовать пазы вдоль пути figure"
+        "Нарисовать пазы вдоль пути figure",
+        listOf(
+            HelpDataParam(
+                "figure",
+                "Фигура",
+                FIELD_FIGURE
+            ),
+            HelpDataParam(
+                "edge",
+                ""
+            ),
+            HelpDataParam(
+                "delta",
+                ""
+            ),
+            HelpDataParam(
+                "le",
+                ""
+            ),
+            HelpDataParam(
+                "he",
+                ""
+            ),
+        )
     )
 
     override fun draw(
