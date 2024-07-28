@@ -75,7 +75,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApprox
             return  if (points.size >= 2) {
                 val last = points[1]
                 val pred = points.first()
-                PointWithNormal.from(pred, last)
+                PointWithNormal.from(pred,pred, last)
             } else
                 PointWithNormal.EMPTY
         }
@@ -87,7 +87,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApprox
                 if (points.size >= 2) {
                     val last = points.last()
                     val pred = points[points.size - 2]
-                    PointWithNormal.fromPreviousPoint(last, pred)
+                    PointWithNormal.from(last, pred, last)
                 } else
                     PointWithNormal.EMPTY
             } else {
@@ -107,7 +107,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApprox
             if (points.size >= 2) {
                 val last = points[1]
                 val pred = points.first()
-                PointWithNormal.from(pred, last)
+                PointWithNormal.from(pred, pred, last)
             } else
                 PointWithNormal.EMPTY
     }
@@ -184,14 +184,19 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApprox
     }
 
     override fun duplicationAtNormal(h: Double): Figure {
+        val eps = 0.001
         val l =  points.windowed(4, 3).map { curve ->
-            val ns = Vec2.normal(curve[0], curve[1])
-            val ne = Vec2.normal(curve[2], curve[3])
+
+            val sp = Vec2.bezierPosition(curve, 0.0, eps)
+            val en = Vec2.bezierPosition(curve, 1.0, eps)
+           
+          //  val ns = Vec2.normal(curve[0], curve[1])
+         //   val ne = Vec2.normal(curve[2], curve[3])
             listOf(
-                curve[0]+ns*h,
-                curve[1]+ns*h,
-                curve[2]+ne*h,
-                curve[3]+ne*h
+                curve[0]+sp.normal*h,
+                curve[1]+sp.normal*h,
+                curve[2]+en.normal*h,
+                curve[3]+en.normal*h
             )
         }
         return FigureBezierList(l).toFigure()

@@ -40,10 +40,6 @@ abstract class Figure : IFigure {
 
     abstract fun translate(translateX: Double, translateY: Double): Figure
 
-    abstract fun rotate(angle: Double): Figure
-
-    abstract fun rotate(angle: Double, rotateCenter: Vec2): Figure
-
     abstract fun transform(matrix: Matrix): Figure
 
     abstract fun crop(k: Double, cropSide: CropSide): Figure
@@ -56,7 +52,7 @@ interface Approximation {
 
 interface FigureWithApproximation: IFigure,  Approximation
 
-object FigureEmpty : Figure(), IFigurePath {
+object FigureEmpty : Figure(), IFigurePath, IRotable {
     override fun positionInPath(delta: Double): PointWithNormal {
         return PointWithNormal.EMPTY
     }

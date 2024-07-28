@@ -103,7 +103,7 @@ object PaintUtils {
 
     fun onlyFigures(figure: IFigure, state: TortoiseState): List<Figure> {
         val res = when (figure) {
-            is Figure -> return listOf(figure.rotate(state.angle).translate(state.x, state.y))
+            is Figure -> return listOf(figure /*.rotate(state.angle) */ .translate(state.x, state.y))
             else -> {
                 val newState = if (figure.hasTransform) {
                     val nm = TortoiseState().from(state)

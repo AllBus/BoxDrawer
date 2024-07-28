@@ -14,6 +14,7 @@ import turtoise.ZigzagInfo
 import turtoise.memory.keys.MemoryKey
 import turtoise.memory.TortoiseMemory
 import turtoise.road.EBoardConnectStyle
+import turtoise.road.ERoadStyle
 
 class BoxAlgorithm(
     val boxInfo: BoxInfo,
@@ -140,6 +141,17 @@ class BoxAlgorithm(
                 else -> EBoardConnectStyle.EQUAL
             }
         }
+
+        fun parseRoadStyle(text: String?): ERoadStyle {
+            return when (text?.lowercase()) {
+                "s" -> ERoadStyle.SIMETRIC
+                "a" -> ERoadStyle.ASIMETRIC
+                "p" -> ERoadStyle.PLATO
+                "d" -> ERoadStyle.DUPLICATION
+                else -> ERoadStyle.STANDARD
+            }
+        }
+
 
         fun outVariantName(variant: BoxCad.EOutVariant): String {
             return when (variant) {

@@ -251,16 +251,12 @@ abstract class TortoiseBase {
         val c2 = builder.xy
         val angle = builder.angle
 
-        builder.add(
-            FigureRotate(
+        builder.addProduct(
             FigureCreator.rectangle(
-                -width2 + c2.x, -height2 + c2.y, width2 + c2.x, height2 + c2.y,
+                -width2, -height2, width2, height2,
                 enableSmooth = smoothSize != 0.0,
                 smoothSize = smoothSize,
             ),
-                angle,
-                Vec2.Zero
-            )
         )
     }
 
@@ -300,9 +296,9 @@ abstract class TortoiseBase {
 
         val points = listOf<Vec2>(
             c2 + Vec2(-width2, -height2).rotate(angle),
-            c2 + Vec2(-width2, height2).rotate(angle),
-            c2 + Vec2(width2, height2).rotate(angle),
             c2 + Vec2(width2, -height2).rotate(angle),
+            c2 + Vec2(width2, height2).rotate(angle),
+            c2 + Vec2(-width2, height2).rotate(angle),
             c2 + Vec2(-width2, -height2).rotate(angle),
         )
 

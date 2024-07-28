@@ -11,5 +11,6 @@ class RoadProperties(
     val zigzagInfo: ZigzagInfo,
     val connectStyle: EBoardConnectStyle,
     val isHoleLine: Boolean,
+    val style: ERoadStyle
 )
 

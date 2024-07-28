@@ -7,7 +7,7 @@ import vectors.Vec2.Companion.calcYPosition
 import kotlin.math.max
 import kotlin.math.min
 
-class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points), FigureWithApproximation {
+class FigureLine private constructor(points: List<Vec2>) : FigurePolyline(points), FigureWithApproximation {
 
     constructor(a: Vec2, b: Vec2) : this(listOf(a, b))
 
@@ -107,7 +107,7 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
 
     override fun positionInPath(delta: Double): PointWithNormal {
         return if (points.size >= 2) {
-            PointWithNormal.from(Vec2.lerp(points[0], points[1], delta), points[1])
+            PointWithNormal.from(Vec2.lerp(points[0], points[1], delta), points[0],  points[1])
         } else
             PointWithNormal.EMPTY
     }
@@ -118,10 +118,6 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolygon(points)
 
     override fun name(): String {
         return "Линия"
-    }
-
-    override fun approximate(pointCount: Int): List<List<Vec2>> {
-        return listOf(points)
     }
 
     override fun edgeCount(): Int = 1

@@ -6,7 +6,7 @@ import vectors.Vec2
 import vectors.Vec2.Companion.coordForX
 import vectors.Vec2.Companion.coordForY
 
-class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWithApproximation {
+open class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWithApproximation {
 
     constructor(points: List<Vec2>, close: Boolean) : this(
         if (close) (points + listOfNotNull(points.firstOrNull()))
@@ -108,7 +108,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWithAppr
                 if (points.size >= 2) {
                     val last = points.last()
                     val pred = points[points.size - 2]
-                    PointWithNormal.fromPreviousPoint(last, pred)
+                    PointWithNormal.from(last, pred, last)
                 } else
                     PointWithNormal.EMPTY
             } else {
@@ -128,7 +128,7 @@ class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWithAppr
             if (points.size >= 2) {
                 val last = points[1]
                 val pred = points.first()
-                PointWithNormal.from(pred, last)
+                PointWithNormal.from(pred, pred, last)
             } else
                 PointWithNormal.EMPTY
     }

@@ -4,7 +4,7 @@ import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
 
-abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath {
+abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath, IRotable {
     override fun rect(): BoundingRectangle {
         return if (points.size < 2)
             BoundingRectangle(Vec2(0.0, 0.0), 0.0)

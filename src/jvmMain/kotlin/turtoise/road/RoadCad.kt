@@ -1,6 +1,7 @@
 package turtoise.road
 
 import androidx.compose.ui.graphics.Matrix
+import androidx.compose.ui.util.fastForEachReversed
 import com.jsevy.jdxf.DXFColor
 import com.kos.boxdrawer.detal.box.BoxCad.EOutVariant
 import com.kos.figure.FigureEmpty
@@ -200,12 +201,80 @@ object RoadCad {
         return drr
     }
 
+    fun duplicationFigure(line: FigurePolyline, startHeight: Double): FigurePolyline {
+        if (line.isClose())
+            return line
+        if (line.points.size<2)
+            return line
+
+        val po = line.points
+        val result = ArrayList<Vec2>(line.points.size*2+1)
+        result.addAll(po)
+        val hv = Vec2(0.0, -startHeight)
+        po.fastForEachReversed { p ->
+            result.add(p+hv)
+        }
+        result.add(po.first())
+        return FigurePolyline(result.toList())
+    }
+
+    fun simmericFigure(line: FigurePolyline, startHeight: Double): FigurePolyline {
+        if (line.isClose())
+            return line
+        if (line.points.size<2)
+            return line
+
+        val po = line.points
+        val result = ArrayList<Vec2>(line.points.size*2+1)
+        result.addAll(po)
+        val pfy = po.first().y
+        val hv = Vec2(0.0, startHeight+pfy)
+        po.fastForEachReversed { p ->
+            result.add(Vec2(p.x, -(p.y-pfy))+hv)
+        }
+        result.add(po.first())
+        return FigurePolyline(result.toList())
+    }
+
+    fun asimmericFigure(line: FigurePolyline, startHeight: Double): FigurePolyline {
+        if (line.isClose())
+            return line
+        if (line.points.size<2)
+            return line
+
+        val po = line.points
+        val result = ArrayList<Vec2>(line.points.size*2+1)
+        result.addAll(po)
+
+        val pfy = po.first().y
+        val pfx = po.first().x
+        val plx = po.last().x + pfx
+        val hv = Vec2(0.0, startHeight+pfy)
+
+        po.forEach { p -> result.add(Vec2( (plx -p.x), -(p.y-pfy))+hv) }
+        result.add(po.first())
+        return FigurePolyline(result.toList())
+    }
+
     fun build(line: FigurePolyline, rp: RoadProperties, ds: DrawerSettings): IFigure {
+        val figure = when (rp.style){
+            ERoadStyle.STANDARD -> line
+            ERoadStyle.SIMETRIC -> simmericFigure(line, rp.startHeight)
+            ERoadStyle.ASIMETRIC -> asimmericFigure(line, rp.startHeight)
+            ERoadStyle.PLATO -> line
+            ERoadStyle.DUPLICATION -> duplicationFigure(line, rp.startHeight)
+        }
+
+        return buildFigure(figure, rp, ds)
+    }
+
+
+
+    fun buildFigure(line: FigurePolyline, rp: RoadProperties, ds: DrawerSettings): IFigure {
         val dp = DrawingParam(
             reverse = false,
             back = false,
         )
-        //  val rm: Map<Int, IFigure> = mutableMapOf()
 
         val p1 = line.points.first() + Vec2(0.0, rp.startHeight)
         val lpoints = line.points.map { it - p1 }
@@ -320,10 +389,7 @@ object RoadCad {
                 )
                 isFirst = false
             }
-
-
             pl = cur
-
         }
 
         val sdvig = Vec2(0.0,  delp)

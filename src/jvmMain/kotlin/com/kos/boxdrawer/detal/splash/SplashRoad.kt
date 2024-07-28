@@ -20,7 +20,7 @@ class SplashRoad() : ISplashDetail {
         get() = listOf("road")
 
     override fun help(): HelpData = HelpData(
-        "road (figure) (w h) (zw zd zh) (ve) (ds)",
+        "road (figure) (w h s) (zw zd zh) (ve) (ds)",
         "Построить дорогу",
         listOf(
             HelpDataParam(
@@ -30,27 +30,31 @@ class SplashRoad() : ISplashDetail {
             ),
             HelpDataParam(
                 "w",
-                ""
+                "Ширина"
             ),
             HelpDataParam(
                 "h",
-                ""
+                "Высота у начала"
+            ),
+            HelpDataParam(
+                "s",
+                "Стиль [sapd]"
             ),
             HelpDataParam(
                 "zw",
-                ""
+                "Длина зигзага"
             ),
             HelpDataParam(
                 "zd",
-                ""
+                "Дельта зигзагов"
             ),
             HelpDataParam(
                 "zh",
-                ""
+                "высота зигзага"
             ),
             HelpDataParam(
                 "ve",
-                ""
+                "Стиль рисования [acv][efsn][ho]"
             ),
             HelpDataParam(
                 "ds",
@@ -79,6 +83,7 @@ class SplashRoad() : ISplashDetail {
                         figureExtractor.ds
                     )
                     val stl = st?.innerLine.orEmpty()+"   "
+                    val style = a?.inner?.getOrNull(2)?.innerLine.orEmpty()+" "
 
                     builder.addProduct(
                         FigureTranslate(
@@ -104,7 +109,8 @@ class SplashRoad() : ISplashDetail {
                                     connectStyle = BoxAlgorithm.parseConnectVariant(
                                         stl.substring(1,2)
                                     ),
-                                    isHoleLine = stl.substring(2,3) in "ho"
+                                    isHoleLine = stl.substring(2,3) in "ho",
+                                    style = BoxAlgorithm.parseRoadStyle(style.substring(0,1))
                                 ),
                                 ds = ds
                             ), acc

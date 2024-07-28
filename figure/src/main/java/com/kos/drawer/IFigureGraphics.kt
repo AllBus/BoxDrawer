@@ -14,6 +14,7 @@ interface IFigureGraphics {
     fun drawBezier(points: List<Vec2>)
     fun drawBezierList(points: List<List<Vec2>>)
 
+    /** inDegrees */
     fun drawArc(center: Vec2, radius: Double, radiusMinor: Double, startAngle: Double, sweepAngle: Double)
 
     fun drawCircle(center: Vec2, radius: Double)

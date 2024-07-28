@@ -12,14 +12,14 @@ class SimpleFigure(val figures:List<Figure>): Figure() {
     override fun translate(translateX: Double, translateY: Double): Figure {
         return SimpleFigure(figures.map { it.translate(translateX, translateY) })
     }
-
-    override fun rotate(angle: Double): Figure {
-        return SimpleFigure(figures.map { it.rotate(angle) })
-    }
-
-    override fun rotate(angle: Double, rotateCenter: Vec2): Figure {
-        return SimpleFigure(figures.map { it.rotate(angle, rotateCenter) })
-    }
+//
+//    override fun rotate(angle: Double): Figure {
+//        return SimpleFigure(figures.map { it.rotate(angle) })
+//    }
+//
+//    override fun rotate(angle: Double, rotateCenter: Vec2): Figure {
+//        return SimpleFigure(figures.map { it.rotate(angle, rotateCenter) })
+//    }
 
     override fun transform(matrix: Matrix): Figure {
         return SimpleFigure(figures.map { it.transform(matrix) })

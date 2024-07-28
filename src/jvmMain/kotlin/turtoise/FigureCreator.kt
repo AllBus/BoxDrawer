@@ -8,6 +8,7 @@ import com.kos.figure.FigureLine
 import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
+import com.kos.figure.complex.FigureRoundRect
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.cos
@@ -24,7 +25,7 @@ object FigureCreator {
     ): IFigure {
         val p = (1..count).map { ind ->
             val ang = angle + 2 * Math.PI * ind / count
-            center + Vec2(sin(ang), cos(ang)) * radius
+            center + Vec2(cos(ang),sin(ang)) * radius
         }
         return FigurePolyline(p, true)
     }
@@ -207,6 +208,13 @@ object FigureCreator {
         smoothSize: Double,
     ): IFigure {
         if (enableSmooth) {
+//            return FigureRoundRect(
+//                left = left,
+//                top = top,
+//                right = right,
+//                bottom = bottom,
+//                radius = smoothSize
+//            )
             val lt = Vec2(left, top);
             val rt = Vec2(right, top);
             val lb = Vec2(left, bottom);

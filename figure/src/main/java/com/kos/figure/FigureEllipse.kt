@@ -23,7 +23,7 @@ open class FigureEllipse(
     val rotation: Double,
     val segmentStart: Double = 0.0,
     val segmentSweep: Double = 360.0,
-) : Figure(), IFigurePath, FigureWithApproximation {
+) : Figure(), IFigurePath, FigureWithApproximation, IRotable {
 
     override fun crop(k: Double, cropSide: CropSide): Figure {
         //Todo: Правильно отрезать
