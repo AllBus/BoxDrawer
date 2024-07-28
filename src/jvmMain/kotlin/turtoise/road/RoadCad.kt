@@ -256,12 +256,24 @@ object RoadCad {
         return FigurePolyline(result.toList())
     }
 
+    fun platoFigure(line: FigurePolyline, startHeight: Double): FigurePolyline {
+        if (line.isClose())
+            return line
+
+        if (line.points.size<2)
+            return line
+
+        val p2 = line.duplicationAtNormal(startHeight).points
+
+        return FigurePolyline(line.points.reversed()+p2, close = true)
+    }
+
     fun build(line: FigurePolyline, rp: RoadProperties, ds: DrawerSettings): IFigure {
         val figure = when (rp.style){
             ERoadStyle.STANDARD -> line
             ERoadStyle.SIMETRIC -> simmericFigure(line, rp.startHeight)
             ERoadStyle.ASIMETRIC -> asimmericFigure(line, rp.startHeight)
-            ERoadStyle.PLATO -> line
+            ERoadStyle.PLATO ->     platoFigure(line, rp.startHeight)
             ERoadStyle.DUPLICATION -> duplicationFigure(line, rp.startHeight)
         }
 

@@ -134,7 +134,7 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolyline(points
         return this
     }
 
-    override fun duplicationAtNormal(h: Double): Figure {
+    override fun duplicationAtNormal(h: Double): FigureLine {
         val s = positionInPath(0.0)
         val e = positionInPath(1.0)
         return FigureLine(points[0] + s.normal * h, points[1] + e.normal * h)

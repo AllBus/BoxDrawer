@@ -205,7 +205,7 @@ open class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWit
         return FigureEmpty
     }
 
-    override fun duplicationAtNormal(h: Double): Figure {
+    override fun duplicationAtNormal(h: Double): FigurePolyline {
         if (points.size == 2) {
             val pred = points[0]
             val next = points[1]
@@ -264,7 +264,7 @@ open class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWit
                 }
                 return FigurePolyline(res)
             } else
-                return FigureEmpty
+                return this
     }
 
     override fun take(startMM: Double, endMM: Double): Figure {
