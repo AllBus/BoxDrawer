@@ -46,9 +46,9 @@ class SplashDiamond : ISplashDetail {
 
         val apoint = listOf<Vec2>(
             Vec2(0.0, diagonalLong / 2),
-            Vec2(diagonalShort / 2, 0.0),
+            Vec2(-diagonalShort / 2, 0.0),
             Vec2(0.0, -diagonalLong / 2),
-            Vec2(-diagonalShort / 2, 0.0)
+            Vec2(diagonalShort / 2, 0.0),
         )
         builder.addPolyline(apoint, true)
     }
@@ -90,9 +90,9 @@ class SplashDiamondAngle : ISplashDetail {
         val diagonalShort = (2 * d * cos(alpha * PI / 180 / 2))
         val apoint = listOf<Vec2>(
             Vec2(0.0, diagonalLong / 2),
-            Vec2(diagonalShort / 2, 0.0),
+            Vec2(-diagonalShort / 2, 0.0),
             Vec2(0.0, -diagonalLong / 2),
-            Vec2(-diagonalShort / 2, 0.0)
+            Vec2(diagonalShort / 2, 0.0),
         )
         builder.addPolyline(apoint, true)
     }
@@ -138,9 +138,9 @@ class SplashParallelogram : ISplashDetail {
         val d = storona * cos(povorot * PI / 180)
         val apoint = listOf<Vec2>(
             Vec2(storonaDlinnaya, 0.0),
-            Vec2(storonaDlinnaya + d, h),
+            Vec2(0.0, 0.0),
             Vec2(d, h),
-            Vec2(0.0, 0.0)
+            Vec2(storonaDlinnaya + d, h),
         )
         builder.addPolyline(apoint, true)
     }

@@ -1,6 +1,5 @@
 package com.kos.boxdrawer.detal.splash
 
-import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
@@ -41,3 +40,4 @@ class SplashLine: ISplashDetail {
         }
     }
 }
+

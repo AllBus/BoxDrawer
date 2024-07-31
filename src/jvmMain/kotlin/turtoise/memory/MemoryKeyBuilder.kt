@@ -21,6 +21,7 @@ import turtoise.memory.keys.SumMemoryKey
 import turtoise.memory.keys.TanMemoryKey
 import turtoise.memory.keys.TriangleAngleMemoryKey
 
+/** Выполенение алгебраических действий над переменными*/
 object MemoryKeyBuilder {
 
     fun constructFunction(item: TortoiseParserStackBlock): MemoryKey {

@@ -242,20 +242,27 @@ class Tortoise() : TortoiseSplash() {
 
                 TortoiseCommand.TURTOISE_ZIGZAG_FIGURE -> {//-
                     builder.saveLine()
+                    //"w (delta zigWidth board) (figure (args)?)"
 
-                    val zigWidth = com.take(2, state.zigWidth, memory)
-                    val board = com.take(3, figureExtractor.ds.boardWeight, memory)
+                    val zigInfo = BlockTortoiseReader.readZigInfo(
+                        com.takeBlock(1),
+                        memory,
+                        figureExtractor.ds
+                    )
 
-                    val block = com.takeBlock(0)
+                    val board = zigInfo.height
+                    val block = com.takeBlock(2)
+
+                    BlockTortoiseReader.putZigZagInfo(zigInfo, memory)
                     val f = figureList(block, figureExtractor)
                     val zf = f ?: FigureCreator.zigFigure(
-                        hz = com.take(4, 0.0, memory),
-                        bz1x = com.take(5, board / 2, memory),
-                        bz2x = com.take(6, board / 2, memory),
-                        bz1y = com.take(7, 0.0, memory),
-                        bz2y = com.take(8, 0.0, memory),
+                        hz = com.take(3, 0.0, memory),
+                        bz1x = com.take(4, board / 2, memory),
+                        bz2x = com.take(5, board / 2, memory),
+                        bz1y = com.take(6, 0.0, memory),
+                        bz2y = com.take(7, 0.0, memory),
                         board = board,
-                        zigWidth = zigWidth
+                        zigWidth = zigInfo.width
                     )
 
                     val width = com.value(memory)
@@ -263,10 +270,7 @@ class Tortoise() : TortoiseSplash() {
                         ZigConstructor.zigZag(
                             origin = state.xy,
                             width = width,
-                            zig = ZigzagInfo(
-                                zigWidth,
-                                com.take(1, state.zigDelta, memory),
-                            ),
+                            zig = zigInfo,
                             angle = state.angle,
                             param = state.zigParam,
                             zigzagFigure = zf

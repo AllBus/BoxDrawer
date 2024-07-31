@@ -277,7 +277,7 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             TortoiseCommand.TURTOISE_ZIGZAG,
             listOf(
                 HelpData(
-                    "w delta zigWidth board",
+                    "w (delta zigWidth board)",
                     "Зигзаги",
                     listOf(
                         HelpDataParam("w", "общая длина"),
@@ -293,12 +293,12 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             TortoiseCommand.TURTOISE_ZIGZAG_FIGURE,
             listOf(
                 HelpData(
-                    "w delta zigWidth board (figure (args)?)",
+                    "w (delta zigWidth board) (figure (args)?)",
                     "Зигзаги формы описаной в строке figure",
                     listOf(
                         HelpDataParam("w", "общая длина"),
                         HelpDataParam("delta", "расстояние между началами двух зигзагов"),
-                        HelpDataParam("zigWidth", "длина одноо зигзага"),
+                        HelpDataParam("zigWidth", "длина одного зигзага"),
                         HelpDataParam("board", "толщина доски"),
                         HelpDataParam("(figure (args)?)", "фигура для формы зигзага"),
                     )

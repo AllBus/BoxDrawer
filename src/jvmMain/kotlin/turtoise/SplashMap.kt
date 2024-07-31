@@ -6,6 +6,7 @@ import com.kos.boxdrawer.detal.splash.SplashDiamond
 import com.kos.boxdrawer.detal.splash.SplashDiamondAngle
 import com.kos.boxdrawer.detal.splash.SplashDrop
 import com.kos.boxdrawer.detal.splash.SplashEdit
+import com.kos.boxdrawer.detal.splash.SplashIntersectLine
 import com.kos.boxdrawer.detal.splash.SplashLine
 import com.kos.boxdrawer.detal.splash.SplashNormal
 import com.kos.boxdrawer.detal.splash.SplashObruch
@@ -28,6 +29,7 @@ object SplashMap {
         SplashTooth(),
         SplashToothReverse(),
         SplashRoundLine(),
+        SplashIntersectLine(),
         SplashLine(),
         SplashSoftRez(),
         SplashPaz(),

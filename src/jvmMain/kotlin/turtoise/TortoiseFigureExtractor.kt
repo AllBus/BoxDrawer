@@ -14,6 +14,19 @@ class TortoiseFigureExtractor(
     val memory: TortoiseMemory,
     val runner: TortoiseRunner,
 ) {
+    fun existsFigure(
+        block: TortoiseParserStackItem
+    ): IFigure {
+        val state = TortoiseState()
+        return runner.figure(
+            block = block,
+            ds = ds,
+            state = state,
+            maxStackSize = maxStackSize,
+            memory = memory,
+        )
+
+    }
 
     fun figure(
         block: TortoiseParserStackItem?,
@@ -31,9 +44,9 @@ class TortoiseFigureExtractor(
     }
 
     fun tortoiseDraw(
-        block:TortoiseBlock,
+        block: TortoiseBlock,
         state: TortoiseState,
-    ): List<IFigure>{
+    ): List<IFigure> {
         return runner.tortoise.draw(
             commands = block,
             state = state,
@@ -45,10 +58,10 @@ class TortoiseFigureExtractor(
         return (maxStackSize <= 0)
     }
 
-    fun collectPolygons(f: IFigure) : List<FigurePolygon> =
-        f.list().filterIsInstance(FigurePolygon::class.java)
+    fun collectPolygons(f: IFigure): List<FigurePolygon> =
+        f.list().filterIsInstance<FigurePolygon>()
 
-    fun collectPaths(f: IFigure) : List<IFigurePath> {
+    fun collectPaths(f: IFigure): List<IFigurePath> {
         return IFigure.path(f)
     }
 
@@ -67,17 +80,19 @@ class TortoiseFigureExtractor(
 
         fun positionInPath(paths: List<IFigurePath>, edge: Int, delta: Double): PointWithNormal? {
             var e = edge
-            for ( p in paths){
-                if (p.edgeCount()> e){
+            for (p in paths) {
+                if (p.edgeCount() > e) {
                     return when {
                         delta in 0.0..1.0 -> {
                             p.positionInPath(e, delta)
                         }
+
                         delta > 1.0 -> {
                             p.positionInPathAtMM(e, delta)
                         }
+
                         else -> {
-                            p.positionInPathAtMM(e, p.pathLength(e) -delta)
+                            p.positionInPathAtMM(e, p.pathLength(e) - delta)
                         }
                     }
                 } else {

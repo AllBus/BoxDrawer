@@ -17,5 +17,6 @@ data class TemplateField(val name:String) {
         const val FIELD_MULTI = "multi"
         const val FIELD_TEXT = "text"
         const val FIELD_NONE = "-"
+        const val FIELD_SELECTOR = "selector"
     }
 }

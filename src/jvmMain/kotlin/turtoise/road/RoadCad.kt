@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.util.fastForEachReversed
 import com.jsevy.jdxf.DXFColor
 import com.kos.boxdrawer.detal.box.BoxCad.EOutVariant
+import com.kos.boxdrawer.figure.FigureExtractor
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureLine
 import com.kos.figure.FigurePolyline
@@ -13,11 +14,15 @@ import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureTranslate
 import com.kos.figure.composition.FigureTranslateWithRotate
+import turtoise.BlockTortoiseReader
 import turtoise.DrawerSettings
 import turtoise.DrawingParam
 import turtoise.LineInfo
+import turtoise.TortoiseFigureExtractor
 import turtoise.ZigConstructor
 import turtoise.ZigzagInfo
+import turtoise.memory.keys.MemoryKey
+import turtoise.parser.TortoiseParserStackItem
 import vectors.Vec2
 import kotlin.math.abs
 import kotlin.math.cos
@@ -27,7 +32,36 @@ import kotlin.math.sin
 
 object RoadCad {
 
-    fun simpleZigZag(zihe: ZigzagInfo, reverse: Boolean = false): IFigure {
+    fun figureBuilder(zihe: ZigzagInfo, reverse: Boolean, line: TortoiseParserStackItem, figureExtractor: TortoiseFigureExtractor): IFigure {
+        BlockTortoiseReader.putReverse(reverse, figureExtractor.memory)
+        BlockTortoiseReader.putZigZagInfo(zihe, figureExtractor.memory)
+
+        return figureExtractor.existsFigure(line)
+    }
+
+    fun createZigZag(zihe: ZigzagInfo,
+                     reverse: Boolean,
+                     line: TortoiseParserStackItem?,
+                     figureExtractor: TortoiseFigureExtractor
+    ):IFigure{
+        return if (line == null)
+            simpleZigZag(zihe, reverse)
+        else
+            figureBuilder(zihe, reverse, line, figureExtractor)
+    }
+
+    fun createHole(zihe: ZigzagInfo,
+                     reverse: Boolean,
+                     line: TortoiseParserStackItem?,
+                     figureExtractor: TortoiseFigureExtractor
+    ):IFigure{
+        return if (line == null)
+            simpleHole(zihe, reverse)
+        else
+            figureBuilder(zihe, reverse, line, figureExtractor)
+    }
+
+    fun simpleZigZag(zihe: ZigzagInfo, reverse: Boolean): IFigure {
         val h = (if (reverse) -1 else 1) * zihe.height
         return FigurePolyline(
             listOf(
@@ -39,7 +73,7 @@ object RoadCad {
         )
     }
 
-    fun simpleHole(zihe: ZigzagInfo, reverse: Boolean = false): IFigure {
+    fun simpleHole(zihe: ZigzagInfo, reverse: Boolean): IFigure {
         val offset = 0.0
         val z = 0.0
         val weight = (if (reverse) -1 else 1) * zihe.height
@@ -268,7 +302,7 @@ object RoadCad {
         return FigurePolyline(line.points.reversed()+p2, close = true)
     }
 
-    fun build(line: FigurePolyline, rp: RoadProperties, ds: DrawerSettings): IFigure {
+    fun build(line: FigurePolyline, rp: RoadProperties, ds: DrawerSettings, figureExtractor: TortoiseFigureExtractor): IFigure {
         val figure = when (rp.style){
             ERoadStyle.STANDARD -> line
             ERoadStyle.SIMETRIC -> simmericFigure(line, rp.startHeight)
@@ -277,12 +311,12 @@ object RoadCad {
             ERoadStyle.DUPLICATION -> duplicationFigure(line, rp.startHeight)
         }
 
-        return buildFigure(figure, rp, ds)
+        return buildFigure(figure, rp, ds, figureExtractor)
     }
 
 
 
-    fun buildFigure(line: FigurePolyline, rp: RoadProperties, ds: DrawerSettings): IFigure {
+    fun buildFigure(line: FigurePolyline, rp: RoadProperties, ds: DrawerSettings, figureExtractor: TortoiseFigureExtractor): IFigure {
         val dp = DrawingParam(
             reverse = false,
             back = false,
@@ -291,7 +325,11 @@ object RoadCad {
         val p1 = line.points.first() + Vec2(0.0, rp.startHeight)
         val lpoints = line.points.map { it - p1 }
 
-        val drawInfo = RoadDrawInfo(ds, rp.zigzagInfo, ::simpleZigZag, ::simpleHole)
+        val drawInfo = RoadDrawInfo(ds, rp.zigzagInfo, { zi ,re ->
+            createZigZag(zi, re, rp.zigazagModel, figureExtractor)
+        }, { zi ,re ->
+            createHole(zi, re, rp.holeModel, figureExtractor)
+        })
 
         val result: RoadCadResult = RoadCadResult()
 

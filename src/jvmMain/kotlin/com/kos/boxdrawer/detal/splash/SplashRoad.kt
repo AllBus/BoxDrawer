@@ -2,6 +2,7 @@ package com.kos.boxdrawer.detal.splash
 
 import com.kos.boxdrawer.detal.box.BoxAlgorithm
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_SELECTOR
 import com.kos.figure.FigurePolyline
 import com.kos.figure.composition.FigureTranslate
 import turtoise.BlockTortoiseReader
@@ -20,7 +21,7 @@ class SplashRoad() : ISplashDetail {
         get() = listOf("road")
 
     override fun help(): HelpData = HelpData(
-        "road (figure) (w h s) (zw zd zh) (ve) (ds)",
+        "road (figure) (w h s) (zd zw zh (zig)) (ve) (ds)",
         "Построить дорогу",
         listOf(
             HelpDataParam(
@@ -38,7 +39,8 @@ class SplashRoad() : ISplashDetail {
             ),
             HelpDataParam(
                 "s",
-                "Стиль [sapd]"
+                "Стиль [s|a|p|d]",
+                FIELD_SELECTOR
             ),
             HelpDataParam(
                 "zw",
@@ -54,11 +56,17 @@ class SplashRoad() : ISplashDetail {
             ),
             HelpDataParam(
                 "ve",
-                "Стиль рисования [acv][efsn][ho]"
+                "Стиль рисования [a|c|v][e|f|s|n][h|o]",
+                FIELD_SELECTOR
             ),
             HelpDataParam(
                 "ds",
                 ""
+            ),
+            HelpDataParam(
+                "zig",
+                "Фигура зигзага",
+                FIELD_FIGURE
             ),
         )
     )
@@ -96,23 +104,17 @@ class SplashRoad() : ISplashDetail {
                                     outStyle = BoxAlgorithm.parseOutVariant(
                                         stl.substring(0,1)
                                     ),
-                                    zigzagInfo = ZigzagInfo(
-                                        width = figureExtractor.valueAt(zig, 0, 15.0),
-                                        delta = figureExtractor.valueAt(zig, 1, 35.0),
-                                        height = figureExtractor.valueAt(
-                                            zig,
-                                            2,
-                                            ds.boardWeight,
-                                        ),
-                                        fromCorner = true,
-                                    ),
+                                    zigzagInfo = BlockTortoiseReader.readZigInfo(zig, figureExtractor.memory, ds),
                                     connectStyle = BoxAlgorithm.parseConnectVariant(
                                         stl.substring(1,2)
                                     ),
                                     isHoleLine = stl.substring(2,3) in "ho",
-                                    style = BoxAlgorithm.parseRoadStyle(style.substring(0,1))
+                                    style = BoxAlgorithm.parseRoadStyle(style.substring(0,1)),
+                                    zigazagModel = zig?.inner?.getOrNull(3),
+                                    holeModel = zig?.inner?.getOrNull(4),
                                 ),
-                                ds = ds
+                                ds = ds,
+                                figureExtractor = figureExtractor
                             ), acc
                         ),
                     )

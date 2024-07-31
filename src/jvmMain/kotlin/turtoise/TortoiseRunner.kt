@@ -3,7 +3,7 @@ package turtoise
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
-import turtoise.memory.BlockTortoiseMemory
+import turtoise.memory.FigureTortoiseMemory
 import turtoise.memory.SimpleTortoiseMemory
 import turtoise.memory.TortoiseMemory
 import turtoise.parser.TortoiseParser
@@ -51,7 +51,8 @@ class TortoiseRunner(
         ds: DrawerSettings,
         state: TortoiseState,
         maxStackSize: Int,
-        arguments: TortoiseParserStackItem? = null
+        memory: TortoiseMemory,
+        arguments: TortoiseParserStackItem?,
     ): IFigure {
         return findAlgorithm(algName)?.let { alg ->
             alg.names.firstOrNull()?.let { n ->
@@ -61,7 +62,7 @@ class TortoiseRunner(
                     figureExtractor = TortoiseFigureExtractor(
                         ds = ds,
                         maxStackSize = maxStackSize,
-                        memory = arguments?.let { BlockTortoiseMemory(it) }
+                        memory = arguments?.let { FigureTortoiseMemory(it, memory) }
                             ?: SimpleTortoiseMemory(),
                         runner = this,
                     )
@@ -85,6 +86,7 @@ class TortoiseRunner(
                 ds = ds,
                 state = state,
                 maxStackSize = maxStackSize,
+                memory = memory,
                 arguments = block
             )
         } else {
