@@ -1,12 +1,11 @@
 package turtoise
 
 import com.kos.boxdrawer.detal.splash.ISplashDetail
-import com.kos.figure.FigurePolyline
 import com.kos.figure.FigureText
 import turtoise.parser.TortoiseParserStackBlock
-import turtoise.road.RoadCad
-import turtoise.road.RoadProperties
+import vectors.Vec2
 import java.text.DecimalFormat
+import kotlin.math.abs
 
 
 abstract class TortoiseSplash : TortoiseBase() {
@@ -82,8 +81,73 @@ abstract class TortoiseSplash : TortoiseBase() {
             "f" -> {
                 builder.state.zigParam = builder.state.zigParam.copy(reverse = false)
             }
+            "l", "lv", "lh" -> {
+                val variables = com.takeBlock(1)?.inner.orEmpty()
+
+                val pos = intersectPosition(com, figureExtractor, builder)
+
+                variables.getOrNull(0)?.let { v ->
+                    memory.assign(v.argument, pos?.x?:0.0)
+                }
+                variables.getOrNull(1)?.let { v ->
+                    memory.assign(v.argument, pos?.y?:0.0)
+                }
+            }
+
             else -> {}
         }
+    }
+
+    private fun intersectPosition(
+        com: TortoiseCommand,
+        figureExtractor: TortoiseFigureExtractor,
+        builder: TortoiseBuilder
+    ): Vec2? {
+        val isVertical = com.takeBlock(0)?.innerLine?.endsWith("v") ?: false
+        val cx = com[2, figureExtractor.memory]
+        val a = builder.angle
+        val sp = builder.xy
+
+        val eps = 0.0001
+
+        val pos = if (com.size <= 2) {
+            if (isVertical) {
+                if (abs(cx - sp.x) < eps) {
+                    null
+                } else {
+                    Vec2.intersection(
+                        sp,
+                        sp + Vec2(1.0, 0.0).rotate(a),
+                        Vec2(cx, -1000.0),
+                        Vec2(cx, 1000.0)
+                    )
+                }
+            } else {
+                if (abs(cx - sp.y) < eps) {
+                    null
+                } else {
+                    Vec2.intersection(
+                        sp,
+                        sp + Vec2(1.0, 0.0).rotate(a),
+                        Vec2(-1000.0, cx),
+                        Vec2(1000.0, cx)
+                    )
+                }
+            }
+        } else {
+            val cy = com[3, figureExtractor.memory]
+            val ca = Math.toRadians(com[4, figureExtractor.memory])
+
+            val css = Vec2(cx, cy)
+            Vec2.intersection(
+                sp,
+                sp + Vec2(1.0, 0.0).rotate(a),
+                css,
+                css + Vec2(1.0, 0.0).rotate(ca)
+            )
+
+        }
+        return pos
     }
 
     protected fun figuresSplash(
