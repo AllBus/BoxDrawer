@@ -48,9 +48,9 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
     /**
      * @param angle radians
      */
-    fun rotate(angle: Double, pivot:Vec2): Vec2 = Vec2(
-        cos(angle) * (x+pivot.x) - sin(angle) * (y+pivot.y)-pivot.x,
-        cos(angle) * (y+pivot.y) + sin(angle) * (x+pivot.x)-pivot.y
+    fun rotate(angle: Double, pivot: Vec2): Vec2 = Vec2(
+        cos(angle) * (x + pivot.x) - sin(angle) * (y + pivot.y) - pivot.x,
+        cos(angle) * (y + pivot.y) + sin(angle) * (x + pivot.x) - pivot.y
     )
 
     fun t(): Vec2 {
@@ -76,18 +76,18 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
          * in radians
          */
         fun angle(a: Vec2, b: Vec2): Double {
-            return (b-a).angle
+            return (b - a).angle
         }
 
 
         /**
          * in radians
          */
-        fun angle(a: Vec2, b: Vec2, c :Vec2): Double {
+        fun angle(a: Vec2, b: Vec2, c: Vec2): Double {
             val ang = atan2(c.y - b.y, c.x - b.x) -
                     atan2(a.y - b.y, a.x - b.x)
-            return if (ang<0.0)
-                ang+Math.PI*2
+            return if (ang < 0.0)
+                ang + Math.PI * 2
             else
                 ang
         }
@@ -102,7 +102,21 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
         }
 
         fun twoTriangleSquare(a: Vec2, b: Vec2, p: Vec2): Double {
-            return abs((b.y -a.y) * p.x - (b.x - a.x) * p.y + b.x * a.y - b.y*a.x )
+            return abs((b.y - a.y) * p.x - (b.x - a.x) * p.y + b.x * a.y - b.y * a.x)
+        }
+
+        fun positionEnd(a: Vec2, b: Vec2, offset: Double): Vec2 {
+            val d = distance(a, b)
+            if (d == 0.0)
+                return a
+            return a + (b - a) * (1 - offset / d)
+        }
+
+        fun positionStart(a: Vec2, b: Vec2, offset: Double): Vec2 {
+            val d = distance(a, b)
+            if (d == 0.0)
+                return a
+            return a + (b - a) * (offset / d)
         }
 
         fun normalize(a: Vec2, b: Vec2): Vec2 {
@@ -173,8 +187,8 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             return K
         }
 
-        fun casteljauLine(p: List<Vec2>, ts: Double, te:Double): List<Vec2> {
-            return casteljauLine( casteljauLine(p, te).first, if (te>0.0) ts/te else 0.0).second
+        fun casteljauLine(p: List<Vec2>, ts: Double, te: Double): List<Vec2> {
+            return casteljauLine(casteljauLine(p, te).first, if (te > 0.0) ts / te else 0.0).second
         }
 
         fun casteljauLine(p: List<Vec2>, t: Double): Pair<List<Vec2>, List<Vec2>> {
@@ -297,13 +311,13 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
 
         fun bezierPosition(
             points: List<Vec2>,
-            t:Double,
-            eps:Double
-        ): PointWithNormal{
+            t: Double,
+            eps: Double
+        ): PointWithNormal {
             return PointWithNormal.from(
                 bezierLerp(points, t),
-                bezierLerp(points, t-eps),
-                bezierLerp(points, t+eps)
+                bezierLerp(points, t - eps),
+                bezierLerp(points, t + eps)
             )
         }
 
@@ -355,7 +369,7 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
 
                 if (ns > tr) {
 
-                    val a= bezierLerp(points, predt + (tr - sum) / length)
+                    val a = bezierLerp(points, predt + (tr - sum) / length)
                     return PointWithNormal.from(
                         a,
                         pred,
@@ -366,7 +380,7 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
                 pred = current
                 predt = t
             }
-            return PointWithNormal.from(points.last(), points[points.size - 2],points.last())
+            return PointWithNormal.from(points.last(), points[points.size - 2], points.last())
         }
 
 
@@ -414,12 +428,12 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             return bezierSingleLength(bl) + bezierSingleLength(br)
         }
 
-        fun intersection(a:Vec2, b:Vec2, c:Vec2, d:Vec2): Vec2?{
+        fun intersection(a: Vec2, b: Vec2, c: Vec2, d: Vec2): Vec2? {
             val bt = b - a
-            val zn = (a.x -b.x)*(c.y-d.y) - (a.y-b.y)*(c.x-d.x)
-            if (abs(zn)<0.0001) return null
-            val t = ((a.x-c.x)*(c.y-d.y)-(a.y-c.y)*(c.x-d.x)) / zn
-            return a+bt*t
+            val zn = (a.x - b.x) * (c.y - d.y) - (a.y - b.y) * (c.x - d.x)
+            if (abs(zn) < 0.0001) return null
+            val t = ((a.x - c.x) * (c.y - d.y) - (a.y - c.y) * (c.x - d.x)) / zn
+            return a + bt * t
         }
     }
 }

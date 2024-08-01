@@ -66,3 +66,5 @@ class FigureList(
     override val hasTransform: Boolean
         get() = false
 }
+
+fun <T : IFigure> Iterable<T>.toFigure(): FigureList = FigureList(this.toList())

@@ -54,17 +54,6 @@ fun DisplayTortoise(
 
     val selectedType = remember { mutableIntStateOf(0) }
 
-    val m = Matrix()
-    m.rotateY(45f)
-    m.rotateX(30f)
-
-//    LaunchedEffect(pos, displayScale){
-//        val ds = displayScale.value.toDouble()
-//        val dz = displaySize.value.toVec2() / ds
-//        onStateChange( String.format("(%.4f : %.4f) x (%.4f : %.4f)", pos.x/ds, pos.y/ds , dz.x, dz.y))
-//        //onStateChange(String.format("(%.4f : %.4f) x (%.4f : %.4f)", pos.x/ds, pos.y/ds , dz.x, dz.y))
-//    }
-
     val scale = displayScale.value
 
     Canvas(modifier = Modifier.fillMaxSize().clipToBounds()

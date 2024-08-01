@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -118,39 +117,8 @@ fun Editor(
         }
 
         if ((tabIndex.value == BoxDrawerToolBar.TAB_BOX && !alternative.value) || tabIndex.value == BoxDrawerToolBar.TAB_TORTOISE) {
-            Column(
-                modifier = Modifier.align(Alignment.TopEnd).width(180.dp)
-            ) {
-                Slider(
-                    modifier = Modifier.wrapContentHeight(),
-                    onValueChange = {
-                        dropValueX.value = it;
-                        onRotateDisplay()
-                    },
-                    value = dropValueX.value,
-                    valueRange = -360f..360f
-                )
-
-                Slider(
-                    modifier = Modifier.wrapContentHeight(),
-                    onValueChange = {
-                        dropValueY.value = it;
-                        onRotateDisplay()
-                    },
-                    value = dropValueY.value,
-                    valueRange = -360f..360f
-                )
-                Slider(
-                    modifier = Modifier.wrapContentHeight(),
-                    onValueChange = {
-                        dropValueZ.value = it;
-                        onRotateDisplay(
-                        )
-                    },
-                    value = dropValueZ.value,
-                    valueRange = -360f..360f
-                )
-            }
+            val modifier = Modifier.align(Alignment.TopEnd).width(180.dp)
+            Rotate3dController(modifier, dropValueX, dropValueY, dropValueZ, onRotateDisplay)
         } else {
             //  var visible by remember { mutableStateOf(tabIndex.value == BoxDrawerToolBar.TAB_TOOLS && !checkboxEditor.value) }
             Row(

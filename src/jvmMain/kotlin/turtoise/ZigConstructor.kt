@@ -220,15 +220,16 @@ object ZigConstructor {
 
         offset += 0.0
         val points = mutableListOf<IFigure>()
-        points+=FigureArray(
-            figure = zigzagFigure,
-            startPoint = Vec2(offset, z).rotate(angleV) + origin,
-            distance = Vec2(deltaV, 0.0),
-            columns = count,
-            rows = 1,
-            angle = angleV * 180 / Math.PI,
-
-            )
+        if (zigzagFigure != FigureEmpty) {
+            points += FigureArray(
+                figure = zigzagFigure,
+                startPoint = Vec2(offset, z).rotate(angleV) + origin,
+                distance = Vec2(deltaV, 0.0),
+                columns = count,
+                rows = 1,
+                angle = angleV * 180 / Math.PI,
+                )
+        }
 
         var pred = origin
         for (i in 0 until count) {

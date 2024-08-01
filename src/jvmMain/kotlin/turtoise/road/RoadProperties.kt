@@ -17,5 +17,17 @@ class RoadProperties(
     val style: ERoadStyle,
     val zigazagModel : TortoiseParserStackItem?,
     val holeModel : TortoiseParserStackItem?,
+    val ups: RoadUps?,
 )
 
+class RoadUps(
+    val left: RoadUp?,
+    val right: RoadUp?,
+    val top:RoadUp?
+)
+
+class RoadUp(
+    val height:Double,
+    val radius:Double,
+    val figure: TortoiseParserStackItem?,
+)

@@ -1,6 +1,5 @@
 package com.kos.boxdrawer.detal.splash
 
-import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureLine
 import com.kos.figure.IFigure
@@ -113,3 +112,4 @@ class SplashRoundLine: ISplashDetail {
         return Triple(rest, aap, angle)
     }
 }
+

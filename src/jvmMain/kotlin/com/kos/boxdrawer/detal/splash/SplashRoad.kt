@@ -12,8 +12,11 @@ import turtoise.TortoiseFigureExtractor
 import turtoise.ZigzagInfo
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
+import turtoise.parser.TortoiseParserStackItem
 import turtoise.road.RoadCad
 import turtoise.road.RoadProperties
+import turtoise.road.RoadUp
+import turtoise.road.RoadUps
 import vectors.Vec2
 
 class SplashRoad() : ISplashDetail {
@@ -21,7 +24,7 @@ class SplashRoad() : ISplashDetail {
         get() = listOf("road")
 
     override fun help(): HelpData = HelpData(
-        "road (figure) (w h s) (zd zw zh (zig)) (ve) (ds)",
+        "road (figure) (w h s ((l * *) (r * *) (t * *))) (zd zw zh (zig) (hole)) (ve) (ds)",
         "Построить дорогу",
         listOf(
             HelpDataParam(
@@ -71,6 +74,22 @@ class SplashRoad() : ISplashDetail {
         )
     )
 
+    private fun readUp(block: TortoiseParserStackItem, figureExtractor: TortoiseFigureExtractor): RoadUp{
+        return RoadUp(
+                height = figureExtractor.valueAt(block, 1, 0.0),
+                radius = figureExtractor.valueAt(block, 2, 0.0),
+                figure = block.inner.getOrNull(3)
+            )
+    }
+
+    private fun readUps(block: TortoiseParserStackItem, figureExtractor: TortoiseFigureExtractor): RoadUps{
+        return RoadUps(
+            left = block.getInnerAtName("l")?.let{readUp(it, figureExtractor)},
+            right = block.getInnerAtName("r")?.let{readUp(it, figureExtractor)},
+            top = block.getInnerAtName("t")?.let{readUp(it, figureExtractor)},
+        )
+   }
+
     override fun draw(
         builder: TortoiseBuilder,
         com: TortoiseCommand,
@@ -112,6 +131,7 @@ class SplashRoad() : ISplashDetail {
                                     style = BoxAlgorithm.parseRoadStyle(style.substring(0,1)),
                                     zigazagModel = zig?.inner?.getOrNull(3),
                                     holeModel = zig?.inner?.getOrNull(4),
+                                    ups = a?.inner?.getOrNull(3)?.let { readUps(it, figureExtractor) }
                                 ),
                                 ds = ds,
                                 figureExtractor = figureExtractor
@@ -121,7 +141,6 @@ class SplashRoad() : ISplashDetail {
                     acc + Vec2(f.rect().width, 0.0)
                 } else
                     acc
-
             }
         }
     }

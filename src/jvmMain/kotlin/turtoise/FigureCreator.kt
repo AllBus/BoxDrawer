@@ -3,17 +3,20 @@ package turtoise
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEmpty
-import com.kos.figure.algorithms.FigureBezierList
 import com.kos.figure.FigureLine
-import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
-import com.kos.figure.complex.FigureRoundRect
+import com.kos.figure.algorithms.FigureBezierList
+import com.kos.figure.collections.FigureList
+import com.kos.figure.collections.toFigure
 import vectors.Vec2
 import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlin.math.tan
 import kotlin.math.truncate
 
 object FigureCreator {
@@ -25,7 +28,7 @@ object FigureCreator {
     ): IFigure {
         val p = (1..count).map { ind ->
             val ang = angle + 2 * Math.PI * ind / count
-            center + Vec2(cos(ang),sin(ang)) * radius
+            center + Vec2(cos(ang), sin(ang)) * radius
         }
         return FigurePolyline(p, true)
     }
@@ -175,8 +178,8 @@ object FigureCreator {
         val eps = 0.0 //-0.00001
         return FigureBezierList(
             Vec2(v.x - p1.first * smoothSize, v.y - p1.second * smoothSize),
-            Vec2(v.x - (eps+p1.first) * smoothSize, v.y - (eps+p1.second) * smoothSize),
-            Vec2(v2.x + (eps+p2.first) * smoothSize, v2.y + (eps+p2.second) * smoothSize),
+            Vec2(v.x - (eps + p1.first) * smoothSize, v.y - (eps + p1.second) * smoothSize),
+            Vec2(v2.x + (eps + p2.first) * smoothSize, v2.y + (eps + p2.second) * smoothSize),
             Vec2(v2.x + p2.first * smoothSize, v2.y + p2.second * smoothSize)
         )
     }
@@ -322,4 +325,130 @@ object FigureCreator {
         } else
             FigureEmpty
     }
+
+    fun roundedLine(points: List<Vec2>, radius: List<Double>): IFigure {
+        if (points.size < 2)
+            return FigureEmpty
+
+        var predPoint = points[0]
+        var lastPoint =  points.last()
+        val result = mutableListOf<IFigure>()
+//        result += FigureColor(
+//            Color.Yellow.toArgb(),
+//            DXFColor.getClosestDXFColor(Color.Yellow.toArgb()),
+//            FigurePolyline(points)
+//
+//        )
+
+        val isClose = points.first() == points.last()
+        if (isClose){
+            val r = radius.getOrNull(points.size-2) ?: 0.0
+            val a = points[points.size-2]
+            val b = points[0]
+            val c = points[1]
+            val ci = calculateRadius(a,b,c,r)
+            predPoint = ci.bc
+            lastPoint = ci.ab
+            with (ci) {
+                val startAngle = -atan2((ab.y - o.y), (ab.x - o.x))
+                val endAngle = -atan2((bc.y - o.y), (bc.x - o.x))
+                val sweep = endAngle - startAngle
+                result += FigureCircle(
+                    center = o,
+                    radius = r,
+                    segmentStart = Math.toDegrees(startAngle),
+                    segmentSweep = if (abs(sweep) > Math.PI)
+                        if (sweep<0.0) {
+                            Math.toDegrees(sweep + Math.PI * 2)
+                        }else{
+                            Math.toDegrees(sweep - Math.PI * 2)
+                        }
+                    else
+                        Math.toDegrees(sweep)
+                )
+            }
+        }
+
+        for (i in 0 until points.size - 2) {
+            val a = points[i + 0]
+            val b = points[i + 1]
+            val c = points[i + 2]
+            val r = radius.getOrNull(i) ?: 0.0
+            if (r != 0.0) {
+
+                val ci: CornerInfo = calculateRadius(a, b, c, r)
+
+                if (ci.nonZero){
+                    with (ci) {
+                        val startAngle = -atan2((ab.y - o.y), (ab.x - o.x))
+                        val endAngle = -atan2((bc.y - o.y), (bc.x - o.x))
+                        val sweep = endAngle - startAngle
+
+                        println(
+                            "> ${Math.toDegrees(startAngle)} ${Math.toDegrees(endAngle)} ${
+                                Math.toDegrees(
+                                    sweep
+                                )
+                            }"
+                        )
+
+                        result += FigureLine(predPoint, ab)
+                        result += FigureCircle(
+                            center = o,
+                            radius = r,
+                            segmentStart = Math.toDegrees(startAngle),
+                            segmentSweep = if (abs(sweep) > Math.PI)
+                                if (sweep<0.0) {
+                                    Math.toDegrees(sweep + Math.PI * 2)
+                                }else{
+                                    Math.toDegrees(sweep - Math.PI * 2)
+                                }
+                            else
+                                Math.toDegrees(sweep)
+                        )
+                    }
+                }else{
+                    result += FigureLine(predPoint, ci.ab)
+                }
+                predPoint = ci.bc
+
+            } else {
+                result += FigureLine(predPoint, b)
+                predPoint = b
+            }
+        }
+        result.add(FigureLine(predPoint, lastPoint))
+        return result.toFigure()
+    }
+
+    private fun calculateRadius(
+        a: Vec2,
+        b: Vec2,
+        c: Vec2,
+        r: Double
+    ): CornerInfo {
+        val oa = Vec2.angle(a, b, c)
+        val segment = r / abs(tan(oa / 2))
+        val pp1 = Vec2.distance(a, b)
+        val pp2 = Vec2.distance(b, c)
+        val po = sqrt(r * r + segment * segment)
+
+        val ab = b - (b - a) * segment / pp1
+        val bc = b - (b - c) * segment / pp2
+
+        val co = ab + bc - b
+        val pc = Vec2.distance(b, co)
+
+        val ci: CornerInfo = if (pc != 0.0) {
+            val d = b - co
+            val o = b - d * po / pc
+
+            CornerInfo(ab, bc, o, true)
+        } else {
+            CornerInfo(b, b, b, false)
+        }
+        return ci
+    }
 }
+
+class CornerInfo(val ab:Vec2,val bc:Vec2, val o:Vec2,val nonZero:Boolean)
