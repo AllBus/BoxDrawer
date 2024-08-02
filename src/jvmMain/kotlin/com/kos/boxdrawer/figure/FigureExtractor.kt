@@ -89,7 +89,7 @@ class FigureExtractor {
         }
 
         is DXFCircle ->
-            FigureCircle(entry.centerPoint.vec, entry.radius)
+            FigureCircle(entry.centerPoint.vec, entry.radius,           outSide = true,)
 
         is DXFEllipse -> {
 
@@ -99,9 +99,10 @@ class FigureExtractor {
                 radius = entry.halfMajorAxisLength,
                 radiusMinor = entry.ratio * entry.halfMajorAxisLength,
                 rotation = entry.rotationAngle,
-                segmentStart = entry.startParameter * 180.0 / Math.PI,
-                segmentSweep = if (entry.endParameter == entry.startParameter) 360.0 else
-                    (entry.endParameter - entry.startParameter) * 180.0 / Math.PI,
+                outSide = true,
+                segmentStartAngle = entry.startParameter,
+                segmentSweepAngle = if (entry.endParameter == entry.startParameter) Math.PI*2 else
+                    (entry.endParameter - entry.startParameter),
             )
         }
 
@@ -111,9 +112,10 @@ class FigureExtractor {
             FigureCircle(
                 center = entry.centerPoint.vec,
                 radius = entry.radius,
-                segmentStart = entry.startAngle,
-                segmentSweep = if (entry.endAngle == entry.startAngle) 360.0 else
-                        (entry.endAngle - entry.startAngle)
+                outSide = true,
+                segmentStartAngle = Math.toRadians (entry.startAngle),
+                segmentSweepAngle = if (entry.endAngle == entry.startAngle) Math.PI*2 else
+                        Math.toRadians (entry.endAngle - entry.startAngle)
             )
         }
 

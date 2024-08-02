@@ -45,7 +45,7 @@ class DxfFigureDrawer(
         startAngle: Double,
         sweepAngle: Double
     ) {
-        drawArc(g, center, radius, radiusMinor, startAngle, sweepAngle)
+        drawArc(g, center, radius, radiusMinor, Math.toDegrees(startAngle), Math.toDegrees( sweepAngle))
     }
 
     override fun drawCircle(center: Vec2, radius: Double) {

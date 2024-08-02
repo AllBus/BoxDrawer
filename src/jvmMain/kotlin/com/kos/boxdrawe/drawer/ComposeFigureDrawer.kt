@@ -18,6 +18,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import com.kos.drawer.IFigureGraphics
 import vectors.Vec2
+import kotlin.math.PI
 import kotlin.math.abs
 
 class ComposeFigureDrawer(
@@ -156,10 +157,10 @@ class ComposeFigureDrawer(
             (center.x + radius).toFloat(),
             (center.y + radius2).toFloat()
         )
-        if (sweepAngle == 0.0 || abs(sweepAngle) >= 360.0)
+        if (sweepAngle == 0.0 || abs(sweepAngle) >= PI*2)
             p.addOval(rect)
         else
-            p.addArc(
+            p.addArcRad(
                 rect,
                 -startAngle.toFloat(),
                 -sweepAngle.toFloat()

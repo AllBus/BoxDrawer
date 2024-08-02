@@ -126,7 +126,7 @@ class BublikCad {
         val zig = 8;
         val zihe = drawerSettings.holeWeight;
 
-        list.add(FigureCircle(offset, radius + zihe + drawerSettings.holeOffset))
+        list.add(FigureCircle(offset, radius + zihe + drawerSettings.holeOffset, outSide = true))
         var dizig = dist + zig;
 
 
@@ -171,7 +171,7 @@ class BublikCad {
             )
         }
 
-        list.add(FigureCircle(offset, min(holeRadius, radius - zihe - drawerSettings.holeOffset)))
+        list.add(FigureCircle(offset, min(holeRadius, radius - zihe - drawerSettings.holeOffset), outSide = true))
         return list
     }
 

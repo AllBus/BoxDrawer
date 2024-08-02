@@ -23,6 +23,7 @@ import turtoise.ZigConstructor
 import turtoise.ZigzagInfo
 import turtoise.parser.TortoiseParserStackItem
 import vectors.Vec2
+import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.max
@@ -637,7 +638,7 @@ object RoadCad {
             )
             if (r > 0.0) {
                 add(
-                    FigureCircle(tt + Vec2(width - r, rhe), r, 0.0, 90.0)
+                    FigureCircle(tt + Vec2(width - r, rhe), r, outSide = true, 0.0, PI/2)
                 )
             }
             add(
@@ -648,7 +649,7 @@ object RoadCad {
             )
             if (r > 0.0) {
                 add(
-                    FigureCircle(tt + Vec2(r, rhe), r, 90.0, 90.0)
+                    FigureCircle(tt + Vec2(r, rhe), r, true, PI/2, PI/2)
                 )
             }
             add(
@@ -718,7 +719,7 @@ object RoadCad {
             )
             if (r > 0.0) {
                 add(
-                    FigureCircle(tt + Vec2(r, rhe), r, 180.0, 90.0)
+                    FigureCircle(tt + Vec2(r, rhe), r, true, PI, PI/2)
                 )
             }
             add(
@@ -729,7 +730,7 @@ object RoadCad {
             )
             if (r > 0.0) {
                 add(
-                    FigureCircle(tt + Vec2(width - r, rhe), r, 270.0, 90.0)
+                    FigureCircle(tt + Vec2(width - r, rhe), r, true, PI*3/2, PI/2)
                 )
             }
             add(

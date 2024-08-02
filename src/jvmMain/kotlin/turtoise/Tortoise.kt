@@ -370,13 +370,18 @@ class Tortoise() : TortoiseSplash() {
                         //nothing
                     } else {
                         if (r < 0.0) {
-                            builder.add(FigureCircle(center, abs(r), np, c2))
+                            builder.add(FigureCircle(
+                                center = center,
+                                radius = abs(r),
+                                startArc = np,
+                                endArc = c2
+                            ))
                         } else {
                             builder.add(FigureCircle(center, abs(r), c2, np))
                         }
                     }
                     if (cir > 0.0) {
-                        builder.add(FigureCircle(center, cir))
+                        builder.add(FigureCircle(center, cir, true))
                     }
                     state.moveTo(np)
                     state.angleInDegrees += sign(r) * a

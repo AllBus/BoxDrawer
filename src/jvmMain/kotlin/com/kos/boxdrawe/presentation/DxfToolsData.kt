@@ -136,8 +136,9 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                     radius = figure.radius * scale,
                     radiusMinor = figure.radiusMinor * scale,
                     rotation = figure.rotation,
-                    segmentStart = figure.segmentStart,
-                    segmentSweep = figure.segmentSweep
+                    outSide = figure.outSide,
+                    segmentStart = figure.segmentStartAngle,
+                    segmentSweep = figure.segmentSweepAngle,
                 )
             }
 

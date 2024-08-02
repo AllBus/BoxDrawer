@@ -16,10 +16,11 @@ data class Corner(
 ):IEdge{
     override fun toFigure():FigureCircle {
         return FigureCircle(
-            center,
-            radius,
-            startInDegrees,
-            sweepInDegrees,
+            center = center,
+            radius = radius,
+            outSide = true,
+            segmentStartAngle = Math.toRadians( startInDegrees),
+            segmentSweepAngle = Math.toRadians(sweepInDegrees),
         )
     }
 
@@ -48,8 +49,9 @@ data class Corner(
         return FigureCircle(
             center = center,
             radius = radius,
-            segmentStart = startInDegrees+sweepInDegrees*ste,
-            segmentSweep = sweepInDegrees*(end-ste)
+            outSide = true,
+            segmentStartAngle = Math.toRadians(startInDegrees+sweepInDegrees*ste),
+            segmentSweepAngle = Math.toRadians(sweepInDegrees*(end-ste))
         )
     }
 }

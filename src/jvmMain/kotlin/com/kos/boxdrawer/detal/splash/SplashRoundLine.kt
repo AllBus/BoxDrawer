@@ -73,7 +73,7 @@ class SplashRoundLine: ISplashDetail {
         val aa = Vec2(ax, ay)
 
         val (aap, angle) = if (r > 0) {
-            val preda = sign(ay) * 90
+            val preda = sign(ay) * PI/2
             val cc = Vec2(0.0, sign(ay) * r)
 
             val al = (aa - cc).angle
@@ -94,7 +94,7 @@ class SplashRoundLine: ISplashDetail {
                 rest += FigureLine(p + cr, cr + ap)
             }
 
-            rest += FigureCircle(cr + cc, r, preda, -alp * 180 / PI)
+            rest += FigureCircle(cr + cc, r, true,  preda, -alp)
             Pair(ap , (ap-p).angle*180/ PI)
         } else {
             val ap = if (ll == null) {

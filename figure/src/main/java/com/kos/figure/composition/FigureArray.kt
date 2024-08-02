@@ -8,6 +8,9 @@ import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
 
+/**
+ * @angle inDegrees
+ */
 class FigureArray(
     val figure: IFigure,
     val startPoint: Vec2,

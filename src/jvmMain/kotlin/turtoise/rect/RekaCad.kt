@@ -420,7 +420,7 @@ object RekaCad {
         return FigureList(
             rekaDraw.positions.map { kubik ->
                 val av = -kubik.angle * 180 / PI
-                FigureCircle(kubik.coord, 2.5, segmentStart = av - 180.0, segmentSweep = 180.0)
+                FigureCircle(kubik.coord, 2.5, true, segmentStartAngle = av - PI, segmentSweepAngle = PI)
             }
         )
     }
@@ -434,7 +434,7 @@ object RekaCad {
             if (kubik.reka === cur.reka) {
                 val av = -kubik.angle * 180 / PI
                 resList.add(
-                    FigureCircle(kubik.coord, 2.6, segmentStart = av - 180.0, segmentSweep = 180.0)
+                    FigureCircle(kubik.coord, 2.6, true, segmentStartAngle = av - PI, segmentSweepAngle = PI)
                 )
 
                 findEdgePoints(kubik.reka, cur.position.edge)?.let { rep ->

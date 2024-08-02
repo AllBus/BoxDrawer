@@ -318,6 +318,7 @@ abstract class TortoiseBase {
                 FigureCircle(
                     center = builder.state.xy,
                     radius = r1,
+                    outSide = true,
                 )
             )
         } else
@@ -327,7 +328,8 @@ abstract class TortoiseBase {
                         center = builder.state.xy,
                         radius = r1,
                         radiusMinor = r2,
-                        rotation = builder.state.angle,
+                        rotation = builder.angle,
+                        outSide = true,
                     )
                 )
             } else {
@@ -338,9 +340,10 @@ abstract class TortoiseBase {
                             center = builder.state.xy,
                             radius = r1,
                             radiusMinor = r2,
-                            rotation = builder.state.angle,
-                            segmentStart = com.take(d, 0.0, memory),
-                            segmentSweep = com.take(d + 1, 360.0, memory),
+                            rotation = builder.angle,
+                            outSide = true,
+                            segmentStartAngle = Math.toRadians(com.take(d, 0.0, memory)),
+                            segmentSweepAngle = Math.toRadians(com.take(d + 1, 360.0, memory)),
                         )
                     )
                 }
@@ -359,6 +362,7 @@ abstract class TortoiseBase {
                 FigureCircle(
                     center = builder.state.xy,
                     radius = r,
+                    outSide = true,
                 )
             )
         } else {
@@ -367,8 +371,9 @@ abstract class TortoiseBase {
                     FigureCircle(
                         center = builder.state.xy,
                         radius = r,
-                        segmentStart = com.take(d + 0, 0.0, memory) - builder.state.angleInDegrees,
-                        segmentSweep = com.take(d + 1, 360.0, memory),
+                        outSide = true,
+                        segmentStartAngle = Math.toRadians(com.take(d + 0, 0.0, memory)) - builder.angle,
+                        segmentSweepAngle = Math.toRadians(com.take(d + 1, 360.0, memory)),
                     )
                 )
             }

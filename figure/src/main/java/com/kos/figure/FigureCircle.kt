@@ -11,37 +11,39 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 /**
- *  @param segmentStart degrees
- *  @param segmentEnd degrees
+ *  @param segmentStartAngle radians
+ *  @param segmentSweepAngle radians
  */
 class FigureCircle(
     center: Vec2,
     radius: Double,
-    segmentStart: Double = 0.0,
-    segmentSweep: Double = 360.0,
+    outSide: Boolean,
+    segmentStartAngle: Double = 0.0,
+    segmentSweepAngle: Double = PI*2
 ) : FigureEllipse(
     center = center,
     radius = radius,
     radiusMinor = radius,
     rotation = 0.0,
-    segmentStart = segmentStart,
-    segmentSweep = segmentSweep
+    outSide = outSide,
+    segmentStartAngle = segmentStartAngle,
+    segmentSweepAngle = segmentSweepAngle
 ) {
     companion object {
         private fun calcSweep(startArc: Vec2, endArc:Vec2): Double {
             val ea = endArc.angle
             val sa = startArc.angle
             if (sa > ea)
-                return  Math.toDegrees(sa-ea)-360
-           return  Math.toDegrees(sa-ea)
+                return  sa-ea-PI*2
+           return sa-ea
         }
     }
 
     constructor(center:Vec2, radius:Double, startArc: Vec2, endArc:Vec2): this(
-        center, radius, -Math.toDegrees((startArc-center).angle),
+        center, radius, true,  -(startArc-center).angle,
        calcSweep(startArc-center, endArc-center)
     ){
-        println("$segmentStart to $segmentSweep")
+
     }
 
     override fun crop(k: Double, cropSide: CropSide): Figure {
@@ -89,11 +91,11 @@ class FigureCircle(
     }
 
     override fun rotate(angle: Double): FigureEllipse {
-        return FigureCircle(center.rotate(angle), radius, normalizeAngle(segmentStart-Math.toDegrees(angle)), segmentSweep)
+        return FigureCircle(center.rotate(angle), radius, outSide, normalizeAngle(segmentStartAngle-angle), segmentSweepAngle)
     }
 
     override fun rotate(angle: Double, rotateCenter: Vec2): FigureEllipse {
-        return FigureCircle((center + rotateCenter).rotate(angle) - rotateCenter, radius, normalizeAngle(segmentStart-Math.toDegrees(angle)), segmentSweep)
+        return FigureCircle((center + rotateCenter).rotate(angle) - rotateCenter, radius,outSide, normalizeAngle(segmentStartAngle-angle), segmentSweepAngle)
     }
 
     override fun create(
@@ -101,33 +103,40 @@ class FigureCircle(
         radius: Double,
         radiusMinor: Double,
         rotation: Double,
+        outSide: Boolean,
         segmentStart: Double,
         segmentSweep: Double
     ): FigureEllipse {
-        return FigureCircle(center, radius, segmentStart, segmentSweep)
+        return FigureCircle(
+            center = center,
+            radius = radius,
+            outSide = outSide,
+            segmentStartAngle = rotation+ segmentStart,
+            segmentSweepAngle = segmentSweep
+        )
     }
 
     override fun draw(g: IFigureGraphics) {
         if (isFill()) {
             g.drawCircle(center, radius)
         } else {
-            g.drawArc(center, radius, radiusMinor, segmentStart, segmentSweep)
+            g.drawArc(center, radius, radiusMinor, segmentStartAngle, segmentSweepAngle)
         }
     }
 
     override fun print(): String {
-        return "M ${center.x} ${center.y} c ${radius} ${segmentStart} ${segmentSweep}"
+        return "M ${center.x} ${center.y} c ${radius} ${Math.toDegrees(segmentStartAngle)} ${Math.toDegrees(segmentStartAngle+segmentSweepAngle)}"
     }
 
     override fun perimeter(): Double {
         if (isFill()) return 2 * Math.PI * radius
-        return abs((segmentSweep) * Math.PI / 180.0 * radius)
+        return abs(segmentSweepAngle * radius)
     }
 
     override fun positionInPath(delta: Double): PointWithNormal {
-        val rot = (segmentStart + delta * segmentSweep) * Math.PI / 180
+        val rot = (rotation+segmentStartAngle + delta * segmentSweepAngle)
         val pos = center + Vec2(radius, 0.0).rotate(rot)
-        val normal = Vec2(1.0, 0.0).rotate(rot)
+        val normal = Vec2(1.0*normalSign, 0.0).rotate(rot)
         return PointWithNormal(pos, normal)
     }
 
@@ -136,8 +145,8 @@ class FigureCircle(
     }
 
     override fun name(): String {
-        return if (abs(segmentSweep)<360.0)
-            "Дуга ${digitFormatter.format(radius)} : ${digitFormatter.format(segmentStart)} x ${digitFormatter.format(segmentSweep)}"
+        return if (abs(segmentSweepAngle)<PI*2)
+            "Дуга ${digitFormatter.format(radius)} : ${digitFormatter.format(Math.toDegrees(segmentStartAngle))} x ${digitFormatter.format(Math.toDegrees(segmentSweepAngle))}"
         else "Окружность ${digitFormatter.format(radius)}"
     }
 
@@ -148,8 +157,8 @@ class FigureCircle(
     override fun edgeCount(): Int = 1
 
     override fun approximate(pointCount: Int): List<List<Vec2>> {
-        val startAngle = segmentStart * Math.PI / 180;
-        val sweepAngle = segmentSweep * Math.PI / 180;
+        val startAngle = rotation+segmentStartAngle
+        val sweepAngle = segmentSweepAngle
 
         return listOf((0..pointCount).map { p ->
             val t = startAngle + (sweepAngle) * p.toDouble()/pointCount
@@ -157,8 +166,9 @@ class FigureCircle(
         })
     }
 
+
     override fun duplicationAtNormal(h: Double): FigureCircle {
-        return FigureCircle(center, radius+h, segmentStart, segmentSweep)
+        return FigureCircle(center, radius+h*normalSign, outSide, segmentStartAngle, segmentSweepAngle)
     }
 
     override fun take(startMM: Double, endMM: Double): Figure {
@@ -173,8 +183,9 @@ class FigureCircle(
         return FigureCircle(
             center = center,
             radius = radius,
-            segmentStart = segmentStart+segmentSweep*ste,
-            segmentSweep = segmentSweep*(end-ste)
+            outSide = outSide,
+            segmentStartAngle = segmentStartAngle+segmentSweepAngle*ste,
+            segmentSweepAngle = segmentSweepAngle*(end-ste)
         )
     }
 }

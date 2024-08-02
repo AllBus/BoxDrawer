@@ -321,7 +321,7 @@ object FigureCreator {
             val b = (z - h2).angle
             val a = (p - h2).angle
             //      println("$r $p $z $h2 $a $b")
-            FigureCircle(-h2, radius, a * 180 / PI, (b - a) * 180 / PI)
+            FigureCircle(-h2, radius, true, a , (b - a) )
         } else
             FigureEmpty
     }
@@ -349,24 +349,7 @@ object FigureCreator {
             val ci = calculateRadius(a,b,c,r)
             predPoint = ci.bc
             lastPoint = ci.ab
-            with (ci) {
-                val startAngle = -atan2((ab.y - o.y), (ab.x - o.x))
-                val endAngle = -atan2((bc.y - o.y), (bc.x - o.x))
-                val sweep = endAngle - startAngle
-                result += FigureCircle(
-                    center = o,
-                    radius = r,
-                    segmentStart = Math.toDegrees(startAngle),
-                    segmentSweep = if (abs(sweep) > Math.PI)
-                        if (sweep<0.0) {
-                            Math.toDegrees(sweep + Math.PI * 2)
-                        }else{
-                            Math.toDegrees(sweep - Math.PI * 2)
-                        }
-                    else
-                        Math.toDegrees(sweep)
-                )
-            }
+            result += figureCircle(ci, r)
         }
 
         for (i in 0 until points.size - 2) {
@@ -379,34 +362,8 @@ object FigureCreator {
                 val ci: CornerInfo = calculateRadius(a, b, c, r)
 
                 if (ci.nonZero){
-                    with (ci) {
-                        val startAngle = -atan2((ab.y - o.y), (ab.x - o.x))
-                        val endAngle = -atan2((bc.y - o.y), (bc.x - o.x))
-                        val sweep = endAngle - startAngle
-
-                        println(
-                            "> ${Math.toDegrees(startAngle)} ${Math.toDegrees(endAngle)} ${
-                                Math.toDegrees(
-                                    sweep
-                                )
-                            }"
-                        )
-
-                        result += FigureLine(predPoint, ab)
-                        result += FigureCircle(
-                            center = o,
-                            radius = r,
-                            segmentStart = Math.toDegrees(startAngle),
-                            segmentSweep = if (abs(sweep) > Math.PI)
-                                if (sweep<0.0) {
-                                    Math.toDegrees(sweep + Math.PI * 2)
-                                }else{
-                                    Math.toDegrees(sweep - Math.PI * 2)
-                                }
-                            else
-                                Math.toDegrees(sweep)
-                        )
-                    }
+                    result += FigureLine(predPoint, ci.ab)
+                    result += figureCircle(ci, r)
                 }else{
                     result += FigureLine(predPoint, ci.ab)
                 }
@@ -419,6 +376,42 @@ object FigureCreator {
         }
         result.add(FigureLine(predPoint, lastPoint))
         return result.toFigure()
+    }
+
+    fun figureCircle(
+        info: CornerInfo,
+        r: Double,
+    ) :FigureCircle {
+        val startAngle = -atan2((info.ab.y - info.o.y), (info.ab.x - info.o.x))
+        val endAngle = -atan2((info.bc.y - info.o.y), (info.bc.x - info.o.x))
+
+        var sweep = endAngle - startAngle
+
+        var re = 1
+        if (sweep<0.0){
+            re *= -1
+            sweep = -sweep
+        }
+
+        if (sweep > Math.PI){
+            sweep = (sweep - Math.PI * 2)
+        //    re *= -1
+
+        }
+
+        val sa = if (re<0) endAngle else startAngle
+        val sr = sweep
+
+
+       // println("> ${Math.toDegrees(startAngle)} ${Math.toDegrees(endAngle)} ${Math.toDegrees(sweep)}")
+
+        return FigureCircle(
+            center = info.o,
+            radius = r,
+            outSide = true,
+            segmentStartAngle = sa,
+            segmentSweepAngle =  sr
+        )
     }
 
     private fun calculateRadius(
