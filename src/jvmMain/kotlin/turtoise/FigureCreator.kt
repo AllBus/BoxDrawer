@@ -382,25 +382,21 @@ object FigureCreator {
         info: CornerInfo,
         r: Double,
     ) :FigureCircle {
-        val startAngle = -atan2((info.ab.y - info.o.y), (info.ab.x - info.o.x))
-        val endAngle = -atan2((info.bc.y - info.o.y), (info.bc.x - info.o.x))
+        val startAngle = atan2((info.ab.y - info.o.y), (info.ab.x - info.o.x))
+        val endAngle = atan2((info.bc.y - info.o.y), (info.bc.x - info.o.x))
 
-        var sweep = endAngle - startAngle
+        val sweep = endAngle - startAngle
 
-        var re = 1
-        if (sweep<0.0){
-            re *= -1
-            sweep = -sweep
-        }
+        val re = Vec2.det(info.bc-info.ab, info.o-info.ab)
 
-        if (sweep > Math.PI){
-            sweep = (sweep - Math.PI * 2)
-        //    re *= -1
 
-        }
-
-        val sa = if (re<0) endAngle else startAngle
-        val sr = sweep
+        val sr =  if (sweep > Math.PI){
+            (sweep - Math.PI * 2)
+        } else
+        if (sweep < -Math.PI){
+             (sweep + Math.PI * 2)
+        } else
+            sweep
 
 
        // println("> ${Math.toDegrees(startAngle)} ${Math.toDegrees(endAngle)} ${Math.toDegrees(sweep)}")
@@ -408,8 +404,8 @@ object FigureCreator {
         return FigureCircle(
             center = info.o,
             radius = r,
-            outSide = true,
-            segmentStartAngle = sa,
+            outSide = re>0,
+            segmentStartAngle = startAngle,
             segmentSweepAngle =  sr
         )
     }

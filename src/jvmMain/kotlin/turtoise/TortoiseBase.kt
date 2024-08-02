@@ -372,7 +372,7 @@ abstract class TortoiseBase {
                         center = builder.state.xy,
                         radius = r,
                         outSide = true,
-                        segmentStartAngle = Math.toRadians(com.take(d + 0, 0.0, memory)) - builder.angle,
+                        segmentStartAngle = Math.toRadians(com.take(d + 0, 0.0, memory)) + builder.angle,
                         segmentSweepAngle = Math.toRadians(com.take(d + 1, 360.0, memory)),
                     )
                 )

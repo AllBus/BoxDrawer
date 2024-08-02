@@ -14,6 +14,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.PointerEventType
@@ -21,6 +22,7 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.unit.center
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toOffset
+import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.toVec2
 import vectors.Vec2
 import kotlin.math.min
@@ -88,6 +90,7 @@ fun Rotate3dController(
             val s = size.minDimension
             val stroke = Stroke(width = 2f)
             val r = s * 2 / 5
+            this.drawCircle(ThemeColors.controllerBackground, radius = s/2, style = Fill)
 
             withTransform({
                 val m = Matrix()
@@ -97,7 +100,7 @@ fun Rotate3dController(
                 translate(size.center.x, size.center.y)
                 transform(m)
             }) {
-                this.drawCircle(Color.Green, center = Offset.Zero, radius = r, style = stroke)
+                this.drawCircle(Color.Yellow, center = Offset.Zero, radius = r, style = stroke)
                 if (dropValueY.value == 0.0f && dropValueX.value == 0.0f) {
                     this.drawLine(
                         Color.Red,
@@ -107,7 +110,7 @@ fun Rotate3dController(
                     )
 
                     this.drawLine(
-                        Color.Yellow,
+                        Color.Green ,
                         start = Offset(0f, -r),
                         end = Offset(0f, r),
                         strokeWidth = stroke.width
@@ -117,10 +120,8 @@ fun Rotate3dController(
                     val m = Matrix()
                     m.rotateY(90f)
                     transform(m)
-
                 }) {
-                    this.drawCircle(Color.Yellow, center = Offset.Zero, radius = r, style = stroke)
-
+                    this.drawCircle(Color.Green, center = Offset.Zero, radius = r, style = stroke)
                 }
                 withTransform({
                     val m = Matrix()

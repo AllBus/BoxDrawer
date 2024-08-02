@@ -142,6 +142,10 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             return a.x * b.x + a.y * b.y
         }
 
+        fun det(a: Vec2, b: Vec2):Double{
+            return (a.x*b.y-a.y*b.x)
+        }
+
         fun freqency(a: Vec2, f: Double): Vec2 {
             return Vec2(a.x - a.x % f, a.y - a.y % f)
         }

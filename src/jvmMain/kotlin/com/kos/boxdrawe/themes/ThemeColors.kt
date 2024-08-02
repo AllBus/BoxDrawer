@@ -10,6 +10,7 @@ object ThemeColors {
     val inputShape = RoundedCornerShape(8.dp)
     val inputBackground = Color(0xFFFFffff)
     val displayLabelColor = Color(0x8FFFffff)
+    val controllerBackground = Color(0x40909090)
     fun inputBackgroundState(enabled: Boolean) = if (enabled) Color(0xFFFFffff) else Color(0xFFC0C0C0)
     val templateFormBorder = Color(0xFF203020)
     val templateArgumentColor = Color(0xFFAA3020)

@@ -91,11 +91,11 @@ class FigureCircle(
     }
 
     override fun rotate(angle: Double): FigureEllipse {
-        return FigureCircle(center.rotate(angle), radius, outSide, normalizeAngle(segmentStartAngle-angle), segmentSweepAngle)
+        return FigureCircle(center.rotate(angle), radius, outSide, normalizeAngle(segmentStartAngle+angle), segmentSweepAngle)
     }
 
     override fun rotate(angle: Double, rotateCenter: Vec2): FigureEllipse {
-        return FigureCircle((center + rotateCenter).rotate(angle) - rotateCenter, radius,outSide, normalizeAngle(segmentStartAngle-angle), segmentSweepAngle)
+        return FigureCircle((center + rotateCenter).rotate(angle) - rotateCenter, radius,outSide, normalizeAngle(segmentStartAngle+angle), segmentSweepAngle)
     }
 
     override fun create(
@@ -120,7 +120,7 @@ class FigureCircle(
         if (isFill()) {
             g.drawCircle(center, radius)
         } else {
-            g.drawArc(center, radius, radiusMinor, segmentStartAngle, segmentSweepAngle)
+            g.drawArc(center, radius, radiusMinor, -segmentStartAngle, -segmentSweepAngle)
         }
     }
 
