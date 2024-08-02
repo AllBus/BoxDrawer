@@ -419,7 +419,7 @@ object RekaCad {
     fun centerFigures(rekaDraw: RekaDrawResult): IFigure {
         return FigureList(
             rekaDraw.positions.map { kubik ->
-                val av = -kubik.angle * 180 / PI
+                val av = -kubik.angle
                 FigureCircle(kubik.coord, 2.5, true, segmentStartAngle = av - PI, segmentSweepAngle = PI)
             }
         )
@@ -432,7 +432,7 @@ object RekaCad {
         val resList = mutableListOf<IFigure>()
         rekaDraw.positions.forEach { kubik ->
             if (kubik.reka === cur.reka) {
-                val av = -kubik.angle * 180 / PI
+                val av = -kubik.angle
                 resList.add(
                     FigureCircle(kubik.coord, 2.6, true, segmentStartAngle = av - PI, segmentSweepAngle = PI)
                 )
