@@ -11,27 +11,27 @@ import kotlin.math.abs
 data class Corner(
     val center: Vec2,
     val radius:Double,
-    val startInDegrees:Double,
-    val sweepInDegrees:Double,
+    val startAngle:Double,
+    val sweepAngle:Double,
 ):IEdge{
     override fun toFigure():FigureCircle {
         return FigureCircle(
             center = center,
             radius = radius,
             outSide = true,
-            segmentStartAngle = Math.toRadians( startInDegrees),
-            segmentSweepAngle = Math.toRadians(sweepInDegrees),
+            segmentStartAngle = startAngle,
+            segmentSweepAngle = sweepAngle,
         )
     }
 
     override fun toPath(): IFigurePath  = toFigure()
 
     override fun perimeter(): Double {
-        return abs((sweepInDegrees) * Math.PI / 180.0 * radius)
+        return abs(sweepAngle * radius)
     }
 
     override fun positionInPath(delta: Double): PointWithNormal {
-        val rot = (startInDegrees + delta * sweepInDegrees) * Math.PI / 180
+        val rot = (startAngle + delta * sweepAngle)
         val pos = center + Vec2(radius, 0.0).rotate(rot)
         val normal = Vec2(1.0, 0.0).rotate(rot)
         return PointWithNormal(pos, normal)
@@ -50,8 +50,8 @@ data class Corner(
             center = center,
             radius = radius,
             outSide = true,
-            segmentStartAngle = Math.toRadians(startInDegrees+sweepInDegrees*ste),
-            segmentSweepAngle = Math.toRadians(sweepInDegrees*(end-ste))
+            segmentStartAngle = Math.toRadians(startAngle+sweepAngle*ste),
+            segmentSweepAngle = Math.toRadians(sweepAngle*(end-ste))
         )
     }
 }

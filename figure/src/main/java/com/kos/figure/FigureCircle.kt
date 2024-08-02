@@ -120,7 +120,7 @@ class FigureCircle(
         if (isFill()) {
             g.drawCircle(center, radius)
         } else {
-            g.drawArc(center, radius, radiusMinor, -segmentStartAngle, -segmentSweepAngle)
+            g.drawArc(center, radius, radiusMinor, segmentStartAngle, segmentSweepAngle)
         }
     }
 

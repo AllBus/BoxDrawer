@@ -9,6 +9,7 @@ import com.kos.figure.IFigure
 import com.kos.figure.algorithms.FigureBezierList
 import com.kos.figure.collections.FigureList
 import com.kos.figure.collections.toFigure
+import com.kos.figure.complex.FigureRoundRect
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.abs
@@ -211,32 +212,32 @@ object FigureCreator {
         smoothSize: Double,
     ): IFigure {
         if (enableSmooth) {
-//            return FigureRoundRect(
-//                left = left,
-//                top = top,
-//                right = right,
-//                bottom = bottom,
-//                radius = smoothSize
-//            )
-            val lt = Vec2(left, top);
-            val rt = Vec2(right, top);
-            val lb = Vec2(left, bottom);
-            val rb = Vec2(right, bottom);
-
-            val bz = FigureBezierList.simple(
-                listOf(
-                    bezierQuartir(lt, smoothSize, 1, 2),
-                    bezierLine(lt, rt, smoothSize, 0, 0),
-                    bezierQuartir(rt, smoothSize, 2, 3),
-                    bezierLine(rt, rb, smoothSize, 1, 1),
-                    bezierQuartir(rb, smoothSize, 3, 0),
-                    bezierLine(rb, lb, smoothSize, 2, 2),
-                    bezierQuartir(lb, smoothSize, 0, 1),
-                    bezierLine(lb, lt, smoothSize, 3, 3),
-                )
+            return FigureRoundRect(
+                left = left,
+                top = top,
+                right = right,
+                bottom = bottom,
+                radius = smoothSize
             )
-
-            return bz.toFigure()
+//            val lt = Vec2(left, top);
+//            val rt = Vec2(right, top);
+//            val lb = Vec2(left, bottom);
+//            val rb = Vec2(right, bottom);
+//
+//            val bz = FigureBezierList.simple(
+//                listOf(
+//                    bezierQuartir(lt, smoothSize, 1, 2),
+//                    bezierLine(lt, rt, smoothSize, 0, 0),
+//                    bezierQuartir(rt, smoothSize, 2, 3),
+//                    bezierLine(rt, rb, smoothSize, 1, 1),
+//                    bezierQuartir(rb, smoothSize, 3, 0),
+//                    bezierLine(rb, lb, smoothSize, 2, 2),
+//                    bezierQuartir(lb, smoothSize, 0, 1),
+//                    bezierLine(lb, lt, smoothSize, 3, 3),
+//                )
+//            )
+//
+//            return bz.toFigure()
         } else {
             val bz = FigurePolyline(
                 listOf(

@@ -13,6 +13,7 @@ import com.kos.figure.composition.FigureRotate
 import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
+import kotlin.math.PI
 import kotlin.math.max
 import kotlin.math.min
 
@@ -53,26 +54,26 @@ class FigureRoundRect(
         Corner(
             Vec2(left+radius, top+radius),
             radius,
-            90.0,
-            90.0
+            Math.toRadians(180.0),
+            PI/2
         ),
         Corner(
             Vec2(right-radius, top+radius),
             radius,
-            00.0,
-            90.0
+            Math.toRadians(270.0),
+            PI/2
         ),
         Corner(
             Vec2(right-radius, bottom-radius),
             radius,
-            270.0,
-            90.0
+            Math.toRadians(00.0),
+            PI/2
         ),
         Corner(
             Vec2(left+radius, bottom-radius),
             radius,
-            180.0,
-            90.0
+            Math.toRadians(90.0),
+            PI/2
         ),
     )
 
@@ -182,7 +183,7 @@ class FigureRoundRect(
             top = top-h,
             right = right+h,
             bottom = bottom+h,
-            radius = radius,
+            radius = radius+h,
         )
     }
 
@@ -211,7 +212,7 @@ class FigureRoundRect(
             val e = edge(i)
             val c = corner(i)
             g.drawLine(e.a, e.b )
-            g.drawArc(c.center, c.radius, c.radius, c.startInDegrees, c.sweepInDegrees)
+            g.drawArc(c.center, c.radius, c.radius, c.startAngle, c.sweepAngle)
         }
     }
 

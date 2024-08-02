@@ -72,7 +72,7 @@ class ComposeFigureDrawer(
         sweepAngle: Double
     ) {
         val p = Path()
-        drawArc(p, center, radius, radiusMinor, startAngle, sweepAngle)
+        drawArc(p, center, radius, radiusMinor, -startAngle, -sweepAngle)
         scope.drawPath(p, penColor, style = style)
     }
 
