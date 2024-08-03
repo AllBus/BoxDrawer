@@ -13,6 +13,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.DxfToolsData
 import com.kos.boxdrawe.widget.NumericUpDown
+import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.TabContentModifier
@@ -40,15 +41,15 @@ fun ToolbarForDxf(vm: DxfToolsData) {
         Column(modifier = Modifier.weight(1f)) {
             Row {
                 NumericUpDown(stringResource(Res.string.dxfScaleColor), "", colorValue, modifier = Modifier.weight(1f))
-                NumericUpDown(stringResource(Res.string.dxfScaleValue), "", scaleValue, modifier = Modifier.weight(3f))
+                NumericUpDownLine(stringResource(Res.string.dxfScaleValue), "", scaleValue, modifier = Modifier.weight(3f))
             }
             Row {
                 NumericUpDown(stringResource(Res.string.dxfScaleColor), "", colorValue2, modifier = Modifier.weight(1f))
-                NumericUpDown(stringResource(Res.string.dxfScaleValue), "", scaleValue2, modifier = Modifier.weight(3f))
+                NumericUpDownLine(stringResource(Res.string.dxfScaleValue), "", scaleValue2, modifier = Modifier.weight(3f))
             }
             Row {
                 NumericUpDown(stringResource(Res.string.dxfScaleColor), "", colorValue3, modifier = Modifier.weight(1f))
-                NumericUpDown(stringResource(Res.string.dxfScaleValue), "", scaleValue3, modifier = Modifier.weight(3f))
+                NumericUpDownLine(stringResource(Res.string.dxfScaleValue), "", scaleValue3, modifier = Modifier.weight(3f))
             }
         }
         Column(modifier = Modifier.weight(1f)) {  }

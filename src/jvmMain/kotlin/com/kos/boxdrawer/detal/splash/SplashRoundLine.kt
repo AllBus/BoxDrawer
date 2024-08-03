@@ -4,6 +4,7 @@ import com.kos.figure.FigureCircle
 import com.kos.figure.FigureLine
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
+import turtoise.FigureCreator
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
@@ -61,7 +62,7 @@ class SplashRoundLine: ISplashDetail {
         com: TortoiseCommand,
         memory: TortoiseMemory
     ): Triple<List<IFigure>, Vec2, Double> {
-        /* r ax ay */
+        /* r ax ay ll?*/
         val cr = Vec2.Zero
         val rest = mutableListOf<IFigure>()
 
@@ -73,29 +74,45 @@ class SplashRoundLine: ISplashDetail {
         val aa = Vec2(ax, ay)
 
         val (aap, angle) = if (r > 0) {
-            val preda = sign(ay) * PI/2
-            val cc = Vec2(0.0, sign(ay) * r)
+            val sigy = sign(ay)
+            val preda = 0.0
+            val cc = Vec2( 0.0 , sigy * r).rotate(preda)
 
             val al = (aa - cc).angle
             val hl = Vec2.distance(cc, aa)
-            val rv = asin(r / hl) * sign(ay)
-            val alp = al + rv
-            val p = cc + Vec2(0.0, r).rotate((if (ay > 0) PI + alp else alp))
+            if (r <= hl) {
+                val rv = asin(r / hl)  * sigy
+                val alp = (al + rv)
+                val p = cc + Vec2(0.0, r).rotate((if (ay > 0) PI + alp else alp))
 
-            //   println (" ${ rv *180/ PI} : ${al*PI/180} : ${p} ${hl} ${r}")
-            //rest += FigureLine(p + cr, cc + cr)
+                //println(" ${rv * 180 / PI} : ${al * PI / 180} : ${p} ${hl} ${r}")
+                //rest += FigureLine(p + cr, cc + cr)
 
-            val ap = if (ll == null) {
-                aa
+                val ap = if (ll == null) {
+                    aa
+                } else {
+                    p + Vec2.normalize(p, aa) * ll
+                }
+                if (ap != p) {
+                    rest += FigureLine(p + cr, cr + ap)
+                }
+
+                rest += FigureCircle(cr + cc, r, true, preda+(-PI/2*sigy), alp)
+
+                Pair(ap , (ap-p).angle*180/ PI)
             } else {
-                p + Vec2.normalize(p, aa) * ll
-            }
-            if (ap != p) {
-                rest += FigureLine(p + cr, cr + ap)
+                val ap = if (ll == null) {
+                    aa
+                } else {
+                    Vec2.normalize(Vec2.Zero, aa) * ll
+                }
+
+                if (ap != Vec2.Zero) {
+                    rest += FigureLine(cr, ap + cr)
+                }
+                Pair(ap , ap.angle*180/ PI)
             }
 
-            rest += FigureCircle(cr + cc, r, true,  preda, -alp)
-            Pair(ap , (ap-p).angle*180/ PI)
         } else {
             val ap = if (ll == null) {
                 aa

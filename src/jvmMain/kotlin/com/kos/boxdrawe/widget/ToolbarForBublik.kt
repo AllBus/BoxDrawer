@@ -32,11 +32,11 @@ fun ToolbarForBublik(vm: BublikData) {
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)
         ) {
-            NumericUpDown("Радиус тора", "мм", radiusBublik)
-            NumericUpDown("Радиус", "мм", radius)
-            NumericUpDown("Радиус отверстия", "мм", holeRadius)
-            NumericUpDown("Число сегментов", "мм", segmentCount)
-            NumericUpDown("Число сторон", "мм", sideCount)
+            NumericUpDownLine("Радиус тора", "мм", radiusBublik)
+            NumericUpDownLine("Радиус", "мм", radius)
+            NumericUpDownLine("Радиус отверстия", "мм", holeRadius)
+            NumericUpDownLine("Число сегментов", "мм", segmentCount)
+            NumericUpDownLine("Число сторон", "мм", sideCount)
         }
         Column(
             modifier = Modifier.weight(weight = 1f, fill = true)

@@ -31,16 +31,16 @@ class FigureCircle(
 ) {
     companion object {
         private fun calcSweep(startArc: Vec2, endArc:Vec2): Double {
-            val ea = endArc.angle
-            val sa = startArc.angle
+            val ea = startArc.angle
+            val sa = endArc.angle
             if (sa > ea)
                 return  sa-ea-PI*2
            return sa-ea
         }
     }
 
-    constructor(center:Vec2, radius:Double, startArc: Vec2, endArc:Vec2): this(
-        center, radius, true,  -(startArc-center).angle,
+    constructor(center:Vec2, radius:Double,outSide: Boolean, startArc: Vec2, endArc:Vec2 ): this(
+        center, radius, outSide,  (startArc-center).angle,
        calcSweep(startArc-center, endArc-center)
     ){
 

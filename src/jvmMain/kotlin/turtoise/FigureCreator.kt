@@ -312,17 +312,17 @@ object FigureCreator {
         return FigurePolyline(points)
     }
 
+    /**
+     * @see <img src="file:///N:/workspace2023/boxdrawer/src/jvmMain/imgs/arc.png"/>
+     */
     fun arcInTwoPoint(p: Vec2, z: Vec2, radius: Double): IFigure {
         val distance2 = Vec2.distance(p, z) / 2
-        return if (radius >= distance2) {
+        return if (radius >= distance2 && distance2 != 0.0) {
             val hyp = sqrt(radius * radius - distance2 * distance2)
-            val pza = (z - p).angle
+            val pza = ( z-p).angle
             val h2 = (p + z) / 2.0 + Vec2(0.0, hyp).rotate(pza)
 
-            val b = (z - h2).angle
-            val a = (p - h2).angle
-            //      println("$r $p $z $h2 $a $b")
-            FigureCircle(-h2, radius, true, a , (b - a) )
+            figureCircle(CornerInfo(p, z, h2, true), radius)
         } else
             FigureEmpty
     }
@@ -390,11 +390,10 @@ object FigureCreator {
 
         val re = Vec2.det(info.bc-info.ab, info.o-info.ab)
 
-
         val sr =  if (sweep > Math.PI){
             (sweep - Math.PI * 2)
         } else
-        if (sweep < -Math.PI){
+        if (sweep <= -Math.PI){
              (sweep + Math.PI * 2)
         } else
             sweep

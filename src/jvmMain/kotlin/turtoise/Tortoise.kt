@@ -15,6 +15,7 @@ import com.kos.figure.composition.booleans.FigureUnion
 import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
+import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 import java.util.Stack
 import kotlin.math.abs
@@ -358,33 +359,7 @@ class Tortoise() : TortoiseSplash() {
 
                 TortoiseCommand.TURTOISE_ARC -> {
                     builder.saveLine()//+
-                    val c2 = state.xy
-                    val angle = state.angle
-                    val r = com[0, memory]
-                    val a = com[1, memory] // deg
-                    val cir = com[2, memory] // deg
-
-                    val center = c2 + Vec2(0.0, r).rotate(angle)
-                    val np = center + Vec2(0.0, -r).rotate(angle + sign(r) * Math.toRadians(a))
-                    if (a == 0.0) {
-                        //nothing
-                    } else {
-                        if (r < 0.0) {
-                            builder.add(FigureCircle(
-                                center = center,
-                                radius = abs(r),
-                                startArc = np,
-                                endArc = c2
-                            ))
-                        } else {
-                            builder.add(FigureCircle(center, abs(r), c2, np))
-                        }
-                    }
-                    if (cir > 0.0) {
-                        builder.add(FigureCircle(center, cir, true))
-                    }
-                    state.moveTo(np)
-                    state.angleInDegrees += sign(r) * a
+                    arc(com, memory, builder)
                 }
 
                 TortoiseCommand.TURTOISE_UNION -> {
@@ -525,4 +500,6 @@ class Tortoise() : TortoiseSplash() {
         builder.saveLine()
         return builder.build()
     }
+
+
 }

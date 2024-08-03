@@ -25,10 +25,12 @@ import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
 import vectors.Vec2
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.acos
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.min
+import kotlin.math.sign
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -348,6 +350,51 @@ abstract class TortoiseBase {
                     )
                 }
             }
+    }
+
+    protected fun arc(
+        com: TortoiseCommand,
+        memory: TortoiseMemory,
+        builder: TortoiseBuilder,
+    ) {
+        val c2 = builder.xy
+        val angle = builder.angle
+        val r = com[0, memory]
+        val a = com[1, memory] // deg
+        val cir = com[2, memory] // deg
+
+        val center = c2 + Vec2(0.0, r).rotate(angle)
+        val np = center + Vec2( 0.0, -r ).rotate(angle + sign(r) * Math.toRadians(a))
+        if (a == 0.0) {
+            //nothing
+        } else {
+            if (r < 0.0) {
+                builder.add(
+                    FigureCircle(
+                        center = center,
+                        radius = abs(r),
+                        startArc = c2,
+                        endArc = np,
+                        outSide = true
+                    )
+                )
+            } else {
+                builder.add(FigureCircle(
+                    center = center,
+                    radius = abs(r),
+                    startArc = np,
+                    endArc = c2,
+                    outSide = true
+                ))
+                builder.add(FigureCircle(np, 3.0, true))
+              //  builder.add(FigureCreator.figureCircle(CornerInfo(c2, np, center, true), abs(r)))
+            }
+        }
+        if (cir > 0.0) {
+            builder.add(FigureCircle(center, cir, true))
+        }
+        builder.state.moveTo(np)
+        builder.state.angleInDegrees += sign(r) * a
     }
 
     protected fun circle(

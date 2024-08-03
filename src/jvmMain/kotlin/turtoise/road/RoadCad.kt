@@ -638,7 +638,7 @@ object RoadCad {
             )
             if (r > 0.0) {
                 add(
-                    FigureCircle(tt + Vec2(width - r, rhe), r, outSide = true, 0.0, PI/2)
+                    FigureCircle(tt + Vec2(width - r, rhe), r, outSide = true, -PI/2, PI/2)
                 )
             }
             add(
@@ -649,7 +649,7 @@ object RoadCad {
             )
             if (r > 0.0) {
                 add(
-                    FigureCircle(tt + Vec2(r, rhe), r, true, PI/2, PI/2)
+                    FigureCircle(tt + Vec2(r, rhe), r, true, PI, PI/2)
                 )
             }
             add(
@@ -719,7 +719,7 @@ object RoadCad {
             )
             if (r > 0.0) {
                 add(
-                    FigureCircle(tt + Vec2(r, rhe), r, true, PI, PI/2)
+                    FigureCircle(tt + Vec2(r, rhe), r, true, PI/2, PI/2)
                 )
             }
             add(
@@ -730,7 +730,7 @@ object RoadCad {
             )
             if (r > 0.0) {
                 add(
-                    FigureCircle(tt + Vec2(width - r, rhe), r, true, PI*3/2, PI/2)
+                    FigureCircle(tt + Vec2(width - r, rhe), r, true, 0.0, PI/2)
                 )
             }
             add(

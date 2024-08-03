@@ -419,8 +419,8 @@ object RekaCad {
     fun centerFigures(rekaDraw: RekaDrawResult): IFigure {
         return FigureList(
             rekaDraw.positions.map { kubik ->
-                val av = -kubik.angle
-                FigureCircle(kubik.coord, 2.5, true, segmentStartAngle = av - PI, segmentSweepAngle = PI)
+                val av = kubik.angle
+                FigureCircle(kubik.coord, 2.5, true, segmentStartAngle = av, segmentSweepAngle = PI)
             }
         )
     }
@@ -432,9 +432,9 @@ object RekaCad {
         val resList = mutableListOf<IFigure>()
         rekaDraw.positions.forEach { kubik ->
             if (kubik.reka === cur.reka) {
-                val av = -kubik.angle
+                val av = kubik.angle
                 resList.add(
-                    FigureCircle(kubik.coord, 2.6, true, segmentStartAngle = av - PI, segmentSweepAngle = PI)
+                    FigureCircle(kubik.coord, 2.6, true, segmentStartAngle = av, segmentSweepAngle = PI)
                 )
 
                 findEdgePoints(kubik.reka, cur.position.edge)?.let { rep ->
