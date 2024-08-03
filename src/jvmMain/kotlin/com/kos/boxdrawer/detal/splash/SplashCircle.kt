@@ -1,11 +1,16 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import turtoise.CornerInfo
 import turtoise.FigureCreator
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.help.HelpDataParam
+import turtoise.parser.TPArg
+import turtoise.parser.TortoiseParserStackBlock
 import vectors.Vec2
 
 class SplashCircle: ISplashDetail {
@@ -14,8 +19,20 @@ class SplashCircle: ISplashDetail {
 
     override fun help(): HelpData {
         return HelpData(
-            "c ax ay ox oy cx cy r",
-            "Построить дугу радиуса r из точки O между заданноых радиус векторов OA OC"
+            "circle ax ay ox oy cx cy r",
+            "Построить дугу радиуса r из точки O между заданноых радиус векторов OA OC",
+            params = listOf(
+                HelpDataParam("a", "Координата начала дуги", FIELD_2),
+                HelpDataParam("o", "Координата центра дуги", FIELD_2),
+                HelpDataParam("c", "Координата концв дуг,и", FIELD_2),
+                HelpDataParam("r", "радиус дуги", FIELD_1),
+            ),
+            creator = TortoiseParserStackBlock(' ', "circle", listOf(
+                TPArg("a"),
+                TPArg("o"),
+                TPArg("c"),
+                TPArg("r"),
+            ))
         )
     }
 

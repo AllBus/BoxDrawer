@@ -11,7 +11,9 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
 import turtoise.SplashMap
 import turtoise.TortoiseCommand
+import turtoise.parser.TPArg
 import turtoise.parser.TortoiseParser
+import turtoise.parser.TortoiseParserStackBlock
 
 class TortoiseHelpInfo : SimpleHelpInfo() {
 
@@ -285,7 +287,15 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         HelpDataParam("zigWidth", "длина одноо зигзага"),
                         HelpDataParam("board", "толщина доски"),
 
-                        )
+                        ),
+                    creator = TPArg.create("",
+                        TPArg("w"),
+
+                        TPArg("delta"),
+                        TPArg("zigWidth"),
+                        TPArg("board"),
+
+                    )
                 )
             )
         ),
@@ -293,14 +303,23 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             TortoiseCommand.TURTOISE_ZIGZAG_FIGURE,
             listOf(
                 HelpData(
-                    "w (delta zigWidth board) (figure (args)?)",
+                    "w (delta zigWidth board) (figure)",
                     "Зигзаги формы описаной в строке figure",
                     listOf(
                         HelpDataParam("w", "общая длина"),
                         HelpDataParam("delta", "расстояние между началами двух зигзагов"),
                         HelpDataParam("zigWidth", "длина одного зигзага"),
                         HelpDataParam("board", "толщина доски"),
-                        HelpDataParam("(figure (args)?)", "фигура для формы зигзага"),
+                        HelpDataParam("figure", "фигура для формы зигзага", FIELD_FIGURE),
+                    ),
+                    creator = TPArg.create("",
+                        TPArg("w"),
+                        TPArg.block(
+                            TPArg("delta"),
+                            TPArg("zigWidth"),
+                            TPArg("board"),
+                        ),
+                        TPArg.figure("figure")
                     )
                 )
             )
@@ -309,28 +328,29 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             TortoiseCommand.TURTOISE_BEZIER,
             listOf(
                 HelpData(
-                    "(tx1 ty1 tx2 ty2 ex ey)*",
+                    "tx1 ty1 tx2 ty2 ex ey *",
                     "Рисовать линию безье из текущей позиции",
                     listOf(
                         HelpDataParam(
                             "tx1",
-                            "координата x первой контрольной точки относительно начала кривой"
+                            "координата x первой контрольной точки относительно начала кривой", FIELD_2
                         ),
                         HelpDataParam(
                             "ty1",
-                            "координата y первой контрольной точки относительно начала кривой"
+                            "координата y первой контрольной точки относительно начала кривой", FIELD_NONE
                         ),
                         HelpDataParam(
                             "tx2",
-                            "координата x второй контрольной точки относительно начала кривой"
+                            "координата x второй контрольной точки относительно начала кривой", FIELD_2
                         ),
                         HelpDataParam(
                             "ty2",
-                            "координата y второй контрольной точки относительно начала кривой"
+                            "координата y второй контрольной точки относительно начала кривой", FIELD_NONE
                         ),
-                        HelpDataParam("ex", "координата x конца кривой относительно начала кривой"),
-                        HelpDataParam("ey", "координата y конца кривой относительно начала кривой"),
-                    )
+                        HelpDataParam("ex", "координата x конца кривой относительно начала кривой", FIELD_2),
+                        HelpDataParam("ey", "координата y конца кривой относительно начала кривой", FIELD_NONE),
+                    ),
+                    creator = TPArg.create("", TPArg("tx1"), TPArg("tx2"),TPArg("ex"))
                 )
             )
         ),
@@ -490,7 +510,12 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "c commands* <",
                     "выполнить c раз команды между > <",
                     listOf(
-                        HelpDataParam("c", "количество повторений", FIELD_INT)
+                        HelpDataParam("c", "количество повторений", FIELD_INT),
+                        HelpDataParam("commands", "команды черепашки", FIELD_FIGURE)
+                    ),
+                    creator = TPArg.create("",
+                        TPArg.figure("commands"),
+                        TPArg.text("<"),
                     )
                 )
             ),
@@ -640,22 +665,28 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         "Фигура рисуется по правилам фигур", FIELD_FIGURE
                     ),
                     HelpDataParam(
-                        "c * *",
+                        "c",
                         "Количество повторений по оси x и дистанция", FIELD_2
                     ),
                     HelpDataParam(
-                        "r * *",
+                        "r",
                         "Количество повторений по оси y и дистанция", FIELD_2
                     ),
                     HelpDataParam(
-                        "s * *",
+                        "s",
                         "Масштабирование по осям x и y", FIELD_2
                     ),
                     HelpDataParam(
-                        "m * *",
+                        "m",
                         "Начальная точка по осям x и y", FIELD_2
                     ),
-                )
+                ),
+                creator = TPArg.create("", TPArg.figure("figure"), TPArg.block(
+                    TPArg.item("c",  TPArg("c")),
+                    TPArg.item("r",  TPArg("r")),
+                    TPArg.item("s",  TPArg("s")),
+                    TPArg.item("m",  TPArg("m")),
+                ))
             )
         )
     )
@@ -696,22 +727,32 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         "Поворот вокруг оси z в градусах", FIELD_ANGLE
                     ),
                     HelpDataParam(
-                        "c * *",
+                        "c",
                         "Количество повторений по оси x и дистанция", FIELD_2,
                     ),
                     HelpDataParam(
-                        "r * *",
+                        "r",
                         "Количество повторений по оси y и дистанция", FIELD_2,
                     ),
                     HelpDataParam(
-                        "s * *",
+                        "s",
                         "Масштабирование по осям x и y", FIELD_2
                     ),
                     HelpDataParam(
-                        "m * *",
+                        "m",
                         "Начальная точка по осям x и y", FIELD_2
                     ),
-                )
+                ),
+                creator = TPArg.create("",
+                    TPArg.block(TPArg("x")),
+                    TPArg.block(TPArg("ax"), TPArg("ay"),TPArg("az")),
+                    TPArg.figure("figure"),
+                    TPArg.block(
+                        TPArg.item("c",  TPArg("c")),
+                        TPArg.item("r",  TPArg("r")),
+                        TPArg.item("s",  TPArg("s")),
+                        TPArg.item("m",  TPArg("m")),
+                    ))
             )
         )
     )

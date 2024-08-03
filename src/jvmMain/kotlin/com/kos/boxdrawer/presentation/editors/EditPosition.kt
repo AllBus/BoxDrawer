@@ -162,7 +162,7 @@ fun CommandModel(
                 TemplateSimpleItemBox(
                     item,
                     null,
-                    selectedFigure.value.name + "/"+ item.argumentName,
+                    selectedFigure.value.name + "/@"+ item.argumentName,
                     listener
                 )
             }

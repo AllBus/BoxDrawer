@@ -23,7 +23,9 @@ import turtoise.TortoiseState
 import turtoise.help.HelpData
 import turtoise.help.HelpInfoCommand
 import turtoise.parser.TortoiseParser
+import turtoise.parser.TortoiseParserStackBlock
 import java.io.File
+import java.lang.StringBuilder
 
 class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
     val figures = MutableStateFlow<IFigure>(FigureEmpty)
@@ -41,16 +43,21 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
         private var selectCommand :HelpInfoCommand = HelpInfoCommand("", emptyList())
         private var selectData :HelpData =HelpData("","")
         override fun setFigure(command: HelpInfoCommand, data: HelpData) {
+            if (selectCommand!= command){
+                memory.clear()
+            }
             selectCommand = command
             selectData = data
         }
 
         override fun put(arg: String, index: Int, count: Int, value: String) {
+        //    println("$arg : $index $value")
             memory.put(arg, index, count, value)
             recalc()
         }
 
         override fun put(arg: String, value: String) {
+        //    println("$arg : $value")
             memory.put(arg,  value)
             recalc()
         }
@@ -65,12 +72,50 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
             val com = selectCommand.name+" "
 
             //Todo Нужно вставлять правильно параметры
-            val args = selectData.params.map { p ->
-                val v = memory.get(prefix+ p.name)
-                println("> ${p.name} = ${v.joinToString(" ")}")
-                v.joinToString(" ")
+            val creator = selectData.creator
+            val text = if (creator != null){
+                com+ buildCommand(creator, memory, prefix)
+            }else {
+                val args = selectData.params.map { p ->
+                    val v = memory.get(prefix+"@" + p.name)
+                    v.joinToString(" ")
+                }
+                args.joinToString(" ", com)
             }
-            insertText(args.joinToString(" ", com))
+            insertText(text)
+        }
+
+        private val actions = listOf("@+", "@?", "@*")
+
+        private fun buildCommand(
+            creator: TortoiseParserStackBlock,
+            memory: TemplateMemory,
+            prefix:String,
+        ): String {
+            val sb = StringBuilder()
+            creator.inner.forEach{ b ->
+                val t = if (b.isArgument()) {
+                    if (b.name.prefix()=='@'){
+                        val v = memory.get(prefix + b.name.name)
+                        v.joinToString(" ")
+                    } else {
+                        b.name.name
+                    }
+                } else {
+                    if (b is TortoiseParserStackBlock){
+                        if (b.name.name in actions)    {
+                            //
+                            buildCommand(b, memory, prefix)
+                        }else {
+                            "${b.skobka}${buildCommand(b, memory, prefix)}${b.closeBrace()}"
+                        }
+                    } else ""
+                }
+                sb.append(t)
+                sb.append(" ")
+            }
+
+            return sb.toString()
         }
     }
 

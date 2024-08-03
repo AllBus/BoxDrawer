@@ -3,11 +3,13 @@ package turtoise.help
 import androidx.compose.ui.text.AnnotatedString
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import turtoise.parser.TortoiseParser
+import turtoise.parser.TortoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackItem
 
 class HelpInfoCommand(
     val name: String,
     val data: List<HelpData>,
-    val description: String = ""
+    val description: String = "",
 ) {
 
     val text: AnnotatedString by lazy { createText()}
@@ -35,7 +37,8 @@ class HelpInfoCommand(
 class HelpData(
     val argument: String,
     val description: String,
-    val params: List<HelpDataParam> = emptyList()
+    val params: List<HelpDataParam> = emptyList(),
+    val creator : TortoiseParserStackBlock? = null,
 )
 
 class HelpDataParam(

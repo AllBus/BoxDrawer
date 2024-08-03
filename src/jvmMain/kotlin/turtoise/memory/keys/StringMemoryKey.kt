@@ -11,7 +11,7 @@ data class StringMemoryKey(
         return name.toDoubleOrNull()
     }
 
-    override fun prefix(): Char = name[0]
+    override fun prefix(): Char = if (name.isNotEmpty()) name[0] else ' '
 
     override fun drop(): MemoryKey {
         return StringMemoryKey(name.drop(1))
