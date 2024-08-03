@@ -1,5 +1,16 @@
 package com.kos.boxdrawer.template
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_3
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_4
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_LABEL
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_MULTI
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
 
@@ -132,7 +143,7 @@ data class TemplateItemMulti(
     override fun print(): TortoiseParserStackItem {
         val inner = TortoiseParserStackBlock('(', "item", listOf(data.print()))
         val tp = TortoiseParserStackBlock()
-        tp.add("multi")
+        tp.add(FIELD_MULTI)
         tp.add("title", "[$title]")
         tp.add("arg", argumentName)
         tp.add(inner)
@@ -149,7 +160,7 @@ data class TemplateItemInt(
 
     override fun print(): TortoiseParserStackItem {
         val tp = TortoiseParserStackBlock()
-        tp.add("int")
+        tp.add(FIELD_INT)
         tp.add(argumentName)
         tp.add("[$title]")
         return tp
@@ -165,7 +176,7 @@ data class TemplateItemNumeric(
 
     override fun print(): TortoiseParserStackItem {
         val tp = TortoiseParserStackBlock()
-        tp.add("1")
+        tp.add(FIELD_1)
         tp.add(argumentName)
         tp.add("[$title]")
         return tp
@@ -181,7 +192,7 @@ data class TemplateItemAngle(
 
     override fun print(): TortoiseParserStackItem {
         val tp = TortoiseParserStackBlock()
-        tp.add("angle")
+        tp.add(FIELD_ANGLE)
         tp.add(argumentName)
         tp.add("[$title]")
         return tp
@@ -198,7 +209,7 @@ data class TemplateItemSize(
 
     override fun print(): TortoiseParserStackItem {
         val tp = TortoiseParserStackBlock()
-        tp.add("2")
+        tp.add(FIELD_2)
         tp.add(argumentName)
         tp.add("[$title]")
         return tp
@@ -215,7 +226,7 @@ data class TemplateItemTriple(
 
     override fun print(): TortoiseParserStackItem {
         val tp = TortoiseParserStackBlock()
-        tp.add("3")
+        tp.add(FIELD_3)
         tp.add(argumentName)
         tp.add("[$title]")
         return tp
@@ -232,7 +243,7 @@ data class TemplateItemRect(
 
     override fun print(): TortoiseParserStackItem {
         val tp = TortoiseParserStackBlock()
-        tp.add("4")
+        tp.add(FIELD_4)
         tp.add(argumentName)
         tp.add("[$title]")
         return tp
@@ -249,7 +260,7 @@ data class TemplateItemCheck(
 
     override fun print(): TortoiseParserStackItem {
         val tp = TortoiseParserStackBlock()
-        tp.add("check")
+        tp.add(FIELD_CHECK)
         tp.add(argumentName)
         tp.add("[$title]")
         return tp
@@ -266,7 +277,24 @@ data class TemplateItemString(
 
     override fun print(): TortoiseParserStackItem {
         val tp = TortoiseParserStackBlock()
-        tp.add("text")
+        tp.add(FIELD_TEXT)
+        tp.add(argumentName)
+        tp.add("[$title]")
+        return tp
+    }
+}
+
+data class TemplateItemFigure(
+    override val title: String,
+    override val argumentName: String
+
+) : TemplateItem {
+    override val argumentCount: Int
+        get() = 1
+
+    override fun print(): TortoiseParserStackItem {
+        val tp = TortoiseParserStackBlock()
+        tp.add(FIELD_FIGURE)
         tp.add(argumentName)
         tp.add("[$title]")
         return tp
@@ -283,7 +311,7 @@ data class TemplateItemLabel(
 
     override fun print(): TortoiseParserStackItem {
         val tp = TortoiseParserStackBlock()
-        tp.add("label")
+        tp.add(FIELD_LABEL)
         tp.add(argumentName)
         tp.add("[$title]")
         return tp

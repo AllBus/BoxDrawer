@@ -2,8 +2,10 @@ package turtoise
 
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureCircle
+import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureLine
+import com.kos.figure.FigurePolygon
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.algorithms.FigureBezierList
@@ -14,6 +16,8 @@ import com.kos.figure.complex.Edge
 import com.kos.figure.complex.FigureRound
 import com.kos.figure.complex.FigureRoundRect
 import com.kos.figure.complex.IEdge
+import com.kos.figure.composition.FigureArray
+import com.kos.figure.composition.FigureComposition
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.abs
@@ -463,6 +467,57 @@ object FigureCreator {
             CornerInfo(b, b, b, false)
         }
         return ci
+    }
+
+    fun changeScale(figure: IFigure, scale: Double): IFigure {
+        return when (figure) {
+            is FigurePolygon -> {
+                val rect = figure.rect()
+                val c = Vec2(rect.centerX, rect.centerY)
+                val points = figure.points.map { (it - c) * scale + c }
+                // println("Super $scale")
+                figure.create(points)
+            }
+
+            is FigureEllipse -> {
+                figure.create(
+                    center = figure.center,
+                    radius = figure.radius * scale,
+                    radiusMinor = figure.radiusMinor * scale,
+                    rotation = figure.rotation,
+                    outSide = figure.outSide,
+                    segmentStart = figure.segmentStartAngle,
+                    segmentSweep = figure.segmentSweepAngle,
+                )
+            }
+
+            is FigureArray ->
+                FigureArray(
+                    changeScale(figure.figure, scale),
+                    startPoint = figure.startPoint,
+                    distance = figure.distance,
+                    columns = figure.columns,
+                    rows = figure.rows,
+                    angle = figure.angle,
+                    scaleX = figure.scaleX,
+                    scaleY = figure.scaleY,
+                    figureStart = figure.figureStart?.let { changeScale(it, scale) },
+                    figureEnd = figure.figureEnd?.let { changeScale(it, scale) },
+                )
+
+            is FigureComposition ->
+                figure.create(changeScale(figure.figure, scale))
+
+            is FigureList ->
+                FigureList(
+                    figure.collection().map { f ->
+                        changeScale(f, scale)
+                    }
+                )
+
+            else -> figure
+        }
+
     }
 }
 

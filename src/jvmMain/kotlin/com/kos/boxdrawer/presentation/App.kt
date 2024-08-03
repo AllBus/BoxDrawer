@@ -62,6 +62,7 @@ fun App(vm: State<DrawerViewModel>) {
     }
 
     val tortoiseListener = vm.value.tortoise.editorListener
+    val tortoiseMoveListener = vm.value.tortoise.moveListener
 
     MaterialTheme {
         Column {
@@ -84,7 +85,8 @@ fun App(vm: State<DrawerViewModel>) {
                     Editor(
                         modifier = Modifier.weight(1f),
                         tabIndex,
-                        tortoiseListener =  tortoiseListener,
+                        moveListener =  tortoiseMoveListener,
+                        editorListener =  tortoiseListener,
                         boxListener = vm.value.box.boxListener,
                         helpText,
                         menu,

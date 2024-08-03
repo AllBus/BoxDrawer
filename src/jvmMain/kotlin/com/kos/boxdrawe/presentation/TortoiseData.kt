@@ -9,6 +9,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.getTextAfterSelection
 import androidx.compose.ui.text.input.getTextBeforeSelection
+import com.kos.boxdrawer.template.TemplateFigureBuilderListener
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.figure.CropSide
@@ -19,6 +20,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
+import turtoise.help.HelpData
+import turtoise.help.HelpInfoCommand
 import turtoise.parser.TortoiseParser
 import java.io.File
 
@@ -32,7 +35,46 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
     @OptIn(ExperimentalFoundationApi::class)
     val text = mutableStateOf(TextFieldValue(""))
 
-    val editorListener = object : TemplateGeneratorSimpleListener {
+    val editorListener = object : TemplateFigureBuilderListener {
+        val memory = TemplateMemory()
+
+        private var selectCommand :HelpInfoCommand = HelpInfoCommand("", emptyList())
+        private var selectData :HelpData =HelpData("","")
+        override fun setFigure(command: HelpInfoCommand, data: HelpData) {
+            selectCommand = command
+            selectData = data
+        }
+
+        override fun put(arg: String, index: Int, count: Int, value: String) {
+            memory.put(arg, index, count, value)
+            recalc()
+        }
+
+        override fun put(arg: String, value: String) {
+            memory.put(arg,  value)
+            recalc()
+        }
+
+        override fun get(arg: String): List<String> {
+            return memory.get(arg)
+        }
+
+        fun recalc(){
+
+            val prefix = "${selectCommand.name}/"
+            val com = selectCommand.name+" "
+
+            //Todo Нужно вставлять правильно параметры
+            val args = selectData.params.map { p ->
+                val v = memory.get(prefix+ p.name)
+                println("> ${p.name} = ${v.joinToString(" ")}")
+                v.joinToString(" ")
+            }
+            insertText(args.joinToString(" ", com))
+        }
+    }
+
+    val moveListener = object : TemplateGeneratorSimpleListener {
         val memory = TemplateMemory()
         override fun put(arg: String, index: Int, count: Int, value: String) {
             if (arg == "pos"){
@@ -62,16 +104,7 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
 
         fun reposition(value:String){
             val f = " $value"
-            val tv = text.value
-            val ntext =
-                tv.getTextBeforeSelection(tv.text.length) + AnnotatedString(f) + tv.getTextAfterSelection(
-                    tv.text.length
-                )
-            text.value = tv.copy(
-                annotatedString = ntext,
-                selection = TextRange(tv.selection.min, tv.selection.min + f.length)
-            )
-            createTortoise()
+            insertText(f)
         }
 
         fun recalc() {
@@ -91,18 +124,21 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
                 " m $x $y $a $xa $ya "
             }
 
-
-            val tv = text.value
-            val ntext =
-                tv.getTextBeforeSelection(tv.text.length) + AnnotatedString(f) + tv.getTextAfterSelection(
-                    tv.text.length
-                )
-            text.value = tv.copy(
-                annotatedString = ntext,
-                selection = TextRange(tv.selection.min, tv.selection.min + f.length)
-            )
-            createTortoise()
+            insertText(f)
         }
+    }
+
+    private fun insertText(f: String) {
+        val tv = text.value
+        val ntext =
+            tv.getTextBeforeSelection(tv.text.length) + AnnotatedString(f) + tv.getTextAfterSelection(
+                tv.text.length
+            )
+        text.value = tv.copy(
+            annotatedString = ntext,
+            selection = TextRange(tv.selection.min, tv.selection.min + f.length)
+        )
+        createTortoise()
     }
 
     override suspend fun createFigure(): IFigure {

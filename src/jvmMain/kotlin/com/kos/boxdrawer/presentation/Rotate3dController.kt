@@ -1,10 +1,15 @@
 package com.kos.boxdrawer.presentation
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.triStateToggleable
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -19,11 +24,14 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.center
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toOffset
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.toVec2
+import kotlinx.coroutines.flow.map
 import vectors.Vec2
 import kotlin.math.min
 
@@ -39,12 +47,22 @@ fun Rotate3dController(
     Column(
         modifier = modifier
     ) {
+        val interactionSource = remember { MutableInteractionSource() }
         val starPosition = remember { mutableStateOf(Vec2.Zero) }
         val selectedType = remember { mutableIntStateOf(0) }
         val startX = remember { mutableStateOf(dropValueX.value) }
         val startY = remember { mutableStateOf(dropValueY.value) }
         val startZ = remember { mutableStateOf(dropValueZ.value) }
-        Canvas(modifier = Modifier.size(64.dp).onPointerEvent(PointerEventType.Press) {
+        Canvas(modifier = Modifier.size(64.dp).clickable(
+            interactionSource = interactionSource,
+            indication = rememberRipple(
+                bounded = false,
+                radius = 32.dp
+            ),
+            enabled = true,
+            role = Role.Button,
+            onClick = {  }
+        ).onPointerEvent(PointerEventType.Press) {
 
             val sz = this.size
             val posi = it.changes.first().position.toVec2()

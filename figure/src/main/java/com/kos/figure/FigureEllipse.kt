@@ -355,7 +355,15 @@ open class FigureEllipse(
     }
 
     override fun name(): String {
-        return "Эллипс ${digitFormatter.format(radius)} x ${digitFormatter.format(radiusMinor)} : ${digitFormatter.format(Math.toDegrees(segmentStartAngle))} x ${digitFormatter.format(Math.toDegrees(segmentSweepAngle))}"
+        if (isFill()){
+            return "Эллипс ${digitFormatter.format(radius)} x ${digitFormatter.format(radiusMinor)}"
+        }else {
+            return "Эллипс ${digitFormatter.format(radius)} x ${digitFormatter.format(radiusMinor)} : ${
+                digitFormatter.format(
+                    Math.toDegrees(segmentStartAngle)
+                )
+            } x ${digitFormatter.format(Math.toDegrees(segmentSweepAngle))}"
+        }
     }
 
     override fun approximate(pointCount: Int): List<List<Vec2>> {

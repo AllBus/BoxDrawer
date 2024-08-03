@@ -175,7 +175,7 @@ open class FigureRound(
     }
 
     override fun duplicationAtNormal(h: Double): Figure {
-        // Todo: Нужно правильно вычислить
+        // Todo: Нужно правильно вычислить пересечения
         val sg = segments.mapNotNull { s ->
             when (s) {
                 is Edge -> s.translate(s.positionInPath(0.0).normal * h)

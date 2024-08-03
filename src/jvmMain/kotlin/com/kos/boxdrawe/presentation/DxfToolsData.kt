@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.kabeja.dxf.DXFDocument
 import org.kabeja.parser.DXFParser
 import org.kabeja.parser.ParserBuilder
+import turtoise.FigureCreator.changeScale
 import turtoise.paint.PaintUtils
 import vectors.Matrix
 import vectors.Vec2
@@ -120,56 +121,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         }
     }
 
-    private fun changeScale(figure: IFigure, scale: Double): IFigure {
-        return when (figure) {
-            is FigurePolygon -> {
-                val rect = figure.rect()
-                val c = Vec2(rect.centerX, rect.centerY)
-                val points = figure.points.map { (it - c) * scale + c }
-                // println("Super $scale")
-                figure.create(points)
-            }
 
-            is FigureEllipse -> {
-                figure.create(
-                    center = figure.center,
-                    radius = figure.radius * scale,
-                    radiusMinor = figure.radiusMinor * scale,
-                    rotation = figure.rotation,
-                    outSide = figure.outSide,
-                    segmentStart = figure.segmentStartAngle,
-                    segmentSweep = figure.segmentSweepAngle,
-                )
-            }
-
-            is FigureArray ->
-                FigureArray(
-                    changeScale(figure.figure, scale),
-                    startPoint = figure.startPoint,
-                    distance = figure.distance,
-                    columns = figure.columns,
-                    rows = figure.rows,
-                    angle = figure.angle,
-                    scaleX = figure.scaleX,
-                    scaleY = figure.scaleY,
-                    figureStart = figure.figureStart?.let { changeScale(it, scale) },
-                    figureEnd = figure.figureEnd?.let { changeScale(it, scale) },
-                )
-
-            is FigureComposition ->
-                figure.create(changeScale(figure.figure, scale))
-
-            is FigureList ->
-                FigureList(
-                    figure.collection().map { f ->
-                        changeScale(f, scale)
-                    }
-                )
-
-            else -> figure
-        }
-
-    }
 
     val scaleEdit = NumericTextFieldState(1.0, minValue = 0.000001) { redrawBox() }
     val scaleColor = NumericTextFieldState(0.0, digits = 0, maxValue = 1000.0) { redrawBox() }

@@ -31,6 +31,7 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.boxdrawer.presentation.editors.EditBoxPolka
 import com.kos.boxdrawer.presentation.editors.EditPosition
 import com.kos.boxdrawer.presentation.template.TemplateEditorBox
+import com.kos.boxdrawer.template.TemplateFigureBuilderListener
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.figure.FigureInfo
@@ -39,7 +40,8 @@ import com.kos.figure.FigureInfo
 fun Editor(
     modifier: Modifier,
     tabIndex: State<Int>,
-    tortoiseListener: TemplateGeneratorSimpleListener,
+    moveListener: TemplateGeneratorSimpleListener,
+    editorListener: TemplateFigureBuilderListener,
     boxListener: BoxSimpleListener,
     helpText: AnnotatedString,
     menu: State<TemplateInfo>,
@@ -71,7 +73,7 @@ fun Editor(
                         ),
 
                         ) {
-                        EditPosition(tortoiseListener, onPickSelected)
+                        EditPosition(moveListener,editorListener, onPickSelected)
                     }
 
                     Text(

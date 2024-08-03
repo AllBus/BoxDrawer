@@ -110,7 +110,12 @@ object TemplateCreator {
                 argumentName = argument,
             )
 
-            FIELD_FIGURE, "string" , FIELD_TEXT -> TemplateItemString(
+            FIELD_FIGURE  -> TemplateItemFigure(
+                title = title,
+                argumentName = argument,
+            )
+
+            "string" , FIELD_TEXT -> TemplateItemString(
                 title = title,
                 argumentName = argument,
             )

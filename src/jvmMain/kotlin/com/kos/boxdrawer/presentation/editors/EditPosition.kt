@@ -38,6 +38,7 @@ import com.kos.boxdrawer.presentation.template.TemplateItemBox
 import com.kos.boxdrawer.presentation.template.TemplateSimpleItemBox
 import com.kos.boxdrawer.presentation.template.TemplateSizeBox
 import com.kos.boxdrawer.template.TemplateCreator
+import com.kos.boxdrawer.template.TemplateFigureBuilderListener
 import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItemAngle
@@ -48,7 +49,10 @@ import turtoise.help.TortoiseHelpInfo
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun EditPosition(listener: TemplateGeneratorSimpleListener, onPickSelected : () -> String) {
+fun EditPosition(
+    moveListener: TemplateGeneratorSimpleListener,
+    editorListener: TemplateFigureBuilderListener,
+    onPickSelected : () -> String) {
     val expanded = remember{ mutableStateOf(false) }
     Column(
     ) {
@@ -69,12 +73,12 @@ fun EditPosition(listener: TemplateGeneratorSimpleListener, onPickSelected : () 
                 TemplateSizeBox(
                     TemplateItemSize("x y", "xy"),
                     null, "xy",
-                    listener,
+                    moveListener,
                 )
                 TemplateAngleBox(
                     TemplateItemAngle("a", "a"),
                     null, "a",
-                    listener,
+                    moveListener,
                 )
 
                 val inputPos =
@@ -83,7 +87,7 @@ fun EditPosition(listener: TemplateGeneratorSimpleListener, onPickSelected : () 
                             value = 0.0,
                             minValue = -1000000.0,
                         ) { v ->
-                            listener.put(
+                            moveListener.put(
                                 "pos",
                                 v.toString()
                             )
@@ -127,6 +131,7 @@ fun EditPosition(listener: TemplateGeneratorSimpleListener, onPickSelected : () 
                     if (selectedFigure.value.data.size>1) {
                         subMenuExpand.status = DropdownMenuState.Status.Open(Offset.Zero)
                     }
+                    editorListener.setFigure(selectedFigure.value,  selectedCommandData.value)
                 }
                 Text(AnnotatedString(selectedCommandData.value.description),
                     modifier = Modifier.fillMaxWidth().clickable {
@@ -136,9 +141,10 @@ fun EditPosition(listener: TemplateGeneratorSimpleListener, onPickSelected : () 
 
                 DropDownMenuCommandData(selectedFigure.value, subMenuExpand){ f, d ->
                     selectedCommandData.value = d
+                    editorListener.setFigure(selectedFigure.value,  selectedCommandData.value)
                 }
 
-                CommandModel(selectedFigure, selectedCommandData,  listener)
+                CommandModel(selectedFigure, selectedCommandData,  editorListener)
             }
         }
     }
@@ -156,7 +162,7 @@ fun CommandModel(
                 TemplateSimpleItemBox(
                     item,
                     null,
-                    selectedFigure.value.name + "/",
+                    selectedFigure.value.name + "/"+ item.argumentName,
                     listener
                 )
             }

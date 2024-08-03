@@ -56,13 +56,6 @@ fun NumericUpDown(
         verticalAlignment = Alignment.Bottom
     ) {
 
-        val textStyle = TextStyle.Default
-        val colors = TextFieldDefaults.textFieldColors()
-        val textColor = textStyle.color.takeOrElse {
-            colors.textColor(enabled).value
-        }
-
-        val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
         if (title.isNotEmpty()) {
             Text(
                 text = title,
@@ -74,23 +67,14 @@ fun NumericUpDown(
             )
             Spacer(Modifier.width(4.dp))
         }
-        BasicTextField(
-            value = value.text,
-            onValueChange = { v: TextFieldValue ->
-                value.update(v)
-            },
+        InputNumeric(
+            value = value,
             modifier = Modifier
                 .height(ThemeColors.NumericFieldHeight)
                 .width(fieldMaxWidth)
-                .weight(1f)
-                //   .background(colors.backgroundColor(enabled).value)
-                .background(ThemeColors.inputBackgroundState(enabled))
-                .border(1.dp, ThemeColors.inputBorder).padding(4.dp),
+                .weight(1f),
             enabled = enabled,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            textStyle = mergedTextStyle
-
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
         )
         if (postfix.isNotEmpty()) {
             Spacer(Modifier.width(4.dp))
@@ -118,14 +102,6 @@ fun NumericUpDownLine(
         modifier = modifier.padding(2.dp),
         verticalAlignment = Alignment.Bottom
     ) {
-
-        val textStyle = TextStyle.Default
-        val colors = TextFieldDefaults.textFieldColors()
-        val textColor = textStyle.color.takeOrElse {
-            colors.textColor(enabled).value
-        }
-
-        val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
         if (title.isNotEmpty()) {
             Text(
                 text = title,
@@ -137,22 +113,13 @@ fun NumericUpDownLine(
             )
             Spacer(Modifier.width(4.dp))
         }
-        BasicTextField(
-            value = value.text,
-            onValueChange = { v: TextFieldValue ->
-                value.update(v)
-            },
-            modifier = Modifier
-                .height(ThemeColors.NumericFieldHeight)
-                .width(fieldMaxWidth)
-                .weight(1f)
-                //   .background(colors.backgroundColor(enabled).value)
-                .background(ThemeColors.inputBackgroundState(enabled))
-                .border(1.dp, ThemeColors.inputBorder).padding(4.dp),
+        val modifier = Modifier.height(ThemeColors.NumericFieldHeight)
+            .width(fieldMaxWidth).weight(1f)
+        InputNumeric(
+            value = value,
+            modifier = modifier,
             enabled = enabled,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            textStyle = mergedTextStyle
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
         )
         LineBox(
             modifier = Modifier.size(12.dp, ThemeColors.NumericFieldHeight)
@@ -173,6 +140,66 @@ fun NumericUpDownLine(
             )
         }
     }
+}
+
+@Composable
+fun InputNumeric(
+    value: NumericTextFieldState,
+    modifier: Modifier,
+    enabled: Boolean,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+) {
+    val textStyle = TextStyle.Default
+    val colors = TextFieldDefaults.textFieldColors()
+    val textColor = textStyle.color.takeOrElse {
+        colors.textColor(enabled).value
+    }
+    val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
+
+    BasicTextField(
+        value = value.text,
+        onValueChange = { v: TextFieldValue ->
+            value.update(v)
+        },
+        modifier = modifier
+            .background(ThemeColors.inputBackgroundState(enabled))
+            .border(1.dp, ThemeColors.inputBorder).padding(4.dp),
+        enabled = enabled,
+        singleLine = true,
+        keyboardOptions = keyboardOptions,
+        textStyle = mergedTextStyle
+    )
+}
+
+@Composable
+fun InputText(
+    modifier: Modifier,
+    value: TextFieldValue,
+    enabled: Boolean,
+    singleLine: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    label:String? = null,
+    onValueChange: (TextFieldValue) -> Unit
+) {
+    val textStyle = TextStyle.Default
+    val colors = TextFieldDefaults.textFieldColors()
+    val textColor = textStyle.color.takeOrElse {
+        colors.textColor(enabled).value
+    }
+    val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
+
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier
+            .background(ThemeColors.inputBackgroundState(enabled))
+            .border(1.dp, ThemeColors.inputBorder).padding(4.dp),
+        enabled = enabled,
+        singleLine = singleLine,
+        keyboardOptions = keyboardOptions,
+        textStyle = mergedTextStyle,
+
+    )
 }
 
 @Composable
