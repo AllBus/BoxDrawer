@@ -9,7 +9,11 @@ import com.kos.figure.IFigure
 import com.kos.figure.algorithms.FigureBezierList
 import com.kos.figure.collections.FigureList
 import com.kos.figure.collections.toFigure
+import com.kos.figure.complex.Corner
+import com.kos.figure.complex.Edge
+import com.kos.figure.complex.FigureRound
 import com.kos.figure.complex.FigureRoundRect
+import com.kos.figure.complex.IEdge
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.abs
@@ -333,13 +337,7 @@ object FigureCreator {
 
         var predPoint = points[0]
         var lastPoint =  points.last()
-        val result = mutableListOf<IFigure>()
-//        result += FigureColor(
-//            Color.Yellow.toArgb(),
-//            DXFColor.getClosestDXFColor(Color.Yellow.toArgb()),
-//            FigurePolyline(points)
-//
-//        )
+        val result = mutableListOf<IEdge>()
 
         val isClose = points.first() == points.last()
         if (isClose){
@@ -350,7 +348,7 @@ object FigureCreator {
             val ci = calculateRadius(a,b,c,r)
             predPoint = ci.bc
             lastPoint = ci.ab
-            result += figureCircle(ci, r)
+            result += corner(ci, r)
         }
 
         for (i in 0 until points.size - 2) {
@@ -363,20 +361,48 @@ object FigureCreator {
                 val ci: CornerInfo = calculateRadius(a, b, c, r)
 
                 if (ci.nonZero){
-                    result += FigureLine(predPoint, ci.ab)
-                    result += figureCircle(ci, r)
+                    result += Edge(predPoint, ci.ab)
+                    result += corner(ci, r)
                 }else{
-                    result += FigureLine(predPoint, ci.ab)
+                    result += Edge(predPoint, ci.ab)
                 }
                 predPoint = ci.bc
 
             } else {
-                result += FigureLine(predPoint, b)
+                result += Edge(predPoint, b)
                 predPoint = b
             }
         }
-        result.add(FigureLine(predPoint, lastPoint))
-        return result.toFigure()
+        result.add(Edge(predPoint, lastPoint))
+        return FigureRound(result.toList())
+    }
+
+    fun corner(
+        info: CornerInfo,
+        r: Double,
+    ) :Corner {
+        val startAngle = atan2((info.ab.y - info.o.y), (info.ab.x - info.o.x))
+        val endAngle = atan2((info.bc.y - info.o.y), (info.bc.x - info.o.x))
+
+        val sweep = endAngle - startAngle
+
+        val re = Vec2.det(info.bc-info.ab, info.o-info.ab)
+
+        val sr =  if (sweep > Math.PI){
+            (sweep - Math.PI * 2)
+        } else
+            if (sweep <= -Math.PI){
+                (sweep + Math.PI * 2)
+            } else
+                sweep
+
+        return Corner(
+            center = info.o,
+            radius = r,
+            outSide = re>0,
+            startAngle = startAngle,
+            sweepAngle =  sr
+        )
     }
 
     fun figureCircle(

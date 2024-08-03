@@ -1,5 +1,6 @@
 package com.kos.figure.complex
 
+import com.kos.drawer.IFigureGraphics
 import com.kos.figure.Figure
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureLine
@@ -8,25 +9,25 @@ import com.kos.figure.PointWithNormal
 import vectors.Vec2
 
 data class Edge(
-    val a: Vec2,
-    val b: Vec2,
+    override val start: Vec2,
+    override val end: Vec2,
 ) : IEdge {
     override fun toFigure(): FigureLine {
-        return FigureLine(a, b)
+        return FigureLine(start, end)
     }
 
     override fun toPath(): IFigurePath = toFigure()
 
     override fun perimeter(): Double {
-        return Vec2.distance(a, b)
+        return Vec2.distance(start, end)
     }
 
     override fun positionInPath(delta: Double): PointWithNormal {
-        return PointWithNormal.from(Vec2.lerp(a, b, delta), a, b)
+        return PointWithNormal.from(Vec2.lerp(start, end, delta), start, end)
     }
 
     override fun take(startMM: Double, endMM: Double): Figure {
-        val d = Vec2.distance(a, b)
+        val d = Vec2.distance(start, end)
 
         if (d <= 0.0 || endMM<=startMM)
             return FigureEmpty
@@ -35,8 +36,16 @@ data class Edge(
         val em = endMM.coerceIn(0.0, d)
 
         return FigureLine(
-            Vec2.lerp(a, b, sm / d),
-            Vec2.lerp(a, b, em / d)
+            Vec2.lerp(start, end, sm / d),
+            Vec2.lerp(start, end, em / d)
         )
+    }
+
+    override fun translate(xy: Vec2): Edge {
+        return Edge(start = start+xy, end = end+xy)
+    }
+
+    override fun draw(g: IFigureGraphics) {
+        g.drawLine(start, end)
     }
 }

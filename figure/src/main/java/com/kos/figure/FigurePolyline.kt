@@ -307,4 +307,23 @@ open class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWit
             return edgeCount() + 1
         return length.indexOfLast { it <= mm }
     }
+
+    companion object {
+        fun rect(
+            left: Double,
+            top: Double,
+            right: Double,
+            bottom: Double
+        ): FigurePolyline {
+            return FigurePolyline(
+                listOf(
+                    Vec2(left, top),
+                    Vec2(right, top),
+                    Vec2(right, bottom),
+                    Vec2(left, bottom),
+                    Vec2(left, top)
+                )
+            )
+        }
+    }
 }

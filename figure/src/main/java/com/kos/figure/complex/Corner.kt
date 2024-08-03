@@ -1,5 +1,6 @@
 package com.kos.figure.complex
 
+import com.kos.drawer.IFigureGraphics
 import com.kos.figure.Figure
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEmpty
@@ -11,6 +12,7 @@ import kotlin.math.abs
 data class Corner(
     val center: Vec2,
     val radius:Double,
+    val outSide: Boolean,
     val startAngle:Double,
     val sweepAngle:Double,
 ):IEdge{
@@ -18,7 +20,7 @@ data class Corner(
         return FigureCircle(
             center = center,
             radius = radius,
-            outSide = true,
+            outSide = outSide,
             segmentStartAngle = startAngle,
             segmentSweepAngle = sweepAngle,
         )
@@ -30,10 +32,12 @@ data class Corner(
         return abs(sweepAngle * radius)
     }
 
+    val normalSign get() = if (outSide) 1.0 else -1.0
+
     override fun positionInPath(delta: Double): PointWithNormal {
         val rot = (startAngle + delta * sweepAngle)
         val pos = center + Vec2(radius, 0.0).rotate(rot)
-        val normal = Vec2(1.0, 0.0).rotate(rot)
+        val normal = Vec2(1.0*normalSign, 0.0).rotate(rot)
         return PointWithNormal(pos, normal)
     }
 
@@ -49,9 +53,28 @@ data class Corner(
         return FigureCircle(
             center = center,
             radius = radius,
-            outSide = true,
+            outSide = outSide,
             segmentStartAngle = Math.toRadians(startAngle+sweepAngle*ste),
             segmentSweepAngle = Math.toRadians(sweepAngle*(end-ste))
         )
     }
+
+    override fun translate(xy: Vec2): Corner {
+        return Corner(
+            center = center+xy,
+            radius = radius,
+            outSide = outSide,
+            startAngle = startAngle,
+            sweepAngle = sweepAngle
+        )
+    }
+
+    override fun draw(g: IFigureGraphics) {
+        g.drawArc(center, radius, radius, startAngle, sweepAngle)
+    }
+
+    override val start: Vec2
+        get() = center + Vec2(radius, 0.0).rotate(startAngle)
+    override val end: Vec2
+        get() = center + Vec2(radius, 0.0).rotate(startAngle+sweepAngle)
 }
