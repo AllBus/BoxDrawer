@@ -44,5 +44,6 @@ class HelpData(
 class HelpDataParam(
     val name: String,
     val description: String,
-    val kind: String = FIELD_1
+    val kind: String = FIELD_1,
+    val variants : List<String>? = null,
 )

@@ -8,6 +8,7 @@ import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
+import turtoise.parser.TPArg
 import turtoise.parser.TortoiseParserStackBlock
 import java.text.DecimalFormat
 
@@ -26,6 +27,11 @@ open class SplashText: ISplashDetail {
                 "Выводимый текст",
                 FIELD_TEXT
             ),
+        ),
+        creator = TPArg.create("print",
+            TPArg.multiVariant(
+                TPArg("text")
+            )
         )
     )
     override fun draw(

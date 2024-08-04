@@ -12,6 +12,7 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FORM
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_LABEL
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_MULTI
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_SELECTOR
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
 import turtoise.parser.TortoiseParser
 import turtoise.parser.TortoiseParserStackBlock
@@ -65,6 +66,18 @@ object TemplateCreator {
                 item
             )
         }
+    }
+
+    fun createSelector(block: TortoiseParserStackBlock): TemplateItemSelector {
+        val title = block.inner.getOrNull(2)?.innerLine.orEmpty()
+        val argument = block.inner.getOrNull(1)?.argument.orEmpty().name
+        val variants = block.inner.getOrNull(3)?.inner.orEmpty()
+
+        return TemplateItemSelector(
+            title,
+            argument,
+            variants.map { it.innerLine }
+        )
     }
 
     fun createItem(
@@ -131,8 +144,11 @@ object TemplateCreator {
                 argumentName = argument,
             )
 
+            FIELD_SELECTOR -> block?.let { b -> createSelector(b) }
+
             FIELD_FORM -> block?.let { b -> createForm(b) }
             FIELD_MULTI -> block?.let { b -> createMulti(b) }
+
             else -> null
         }
     }

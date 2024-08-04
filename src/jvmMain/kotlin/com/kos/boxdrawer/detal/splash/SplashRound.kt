@@ -10,6 +10,7 @@ import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
+import turtoise.parser.TPArg
 import vectors.Vec2
 
 class SplashRound: ISplashDetail {
@@ -17,12 +18,18 @@ class SplashRound: ISplashDetail {
         get() = listOf("round")
 
     override fun help(): HelpData = HelpData(
-        "round x y r + x y",
-        "Нарисовать линию со скруглениями углов",
+        argument = "round x y r + x y",
+        description = "Нарисовать линию со скруглениями углов",
         params = listOf(
             HelpDataParam("x", "Координата x точки относительно предыдущей точки", FIELD_2),
             HelpDataParam("y", "Координата y точки относительно предыдущей точки", FIELD_NONE),
             HelpDataParam("r", "Радиус скругления", FIELD_1),
+        ),
+        creator = TPArg.create("round",
+            TPArg.oneOrMore(
+                TPArg("x"),
+                TPArg("r"),
+            )
         )
     )
 

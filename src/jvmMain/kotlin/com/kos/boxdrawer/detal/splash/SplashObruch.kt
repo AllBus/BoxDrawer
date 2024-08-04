@@ -7,12 +7,13 @@ import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
+import turtoise.parser.TPArg
 
-class SplashObruch:ISplashDetail {
+class SplashObruch : ISplashDetail {
     override val names: List<String>
         get() = listOf("o")
 
-    override fun help(): HelpData =  HelpData(
+    override fun help(): HelpData = HelpData(
         "o (figure) h+",
         "Нарисовать фигуру сдвунутую на h от текущей фигуры",
         listOf(
@@ -25,7 +26,13 @@ class SplashObruch:ISplashDetail {
                 "h",
                 ""
             ),
-
+        ),
+        creator = TPArg.create(
+            "o",
+            TPArg.figure("figure"),
+            TPArg.oneOrMore(
+                TPArg("h"),
+            )
         )
     )
 

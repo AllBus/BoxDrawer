@@ -1,6 +1,7 @@
 package com.kos.boxdrawer.detal.splash
 
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.figure.IFigurePath
 import com.kos.figure.collections.FigureList
 import com.kos.figure.composition.FigureWithPosition
@@ -10,12 +11,13 @@ import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
+import turtoise.parser.TPArg
 
 open class SplashDrop : ISplashDetail {
     override val names: List<String>
         get() = listOf("drop")
 
-    override fun help(): HelpData =  HelpData(
+    override fun help(): HelpData = HelpData(
         "drop (figure) (edge offset width bias)+",
         "Нарисовать часть пути за исключением кусочков",
         listOf(
@@ -40,6 +42,18 @@ open class SplashDrop : ISplashDetail {
                 "bias",
                 ""
             ),
+        ),
+        creator = TPArg.create(
+            "drop",
+            TPArg.figure("figure"),
+            TPArg.oneOrMore(
+                TPArg.block(
+                    TPArg("edge"),
+                    TPArg("offset"),
+                    TPArg("width"),
+                    TPArg("bias"),
+                )
+            )
         )
     )
 
@@ -90,7 +104,7 @@ open class SplashDrop : ISplashDetail {
 
 }
 
-class SplashTake: SplashDrop(){
+class SplashTake : SplashDrop() {
 
     override val names: List<String>
         get() = listOf("take")
@@ -106,7 +120,7 @@ class SplashTake: SplashDrop(){
             ),
             HelpDataParam(
                 "edge",
-                ""
+                "", FIELD_INT
             ),
             HelpDataParam(
                 "offset",
@@ -120,6 +134,18 @@ class SplashTake: SplashDrop(){
                 "bias",
                 ""
             ),
+        ),
+        creator = TPArg.create(
+            "take",
+            TPArg.figure("figure"),
+            TPArg.oneOrMore(
+                TPArg.block(
+                    TPArg("edge"),
+                    TPArg("offset"),
+                    TPArg("width"),
+                    TPArg("bias"),
+                )
+            )
         )
     )
 

@@ -1,8 +1,10 @@
 package com.kos.boxdrawer.detal.splash
 
 import com.kos.boxdrawer.detal.box.BoxAlgorithm
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_SELECTOR
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
 import com.kos.figure.FigurePolyline
 import com.kos.figure.composition.FigureTranslate
 import turtoise.BlockTortoiseReader
@@ -12,6 +14,7 @@ import turtoise.TortoiseFigureExtractor
 import turtoise.ZigzagInfo
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
+import turtoise.parser.TPArg
 import turtoise.parser.TortoiseParserStackItem
 import turtoise.road.RoadCad
 import turtoise.road.RoadProperties
@@ -43,15 +46,24 @@ class SplashRoad() : ISplashDetail {
             HelpDataParam(
                 "s",
                 "Стиль [s|a|p|d]",
-                FIELD_SELECTOR
+                FIELD_SELECTOR,
+                listOf("s", "a", "p", "d")
             ),
             HelpDataParam(
-                "zw",
-                "Длина зигзага"
+                "l",
+                "Форма ботика слева", FIELD_2
+            ),
+            HelpDataParam(
+                "r",
+                "Форма бортика справа", FIELD_2
             ),
             HelpDataParam(
                 "zd",
                 "Дельта зигзагов"
+            ),
+            HelpDataParam(
+                "zw",
+                "Длина зигзага"
             ),
             HelpDataParam(
                 "zh",
@@ -60,17 +72,61 @@ class SplashRoad() : ISplashDetail {
             HelpDataParam(
                 "ve",
                 "Стиль рисования [a|c|v][e|f|s|n][h|o]",
-                FIELD_SELECTOR
+                FIELD_SELECTOR,
+                listOf("a", "c", "v","ae","af","as","an","aeh","aeo")
             ),
             HelpDataParam(
                 "ds",
-                ""
+                "", FIELD_TEXT
             ),
             HelpDataParam(
                 "zig",
                 "Фигура зигзага",
                 FIELD_FIGURE
             ),
+            HelpDataParam(
+                "hole",
+                "Фигура зигзага отверстия",
+                FIELD_FIGURE
+            ),
+        ),
+        creator = TPArg.create( "road",
+            TPArg.figure("figure"),
+            TPArg.block(
+                TPArg("w"),
+                TPArg("h"),
+                TPArg("s"),
+                TPArg.noneOrOne(
+                    TPArg.block(
+                        TPArg.oneVariant(
+                            TPArg.item("l",
+                                TPArg("l")
+                            ),
+                            TPArg.item("r",
+                                TPArg("r")
+                            ),
+                            TPArg.item("t",
+                                TPArg("t")
+                            ),
+                        )
+                    )
+                )
+            ),
+            TPArg.noneOrLine(
+                TPArg.block(
+                    TPArg.noneOrLine(
+                    TPArg("zd"),
+                    TPArg("zw"),
+                    TPArg("zh"),
+                    TPArg.figure("zig"),
+                    TPArg.figure("hole"),
+                    )
+                ),
+                TPArg("ve"),
+                TPArg.block(
+                    TPArg("ds")
+                )
+            )
         )
     )
 

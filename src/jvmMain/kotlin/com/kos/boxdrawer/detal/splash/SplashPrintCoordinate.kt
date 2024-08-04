@@ -5,6 +5,7 @@ import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
+import turtoise.parser.TPArg
 
 class SplashPrintCoordinate:ISplashDetail {
     override val names: List<String>
@@ -19,7 +20,9 @@ class SplashPrintCoordinate:ISplashDetail {
 
     override fun help() = HelpData(
     "printс",
-    "Написать текущую координату"
+    "Написать текущую координату",
+         creator = TPArg.create("printс")
+
     )
 
 

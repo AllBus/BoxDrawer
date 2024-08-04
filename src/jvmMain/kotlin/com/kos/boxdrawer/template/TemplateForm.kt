@@ -333,3 +333,26 @@ data class TemplateItemLabel(
         return tp
     }
 }
+
+data class TemplateItemSelector(
+    override val title: String,
+    override val argumentName: String,
+    val variants: List<String>
+) : TemplateItem {
+    override val argumentCount: Int
+        get() = 0
+
+    override fun print(): TortoiseParserStackItem {
+        val tp = TortoiseParserStackBlock()
+        tp.add(FIELD_LABEL)
+        tp.add(argumentName)
+        tp.add("[$title]")
+        tp.add(
+            TortoiseParserStackBlock(
+                '(',
+            ).apply {
+                add(variants)
+            })
+        return tp
+    }
+}

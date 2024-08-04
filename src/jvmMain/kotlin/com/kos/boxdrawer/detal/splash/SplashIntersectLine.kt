@@ -1,15 +1,13 @@
 package com.kos.boxdrawer.detal.splash
 
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import com.jsevy.jdxf.DXFColor
-import com.kos.figure.FigureLine
-import com.kos.figure.composition.FigureColor
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_SELECTOR
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
+import turtoise.parser.TPArg
 import vectors.Vec2
 import kotlin.math.abs
 
@@ -22,9 +20,30 @@ class SplashIntersectLine : ISplashDetail {
         "Нарисовать прямую линию до пресечения с вериткальной или горизонтальной линией указанной координатой",
         listOf(
             HelpDataParam(
-                "x",
-                "Координата линии"
+                "v|h",
+                "lv до вертикальной или lh до горизонтальной линии", FIELD_SELECTOR,
+                variants = listOf("lv", "lh")
             ),
+            HelpDataParam(
+                "x",
+                "Координата линии",
+            ),
+            HelpDataParam(
+                "y",
+                "Координата линии y",
+            ),
+            HelpDataParam(
+                "a",
+                "Угол наклона линии", FIELD_ANGLE
+            ),
+        ),
+        creator = TPArg.block(
+            TPArg("v|h"),
+            TPArg("x"),
+            TPArg.noneOrLine(
+                TPArg("y"),
+                TPArg("a"),
+            )
         )
     )
 

@@ -1,13 +1,16 @@
 package com.kos.boxdrawer.detal.splash
 
 import com.kos.boxdrawer.detal.soft.SoftRez
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
+import turtoise.parser.TPArg
 
 class SplashSoftRez: ISplashDetail {
     override val names: List<String>
@@ -19,15 +22,15 @@ class SplashSoftRez: ISplashDetail {
         listOf(
             HelpDataParam(
                 "width",
-                ""
+                "", FIELD_2
             ),
             HelpDataParam(
                 "height",
-                ""
+                "", FIELD_NONE
             ),
             HelpDataParam(
                 "delta",
-                ""
+                "",
             ),
             HelpDataParam(
                 "dlina",
@@ -41,6 +44,12 @@ class SplashSoftRez: ISplashDetail {
                 "isFirstSmall",
                 "", FIELD_CHECK
             ),
+        ),
+        creator = TPArg.create("rez",
+            TPArg("width"),
+            TPArg("dlina"),
+            TPArg("soedinenie"),
+            TPArg("isFirstSmall"),
         )
     )
 

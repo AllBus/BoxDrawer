@@ -1,5 +1,7 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.figure.FigureLine
 import com.kos.figure.collections.FigureList
 import turtoise.TortoiseBuilder
@@ -7,6 +9,7 @@ import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
+import turtoise.parser.TPArg
 
 class SplashNormal: ISplashDetail {
     override val names: List<String>
@@ -19,11 +22,12 @@ class SplashNormal: ISplashDetail {
             listOf(
                 HelpDataParam(
                     "figure",
-                    "Фигура"
+                    "Фигура", FIELD_FIGURE
                 ),
                 HelpDataParam(
                     "c",
-                    "количество раз"
+                    "количество раз", FIELD_INT
+
                 ),
                 HelpDataParam(
                     "l",
@@ -33,7 +37,13 @@ class SplashNormal: ISplashDetail {
                     "o",
                     "Отступ от фигуры"
                 )
-            )
+            ),
+            creator = TPArg.create("normal",
+                TPArg.figure("figure"),
+                TPArg("c"),
+                TPArg("l"),
+                TPArg("o"),
+                )
         )
     }
 

@@ -14,7 +14,6 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.DropdownMenuState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,26 +33,27 @@ import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawer.presentation.template.TemplateAngleBox
-import com.kos.boxdrawer.presentation.template.TemplateItemBox
 import com.kos.boxdrawer.presentation.template.TemplateSimpleItemBox
 import com.kos.boxdrawer.presentation.template.TemplateSizeBox
 import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateFigureBuilderListener
-import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItemAngle
 import com.kos.boxdrawer.template.TemplateItemSize
 import turtoise.help.HelpData
 import turtoise.help.HelpInfoCommand
 import turtoise.help.TortoiseHelpInfo
+import turtoise.parser.TPArg
+import turtoise.parser.TortoiseParserStackBlock
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun EditPosition(
     moveListener: TemplateGeneratorSimpleListener,
     editorListener: TemplateFigureBuilderListener,
-    onPickSelected : () -> String) {
-    val expanded = remember{ mutableStateOf(false) }
+    onPickSelected: () -> String
+) {
+    val expanded = remember { mutableStateOf(false) }
     Column(
     ) {
         Row {
@@ -64,7 +64,7 @@ fun EditPosition(
                 if (expanded.value) Expand.rememberExpandLess() else Expand.rememberExpandMore(),
                 modifier = Modifier,
                 enabled = true
-            ){
+            ) {
                 expanded.value = !expanded.value
             }
         }
@@ -95,10 +95,12 @@ fun EditPosition(
                     }
 
                 Row {
-                    Label("Вставить значение", modifier = Modifier.onPointerEvent(PointerEventType.Press){
-                        val t=  onPickSelected()
-                        inputPos.update(t)
-                    })
+                    Label(
+                        "Вставить значение",
+                        modifier = Modifier.onPointerEvent(PointerEventType.Press) {
+                            val t = onPickSelected()
+                            inputPos.update(t)
+                        })
                 }
                 Row() {
                     NumericUpDownLine("", "", inputPos, modifier = Modifier.weight(1f))
@@ -109,42 +111,51 @@ fun EditPosition(
                 val expandedMenuState = remember { DropdownMenuState() }
                 val subMenuExpand = remember { DropdownMenuState() }
 
-                val selectedFigure =  remember{ mutableStateOf(commands.firstOrNull()?: HelpInfoCommand("", emptyList())) }
-                val selectedCommandData = remember{ mutableStateOf(HelpData("", ""))}
-                    Text(
+                val selectedFigure = remember {
+                    mutableStateOf(
+                        commands.firstOrNull() ?: HelpInfoCommand(
+                            "",
+                            emptyList()
+                        )
+                    )
+                }
+                val selectedCommandData = remember { mutableStateOf(HelpData("", "")) }
+                Text(
                     AnnotatedString(
                         selectedFigure.value.name
-                    ) + AnnotatedString(" ")+
-                            AnnotatedString(selectedCommandData.value.argument.orEmpty(),
+                    ) + AnnotatedString(" ") +
+                            AnnotatedString(
+                                selectedCommandData.value.argument.orEmpty(),
                                 SpanStyle(
                                     color = Color(0xFF26A530),
-                                ) )
-                    ,
+                                )
+                            ),
                     modifier = Modifier.fillMaxWidth().clickable {
                         expandedMenuState.status = DropdownMenuState.Status.Open(Offset.Zero)
                     }.padding(4.dp)
                 )
 
-                CommandMenu(expandedMenuState, commands){ com ->
+                CommandMenu(expandedMenuState, commands) { com ->
                     selectedFigure.value = com
-                    selectedCommandData.value = com.data.firstOrNull()?: HelpData("", "")
-                    if (selectedFigure.value.data.size>1) {
+                    selectedCommandData.value = com.data.firstOrNull() ?: HelpData("", "")
+                    if (selectedFigure.value.data.size > 1) {
                         subMenuExpand.status = DropdownMenuState.Status.Open(Offset.Zero)
                     }
-                    editorListener.setFigure(selectedFigure.value,  selectedCommandData.value)
+                    editorListener.setFigure(selectedFigure.value, selectedCommandData.value)
                 }
-                Text(AnnotatedString(selectedCommandData.value.description),
+                Text(
+                    AnnotatedString(selectedCommandData.value.description),
                     modifier = Modifier.fillMaxWidth().clickable {
                         subMenuExpand.status = DropdownMenuState.Status.Open(Offset.Zero)
                     }.padding(4.dp)
                 )
 
-                DropDownMenuCommandData(selectedFigure.value, subMenuExpand){ f, d ->
+                DropDownMenuCommandData(selectedFigure.value, subMenuExpand) { f, d ->
                     selectedCommandData.value = d
-                    editorListener.setFigure(selectedFigure.value,  selectedCommandData.value)
+                    editorListener.setFigure(selectedFigure.value, selectedCommandData.value)
                 }
 
-                CommandModel(selectedFigure, selectedCommandData,  editorListener)
+                CommandModel(selectedFigure, selectedCommandData, editorListener)
             }
         }
     }
@@ -158,11 +169,24 @@ fun CommandModel(
 ) {
     Column {
         selectedCommandData.value.params.forEach { param ->
-            TemplateCreator.createItem(param.kind, param.name, param.name, null)?.let { item ->
+            TemplateCreator.createItem(
+                param.kind,
+                param.name,
+                param.name,
+                param.variants?.let { v ->
+                    TortoiseParserStackBlock(
+                        '(', param.kind, listOf(
+                            TPArg.text(param.name),
+                            TPArg.text(param.name),
+                            TPArg.block(v.map { TPArg.text(it) })
+                        )
+                    )
+                }
+            )?.let { item ->
                 TemplateSimpleItemBox(
                     item,
                     null,
-                    selectedFigure.value.name + "/@"+ item.argumentName,
+                    selectedFigure.value.name + "/@" + item.argumentName,
                     listener
                 )
             }
@@ -191,7 +215,8 @@ private fun CommandMenu(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    com.description.takeIf { it.isNotEmpty() }?: com.data.firstOrNull()?.description.orEmpty(),
+                    com.description.takeIf { it.isNotEmpty() }
+                        ?: com.data.firstOrNull()?.description.orEmpty(),
 
                     fontSize = 12.sp,
                     lineHeight = 14.sp
@@ -202,18 +227,21 @@ private fun CommandMenu(
 }
 
 @Composable
-fun DropDownMenuCommandData(info: HelpInfoCommand,
-                            expandedMenuState:DropdownMenuState,
-                            onSelect: (HelpInfoCommand, HelpData
-) -> Unit){
+fun DropDownMenuCommandData(
+    info: HelpInfoCommand,
+    expandedMenuState: DropdownMenuState,
+    onSelect: (
+        HelpInfoCommand, HelpData
+    ) -> Unit
+) {
     DropdownMenu(
         state = expandedMenuState,
-    ){
+    ) {
         info.data.forEach { com ->
             DropdownMenuItem(onClick = {
                 expandedMenuState.status = DropdownMenuState.Status.Closed
                 onSelect(info, com)
-            }){
+            }) {
                 Column {
                     Text(
                         com.argument,

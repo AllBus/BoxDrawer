@@ -34,6 +34,7 @@ import com.kos.boxdrawer.template.TemplateItemLabel
 import com.kos.boxdrawer.template.TemplateItemMulti
 import com.kos.boxdrawer.template.TemplateItemNumeric
 import com.kos.boxdrawer.template.TemplateItemRect
+import com.kos.boxdrawer.template.TemplateItemSelector
 import com.kos.boxdrawer.template.TemplateItemSize
 import com.kos.boxdrawer.template.TemplateItemString
 import com.kos.boxdrawer.template.TemplateItemTriple
@@ -172,6 +173,12 @@ fun TemplateSimpleItemBox(
         )
 
         is TemplateItemCheck -> TemplateCheckBox(
+            form = item,
+            block = inner,
+            prefix = newPrefix,
+            templateGenerator = templateGenerator
+        )
+        is TemplateItemSelector -> TemplateSelectorBox(
             form = item,
             block = inner,
             prefix = newPrefix,

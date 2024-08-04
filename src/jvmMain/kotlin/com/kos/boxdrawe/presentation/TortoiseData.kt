@@ -22,6 +22,7 @@ import turtoise.TortoiseRunner
 import turtoise.TortoiseState
 import turtoise.help.HelpData
 import turtoise.help.HelpInfoCommand
+import turtoise.parser.TPArg
 import turtoise.parser.TortoiseParser
 import turtoise.parser.TortoiseParserStackBlock
 import java.io.File
@@ -69,23 +70,21 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
         fun recalc(){
 
             val prefix = "${selectCommand.name}/"
-            val com = selectCommand.name+" "
+            val com = selectCommand.name
 
             //Todo Нужно вставлять правильно параметры
             val creator = selectData.creator
             val text = if (creator != null){
                 com+ buildCommand(creator, memory, prefix)
-            }else {
+            } else {
                 val args = selectData.params.map { p ->
                     val v = memory.get(prefix+"@" + p.name)
                     v.joinToString(" ")
                 }
-                args.joinToString(" ", com)
+                args.joinToString(" ", "$com ")
             }
             insertText(text)
         }
-
-        private val actions = listOf("@+", "@?", "@*")
 
         private fun buildCommand(
             creator: TortoiseParserStackBlock,
@@ -103,10 +102,9 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
                     }
                 } else {
                     if (b is TortoiseParserStackBlock){
-                        if (b.name.name in actions)    {
-                            //
+                        if (TPArg.isAction(b)) {
                             buildCommand(b, memory, prefix)
-                        }else {
+                        } else {
                             "${b.skobka}${buildCommand(b, memory, prefix)}${b.closeBrace()}"
                         }
                     } else ""

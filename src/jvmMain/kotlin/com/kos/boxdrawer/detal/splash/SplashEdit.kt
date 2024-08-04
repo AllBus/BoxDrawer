@@ -1,11 +1,16 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
+import turtoise.parser.TPArg
 import vectors.Vec2
 
 class SplashEdit : ISplashDetail {
@@ -13,7 +18,7 @@ class SplashEdit : ISplashDetail {
         get() = listOf("edit", "e")
 
     override fun help(): HelpData = HelpData(
-        "edit (figure) (m x y a)* (r e+)",
+        "edit (figure) (m e x y a)* (r e+)",
         "Редактировать фигуру",
         listOf(
             HelpDataParam(
@@ -22,21 +27,39 @@ class SplashEdit : ISplashDetail {
                 FIELD_FIGURE
             ),
             HelpDataParam(
+                "e",
+                "", FIELD_INT
+            ),
+            HelpDataParam(
                 "x",
-                ""
+                "", FIELD_2
             ),
             HelpDataParam(
                 "y",
-                ""
+                "", FIELD_NONE
             ),
             HelpDataParam(
                 "a",
-                ""
+                "", FIELD_ANGLE
             ),
-            HelpDataParam(
-                "e",
-                ""
-            ),
+        ),
+        creator = TPArg.create(
+            "edit",
+            TPArg.figure("figure"),
+            TPArg.multiVariant(
+                TPArg.item(
+                    "m",
+                    TPArg("e"),
+                    TPArg("x"),
+                    TPArg("a"),
+                ),
+                TPArg.item(
+                    "r",
+                    TPArg.oneOrMore(
+                        TPArg("e"),
+                    )
+                ),
+            )
         )
     )
 

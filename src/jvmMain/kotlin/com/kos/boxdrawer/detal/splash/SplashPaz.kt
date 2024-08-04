@@ -2,6 +2,7 @@ package com.kos.boxdrawer.detal.splash
 
 import com.jsevy.jdxf.DXFColor
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.figure.FigurePolyline
 import com.kos.figure.collections.FigureList
 import com.kos.figure.composition.FigureColor
@@ -14,6 +15,7 @@ import turtoise.TortoiseFigureExtractor.Companion.positionInPath
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
 import turtoise.memory.keys.MemoryKey
+import turtoise.parser.TPArg
 import vectors.Vec2
 import kotlin.math.PI
 
@@ -32,7 +34,7 @@ class SplashPaz: ISplashDetail {
             ),
             HelpDataParam(
                 "edge",
-                ""
+                "", FIELD_INT
             ),
             HelpDataParam(
                 "delta",
@@ -46,6 +48,17 @@ class SplashPaz: ISplashDetail {
                 "he",
                 ""
             ),
+        ),
+        creator = TPArg.create("paz",
+            TPArg.figure("figure"),
+            TPArg.oneOrMore(
+                TPArg.block(
+                    TPArg("edge"),
+                    TPArg("delta"),
+                    TPArg("le"),
+                    TPArg("he"),
+                )
+            )
         )
     )
 

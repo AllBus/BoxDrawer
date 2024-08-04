@@ -9,6 +9,7 @@ import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
+import turtoise.parser.TPArg
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.cos
@@ -24,16 +25,20 @@ class SplashDiamond : ISplashDetail {
     override fun help(): HelpData = HelpData(
         "diamond dx dy",
         "Построить ромб по двум диагоналям",
-                listOf(
-                    HelpDataParam(
-                        "dx",
-                        "Диагональ по оси x", FIELD_2
-                    ),
-                    HelpDataParam(
-                        "dy",
-                        "Диагональ по оси y", FIELD_NONE
-                    ),
-                )
+        listOf(
+            HelpDataParam(
+                "dx",
+                "Диагональ по оси x", FIELD_2
+            ),
+            HelpDataParam(
+                "dy",
+                "Диагональ по оси y", FIELD_NONE
+            ),
+        ),
+        creator = TPArg.create(
+            "diamond",
+            TPArg("dx"),
+        )
     )
 
     override fun draw(
@@ -76,6 +81,13 @@ class SplashDiamondAngle : ISplashDetail {
                 "a",
                 "Угол", FIELD_ANGLE
             ),
+        ),
+        creator = TPArg.create(
+            "diamonda",
+
+                TPArg("d"),
+                TPArg("a"),
+
         )
     )
 
@@ -108,7 +120,7 @@ class SplashParallelogram : ISplashDetail {
 
     override fun help(): HelpData = HelpData(
         "par d a b",
-        "Построить параллелограмм по двум сторонам углу между ними",
+        "Построить параллелограмм по двум сторонам и углу между ними",
         listOf(
             HelpDataParam(
                 "d",
@@ -122,6 +134,14 @@ class SplashParallelogram : ISplashDetail {
                 "b",
                 "Сторона", FIELD_1
             ),
+        ),
+        creator = TPArg.create(
+            "par",
+
+            TPArg("d"),
+            TPArg("a"),
+            TPArg("b"),
+
         )
     )
 

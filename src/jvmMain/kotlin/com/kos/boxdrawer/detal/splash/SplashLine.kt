@@ -1,10 +1,13 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
+import turtoise.parser.TPArg
 
 class SplashLine: ISplashDetail {
     override val names: List<String>
@@ -17,13 +20,17 @@ class SplashLine: ISplashDetail {
 
             HelpDataParam(
                 "x",
-                ""
+                "Координата угла линии", FIELD_2
             ),
             HelpDataParam(
                 "y",
-                ""
+                "Координата угла линии", FIELD_NONE
             ),
-        )
+        ),
+        creator = TPArg.create("line",
+            TPArg.oneOrMore(
+                TPArg("x")
+            ))
     )
 
     override fun draw(

@@ -1,12 +1,14 @@
 package com.kos.boxdrawer.detal.splash
 
-import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
 import turtoise.memory.TortoiseMemory
+import turtoise.parser.TPArg
 
 open class SplashTooth : ISplashDetail {
     override val names: List<String>
@@ -18,13 +20,17 @@ open class SplashTooth : ISplashDetail {
         listOf(
             HelpDataParam(
                 "h",
-                "",
+                "", FIELD_2
 
-                ),
+            ),
             HelpDataParam(
                 "w",
-                "",
+                "", FIELD_NONE
             ),
+        ),
+        creator = TPArg.create(
+            "tooth",
+            TPArg("h")
         )
     )
 
@@ -90,7 +96,11 @@ class SplashToothReverse : SplashTooth() {
                 "w",
                 "",
 
-                ),
+                )
+        ),
+        creator = TPArg.create(
+            "tooth",
+            TPArg("h")
         )
     )
 

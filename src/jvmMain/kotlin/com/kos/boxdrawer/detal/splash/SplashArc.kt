@@ -1,5 +1,7 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
 import com.kos.figure.collections.FigureList
 import turtoise.FigureCreator.arcInTwoPoint
 import turtoise.TortoiseBuilder
@@ -8,6 +10,7 @@ import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
 import turtoise.memory.keys.MemoryKey
+import turtoise.parser.TPArg
 import vectors.Vec2
 
 class SplashArc : ISplashDetail {
@@ -25,12 +28,19 @@ class SplashArc : ISplashDetail {
                 ),
                 HelpDataParam(
                     "pointStart",
-                    "Точка начала"
+                    "Точка начала", FIELD_2
                 ),
                 HelpDataParam(
                     "pointEnd",
-                    "Точка конца"
+                    "Точка конца", FIELD_NONE
                 ),
+            ),
+            creator = TPArg.create(
+                "arc",
+                TPArg.oneOrMore(
+                    TPArg("radius"),
+                    TPArg("pointStart"),
+                )
             )
         )
     }

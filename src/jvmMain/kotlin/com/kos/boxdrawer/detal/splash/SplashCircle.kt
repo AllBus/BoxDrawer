@@ -20,11 +20,11 @@ class SplashCircle: ISplashDetail {
     override fun help(): HelpData {
         return HelpData(
             "circle ax ay ox oy cx cy r",
-            "Построить дугу радиуса r из точки O между заданноых радиус векторов OA OC",
+            "Построить дугу радиуса r из точки O между заданных радиус-векторов OA OC",
             params = listOf(
                 HelpDataParam("a", "Координата начала дуги", FIELD_2),
                 HelpDataParam("o", "Координата центра дуги", FIELD_2),
-                HelpDataParam("c", "Координата концв дуг,и", FIELD_2),
+                HelpDataParam("c", "Координата концв дуги", FIELD_2),
                 HelpDataParam("r", "радиус дуги", FIELD_1),
             ),
             creator = TortoiseParserStackBlock(' ', "circle", listOf(
