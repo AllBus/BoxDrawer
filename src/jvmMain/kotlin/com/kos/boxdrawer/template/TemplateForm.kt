@@ -167,6 +167,22 @@ data class TemplateItemInt(
     }
 }
 
+data class TemplateItemColor(
+    override val title: String,
+    override val argumentName: String
+) : TemplateItem {
+    override val argumentCount: Int
+        get() = 1
+
+    override fun print(): TortoiseParserStackItem {
+        val tp = TortoiseParserStackBlock()
+        tp.add(FIELD_INT)
+        tp.add(argumentName)
+        tp.add("[$title]")
+        return tp
+    }
+}
+
 data class TemplateItemNumeric(
     override val title: String,
     override val argumentName: String

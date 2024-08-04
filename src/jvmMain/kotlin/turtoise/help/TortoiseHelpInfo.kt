@@ -5,6 +5,7 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_3
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_COLOR
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
@@ -378,7 +379,8 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "Рисовать фигуру которая записана в строке по правилам черепашки",
                     listOf(
                         HelpDataParam("tortoise", "Строка черепашьих команд", FIELD_TEXT),
-                    )
+                    ),
+                    creator =  TPArg.create("", TPArg.block(TPArg("tortoise")))
                 )
             ),
             "Фигура"
@@ -387,14 +389,14 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             TortoiseCommand.TURTOISE_IF_FIGURE,
             listOf(
                 HelpData(
-                    "(expresion)(@figure (args?))",
+                    "(expresion)(figure)",
                     "Рисовать фигуру которая записана в строке начинающейся с @program\n",
                     listOf(
                         HelpDataParam(
                             "expression",
                             "Если значение вычисления выражение больше 0.0 будет рисовать фигуру иначе нет", FIELD_TEXT
                         ),
-                        HelpDataParam("@program", "название програмы рисования фигур", FIELD_FIGURE),
+                        HelpDataParam("figure", "фигура", FIELD_FIGURE),
                         HelpDataParam(
                             "args",
                             "ноль или несколько значений которые передаются фигуре\n каждое значение записывается как (name value) где", FIELD_NONE
@@ -404,7 +406,11 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                             "название переменной обращение в описании фиугры к которой происходит через .", FIELD_NONE
                         ),
                         HelpDataParam("value", "значение подставляемое всместо переменной", FIELD_NONE),
-                    )
+                    ),
+                    creator =  TPArg.create("",
+                        TPArg.block(TPArg("expression")),
+                        TPArg.figure("figure"),
+                        )
                 ),
                 HelpData(
                     "(expression)(tortoise)",
@@ -415,6 +421,10 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                             "Если значение вычисления выражение больше 0.5 будет рисовать фигуру иначе нет", FIELD_TEXT
                         ),
                         HelpDataParam("tortoise", "Строка черепашьих команд", FIELD_TEXT),
+                    ),
+                    creator =  TPArg.create("",
+                        TPArg.block(TPArg("expression")),
+                        TPArg.block(TPArg("tortoise"))
                     )
                 )
             ),
@@ -429,7 +439,7 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam(
                             "path",
-                            "Пуь в доль которого рисуем фигуры", FIELD_FIGURE
+                            "Путь в доль которого рисуем фигуры", FIELD_FIGURE
                         ),
                         HelpDataParam("edge", "Номер стороны в путь path начинается с 0"),
                         HelpDataParam(
@@ -440,6 +450,11 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                             "f",
                             "Фигура рисуемая в указанной позиции (здаётся по правилам рисования фигур)", FIELD_FIGURE
                         ),
+                    ),
+                    creator = TPArg.create("",
+                        TPArg.figure("path"),
+                        TPArg.block(TPArg("edge"), TPArg("delta") ),
+                        TPArg.figure("f"),
                     )
                 ),
             )
@@ -450,7 +465,7 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             listOf(
                 HelpData(
                     "(path) (count distance offset angle normal px py reverse) (figure)",
-                    "Рисовать фигуру которая записана в строке начинающейся с @program\n",
+                    "Рисовать фигуры вдоль пути\n",
                     listOf(
                         HelpDataParam(
                             "path",
@@ -492,15 +507,21 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                             "figure",
                             "Фигура, копии которой распологаются вдоль пути", FIELD_FIGURE
                         ),
+                    ),
+                    creator = TPArg.create("",
+                        TPArg.figure("path"),
+                        TPArg.block(
+                            TPArg("count"),
+                            TPArg("distance"),
+                            TPArg("offset"),
+                            TPArg("angle"),
+                            TPArg("normal"),
+                            TPArg("px"),
+                            TPArg("reverse"),
+                        ),
+                        TPArg.figure("figure"),
                     )
                 ),
-                HelpData(
-                    "(tortoise)",
-                    "Рисовать фигуру которая записана в строке по правилам черепашки",
-                    listOf(
-                        HelpDataParam("tortoise", "Строка черепашьих команд", FIELD_TEXT),
-                    )
-                )
             )
         ),
         helpName(
@@ -525,11 +546,15 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             TortoiseCommand.TURTOISE_MEMORY_ASSIGN,
             listOf(
                 HelpData(
-                    "var arg*",
-                    "присвоить переменной var сумму значений arg",
-                    listOf(
+                    argument = "var arg*",
+                    description = "присвоить переменной var сумму значений arg",
+                    params = listOf(
                         HelpDataParam("var", "Название переменной", FIELD_TEXT),
                         HelpDataParam("arg", "Значение которое будет сохранено в переменную", FIELD_TEXT),
+                    ),
+                    creator = TPArg.create("",
+                        TPArg.text("var"),
+                        TPArg.text("arg"),
                     )
                 )
             ),
@@ -539,7 +564,12 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             '@',
             listOf(
                 HelpData(
-                    "var", "подставить значение переменной var. Пишется слитно"
+                    argument = "var",
+                    description = "подставить значение переменной var. Пишется слитно",
+                    params = listOf(
+                        HelpDataParam("var", "Название переменной", FIELD_TEXT),
+                    ),
+                    creator = TPArg.create("",  TPArg.text("var"))
                 )
             ),
             "Подстановка значения переменной"
@@ -548,9 +578,9 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             TortoiseCommand.TURTOISE_UNION,
             listOf(
                 HelpData(
-                    "(figure1)(fiugre2)",
-                    "Объединение мнгогоугольников. Многоугольники задаются также как и при рисовании фигур",
-                    listOf(
+                    argument = "(figure1)(fiugre2)",
+                    description = "Объединение мнгогоугольников. Многоугольники задаются также как и при рисовании фигур",
+                    params = listOf(
                         HelpDataParam(
                             "figure1",
                             "Первый многоугольник для объединения", FIELD_FIGURE
@@ -634,7 +664,7 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam(
                             "color",
-                            "Индекс цвета в таблице dxf", FIELD_INT
+                            "Индекс цвета в таблице dxf", FIELD_COLOR
                         ),
                         HelpDataParam(
                             "figure",

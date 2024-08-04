@@ -17,8 +17,11 @@ fun TemplateCheckBox(
     templateGenerator: TemplateGeneratorSimpleListener
 ) {
     val checkState = remember("$prefix") {
-        mutableStateOf(
-            (templateGenerator.get(prefix).firstOrNull() ?: block?.get(0)) == "true"
+
+        val p = templateGenerator.get(prefix).firstOrNull()?.toDoubleOrNull()
+        val b = block?.get(0)?.toDoubleOrNull()
+        mutableStateOf<Boolean>(
+            (p?: b?: 1.0) >0.0
         )
     }
     RunCheckBox(
@@ -28,7 +31,7 @@ fun TemplateCheckBox(
             checkState.value = c
             templateGenerator.put(
                 prefix,
-                c.toString()
+                if (c) "1" else "-1"
             )
         },
     )

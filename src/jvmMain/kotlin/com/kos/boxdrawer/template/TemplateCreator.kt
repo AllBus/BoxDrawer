@@ -6,6 +6,7 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_3
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_4
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_COLOR
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FORM
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
@@ -94,7 +95,12 @@ object TemplateCreator {
                 title = title,
                 argumentName = argument,
             )
-
+            FIELD_COLOR -> {
+                TemplateItemColor(
+                    title = title,
+                    argumentName = argument,
+                )
+            }
             FIELD_3, "triple", "triangle", "coord" -> TemplateItemTriple(
                 title = title,
                 argumentName = argument,
@@ -115,7 +121,7 @@ object TemplateCreator {
                 argumentName = argument,
             )
 
-            "string" , FIELD_TEXT -> TemplateItemString(
+            FIELD_TEXT ,"string"  -> TemplateItemString(
                 title = title,
                 argumentName = argument,
             )

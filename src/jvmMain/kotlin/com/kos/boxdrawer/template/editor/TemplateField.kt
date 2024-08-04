@@ -10,6 +10,7 @@ data class TemplateField(val name:String) {
         const val FIELD_4 = "4"
         const val FIELD_ANGLE = "a"
         const val FIELD_CHECK = "check"
+        const val FIELD_COLOR = "color"
         const val FIELD_FIGURE = "f"
         const val FIELD_FORM = "form"
         const val FIELD_INT = "int"
