@@ -39,16 +39,13 @@ fun TemplateEditorBox(
         TemplateBox(
             modifier = Modifier.padding(8.dp)
                 .width(250.dp)
+                .background(ThemeColors.editorBackground, ThemeColors.figureListItemShape)
                 .verticalScroll(
                     rememberScrollState()
                 ),
             menu = menu,
             templateGenerator = templateGenerator,
         )
-
-//        if (menu.value.edit){
-//
-//        }
     }
 
     Column {

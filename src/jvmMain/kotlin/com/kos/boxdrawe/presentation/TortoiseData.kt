@@ -3,17 +3,15 @@ package com.kos.boxdrawe.presentation
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Matrix
-import androidx.compose.ui.res.useResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.getTextAfterSelection
 import androidx.compose.ui.text.input.getTextBeforeSelection
+import com.kos.boxdrawe.presentation.template.TemplateFigureEditor
 import com.kos.boxdrawer.template.TemplateFigureBuilderListener
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateMemory
-import com.kos.figure.CropSide
-import com.kos.figure.Figure
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,10 +21,12 @@ import turtoise.TortoiseState
 import turtoise.help.HelpData
 import turtoise.help.HelpInfoCommand
 import turtoise.parser.TPArg
+import turtoise.parser.TPArg.SOME
+import turtoise.parser.TPArg.VARIANT
 import turtoise.parser.TortoiseParser
 import turtoise.parser.TortoiseParserStackBlock
+import turtoise.parser.TortoiseParserStackItem
 import java.io.File
-import java.lang.StringBuilder
 
 class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
     val figures = MutableStateFlow<IFigure>(FigureEmpty)
@@ -38,91 +38,14 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
     @OptIn(ExperimentalFoundationApi::class)
     val text = mutableStateOf(TextFieldValue(""))
 
-    val editorListener = object : TemplateFigureBuilderListener {
-        val memory = TemplateMemory()
-
-        private var selectCommand :HelpInfoCommand = HelpInfoCommand("", emptyList())
-        private var selectData :HelpData =HelpData("","")
-        override fun setFigure(command: HelpInfoCommand, data: HelpData) {
-            if (selectCommand!= command){
-                memory.clear()
-            }
-            selectCommand = command
-            selectData = data
-        }
-
-        override fun put(arg: String, index: Int, count: Int, value: String) {
-        //    println("$arg : $index $value")
-            memory.put(arg, index, count, value)
-            recalc()
-        }
-
-        override fun put(arg: String, value: String) {
-        //    println("$arg : $value")
-            memory.put(arg,  value)
-            recalc()
-        }
-
-        override fun get(arg: String): List<String> {
-            return memory.get(arg)
-        }
-
-        fun recalc(){
-
-            val prefix = "${selectCommand.name}/"
-            val com = selectCommand.name
-
-            //Todo Нужно вставлять правильно параметры
-            val creator = selectData.creator
-            val text = if (creator != null){
-                com+ buildCommand(creator, memory, prefix)
-            } else {
-                val args = selectData.params.map { p ->
-                    val v = memory.get(prefix+"@" + p.name)
-                    v.joinToString(" ")
-                }
-                args.joinToString(" ", "$com ")
-            }
-            insertText(text)
-        }
-
-        private fun buildCommand(
-            creator: TortoiseParserStackBlock,
-            memory: TemplateMemory,
-            prefix:String,
-        ): String {
-            val sb = StringBuilder()
-            creator.inner.forEach{ b ->
-                val t = if (b.isArgument()) {
-                    if (b.name.prefix()=='@'){
-                        val v = memory.get(prefix + b.name.name)
-                        v.joinToString(" ")
-                    } else {
-                        b.name.name
-                    }
-                } else {
-                    if (b is TortoiseParserStackBlock){
-                        if (TPArg.isAction(b)) {
-                            buildCommand(b, memory, prefix)
-                        } else {
-                            "${b.skobka}${buildCommand(b, memory, prefix)}${b.closeBrace()}"
-                        }
-                    } else ""
-                }
-                sb.append(t)
-                sb.append(" ")
-            }
-
-            return sb.toString()
-        }
-    }
+    val editorListener = TemplateFigureEditor(::insertText)
 
     val moveListener = object : TemplateGeneratorSimpleListener {
         val memory = TemplateMemory()
         override fun put(arg: String, index: Int, count: Int, value: String) {
-            if (arg == "pos"){
+            if (arg == "pos") {
                 reposition(value)
-            }else {
+            } else {
                 if (count > 1) {
                     memory.put(arg, index, count, value)
                     recalc()
@@ -133,9 +56,9 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
         }
 
         override fun put(arg: String, value: String) {
-            if (arg == "pos"){
+            if (arg == "pos") {
                 reposition(value)
-            }else {
+            } else {
                 memory.put(arg, value)
                 recalc()
             }
@@ -145,7 +68,7 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
             return memory.get(arg)
         }
 
-        fun reposition(value:String){
+        fun reposition(value: String) {
             val f = " $value"
             insertText(f)
         }
@@ -153,17 +76,17 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
         fun recalc() {
             val x = memory.get("xy").getOrElse(0) { "0" }
             val y = memory.get("xy").getOrElse(1) { "0" }
-            val xa =  memory.get("axy").getOrElse(0) { "0" }
+            val xa = memory.get("axy").getOrElse(0) { "0" }
             val ya = memory.get("axy").getOrElse(1) { "0" }
             val a = memory.get("a").getOrElse(0) { "0" }
 
-            val f =   if (xa.toDoubleOrNull() == 0.0 && ya.toDoubleOrNull() == 0.0){
-                if (x.toDoubleOrNull() == 0.0 && y.toDoubleOrNull() == 0.0){
+            val f = if (xa.toDoubleOrNull() == 0.0 && ya.toDoubleOrNull() == 0.0) {
+                if (x.toDoubleOrNull() == 0.0 && y.toDoubleOrNull() == 0.0) {
                     " q $a "
-                }else {
+                } else {
                     " m $x $y $a "
                 }
-            }else{
+            } else {
                 " m $x $y $a $xa $ya "
             }
 
@@ -289,15 +212,17 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
                 output.write(lines)
                 output.flush()
             }
-        }catch (_:Exception){}
+        } catch (_: Exception) {
+        }
     }
 
     override fun loadState() {
         try {
             File("settings/tortoise.txt").bufferedReader(Charsets.UTF_8).use { output ->
-                text.value = text.value.copy( output.readText())
+                text.value = text.value.copy(output.readText())
             }
-        }catch (_:Exception){}
+        } catch (_: Exception) {
+        }
     }
 
 }

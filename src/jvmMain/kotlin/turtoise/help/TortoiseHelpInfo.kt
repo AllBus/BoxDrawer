@@ -122,8 +122,14 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "Прямая длиной d. Последующие значения ресуют перпендикулярно",
                     listOf(
                         HelpDataParam("d", "Длина прямой"),
+                    ),
+                    creator =  TPArg.create("",
+                        TPArg.oneOrMore(
+                            TPArg("d")
+                        )
                     )
-                )
+                ),
+
             ),
             "Прямая линия"
         ),

@@ -33,6 +33,7 @@ import com.kos.boxdrawer.template.TemplateItemInt
 import com.kos.boxdrawer.template.TemplateItemLabel
 import com.kos.boxdrawer.template.TemplateItemMulti
 import com.kos.boxdrawer.template.TemplateItemNumeric
+import com.kos.boxdrawer.template.TemplateItemOne
 import com.kos.boxdrawer.template.TemplateItemRect
 import com.kos.boxdrawer.template.TemplateItemSelector
 import com.kos.boxdrawer.template.TemplateItemSize
@@ -82,13 +83,15 @@ fun TemplateFormBox(
     Column(
         modifier = modifier
             .border(1.dp, ThemeColors.templateFormBorder)
-            .background(ThemeColors.tabBackground)
+         //   .background(ThemeColors.tabBackground)
             .padding(2.dp)
     ) {
-        Row() {
-            Text(form.title, modifier = Modifier.weight(1f))
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(form.argumentName, color = ThemeColors.templateArgumentColor)
+        if (form.title.isNotEmpty()) {
+            Row() {
+                Text(form.title, modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(4.dp))
+              //  Text(form.argumentName, color = ThemeColors.templateArgumentColor)
+            }
         }
         form.list.forEach {
             TemplateItemBox(
@@ -210,6 +213,12 @@ fun TemplateItemBox(
 
                 is TemplateItemLabel -> TemplateLabelBox(form = item)
                 is TemplateItemMulti -> TemplateItemMultiBox(
+                    form = item,
+                    block = inner,
+                    prefix = newPrefix,
+                    templateGenerator = templateGenerator,
+                )
+                is TemplateItemOne -> TemplateItemOneBox(
                     form = item,
                     block = inner,
                     prefix = newPrefix,

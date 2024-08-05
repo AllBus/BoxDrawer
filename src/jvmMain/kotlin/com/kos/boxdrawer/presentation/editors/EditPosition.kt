@@ -14,7 +14,6 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.DropdownMenuState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -33,11 +32,15 @@ import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawer.presentation.template.TemplateAngleBox
+import com.kos.boxdrawer.presentation.template.TemplateBox
 import com.kos.boxdrawer.presentation.template.TemplateSimpleItemBox
 import com.kos.boxdrawer.presentation.template.TemplateSizeBox
 import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateFigureBuilderListener
+import com.kos.boxdrawer.template.TemplateForm
+import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
+import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.boxdrawer.template.TemplateItemAngle
 import com.kos.boxdrawer.template.TemplateItemSize
 import turtoise.help.HelpData
@@ -155,7 +158,10 @@ fun EditPosition(
                     editorListener.setFigure(selectedFigure.value, selectedCommandData.value)
                 }
 
-                CommandModel(selectedFigure, selectedCommandData, editorListener)
+                val form = remember(selectedFigure.value, selectedCommandData.value) {
+                    editorListener.getForm()
+                }
+                CommandModel(form, editorListener)
             }
         }
     }
@@ -163,34 +169,25 @@ fun EditPosition(
 
 @Composable
 fun CommandModel(
-    selectedFigure: MutableState<HelpInfoCommand>,
-    selectedCommandData: MutableState<HelpData>,
-    listener: TemplateGeneratorSimpleListener
+    form: TemplateForm,
+    listener: TemplateGeneratorListener
 ) {
+
+    val menu = remember(form) {
+        mutableStateOf(
+            TemplateInfo(
+                form = form,
+                values = TortoiseParserStackBlock(),
+                edit = false,
+            )
+        )
+    }
     Column {
-        selectedCommandData.value.params.forEach { param ->
-            TemplateCreator.createItem(
-                param.kind,
-                param.name,
-                param.name,
-                param.variants?.let { v ->
-                    TortoiseParserStackBlock(
-                        '(', param.kind, listOf(
-                            TPArg.text(param.name),
-                            TPArg.text(param.name),
-                            TPArg.block(v.map { TPArg.text(it) })
-                        )
-                    )
-                }
-            )?.let { item ->
-                TemplateSimpleItemBox(
-                    item,
-                    null,
-                    selectedFigure.value.name + "/@" + item.argumentName,
-                    listener
-                )
-            }
-        }
+        TemplateBox(
+            modifier = Modifier,
+            menu,
+            listener
+        )
     }
 }
 

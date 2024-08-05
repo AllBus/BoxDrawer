@@ -9,13 +9,13 @@ object TPArg {
     val VARIANT = MemoryKey("@*?")
     val ONE_VARIANT = MemoryKey("@??")
     val LINE = MemoryKey("@?-")
+    val UNION = MemoryKey("@^")
 
-    private val actions = listOf(MULTI, ONE, SOME, VARIANT, ONE_VARIANT, LINE)
+    private val actions = setOf(MULTI, ONE, SOME, VARIANT, ONE_VARIANT, LINE, UNION)
 
     fun isAction(block :TortoiseParserStackBlock): Boolean{
         return block.name in actions
     }
-
 
     operator fun invoke(name: String) = TortoiseParserStackArgument(MemoryKey("@$name"))
 
@@ -33,6 +33,10 @@ object TPArg {
 
     fun block(vararg args: TortoiseParserStackItem): TortoiseParserStackBlock {
         return TortoiseParserStackBlock('(').apply { this.addItems(args.toList()) }
+    }
+
+    fun union(vararg args: TortoiseParserStackItem): TortoiseParserStackBlock {
+        return TortoiseParserStackBlock('(',  UNION).apply { this.addItems(args.toList()) }
     }
 
     fun figure(name: String): TortoiseParserStackBlock {

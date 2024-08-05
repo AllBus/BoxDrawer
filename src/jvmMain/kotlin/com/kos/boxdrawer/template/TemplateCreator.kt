@@ -12,6 +12,7 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FORM
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_LABEL
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_MULTI
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ONE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_SELECTOR
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
 import turtoise.parser.TortoiseParser
@@ -48,7 +49,6 @@ object TemplateCreator {
         val title = block.inner.getOrNull(2)?.innerLine.orEmpty()
         val argument = block.inner.getOrNull(1)?.argument.orEmpty().name
         val name = block.name.name.lowercase()
-
         return createItem(name = name, title = title, argument = argument, block = block)
     }
 
@@ -61,6 +61,22 @@ object TemplateCreator {
             createItem(b)
         }?.let { item ->
             TemplateItemMulti(
+                title,
+                argument,
+                item
+            )
+        }
+    }
+
+    fun createNoneOrOne(block: TortoiseParserStackBlock): TemplateItemOne? {
+        val title =
+            block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
+        val argument = block.getBlockAtName("arg")?.value.orEmpty().name
+
+        return block.getBlockAtName("item")?.blocks?.firstOrNull()?.let { b ->
+            createItem(b)
+        }?.let { item ->
+            TemplateItemOne(
                 title,
                 argument,
                 item
@@ -148,6 +164,7 @@ object TemplateCreator {
 
             FIELD_FORM -> block?.let { b -> createForm(b) }
             FIELD_MULTI -> block?.let { b -> createMulti(b) }
+            FIELD_ONE -> block?.let { b -> createNoneOrOne(b) }
 
             else -> null
         }

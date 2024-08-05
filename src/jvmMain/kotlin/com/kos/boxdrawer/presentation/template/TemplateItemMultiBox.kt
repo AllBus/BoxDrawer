@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -19,10 +20,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.presentation.template.MULTI_NAME
+import com.kos.boxdrawe.presentation.template.ONE_NAME
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.ImageButton
+import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateItemMulti
+import com.kos.boxdrawer.template.TemplateItemOne
 import turtoise.parser.TortoiseParserStackItem
 
 @Composable
@@ -32,7 +37,7 @@ fun TemplateItemMultiBox(
     prefix: String,
     templateGenerator: TemplateGeneratorListener
 ) {
-    val namesPrefix = "$prefix._multi_names_"
+    val namesPrefix = "$prefix.$MULTI_NAME"
 
     val x = remember {
         val s =
@@ -44,14 +49,17 @@ fun TemplateItemMultiBox(
     Column(
         modifier = Modifier
             .border(1.dp, ThemeColors.templateFormBorder)
-            .background(ThemeColors.tabBackground)
-            .padding(2.dp)
+            //.background(ThemeColors.tabBackground)
     ) {
 
         Row() {
-            Text(form.title, modifier = Modifier.weight(1f))
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(form.argumentName, color = ThemeColors.templateArgumentColor)
+            if (form.title.isNotEmpty()) {
+                Text(form.title, modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(form.argumentName, color = ThemeColors.templateArgumentColor)
+            }else{
+                Spacer(modifier = Modifier.weight(1f))
+            }
             val icon = Icons.Rounded.Add
             ImageButton(icon, Modifier.wrapContentSize()) {
                 val xv = x.value
@@ -59,13 +67,10 @@ fun TemplateItemMultiBox(
                 templateGenerator.putList(namesPrefix, x.value.map { it.toString() }.toList())
             }
         }
-
-
-
         x.value.forEach() { v ->
             val itemPrefix = "$prefix.$v"
             Row {
-                Box(Modifier.weight(1f)) {
+                Column (Modifier.weight(1f)) {
                     TemplateItemBox(
                         item = form.data,
                         block = block,
@@ -86,7 +91,48 @@ fun TemplateItemMultiBox(
                 }
             }
         }
+    }
+}
 
+@Composable
+fun TemplateItemOneBox(
+    form: TemplateItemOne,
+    block: TortoiseParserStackItem?,
+    prefix: String,
+    templateGenerator: TemplateGeneratorListener
+) {
+    val namesPrefix = "$prefix.$ONE_NAME"
+
+    val checkState = remember {
+        val s =
+            templateGenerator.get(namesPrefix).firstOrNull()?.toDoubleOrNull()
+        mutableStateOf<Boolean>(s?:1.0 > 0.0)
+    }
+
+    Row {
+        Column (Modifier.weight(1f)) {
+            TemplateItemBox(
+                item = form.data,
+                block = block,
+                prefix = prefix,
+                templateGenerator = templateGenerator,
+                isEdit = false,
+            )
+        }
+
+        RunCheckBox(
+            checked = checkState.value,
+            title = form.title,
+            onCheckedChange = { c ->
+                checkState.value = c
+                templateGenerator.put(
+                    prefix,
+                    if (c) "1" else "-1"
+                )
+            },
+        )
 
     }
+
+
 }

@@ -10,6 +10,7 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_LABEL
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_MULTI
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ONE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
@@ -150,6 +151,28 @@ data class TemplateItemMulti(
         return tp
     }
 }
+
+data class TemplateItemOne(
+    override val title: String,
+    override val argumentName: String,
+    val data: TemplateItem,
+) : TemplateItem {
+
+    override val argumentCount: Int
+        get() = 1
+
+    override fun print(): TortoiseParserStackItem {
+        val inner = TortoiseParserStackBlock('(', "item", listOf(data.print()))
+        val tp = TortoiseParserStackBlock()
+        tp.add(FIELD_ONE)
+        tp.add("title", "[$title]")
+        tp.add("arg", argumentName)
+        tp.add(inner)
+        return tp
+    }
+}
+
+
 
 data class TemplateItemInt(
     override val title: String,

@@ -11,7 +11,6 @@ import turtoise.BlockTortoiseReader
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
-import turtoise.ZigzagInfo
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
 import turtoise.parser.TPArg
@@ -71,9 +70,21 @@ class SplashRoad() : ISplashDetail {
             ),
             HelpDataParam(
                 "ve",
-                "Стиль рисования [a|c|v][e|f|s|n][h|o]",
+                "Стиль рисования [a|c|v][e|f|s|n][ |o]",
                 FIELD_SELECTOR,
-                listOf("a", "c", "v","ae","af","as","an","aeh","aeo")
+                listOf("a", "c", "v")
+            ),
+            HelpDataParam(
+                "efsn",
+                "Длина доски на стыке [e|f|s|n]",
+                FIELD_SELECTOR,
+                listOf("e","f","s","n")
+            ),
+            HelpDataParam(
+                "ho",
+                "Рисовать отверстия [_|h]",
+                FIELD_SELECTOR,
+                listOf("_","h")
             ),
             HelpDataParam(
                 "ds",
@@ -122,7 +133,13 @@ class SplashRoad() : ISplashDetail {
                     TPArg.figure("hole"),
                     )
                 ),
-                TPArg("ve"),
+                TPArg.block(
+                    TPArg.union(
+                        TPArg("ve"),
+                        TPArg("efsn"),
+                        TPArg("ho"),
+                    ),
+                ),
                 TPArg.block(
                     TPArg("ds")
                 )
