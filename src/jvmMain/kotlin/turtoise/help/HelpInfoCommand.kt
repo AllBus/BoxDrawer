@@ -1,6 +1,8 @@
 package turtoise.help
 
 import androidx.compose.ui.text.AnnotatedString
+import com.kos.boxdrawer.template.TemplateForm
+import com.kos.boxdrawer.template.TemplateItem
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import turtoise.parser.TortoiseParser
 import turtoise.parser.TortoiseParserStackBlock
@@ -38,7 +40,7 @@ class HelpData(
     val argument: String,
     val description: String,
     val params: List<HelpDataParam> = emptyList(),
-    val creator : TortoiseParserStackBlock? = null,
+    val creator : TemplateForm? = null,
 )
 
 class HelpDataParam(

@@ -37,7 +37,7 @@ class SplashDiamond : ISplashDetail {
         ),
         creator = TPArg.create(
             "diamond",
-            TPArg("dx"),
+            TPArg("d", FIELD_2),
         )
     )
 
@@ -84,10 +84,8 @@ class SplashDiamondAngle : ISplashDetail {
         ),
         creator = TPArg.create(
             "diamonda",
-
-                TPArg("d"),
-                TPArg("a"),
-
+                TPArg("d", FIELD_1),
+                TPArg("a", FIELD_ANGLE),
         )
     )
 
@@ -138,9 +136,9 @@ class SplashParallelogram : ISplashDetail {
         creator = TPArg.create(
             "par",
 
-            TPArg("d"),
-            TPArg("a"),
-            TPArg("b"),
+            TPArg("d", FIELD_1),
+            TPArg("a", FIELD_ANGLE),
+            TPArg("b", FIELD_1),
 
         )
     )

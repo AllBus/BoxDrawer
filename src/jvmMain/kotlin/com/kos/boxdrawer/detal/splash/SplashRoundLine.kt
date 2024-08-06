@@ -45,10 +45,8 @@ class SplashRoundLine: ISplashDetail {
             ),
         ),
         creator = TPArg.create("rline",
-            TPArg.oneOrMore(
-                TPArg("x"),
-                TPArg("r"),
-            )
+                TPArg("r", FIELD_1),
+                TPArg("xy", FIELD_2),
         )
     )
 

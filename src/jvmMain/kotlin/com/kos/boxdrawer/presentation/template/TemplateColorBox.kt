@@ -65,15 +65,16 @@ fun TemplateColorBox(
                 )
             }
         }
-    }
-    ColorBox(Modifier, onClick = { color ->
-        input.update(color.toString())
-    },
-        onHover = { color ->
-            hoverColor.value = color
+        ColorBox(Modifier, onClick = { color ->
+            input.update(color.toString())
         },
-        onExit = {
-            hoverColor.value = input.decimal.toInt()
-        }
-    )
+            onHover = { color ->
+                hoverColor.value = color
+            },
+            onExit = {
+                hoverColor.value = input.decimal.toInt()
+            }
+        )
+    }
+
 }

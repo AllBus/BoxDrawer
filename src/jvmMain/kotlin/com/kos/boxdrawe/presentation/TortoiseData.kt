@@ -8,7 +8,12 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.getTextAfterSelection
 import androidx.compose.ui.text.input.getTextBeforeSelection
+import com.kos.ariphmetica.Calculator
+import com.kos.ariphmetica.math.algorithms.Calculate
+import com.kos.ariphmetica.math.algorithms.CopositeFunction
+import com.kos.ariphmetica.math.algorithms.OutExpression
 import com.kos.boxdrawe.presentation.template.TemplateFigureEditor
+import com.kos.boxdrawe.presentation.template.TemplateMoveListener
 import com.kos.boxdrawer.template.TemplateFigureBuilderListener
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateMemory
@@ -40,59 +45,7 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
 
     val editorListener = TemplateFigureEditor(::insertText)
 
-    val moveListener = object : TemplateGeneratorSimpleListener {
-        val memory = TemplateMemory()
-        override fun put(arg: String, index: Int, count: Int, value: String) {
-            if (arg == "pos") {
-                reposition(value)
-            } else {
-                if (count > 1) {
-                    memory.put(arg, index, count, value)
-                    recalc()
-                } else {
-                    put(arg, value)
-                }
-            }
-        }
-
-        override fun put(arg: String, value: String) {
-            if (arg == "pos") {
-                reposition(value)
-            } else {
-                memory.put(arg, value)
-                recalc()
-            }
-        }
-
-        override fun get(arg: String): List<String> {
-            return memory.get(arg)
-        }
-
-        fun reposition(value: String) {
-            val f = " $value"
-            insertText(f)
-        }
-
-        fun recalc() {
-            val x = memory.get("xy").getOrElse(0) { "0" }
-            val y = memory.get("xy").getOrElse(1) { "0" }
-            val xa = memory.get("axy").getOrElse(0) { "0" }
-            val ya = memory.get("axy").getOrElse(1) { "0" }
-            val a = memory.get("a").getOrElse(0) { "0" }
-
-            val f = if (xa.toDoubleOrNull() == 0.0 && ya.toDoubleOrNull() == 0.0) {
-                if (x.toDoubleOrNull() == 0.0 && y.toDoubleOrNull() == 0.0) {
-                    " q $a "
-                } else {
-                    " m $x $y $a "
-                }
-            } else {
-                " m $x $y $a $xa $ya "
-            }
-
-            insertText(f)
-        }
-    }
+    val moveListener = TemplateMoveListener(::insertText)
 
     private fun insertText(f: String) {
         val tv = text.value
@@ -114,6 +67,11 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
 
     suspend fun printCommand(): String {
         val lines = text.value.text
+//        Calculator.init()
+//        val dif = Calculator.parseWithSpace(lines)
+//        val r:String = OutExpression.apply(Calculator.fullCalc( CopositeFunction.compose(dif))) as String
+//        return r
+
         val program = tortoiseProgram(lines)
         return program.commands.flatMap { a ->
             a.names.flatMap { name ->

@@ -29,8 +29,8 @@ open class SplashText: ISplashDetail {
             ),
         ),
         creator = TPArg.create("print",
-            TPArg.multiVariant(
-                TPArg("text")
+            TPArg.multiVariant("var",
+                TPArg("text",FIELD_TEXT)
             )
         )
     )

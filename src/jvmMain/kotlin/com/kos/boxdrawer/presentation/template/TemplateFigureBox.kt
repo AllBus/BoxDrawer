@@ -42,7 +42,7 @@ fun TemplateFigureBox(
                 text.value = it
                 templateGenerator.put(
                     prefix,
-                    "[${it.text}]"
+                    it.text
                 )
             },
             label = form.title,

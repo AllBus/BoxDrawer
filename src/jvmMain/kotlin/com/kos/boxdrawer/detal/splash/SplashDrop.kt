@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.figure.IFigurePath
@@ -28,7 +29,7 @@ open class SplashDrop : ISplashDetail {
             ),
             HelpDataParam(
                 "edge",
-                ""
+                "", FIELD_INT
             ),
             HelpDataParam(
                 "offset",
@@ -46,12 +47,12 @@ open class SplashDrop : ISplashDetail {
         creator = TPArg.create(
             "drop",
             TPArg.figure("figure"),
-            TPArg.oneOrMore(
+            TPArg.oneOrMore("1",
                 TPArg.block(
-                    TPArg("edge"),
-                    TPArg("offset"),
-                    TPArg("width"),
-                    TPArg("bias"),
+                    TPArg("edge", FIELD_INT),
+                    TPArg("offset", FIELD_1),
+                    TPArg("width", FIELD_1),
+                    TPArg("bias", FIELD_1),
                 )
             )
         )
@@ -138,12 +139,12 @@ class SplashTake : SplashDrop() {
         creator = TPArg.create(
             "take",
             TPArg.figure("figure"),
-            TPArg.oneOrMore(
+            TPArg.oneOrMore("1",
                 TPArg.block(
-                    TPArg("edge"),
-                    TPArg("offset"),
-                    TPArg("width"),
-                    TPArg("bias"),
+                    TPArg("edge", FIELD_INT),
+                    TPArg("offset", FIELD_1),
+                    TPArg("width", FIELD_1),
+                    TPArg("bias", FIELD_1),
                 )
             )
         )

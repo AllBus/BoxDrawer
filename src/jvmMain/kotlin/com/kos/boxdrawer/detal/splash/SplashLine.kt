@@ -28,8 +28,8 @@ class SplashLine: ISplashDetail {
             ),
         ),
         creator = TPArg.create("line",
-            TPArg.oneOrMore(
-                TPArg("x")
+            TPArg.oneOrMore("1",
+                TPArg("xy",FIELD_2)
             ))
     )
 

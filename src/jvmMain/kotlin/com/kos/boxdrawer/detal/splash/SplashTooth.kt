@@ -30,7 +30,7 @@ open class SplashTooth : ISplashDetail {
         ),
         creator = TPArg.create(
             "tooth",
-            TPArg("h")
+            TPArg("hw", FIELD_2)
         )
     )
 
@@ -99,8 +99,8 @@ class SplashToothReverse : SplashTooth() {
                 )
         ),
         creator = TPArg.create(
-            "tooth",
-            TPArg("h")
+            "toothr",
+            TPArg("hw", FIELD_2)
         )
     )
 

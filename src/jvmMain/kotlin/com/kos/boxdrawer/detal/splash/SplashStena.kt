@@ -47,14 +47,14 @@ class SplashStena : ISplashDetail {
             "stena",
             TPArg.figure("figure"),
             TPArg.block(
-                TPArg("he"),
-                TPArg("we"),
+                TPArg("he", FIELD_1),
+                TPArg("we", FIELD_1),
             ),
-            TPArg.oneOrMore(
+            TPArg.oneOrMore("edge",
                 TPArg.block(
-                    TPArg("edge"),
-                    TPArg.noneOrOne(
-                        TPArg("hee")
+                    TPArg("edge", FIELD_INT),
+                    TPArg.noneOrOne("hee",
+                        TPArg("hee", FIELD_1)
                     ),
                 )
             )

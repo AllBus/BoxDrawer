@@ -5,6 +5,7 @@ import com.kos.boxdrawer.template.TemplateFigureBuilderListener
 import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.TemplateItem
 import com.kos.boxdrawer.template.TemplateItemContainer
+import com.kos.boxdrawer.template.TemplateItemFigure
 import com.kos.boxdrawer.template.TemplateItemHiddenText
 import com.kos.boxdrawer.template.TemplateItemLabel
 import com.kos.boxdrawer.template.TemplateItemMulti
@@ -19,8 +20,8 @@ import turtoise.parser.TPArg
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
 
-private const val FORM_NAME = "^form^"
-private const val VARIANT_NAME = "^variant^"
+const val FORM_NAME = "^form^"
+const val VARIANT_NAME = "^variant^"
 const val MULTI_NAME = "^multi_names^"
 const val ONE_NAME = "^one_name^"
 
@@ -41,12 +42,7 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
 
     private fun buildForm(): TemplateForm{
         return this.selectData.creator?.let { c ->
-            buildEditor(
-                c,
-                this.selectData,
-                this.selectCommand.name,
-                false
-            )
+            c
         } ?: buildSimpleEditor(
             this.selectData,
             this.selectCommand.name
@@ -103,7 +99,7 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
             }
             args.joinToString(" ", "$com ")
         }
-        insertText(text)
+        insertText(" $text ")
     }
 
     private fun command(prefix: String, key: MemoryKey): String {
@@ -178,7 +174,7 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                         )
                     }
                     //"i.x"
-                    sb.size == 1 -> TemplateItemContainer("", FORM_NAME, sb[0])
+                    sb.size == 1 -> TemplateItemContainer("", FORM_NAME, sb, "", "", "")
                     else -> null
                 }
                         )?.let { t ->
@@ -222,7 +218,7 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                         )
                     }
                     //"i.x"
-                    sb.size == 1 -> TemplateItemContainer("", FORM_NAME, sb[0])
+                    sb.size == 1 -> TemplateItemContainer("", FORM_NAME, sb, "", "", "")
                     else -> null
                 }
                 m?.let { t ->
@@ -316,16 +312,27 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
         return t
     }
 
+
+    private fun templateItem(param: HelpDataParam) = TemplateCreator.createItem(
+        name = param.kind,
+        title = param.name,
+        argument = param.name,
+        block = null,
+    )
+    //endregion
+
     private fun buildText(info: TemplateItem, memory: TemplateMemory, prefix:String):String{
         val newPrefix = "$prefix.${info.argumentName}"
         return when (info){
             is TemplateForm -> {
-            //    println("<< $newPrefix")
-                info.list.joinToString(info.separator) { i -> buildText(i, memory, newPrefix) }
+                info.prefix+
+                        info.list.joinToString(info.separator) { i -> buildText(i, memory, newPrefix) }+
+                        info.suffix
             }
             is TemplateItemContainer -> {
-            //    println("<^ $newPrefix")
-                buildText(info.data, memory,newPrefix)
+                info.prefix+
+                        info.list.joinToString(info.separator) { i -> buildText(i, memory, newPrefix) }+
+                        info.suffix
             }
             is TemplateItemHiddenText -> {
                 info.title
@@ -334,39 +341,21 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                 ""
             }
             is TemplateItemMulti -> {
-            //    println("<< $newPrefix.$MULTI_NAME : ${ memory.get("$newPrefix.$MULTI_NAME")}")
                 memory.get("$newPrefix.$MULTI_NAME").joinToString(" ") { mn ->
-                    //       println("<<< {$newPrefix.$mn}")
                     buildText(info.data, memory, "$newPrefix.$mn")
                 }
             }
             is TemplateItemOne -> {
-          //      println("<< $newPrefix.$ONE_NAME  : ${ memory.get("$newPrefix.$ONE_NAME")}")
                 memory.get("$newPrefix.$ONE_NAME").firstOrNull()?.toDoubleOrNull()?.takeIf { it > 0.0 }?.let { mn ->
-                  //  println("<<< $newPrefix.$ONE_NAME  : ${ memory.get("$newPrefix.$ONE_NAME")}")
                     buildText(info.data, memory, newPrefix)
                 }?:""
+            }
+            is TemplateItemFigure -> {
+                "[${memory.get(newPrefix).joinToString(" ")}]"
             }
             else -> {
                 memory.get(newPrefix).joinToString(" ")
             }
         }
     }
-
-    private fun templateItem(param: HelpDataParam) = TemplateCreator.createItem(
-        param.kind,
-        param.name,
-        param.name,
-        param.variants?.let { v ->
-            TortoiseParserStackBlock(
-                '(', param.kind, listOf(
-                    TPArg.text(param.name),
-                    TPArg.text(param.name),
-                    TPArg.block(v.map { TPArg.text(it) })
-                )
-            )
-        }
-    )
-    //endregion
-
 }

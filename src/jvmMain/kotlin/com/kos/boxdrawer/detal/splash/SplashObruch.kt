@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.figure.collections.FigureList
 import turtoise.TortoiseBuilder
@@ -30,8 +31,8 @@ class SplashObruch : ISplashDetail {
         creator = TPArg.create(
             "o",
             TPArg.figure("figure"),
-            TPArg.oneOrMore(
-                TPArg("h"),
+            TPArg.oneOrMore("1",
+                TPArg("h", FIELD_1),
             )
         )
     )

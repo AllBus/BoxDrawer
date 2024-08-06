@@ -1,6 +1,7 @@
 package com.kos.boxdrawer.detal.splash
 
 import com.kos.boxdrawer.detal.soft.SoftRez
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
@@ -46,10 +47,11 @@ class SplashSoftRez: ISplashDetail {
             ),
         ),
         creator = TPArg.create("rez",
-            TPArg("width"),
-            TPArg("dlina"),
-            TPArg("soedinenie"),
-            TPArg("isFirstSmall"),
+            TPArg("wh", FIELD_2),
+            TPArg("delta", FIELD_1),
+            TPArg("dlina", FIELD_1),
+            TPArg("soedinenie", FIELD_1),
+            TPArg("isFirstSmall", FIELD_CHECK),
         )
     )
 

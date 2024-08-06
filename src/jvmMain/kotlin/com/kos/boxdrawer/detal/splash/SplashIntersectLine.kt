@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_SELECTOR
 import turtoise.TortoiseBuilder
@@ -37,12 +38,12 @@ class SplashIntersectLine : ISplashDetail {
                 "Угол наклона линии", FIELD_ANGLE
             ),
         ),
-        creator = TPArg.block(
-            TPArg("v|h"),
-            TPArg("x"),
+        creator = TPArg.createWithoutName(
+            TPArg.selector("v|h", listOf("lv", "lh")),
+            TPArg("x", FIELD_1),
             TPArg.noneOrLine(
-                TPArg("y"),
-                TPArg("a"),
+                TPArg("y", FIELD_1),
+                TPArg("a",FIELD_ANGLE),
             )
         )
     )

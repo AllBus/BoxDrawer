@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.figure.FigureLine
@@ -40,9 +41,9 @@ class SplashNormal: ISplashDetail {
             ),
             creator = TPArg.create("normal",
                 TPArg.figure("figure"),
-                TPArg("c"),
-                TPArg("l"),
-                TPArg("o"),
+                TPArg("c", FIELD_INT),
+                TPArg("l", FIELD_1),
+                TPArg("o", FIELD_1),
                 )
         )
     }

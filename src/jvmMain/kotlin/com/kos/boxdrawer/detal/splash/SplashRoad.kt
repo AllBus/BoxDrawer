@@ -1,6 +1,7 @@
 package com.kos.boxdrawer.detal.splash
 
 import com.kos.boxdrawer.detal.box.BoxAlgorithm
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_SELECTOR
@@ -106,69 +107,48 @@ class SplashRoad() : ISplashDetail {
                 "Фигура зигзага отверстия",
                 FIELD_2
             ),
-            HelpDataParam(
-                "uu",
-                "Фигура зигзага отверстия",
-                FIELD_2
-            ),
-            HelpDataParam(
-                "ua",
-                "Фигура зигзага отверстия",
-                FIELD_2
-            ),
-            HelpDataParam(
-                "ub",
-                "Фигура зигзага отверстия",
-                FIELD_2
-            ),
         ),
         creator = TPArg.create( "road",
             TPArg.figure("figure"),
             TPArg.block(
-                TPArg("w"),
-                TPArg("h"),
-                TPArg("s"),
-                TPArg.noneOrOne(
+                TPArg("w", FIELD_1),
+                TPArg("h", FIELD_1),
+                TPArg.selector("s",  listOf("s", "a", "p", "d")),
+                TPArg.noneOrOne("b",
                     TPArg.block(
-                        TPArg.oneVariant(
+                        TPArg.oneVariant("v",
                             TPArg.item("l",
-                                TPArg("l")
+                                TPArg("l",FIELD_2)
                             ),
                             TPArg.item("r",
-                                TPArg("r")
+                                TPArg("r",FIELD_2)
                             ),
-                            TPArg.item("t",
-                                TPArg("t")
-                            ),
+//                            TPArg.item("t",
+//                                TPArg("t",FIELD_2)
+//                            ),
                         )
                     )
                 ),
-                TPArg.noneOrOne(
-                    TPArg.item("uuuu",
-                        TPArg("uu")
-                    ),
-                    TPArg("ua")
-                )
             ),
             TPArg.noneOrLine(
                 TPArg.block(
                     TPArg.noneOrLine(
-                    TPArg("zd"),
-                    TPArg("zw"),
-                    TPArg("zh"),
-                    TPArg.figure("zig"),
-                    TPArg.figure("hole"),
+                        TPArg("zd",FIELD_1),
+                        TPArg("zw",FIELD_1),
+                        TPArg("zh",FIELD_1),
+                        TPArg.figure("zig"),
+                        TPArg.figure("hole"),
                     )
                 ),
                 TPArg.block(
                     TPArg.union(
-                        TPArg("ve"),
-                        TPArg("efsn"),
-                        TPArg("ho"),
+                        TPArg.selector("ve",  listOf("a", "c", "v")),
+                        TPArg.selector("efsn",listOf("e","f","s","n")),
+                        TPArg.selector("ho", listOf("_","h")),
                     ),
                 ),
                 TPArg.block(
-                    TPArg("ds")
+                    TPArg("ds", FIELD_TEXT)
                 )
             )
         )

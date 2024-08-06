@@ -47,19 +47,21 @@ class SplashEdit : ISplashDetail {
             "edit",
             TPArg.figure("figure"),
             TPArg.multiVariant(
+                "mul",
                 TPArg.item(
                     "m",
-                    TPArg("e"),
-                    TPArg("x"),
-                    TPArg("a"),
+                    TPArg("e", FIELD_INT),
+                    TPArg("xy", FIELD_2),
+                    TPArg("a", FIELD_ANGLE),
                 ),
-                TPArg.item(
-                    "r",
-                    TPArg.oneOrMore(
-                        TPArg("e"),
-                    )
-                ),
-            )
+            ),
+            TPArg.item(
+                "r",
+                TPArg.oneOrMore(
+                    "re",
+                    TPArg("e", FIELD_INT),
+                )
+            ),
         )
     )
 

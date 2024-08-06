@@ -1,6 +1,7 @@
 package com.kos.boxdrawer.detal.splash
 
 import com.jsevy.jdxf.DXFColor
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.figure.FigurePolyline
@@ -51,12 +52,12 @@ class SplashPaz: ISplashDetail {
         ),
         creator = TPArg.create("paz",
             TPArg.figure("figure"),
-            TPArg.oneOrMore(
+            TPArg.oneOrMore("1",
                 TPArg.block(
-                    TPArg("edge"),
-                    TPArg("delta"),
-                    TPArg("le"),
-                    TPArg("he"),
+                    TPArg("edge", FIELD_INT),
+                    TPArg("delta", FIELD_1),
+                    TPArg("le", FIELD_1),
+                    TPArg("he", FIELD_1),
                 )
             )
         )

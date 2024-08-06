@@ -16,10 +16,10 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_MULTI
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ONE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_SELECTOR
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
+import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 import turtoise.parser.TortoiseParser
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
-import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 
 object TemplateCreator {
 
@@ -39,12 +39,21 @@ object TemplateCreator {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
         val argument = block.getBlockAtName("arg")?.value.orEmpty().name
-        val sep = block.getBlockAtName("sep")?.blocks?.firstOrNull()?.innerLine?:" "
+        val sep = block.getBlockAtName("sep")?.blocks?.firstOrNull()?.innerLine ?: " "
+        val prefix = block.getBlockAtName("prefix")?.blocks?.firstOrNull()?.innerLine ?: ""
+        val suffix = block.getBlockAtName("suffix")?.blocks?.firstOrNull()?.innerLine ?: ""
 
         val items = block.getBlockAtName("items")?.blocks?.mapNotNull { b ->
             createItem(b)
         }.orEmpty()
-        return TemplateForm(title, argument, items, sep)
+        return TemplateForm(
+            title = title,
+            argumentName = argument,
+            list = items,
+            separator = sep,
+            prefix = prefix,
+            suffix = suffix
+        )
     }
 
     private fun createItem(block: TortoiseParserStackBlock): TemplateItem? {
@@ -63,9 +72,9 @@ object TemplateCreator {
             createItem(b)
         }?.let { item ->
             TemplateItemMulti(
-                title,
-                argument,
-                item
+                title = title,
+                argumentName = argument,
+                data = item
             )
         }
     }
@@ -86,20 +95,26 @@ object TemplateCreator {
         }
     }
 
-    fun createContainer(block: TortoiseParserStackBlock): TemplateItemContainer? {
+    fun createContainer(block: TortoiseParserStackBlock): TemplateItemContainer {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
         val argument = block.getBlockAtName("arg")?.value.orEmpty().name
 
-        return block.getBlockAtName("item")?.blocks?.firstOrNull()?.let { b ->
+        val items = block.getBlockAtName("items")?.blocks?.mapNotNull { b ->
             createItem(b)
-        }?.let { item ->
-            TemplateItemContainer(
-                title,
-                argument,
-                item
-            )
-        }
+        }.orEmpty()
+        val sep = block.getBlockAtName("sep")?.blocks?.firstOrNull()?.innerLine ?: " "
+        val prefix = block.getBlockAtName("prefix")?.blocks?.firstOrNull()?.innerLine ?: ""
+        val suffix = block.getBlockAtName("suffix")?.blocks?.firstOrNull()?.innerLine ?: ""
+
+        return TemplateItemContainer(
+            title = title,
+            argumentName = argument,
+            list = items,
+            separator = sep,
+            prefix = prefix,
+            suffix = suffix
+        )
     }
 
     fun createSelector(block: TortoiseParserStackBlock): TemplateItemSelector {
@@ -128,6 +143,7 @@ object TemplateCreator {
                 title = title,
                 argumentName = argument,
             )
+
             FIELD_2, "size", "point", "offset" -> TemplateItemSize(
                 title = title,
                 argumentName = argument,
@@ -142,12 +158,14 @@ object TemplateCreator {
                 title = title,
                 argumentName = argument,
             )
+
             FIELD_COLOR -> {
                 TemplateItemColor(
                     title = title,
                     argumentName = argument,
                 )
             }
+
             FIELD_3, "triple", "triangle", "coord" -> TemplateItemTriple(
                 title = title,
                 argumentName = argument,
@@ -163,12 +181,12 @@ object TemplateCreator {
                 argumentName = argument,
             )
 
-            FIELD_FIGURE  -> TemplateItemFigure(
+            FIELD_FIGURE -> TemplateItemFigure(
                 title = title,
                 argumentName = argument,
             )
 
-            FIELD_TEXT ,"string"  -> TemplateItemString(
+            FIELD_TEXT, "string" -> TemplateItemString(
                 title = title,
                 argumentName = argument,
             )
@@ -183,7 +201,7 @@ object TemplateCreator {
             FIELD_FORM -> block?.let { b -> createForm(b) }
             FIELD_MULTI -> block?.let { b -> createMulti(b) }
             FIELD_ONE -> block?.let { b -> createNoneOrOne(b) }
-            FIELD_CONTAINER-> block?.let { b -> createContainer(b) }
+            FIELD_CONTAINER -> block?.let { b -> createContainer(b) }
 
             else -> null
         }

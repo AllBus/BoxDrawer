@@ -26,9 +26,9 @@ class SplashRound: ISplashDetail {
             HelpDataParam("r", "Радиус скругления", FIELD_1),
         ),
         creator = TPArg.create("round",
-            TPArg.oneOrMore(
-                TPArg("x"),
-                TPArg("r"),
+            TPArg.oneOrMore("1",
+                TPArg("xy", FIELD_2),
+                TPArg("r",FIELD_1),
             )
         )
     )

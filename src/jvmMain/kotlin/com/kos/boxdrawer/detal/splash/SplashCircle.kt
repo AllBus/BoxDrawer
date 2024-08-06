@@ -27,12 +27,12 @@ class SplashCircle: ISplashDetail {
                 HelpDataParam("c", "Координата концв дуги", FIELD_2),
                 HelpDataParam("r", "радиус дуги", FIELD_1),
             ),
-            creator = TortoiseParserStackBlock(' ', "circle", listOf(
-                TPArg("a"),
-                TPArg("o"),
-                TPArg("c"),
-                TPArg("r"),
-            ))
+            creator = TPArg.create("circle",
+                TPArg("a", FIELD_2),
+                TPArg("o", FIELD_2),
+                TPArg("c", FIELD_2),
+                TPArg("r", FIELD_1),
+            )
         )
     }
 

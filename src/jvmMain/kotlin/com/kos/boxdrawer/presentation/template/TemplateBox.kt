@@ -1,6 +1,5 @@
 package com.kos.boxdrawer.presentation.template
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -219,20 +218,26 @@ fun TemplateItemBox(
                     prefix = newPrefix,
                     templateGenerator = templateGenerator,
                 )
+
                 is TemplateItemOne -> TemplateItemOneBox(
                     form = item,
                     block = inner,
                     prefix = newPrefix,
                     templateGenerator = templateGenerator,
                 )
-                is TemplateItemContainer -> TemplateItemBox(
-                    item = item.data,
-                    block = inner,
-                    prefix = newPrefix,
-                    templateGenerator = templateGenerator,
-                    isEdit = isEdit,
-                )
 
+                is TemplateItemContainer ->
+                    Column {
+                        for (templateItem in item.list) {
+                            TemplateItemBox(
+                                item = templateItem,
+                                block = inner,
+                                prefix = newPrefix,
+                                templateGenerator = templateGenerator,
+                                isEdit = isEdit,
+                            )
+                        }
+                    }
                 else -> {
                     TemplateSimpleItemBox(
                         item,
@@ -242,8 +247,6 @@ fun TemplateItemBox(
                     )
                 }
             }
-
-
         }
         if (isEdit) {
             TemplateFormEditRemove(

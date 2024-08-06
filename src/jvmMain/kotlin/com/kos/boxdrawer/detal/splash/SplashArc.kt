@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.detal.splash
 
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
 import com.kos.figure.collections.FigureList
@@ -37,9 +38,9 @@ class SplashArc : ISplashDetail {
             ),
             creator = TPArg.create(
                 "arc",
-                TPArg.oneOrMore(
-                    TPArg("radius"),
-                    TPArg("pointStart"),
+                TPArg.oneOrMore("1",
+                    TPArg("radius", FIELD_1),
+                    TPArg("pointStart", FIELD_2),
                 )
             )
         )
