@@ -100,6 +100,27 @@ class SplashRoad() : ISplashDetail {
                 "Фигура зигзага отверстия",
                 FIELD_FIGURE
             ),
+            //-------------
+            HelpDataParam(
+                "t",
+                "Фигура зигзага отверстия",
+                FIELD_2
+            ),
+            HelpDataParam(
+                "uu",
+                "Фигура зигзага отверстия",
+                FIELD_2
+            ),
+            HelpDataParam(
+                "ua",
+                "Фигура зигзага отверстия",
+                FIELD_2
+            ),
+            HelpDataParam(
+                "ub",
+                "Фигура зигзага отверстия",
+                FIELD_2
+            ),
         ),
         creator = TPArg.create( "road",
             TPArg.figure("figure"),
@@ -121,6 +142,12 @@ class SplashRoad() : ISplashDetail {
                             ),
                         )
                     )
+                ),
+                TPArg.noneOrOne(
+                    TPArg.item("uuuu",
+                        TPArg("uu")
+                    ),
+                    TPArg("ua")
                 )
             ),
             TPArg.noneOrLine(
@@ -182,8 +209,8 @@ class SplashRoad() : ISplashDetail {
                         figureExtractor.memory,
                         figureExtractor.ds
                     )
-                    val stl = st?.innerLine.orEmpty()+"   "
-                    val style = a?.inner?.getOrNull(2)?.innerLine.orEmpty()+" "
+                    val stl = st?.innerLine.orEmpty().trim()+"    "
+                    val style = a?.inner?.getOrNull(2)?.innerLine.orEmpty().trim()+" "
 
                     builder.addProduct(
                         FigureTranslate(

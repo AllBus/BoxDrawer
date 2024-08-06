@@ -7,6 +7,7 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_4
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_COLOR
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CONTAINER
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FORM
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
@@ -38,11 +39,12 @@ object TemplateCreator {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
         val argument = block.getBlockAtName("arg")?.value.orEmpty().name
+        val sep = block.getBlockAtName("sep")?.blocks?.firstOrNull()?.innerLine?:" "
 
         val items = block.getBlockAtName("items")?.blocks?.mapNotNull { b ->
             createItem(b)
         }.orEmpty()
-        return TemplateForm(title, argument, items)
+        return TemplateForm(title, argument, items, sep)
     }
 
     private fun createItem(block: TortoiseParserStackBlock): TemplateItem? {
@@ -77,6 +79,22 @@ object TemplateCreator {
             createItem(b)
         }?.let { item ->
             TemplateItemOne(
+                title,
+                argument,
+                item
+            )
+        }
+    }
+
+    fun createContainer(block: TortoiseParserStackBlock): TemplateItemContainer? {
+        val title =
+            block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
+        val argument = block.getBlockAtName("arg")?.value.orEmpty().name
+
+        return block.getBlockAtName("item")?.blocks?.firstOrNull()?.let { b ->
+            createItem(b)
+        }?.let { item ->
+            TemplateItemContainer(
                 title,
                 argument,
                 item
@@ -165,6 +183,7 @@ object TemplateCreator {
             FIELD_FORM -> block?.let { b -> createForm(b) }
             FIELD_MULTI -> block?.let { b -> createMulti(b) }
             FIELD_ONE -> block?.let { b -> createNoneOrOne(b) }
+            FIELD_CONTAINER-> block?.let { b -> createContainer(b) }
 
             else -> null
         }

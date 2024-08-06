@@ -386,8 +386,6 @@ abstract class TortoiseBase {
                     endArc = c2,
                     outSide = true
                 ))
-                builder.add(FigureCircle(np, 3.0, true))
-              //  builder.add(FigureCreator.figureCircle(CornerInfo(c2, np, center, true), abs(r)))
             }
         }
         if (cir > 0.0) {

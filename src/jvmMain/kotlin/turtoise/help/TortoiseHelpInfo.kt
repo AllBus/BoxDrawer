@@ -142,6 +142,11 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam("x", "координата точки угла по оси x", FIELD_2),
                         HelpDataParam("y", "координата точки угла по оси y", FIELD_NONE),
+                    ),
+                    creator = TPArg.create("",
+                        TPArg.oneOrMore(
+                            TPArg("x"),
+                        )
                     )
                 )
             )
@@ -155,6 +160,12 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     listOf(
                         HelpDataParam("d", "Длина стороны"),
                         HelpDataParam("a", "Угол поворта для следующей стороны", FIELD_ANGLE),
+                    ),
+                    creator = TPArg.create("",
+                        TPArg.oneOrMore(
+                            TPArg("d"),
+                            TPArg("a")
+                        )
                     )
                 )
             ),

@@ -35,16 +35,16 @@ object TPArg {
         return TortoiseParserStackBlock('(').apply { this.addItems(args.toList()) }
     }
 
-    fun union(vararg args: TortoiseParserStackItem): TortoiseParserStackBlock {
-        return TortoiseParserStackBlock('(',  UNION).apply { this.addItems(args.toList()) }
-    }
-
     fun figure(name: String): TortoiseParserStackBlock {
         return TortoiseParserStackBlock(' ', "@$name")
     }
 
     fun text(text: String): TortoiseParserStackArgument {
         return TortoiseParserStackArgument(MemoryKey(text))
+    }
+    /** Элементы следуют без разделителя */
+    fun union(vararg args: TortoiseParserStackItem): TortoiseParserStackBlock {
+        return TortoiseParserStackBlock('(',  UNION).apply { this.addItems(args.toList()) }
     }
 
     /** Ноль или больше раз */

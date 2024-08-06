@@ -4,6 +4,9 @@ import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateFigureBuilderListener
 import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.TemplateItem
+import com.kos.boxdrawer.template.TemplateItemContainer
+import com.kos.boxdrawer.template.TemplateItemHiddenText
+import com.kos.boxdrawer.template.TemplateItemLabel
 import com.kos.boxdrawer.template.TemplateItemMulti
 import com.kos.boxdrawer.template.TemplateItemOne
 import com.kos.boxdrawer.template.TemplateMemory
@@ -11,11 +14,13 @@ import com.kos.boxdrawer.template.TemplateMemoryItem
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
 import turtoise.help.HelpInfoCommand
+import turtoise.memory.keys.MemoryKey
 import turtoise.parser.TPArg
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
 
 private const val FORM_NAME = "^form^"
+private const val VARIANT_NAME = "^variant^"
 const val MULTI_NAME = "^multi_names^"
 const val ONE_NAME = "^one_name^"
 
@@ -24,22 +29,38 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
 
     private var selectCommand: HelpInfoCommand = HelpInfoCommand("", emptyList())
     private var selectData: HelpData = HelpData("", "")
+    private var form = TemplateForm("", "", emptyList())
     override fun setFigure(command: HelpInfoCommand, data: HelpData) {
         if (selectCommand != command) {
             memory.clear()
         }
         selectCommand = command
         selectData = data
+        form = buildForm()
+    }
+
+    private fun buildForm(): TemplateForm{
+        return this.selectData.creator?.let { c ->
+            buildEditor(
+                c,
+                this.selectData,
+                this.selectCommand.name,
+                false
+            )
+        } ?: buildSimpleEditor(
+            this.selectData,
+            this.selectCommand.name
+        )
     }
 
     override fun put(arg: String, index: Int, count: Int, value: String) {
-            println("$arg $index : $value")
+    //    println("$arg $index : $value")
         memory.put(arg, index, count, value)
         recalc()
     }
 
     override fun put(arg: String, value: String) {
-            println("$arg : $value")
+     //   println("$arg : $value")
         memory.put(arg, value)
         recalc()
     }
@@ -49,13 +70,13 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
     }
 
     override fun putList(arg: String, value: List<String>) {
-        println("$arg list : $value")
+   //     println("$arg list : $value")
         memory.put(arg, TemplateMemoryItem(value))
         recalc()
     }
 
     override fun removeItem(arg: String) {
-        println("$arg remove")
+    //    println("$arg remove")
         memory.remove(arg)
         recalc()
     }
@@ -70,118 +91,29 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
 
 
     fun recalc() {
-        val prefix = "${selectCommand.name}/"
+        val prefix = ".${selectCommand.name}."
         val com = selectCommand.name
 
-        //Todo Нужно вставлять правильно параметры
         val creator = selectData.creator
         val text = if (creator != null) {
-            com + buildCommand(creator, memory, prefix)
+            com + buildText(form, memory, "") //buildCommand(creator, ::command, prefix)
         } else {
             val args = selectData.params.map { p ->
-                val v = memory.get(prefix + "@" + p.name)
-                v.joinToString(" ")
+                command(prefix, MemoryKey("@" + p.name))
             }
             args.joinToString(" ", "$com ")
         }
         insertText(text)
     }
 
-    //region build command
-    private fun buildCommand(
-        creator: TortoiseParserStackBlock,
-        memory: TemplateMemory,
-        prefix: String,
-    ): String {
-        val sb = StringBuilder()
-        creator.inner.forEachIndexed { i, b ->
-            val t = createCommandText(b, memory, prefix, i)
-            sb.append(t)
-            sb.append(" ")
-        }
-
-        return sb.toString()
+    private fun command(prefix: String, key: MemoryKey): String {
+        return memory.get(prefix + key.name.drop(1)).joinToString(" ")
     }
-
-    private fun buildActionCommand(
-        creator: TortoiseParserStackBlock,
-        memory: TemplateMemory,
-        prefix: String,
-    ): String {
-        val sb = StringBuilder()
-        val action = creator.name
-
-        when (action) {
-            TPArg.SOME,
-            TPArg.VARIANT,
-            TPArg.MULTI -> {
-                val counter = memory.get(prefix + "._multi_names_")
-                for (i in 1 until creator.inner.size) {
-                    val b = creator.inner[i]
-                    val t = createCommandText(b, memory, prefix, i)
-                    sb.append(t)
-                }
-            }
-
-            TPArg.UNION -> {
-                for (i in 1 until creator.inner.size) {
-                    val b = creator.inner[i]
-                    val t = createCommandText(b, memory, prefix, i)
-                    sb.append(t)
-                }
-            }
-
-            else ->
-                for (i in 1 until creator.inner.size) {
-                    val b = creator.inner[i]
-                    val t = createCommandText(b, memory, prefix, i)
-                    sb.append(t)
-                    sb.append(" ")
-                }
-        }
-        return sb.toString()
-    }
-
-    private fun createCommandText(
-        b: TortoiseParserStackItem,
-        memory: TemplateMemory,
-        prefix: String,
-        index: Int,
-    ): String {
-        val t = if (b.isArgument()) {
-            if (b.name.prefix() == '@') {
-                val v = memory.get(prefix + b.name.name)
-                v.joinToString(" ")
-            } else {
-                b.name.name
-            }
-        } else {
-            if (b is TortoiseParserStackBlock) {
-                if (TPArg.isAction(b)) {
-                    buildActionCommand(b, memory, prefix + ".$index")
-                } else {
-                    "${b.skobka}${buildCommand(b, memory, prefix)}${b.closeBrace()}"
-                }
-            } else ""
-        }
-        return t
-    }
-    //endregion
-
 
     //region build editor
 
     override fun getForm(): TemplateForm {
-        return this.selectData.creator?.let { c ->
-            buildEditor(
-                c,
-                this.selectData,
-                this.selectCommand.name
-            )
-        } ?: buildSimpleEditor(
-            this.selectData,
-            this.selectCommand.name
-        )
+        return form
     }
 
     private fun buildSimpleEditor(
@@ -202,11 +134,18 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
         creator: TortoiseParserStackBlock,
         memory: HelpData,
         prefix: String,
+        needSkobki: Boolean,
     ): TemplateForm? {
 
-        val items = creator.inner.mapIndexedNotNull { i, b ->
+        val itemList = creator.inner.mapIndexedNotNull { i, b ->
             createEditField(b, memory, i)
         }
+
+        val items = if (needSkobki) {
+            listOf(TemplateItemHiddenText("${creator.skobka}")) + itemList +
+                    TemplateItemHiddenText("${creator.closeBrace()}")
+        } else itemList
+
 
         return if (items.isNotEmpty()) {
             TemplateForm(
@@ -231,14 +170,15 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                 val sb = createArgumentEditor(creator, memory)
                 (when {
                     sb.size > 1 -> {
+                        //"i.form.x"
                         TemplateForm(
                             "",
                             FORM_NAME,
                             sb.toList()
                         )
                     }
-
-                    sb.size == 1 -> sb[0]
+                    //"i.x"
+                    sb.size == 1 -> TemplateItemContainer("", FORM_NAME, sb[0])
                     else -> null
                 }
                         )?.let { t ->
@@ -251,12 +191,13 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
             }
 
             TPArg.VARIANT -> {
-                val sb = createArgumentEditor(creator, memory,)
+                val sb = createArgumentEditor(creator, memory)
+                //"i.varinatj.x"
                 if (sb.size >= 1) {
-                    val m = sb.map { t ->
+                    val m = sb.mapIndexed { j, t ->
                         TemplateItemMulti(
                             "",
-                            FORM_NAME,
+                            "$VARIANT_NAME${j + 1}",
                             t
                         )
                     }
@@ -269,21 +210,22 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                     null
             }
 
-            TPArg.ONE ->{
-                val sb =  createArgumentEditor(creator, memory)
+            TPArg.ONE -> {
+                val sb = createArgumentEditor(creator, memory)
                 val m = when {
                     sb.size > 1 -> {
+                        //"i.form.x"
                         TemplateForm(
                             "",
                             FORM_NAME,
                             sb.toList()
                         )
                     }
-
-                    sb.size == 1 -> sb[0]
+                    //"i.x"
+                    sb.size == 1 -> TemplateItemContainer("", FORM_NAME, sb[0])
                     else -> null
                 }
-                m?.let{ t ->
+                m?.let { t ->
                     TemplateItemOne(
                         "",
                         prefix,
@@ -291,13 +233,15 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                     )
                 }
             }
+
             TPArg.ONE_VARIANT -> {
-                val sb =  createArgumentEditor(creator, memory)
+                //"i.x.x"
+                val sb = createArgumentEditor(creator, memory)
                 if (sb.size >= 1) {
                     val m = sb.map { t ->
                         TemplateItemOne(
                             "",
-                            FORM_NAME,
+                            t.argumentName,
                             t
                         )
                     }
@@ -306,11 +250,21 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                         prefix,
                         m
                     )
-                }else
+                } else
                     null
             }
+            TPArg.UNION -> {
+                val sb = createArgumentEditor(creator, memory)
+                TemplateForm(
+                    title = "",
+                    argumentName = prefix,
+                    list = sb.toList(),
+                    separator = ""
+                )
+            }
             else -> {
-                val sb =  createArgumentEditor(creator, memory)
+                val sb = createArgumentEditor(creator, memory)
+                //"i.x"
                 TemplateForm(
                     "",
                     prefix,
@@ -343,20 +297,60 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
         val t: TemplateItem? = if (b.isArgument()) {
             if (b.name.prefix() == '@') {
                 val n = b.name.name.drop(1)
+                //"x"
                 memory.params.find { it.name == n }?.let { param ->
                     templateItem(param)
                 }
-            } else null
+            } else TemplateItemHiddenText(b.name.name)
         } else {
             if (b is TortoiseParserStackBlock) {
                 if (TPArg.isAction(b)) {
+                    //"i.x"
                     buildActionEditor(b, memory, "$index")
                 } else {
-                    buildEditor(b, memory, "$index")
+                    ////"i.x"
+                    buildEditor(b, memory, "$index", true)
                 }
             } else null
         }
         return t
+    }
+
+    private fun buildText(info: TemplateItem, memory: TemplateMemory, prefix:String):String{
+        val newPrefix = "$prefix.${info.argumentName}"
+        return when (info){
+            is TemplateForm -> {
+            //    println("<< $newPrefix")
+                info.list.joinToString(info.separator) { i -> buildText(i, memory, newPrefix) }
+            }
+            is TemplateItemContainer -> {
+            //    println("<^ $newPrefix")
+                buildText(info.data, memory,newPrefix)
+            }
+            is TemplateItemHiddenText -> {
+                info.title
+            }
+            is TemplateItemLabel -> {
+                ""
+            }
+            is TemplateItemMulti -> {
+            //    println("<< $newPrefix.$MULTI_NAME : ${ memory.get("$newPrefix.$MULTI_NAME")}")
+                memory.get("$newPrefix.$MULTI_NAME").joinToString(" ") { mn ->
+                    //       println("<<< {$newPrefix.$mn}")
+                    buildText(info.data, memory, "$newPrefix.$mn")
+                }
+            }
+            is TemplateItemOne -> {
+          //      println("<< $newPrefix.$ONE_NAME  : ${ memory.get("$newPrefix.$ONE_NAME")}")
+                memory.get("$newPrefix.$ONE_NAME").firstOrNull()?.toDoubleOrNull()?.takeIf { it > 0.0 }?.let { mn ->
+                  //  println("<<< $newPrefix.$ONE_NAME  : ${ memory.get("$newPrefix.$ONE_NAME")}")
+                    buildText(info.data, memory, newPrefix)
+                }?:""
+            }
+            else -> {
+                memory.get(newPrefix).joinToString(" ")
+            }
+        }
     }
 
     private fun templateItem(param: HelpDataParam) = TemplateCreator.createItem(

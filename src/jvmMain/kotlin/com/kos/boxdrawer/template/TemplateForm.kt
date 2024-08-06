@@ -6,6 +6,7 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_3
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_4
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CONTAINER
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_LABEL
@@ -27,6 +28,7 @@ data class TemplateForm(
     override val title: String,
     override val argumentName: String,
     val list: List<TemplateItem>,
+    val separator: String = " "
 ) : TemplateItem {
     fun isEmpty(): Boolean = list.isEmpty()
 
@@ -36,6 +38,7 @@ data class TemplateForm(
         tp.add("form")
         tp.add("title", "[$title]")
         tp.add("arg", argumentName)
+        tp.add("sep", "[$separator]")
         tp.add(inner)
         return tp
     }
@@ -172,7 +175,24 @@ data class TemplateItemOne(
     }
 }
 
+data class TemplateItemContainer(
+    override val title: String,
+    override val argumentName: String,
+    val data: TemplateItem,
+) : TemplateItem{
+    override val argumentCount: Int
+        get() = 1
 
+    override fun print(): TortoiseParserStackItem {
+        val inner = TortoiseParserStackBlock('(', "item", listOf(data.print()))
+        val tp = TortoiseParserStackBlock()
+        tp.add(FIELD_CONTAINER)
+        tp.add("title", "[$title]")
+        tp.add("arg", argumentName)
+        tp.add(inner)
+        return tp
+    }
+}
 
 data class TemplateItemInt(
     override val title: String,

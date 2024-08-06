@@ -11,14 +11,16 @@ data class TemplateField(val name:String) {
         const val FIELD_ANGLE = "a"
         const val FIELD_CHECK = "check"
         const val FIELD_COLOR = "color"
+        const val FIELD_CONTAINER = "container"
         const val FIELD_FIGURE = "f"
         const val FIELD_FORM = "form"
         const val FIELD_INT = "int"
         const val FIELD_LABEL = "label"
         const val FIELD_MULTI = "multi"
+        const val FIELD_NONE = "-"
         const val FIELD_ONE = "noneOrMore"
         const val FIELD_TEXT = "text"
-        const val FIELD_NONE = "-"
         const val FIELD_SELECTOR = "selector"
+        const val FIELD_HIDDEN_TEXT = "hiddenText"
     }
 }

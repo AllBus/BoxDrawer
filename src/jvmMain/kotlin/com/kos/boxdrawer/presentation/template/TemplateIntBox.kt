@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDown
+import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItem
 import turtoise.parser.TortoiseParserStackItem
@@ -29,7 +30,7 @@ fun TemplateIntBox(
             ) { v ->
                 templateGenerator.put(
                     prefix,
-                    v.toString()
+                    v.toInt().toString()
                 )
             }
         }
@@ -39,7 +40,7 @@ fun TemplateIntBox(
             singleLine = true,
             modifier = Modifier.align(alignment = Alignment.CenterVertically)
         )
-        NumericUpDown("", "", input, modifier = Modifier.weight(1f))
+        NumericUpDownLine("", "", input, modifier = Modifier.weight(1f))
     }
 }
 

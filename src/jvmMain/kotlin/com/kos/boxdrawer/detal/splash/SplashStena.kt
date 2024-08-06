@@ -18,7 +18,7 @@ class SplashStena : ISplashDetail {
         get() = listOf("stena")
 
     override fun help(): HelpData = HelpData(
-        "stena (Figure) (he we) (edge hee)*",
+        "stena (Figure) (he we) (edge hee?)*",
         "Нарисовать стенки вдоль пути Figure",
         listOf(
             HelpDataParam(
@@ -53,7 +53,9 @@ class SplashStena : ISplashDetail {
             TPArg.oneOrMore(
                 TPArg.block(
                     TPArg("edge"),
-                    TPArg("hee"),
+                    TPArg.noneOrOne(
+                        TPArg("hee")
+                    ),
                 )
             )
         )
