@@ -25,6 +25,7 @@ import androidx.compose.ui.text.input.getSelectedText
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.boxdrawe.widget.TabBar
+import com.kos.boxdrawer.presentation.theme.BoxTypography
 import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureInfo
@@ -64,7 +65,9 @@ fun App(vm: State<DrawerViewModel>) {
     val tortoiseListener = vm.value.tortoise.editorListener
     val tortoiseMoveListener = vm.value.tortoise.moveListener
 
-    MaterialTheme {
+    MaterialTheme(
+        typography = BoxTypography.typography
+    ) {
         Column {
             TabBar(BoxDrawerToolBar.tabs, vm)
 
