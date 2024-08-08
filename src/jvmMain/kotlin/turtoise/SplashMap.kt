@@ -1,6 +1,7 @@
 package turtoise
 
 import com.kos.boxdrawer.detal.splash.ISplashDetail
+import com.kos.boxdrawer.detal.splash.SplashApproximation
 import com.kos.boxdrawer.detal.splash.SplashArc
 import com.kos.boxdrawer.detal.splash.SplashCircle
 import com.kos.boxdrawer.detal.splash.SplashDiamond
@@ -27,28 +28,29 @@ import com.kos.boxdrawer.detal.splash.SplashToothReverse
 object SplashMap {
 
     val splashList = listOf(
+        SplashApproximation(),
         SplashArc(),
-        SplashTooth(),
-        SplashToothReverse(),
-        SplashRoundLine(),
+        SplashCircle(),
+        SplashDiamond(),
+        SplashDiamondAngle(),
+        SplashDrop(),
+        SplashEdit(),
         SplashIntersectLine(),
         SplashLine(),
         SplashNormal(),
-        SplashSoftRez(),
-        SplashPaz(),
-        SplashStena(),
         SplashObruch(),
-        SplashEdit(),
-        SplashDrop(),
-        SplashTake(),
-        SplashText(),
-        SplashPrintCoordinate(),
-        SplashDiamond(),
-        SplashDiamondAngle(),
         SplashParallelogram(),
+        SplashPaz(),
+        SplashPrintCoordinate(),
         SplashRoad(),
         SplashRound(),
-        SplashCircle(),
+        SplashRoundLine(),
+        SplashSoftRez(),
+        SplashStena(),
+        SplashTake(),
+        SplashText(),
+        SplashTooth(),
+        SplashToothReverse(),
     )
     val splashes: Map<String, ISplashDetail> = splashList.flatMap { s -> s.names.map { it to s } }.toMap()
 }

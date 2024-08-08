@@ -12,6 +12,9 @@ import com.kos.ariphmetica.Calculator
 import com.kos.ariphmetica.math.algorithms.Calculate
 import com.kos.ariphmetica.math.algorithms.CopositeFunction
 import com.kos.ariphmetica.math.algorithms.OutExpression
+import com.kos.ariphmetica.math.algorithms.Replacement
+import com.kos.ariphmetica.math.terms.Digit
+import com.kos.ariphmetica.math.terms.MathConst
 import com.kos.boxdrawe.presentation.template.TemplateFigureEditor
 import com.kos.boxdrawe.presentation.template.TemplateMoveListener
 import com.kos.boxdrawer.template.TemplateFigureBuilderListener
@@ -67,10 +70,12 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
 
     suspend fun printCommand(): String {
         val lines = text.value.text
-//        Calculator.init()
-//        val dif = Calculator.parseWithSpace(lines)
-//        val r:String = OutExpression.apply(Calculator.fullCalc( CopositeFunction.compose(dif))) as String
-//        return r
+        Calculator.init()
+        val dif = Calculator.parseWithSpace(lines)
+        val v =  Calculator.parseWithSpace("t")
+        val n =  Calculator.parseWithSpace("3.0")
+        val r:String = OutExpression.apply(Calculator.fullCalc(  Replacement.replace(  Calculator.fullCalc( CopositeFunction.compose(dif)), v, n))) as String
+        return r
 
         val program = tortoiseProgram(lines)
         return program.commands.flatMap { a ->

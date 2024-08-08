@@ -7,6 +7,7 @@ import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.google.gson.GsonBuilder
+import com.kos.ariphmetica.Calculator
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.app_name
@@ -71,7 +72,7 @@ fun calcZoom(value: Float): Float {
 }
 
 fun main(args: Array<String>) {
-
+    Calculator.init()
   //  val component = DaggerAppComponent.builder()
     val viewModel = DrawerViewModel()
     application {

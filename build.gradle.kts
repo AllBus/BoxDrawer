@@ -98,7 +98,7 @@ kotlin {
             implementation("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}")
             implementation("org.locationtech.jts:jts-core:1.19.0")
             implementation("io.github.windedge.table:table-m3:0.1.8")
-            implementation("com.github.Allbus:ArithmeticDiff:1.0.3")
+            implementation("com.github.Allbus:ArithmeticDiff:1.1.1")
             implementation( "com.google.dagger:dagger:2.51.1")
             compileOnly( "com.google.dagger:dagger-compiler:2.51.1")
             compileOnly( "com.google.dagger:dagger-compiler:2.51.1")
