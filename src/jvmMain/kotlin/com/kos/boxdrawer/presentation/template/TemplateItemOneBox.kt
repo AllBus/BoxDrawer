@@ -1,10 +1,12 @@
 package com.kos.boxdrawer.presentation.template
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.kos.boxdrawe.presentation.template.ONE_NAME
 import com.kos.boxdrawe.widget.RunCheckBox
@@ -38,17 +40,19 @@ fun TemplateItemOneBox(
             )
         }
 
-        RunCheckBox(
-            checked = checkState.value,
-            title = form.title,
-            onCheckedChange = { c ->
-                checkState.value = c
-                templateGenerator.put(
-                    namesPrefix,
-                    if (c) "1" else "-1"
-                )
-            },
-        )
+        Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+            RunCheckBox(
+                checked = checkState.value,
+                title = form.title,
+                onCheckedChange = { c ->
+                    checkState.value = c
+                    templateGenerator.put(
+                        namesPrefix,
+                        if (c) "1" else "-1"
+                    )
+                },
+            )
+        }
 
     }
 

@@ -15,9 +15,11 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.DropdownMenuState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -55,12 +57,13 @@ import turtoise.parser.TortoiseParserStackBlock
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun EditPosition(
+    expanded: MutableState<Boolean>,
     commands: State<List<HelpInfoCommand>>,
     moveListener: TemplateGeneratorSimpleListener,
     editorListener: TemplateFigureBuilderListener,
     onPickSelected: () -> String
 ) {
-    val expanded = remember { mutableStateOf(false) }
+
     Column(
     ) {
         Row {

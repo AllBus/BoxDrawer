@@ -4,6 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.Text
@@ -81,7 +82,7 @@ fun TemplateItemMultiBox(
                 val iconDelete = Icons.Rounded.Delete
                 ImageButton(
                     iconDelete,
-                    Modifier.wrapContentSize().align(Alignment.CenterVertically)
+                    Modifier.size(16.dp).align(Alignment.CenterVertically)
                 ) {
                     x.value = x.value.filter { it != v }
                     templateGenerator.removeItem(itemPrefix)
@@ -89,6 +90,15 @@ fun TemplateItemMultiBox(
                 }
             }
         }
+//        Row() {
+//            Spacer(modifier = Modifier.weight(1f))
+//            val icon = Icons.Rounded.Add
+//            ImageButton(icon, Modifier.wrapContentSize()) {
+//                val xv = x.value
+//                x.value += if (xv.isEmpty()) 1 else (xv.max() + 1)
+//                templateGenerator.putList(namesPrefix, x.value.map { it.toString() }.toList())
+//            }
+//        }
     }
 }
 

@@ -53,7 +53,7 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
     private fun insertText(f: String) {
         val tv = text.value
         val ntext =
-            tv.getTextBeforeSelection(tv.text.length) + AnnotatedString(f+" ") + tv.getTextAfterSelection(
+            tv.getTextBeforeSelection(tv.text.length) + AnnotatedString(f) + tv.getTextAfterSelection(
                 tv.text.length
             )
         text.value = tv.copy(

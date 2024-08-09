@@ -18,7 +18,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
@@ -61,6 +63,7 @@ fun Editor(
     Box(
         modifier = modifier.fillMaxSize()
     ) {
+        val expanded = rememberSaveable("tortoiseEditorExpanded") { mutableStateOf(true) }
         when (tabIndex.value) {
             BoxDrawerToolBar.TAB_TORTOISE -> {
                 Column(
@@ -75,16 +78,18 @@ fun Editor(
                         ),
 
                         ) {
-                        EditPosition(commands, moveListener,editorListener, onPickSelected)
+                        EditPosition(expanded, commands, moveListener,editorListener, onPickSelected)
                     }
 
-                    Text(
-                        text = helpText,
-                        modifier = Modifier.width(350.dp).wrapContentHeight(),
-                        //          .verticalScroll(scrollState, enabled = false)
-                        fontSize = 10.sp,
-                        lineHeight = 12.sp,
-                    )
+                    if (expanded.value == false) {
+                        Text(
+                            text = helpText,
+                            modifier = Modifier.width(350.dp).wrapContentHeight(),
+                            //          .verticalScroll(scrollState, enabled = false)
+                            fontSize = 10.sp,
+                            lineHeight = 12.sp,
+                        )
+                    }
                 }
             }
 
