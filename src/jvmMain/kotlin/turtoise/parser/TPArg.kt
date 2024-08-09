@@ -32,8 +32,13 @@ object TPArg {
     }
 
     operator fun invoke(name: String, kind: String): TemplateItem =
-        TemplateCreator.createItem(kind, name, name, null)
-            ?: TemplateItemHiddenText("") //  TortoiseParserStackArgument(MemoryKey("@$name"))
+        TemplateCreator.createItem(
+            name = kind,
+            title = name,
+            argument = name,
+            nameItems = false,
+            block = null
+        ) ?: TemplateItemHiddenText("") //  TortoiseParserStackArgument(MemoryKey("@$name"))
 
     fun selector(name: String, variants: List<String>): TemplateItem =
         TemplateItemSelector(name, name, variants)
@@ -43,6 +48,7 @@ object TPArg {
             title = " ",
             argumentName = "/",
             list = args.toList(),
+            named = false,
             separator = " ",
             prefix = "$name ",
         )  //TortoiseParserStackBlock(' ', name, args.toList())
@@ -53,6 +59,7 @@ object TPArg {
             title = " ",
             argumentName = "/",
             list = args.toList(),
+            named = false,
             separator = " ",
             prefix = "",
         )  //TortoiseParserStackBlock(' ', name, args.toList())
@@ -152,6 +159,7 @@ object TPArg {
                 data = a
             )
         },
+        named = false,
         separator = " ",
         prefix = "",
         suffix = ""
@@ -207,6 +215,7 @@ object TPArg {
                 data = a
             )
         },
+        named = false,
         separator = " ",
         prefix = "",
         suffix = ""

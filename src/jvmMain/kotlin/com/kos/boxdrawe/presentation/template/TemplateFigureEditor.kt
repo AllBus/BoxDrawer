@@ -25,12 +25,12 @@ const val VARIANT_NAME = "^variant^"
 const val MULTI_NAME = "^multi_names^"
 const val ONE_NAME = "^one_name^"
 
-class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBuilderListener {
+class TemplateFigureEditor(val insertText: (String) -> Unit, val toNextPosition:() -> Unit) : TemplateFigureBuilderListener {
     val memory = TemplateMemory()
 
     private var selectCommand: HelpInfoCommand = HelpInfoCommand("", emptyList())
     private var selectData: HelpData = HelpData("", "")
-    private var form = TemplateForm("", "", emptyList())
+    private var form = TemplateForm("", "", false, emptyList())
     override fun setFigure(command: HelpInfoCommand, data: HelpData) {
         if (selectCommand != command) {
             memory.clear()
@@ -102,6 +102,11 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
         insertText(" $text ")
     }
 
+    override fun insertFigure() {
+        recalc()
+        toNextPosition()
+    }
+
     private fun command(prefix: String, key: MemoryKey): String {
         return memory.get(prefix + key.name.drop(1)).joinToString(" ")
     }
@@ -120,9 +125,10 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
             templateItem(param)
         }
         return TemplateForm(
-            "",
-            prefix,
-            items
+            title = "",
+            argumentName = prefix,
+            named = false,
+            list = items
         )
     }
 
@@ -145,9 +151,10 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
 
         return if (items.isNotEmpty()) {
             TemplateForm(
-                "",
-                prefix,
-                items
+                title = "",
+                argumentName = prefix,
+                named = false,
+                list = items
             )
         } else
             null
@@ -168,9 +175,10 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                     sb.size > 1 -> {
                         //"i.form.x"
                         TemplateForm(
-                            "",
-                            FORM_NAME,
-                            sb.toList()
+                            title = "",
+                            argumentName = FORM_NAME,
+                            named = false,
+                            list = sb.toList()
                         )
                     }
                     //"i.x"
@@ -198,9 +206,10 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                         )
                     }
                     TemplateForm(
-                        "",
-                        prefix,
-                        m
+                        title = "",
+                        argumentName = prefix,
+                        named = false,
+                        list = m
                     )
                 } else
                     null
@@ -212,13 +221,21 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                     sb.size > 1 -> {
                         //"i.form.x"
                         TemplateForm(
-                            "",
-                            FORM_NAME,
-                            sb.toList()
+                            title = "",
+                            argumentName = FORM_NAME,
+                            named = false,
+                            list = sb.toList()
                         )
                     }
                     //"i.x"
-                    sb.size == 1 -> TemplateItemContainer("", FORM_NAME, sb, "", "", "")
+                    sb.size == 1 -> TemplateItemContainer(
+                        title = "",
+                        argumentName = FORM_NAME,
+                        list = sb,
+                        separator = "",
+                        prefix = "",
+                        suffix = ""
+                    )
                     else -> null
                 }
                 m?.let { t ->
@@ -242,9 +259,10 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                         )
                     }
                     TemplateForm(
-                        "",
-                        prefix,
-                        m
+                        title = "",
+                        argumentName = prefix,
+                        named = false,
+                        list = m
                     )
                 } else
                     null
@@ -254,6 +272,7 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                 TemplateForm(
                     title = "",
                     argumentName = prefix,
+                    named = false,
                     list = sb.toList(),
                     separator = ""
                 )
@@ -262,9 +281,10 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
                 val sb = createArgumentEditor(creator, memory)
                 //"i.x"
                 TemplateForm(
-                    "",
-                    prefix,
-                    sb.toList()
+                    title = "",
+                    argumentName = prefix,
+                    named = false,
+                    list = sb.toList()
                 )
             }
         }
@@ -317,6 +337,7 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
         name = param.kind,
         title = param.name,
         argument = param.name,
+        nameItems = false,
         block = null,
     )
     //endregion
@@ -326,7 +347,14 @@ class TemplateFigureEditor(val insertText: (String) -> Unit) : TemplateFigureBui
         return when (info){
             is TemplateForm -> {
                 info.prefix+
-                        info.list.joinToString(info.separator) { i -> buildText(i, memory, newPrefix) }+
+                        info.list.joinToString(info.separator) { i ->
+                            val t = buildText(i, memory, newPrefix)
+                            if (info.named){
+                                 "(${i.argumentName} $t)"
+                            }else {
+                                t
+                            }
+                        }+
                         info.suffix
             }
             is TemplateItemContainer -> {

@@ -21,6 +21,7 @@ import com.kos.boxdrawer.detal.splash.SplashRoad
 import com.kos.boxdrawer.detal.splash.SplashRound
 import com.kos.boxdrawer.detal.splash.SplashRoundLine
 import com.kos.boxdrawer.detal.splash.SplashSoftRez
+import com.kos.boxdrawer.detal.splash.SplashSpiral
 import com.kos.boxdrawer.detal.splash.SplashStena
 import com.kos.boxdrawer.detal.splash.SplashTake
 import com.kos.boxdrawer.detal.splash.SplashText
@@ -50,6 +51,7 @@ object SplashMap {
         SplashRound(),
         SplashRoundLine(),
         SplashSoftRez(),
+        SplashSpiral(),
         SplashStena(),
         SplashTake(),
         SplashText(),

@@ -5,6 +5,7 @@ import com.kos.ariphmetica.math.algorithms.CopositeFunction
 import com.kos.ariphmetica.math.algorithms.OutExpression
 import com.kos.ariphmetica.math.algorithms.Replacement
 import com.kos.ariphmetica.math.terms.MathTerm
+import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
@@ -329,5 +330,11 @@ open class SplashApproximation : ISplashDetail {
         } else
             line
     }
+
+//    private var memory : List<Pair<String, List<Pair<Vec2 , Vec2>>>>  =  mutableListOf()
+//
+//    fun findInMemory(block:TortoiseParserStackBlock){
+//
+//    }
 }
 

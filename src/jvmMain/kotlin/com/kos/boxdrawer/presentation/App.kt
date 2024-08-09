@@ -30,6 +30,7 @@ import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
+import turtoise.help.TortoiseHelpInfo
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -54,6 +55,8 @@ fun App(vm: State<DrawerViewModel>) {
     val figureList = remember(figures) {
         derivedStateOf { IFigure.tree(figures.value) }
     }
+
+    val commands = vm.value.helpInfoList.collectAsState(emptyList())
 
     val selectedItem :State<List<FigureInfo>> = vm.value.selectedItem.collectAsState(emptyList<FigureInfo>())
     val checkboxEditor = vm.value.template.checkboxEditor.collectAsState()
@@ -87,20 +90,21 @@ fun App(vm: State<DrawerViewModel>) {
                 Column {
                     Editor(
                         modifier = Modifier.weight(1f),
-                        tabIndex,
+                        tabIndex = tabIndex,
                         moveListener =  tortoiseMoveListener,
                         editorListener =  tortoiseListener,
                         boxListener = vm.value.box.boxListener,
-                        helpText,
-                        menu,
-                        vm,
-                        alternative,
-                        rotateValueX,
-                        rotateValueY,
-                        rotateValueZ,
-                        checkboxEditor,
-                        figureList,
-                        selectedItem,
+                        helpText = helpText,
+                        menu = menu,
+                        vm = vm,
+                        alternative = alternative,
+                        dropValueX = rotateValueX,
+                        dropValueY = rotateValueY,
+                        dropValueZ = rotateValueZ,
+                        checkboxEditor = checkboxEditor,
+                        figureList = figureList,
+                        selectedItem = selectedItem,
+                        commands = commands,
                         onRotateDisplay = {
                             vm.value.tortoise.rotate(
                                 rotateValueX.value,

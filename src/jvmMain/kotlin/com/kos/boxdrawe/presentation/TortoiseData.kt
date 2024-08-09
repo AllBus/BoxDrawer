@@ -46,14 +46,14 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
     @OptIn(ExperimentalFoundationApi::class)
     val text = mutableStateOf(TextFieldValue(""))
 
-    val editorListener = TemplateFigureEditor(::insertText)
+    val editorListener = TemplateFigureEditor(::insertText,::toNextPosition)
 
     val moveListener = TemplateMoveListener(::insertText)
 
     private fun insertText(f: String) {
         val tv = text.value
         val ntext =
-            tv.getTextBeforeSelection(tv.text.length) + AnnotatedString(f) + tv.getTextAfterSelection(
+            tv.getTextBeforeSelection(tv.text.length) + AnnotatedString(f+" ") + tv.getTextAfterSelection(
                 tv.text.length
             )
         text.value = tv.copy(
@@ -61,6 +61,11 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
             selection = TextRange(tv.selection.min, tv.selection.min + f.length)
         )
         createTortoise()
+    }
+
+    private fun toNextPosition(){
+        val tv = text.value
+        text.value = tv.copy(selection = TextRange(tv.selection.end))
     }
 
     override suspend fun createFigure(): IFigure {

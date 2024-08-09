@@ -77,6 +77,6 @@ class TemplateInfo(
     }
 
     companion object {
-        val EMPTY = TemplateInfo(TemplateForm("", "", emptyList()), TortoiseParserStackBlock(), false)
+        val EMPTY = TemplateInfo(TemplateForm("", "", true, emptyList()), TortoiseParserStackBlock(), false)
     }
 }

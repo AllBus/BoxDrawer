@@ -7,4 +7,6 @@ interface TemplateFigureBuilderListener: TemplateGeneratorListener {
     fun setFigure(command : HelpInfoCommand, data: HelpData)
 
     fun getForm(): TemplateForm
+
+    fun insertFigure()
 }

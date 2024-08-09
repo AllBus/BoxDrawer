@@ -29,13 +29,13 @@ object TemplateCreator {
 
     fun parse(skobki: TortoiseParserStackItem): TemplateForm {
         if (skobki is TortoiseParserStackBlock) {
-            return createForm(skobki)
+            return createForm(skobki, true)
         } else {
-            return TemplateForm("", "", emptyList())
+            return TemplateForm("", "", false, emptyList())
         }
     }
 
-    private fun createForm(block: TortoiseParserStackBlock): TemplateForm {
+    private fun createForm(block: TortoiseParserStackBlock, nameItems: Boolean): TemplateForm {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
         val argument = block.getBlockAtName("arg")?.value.orEmpty().name
@@ -44,32 +44,33 @@ object TemplateCreator {
         val suffix = block.getBlockAtName("suffix")?.blocks?.firstOrNull()?.innerLine ?: ""
 
         val items = block.getBlockAtName("items")?.blocks?.mapNotNull { b ->
-            createItem(b)
+            createItem(b, nameItems)
         }.orEmpty()
         return TemplateForm(
             title = title,
             argumentName = argument,
             list = items,
+            named = nameItems,
             separator = sep,
             prefix = prefix,
             suffix = suffix
         )
     }
 
-    private fun createItem(block: TortoiseParserStackBlock): TemplateItem? {
+    private fun createItem(block: TortoiseParserStackBlock, nameItems:Boolean): TemplateItem? {
         val title = block.inner.getOrNull(2)?.innerLine.orEmpty()
         val argument = block.inner.getOrNull(1)?.argument.orEmpty().name
         val name = block.name.name.lowercase()
-        return createItem(name = name, title = title, argument = argument, block = block)
+        return createItem(name = name, title = title, argument = argument, nameItems= nameItems, block = block)
     }
 
-    fun createMulti(block: TortoiseParserStackBlock): TemplateItemMulti? {
+    fun createMulti(block: TortoiseParserStackBlock, nameItems:Boolean): TemplateItemMulti? {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
         val argument = block.getBlockAtName("arg")?.value.orEmpty().name
 
         return block.getBlockAtName("item")?.blocks?.firstOrNull()?.let { b ->
-            createItem(b)
+            createItem(b,nameItems)
         }?.let { item ->
             TemplateItemMulti(
                 title = title,
@@ -79,13 +80,13 @@ object TemplateCreator {
         }
     }
 
-    fun createNoneOrOne(block: TortoiseParserStackBlock): TemplateItemOne? {
+    fun createNoneOrOne(block: TortoiseParserStackBlock, nameItems:Boolean): TemplateItemOne? {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
         val argument = block.getBlockAtName("arg")?.value.orEmpty().name
 
         return block.getBlockAtName("item")?.blocks?.firstOrNull()?.let { b ->
-            createItem(b)
+            createItem(b, nameItems)
         }?.let { item ->
             TemplateItemOne(
                 title,
@@ -95,13 +96,13 @@ object TemplateCreator {
         }
     }
 
-    fun createContainer(block: TortoiseParserStackBlock): TemplateItemContainer {
+    fun createContainer(block: TortoiseParserStackBlock, nameItems:Boolean): TemplateItemContainer {
         val title =
             block.getBlockAtName("title")?.blocks?.firstOrNull()?.innerLine.orEmpty()
         val argument = block.getBlockAtName("arg")?.value.orEmpty().name
 
         val items = block.getBlockAtName("items")?.blocks?.mapNotNull { b ->
-            createItem(b)
+            createItem(b, nameItems)
         }.orEmpty()
         val sep = block.getBlockAtName("sep")?.blocks?.firstOrNull()?.innerLine ?: " "
         val prefix = block.getBlockAtName("prefix")?.blocks?.firstOrNull()?.innerLine ?: ""
@@ -133,7 +134,8 @@ object TemplateCreator {
         name: String,
         title: String,
         argument: String,
-        block: TortoiseParserStackBlock? = null
+        nameItems: Boolean,
+        block: TortoiseParserStackBlock? = null,
     ): TemplateItem? {
         if (argument.isEmpty())
             return null
@@ -198,10 +200,10 @@ object TemplateCreator {
 
             FIELD_SELECTOR -> block?.let { b -> createSelector(b) }
 
-            FIELD_FORM -> block?.let { b -> createForm(b) }
-            FIELD_MULTI -> block?.let { b -> createMulti(b) }
-            FIELD_ONE -> block?.let { b -> createNoneOrOne(b) }
-            FIELD_CONTAINER -> block?.let { b -> createContainer(b) }
+            FIELD_FORM -> block?.let { b -> createForm(b,nameItems) }
+            FIELD_MULTI -> block?.let { b -> createMulti(b,nameItems) }
+            FIELD_ONE -> block?.let { b -> createNoneOrOne(b,nameItems) }
+            FIELD_CONTAINER -> block?.let { b -> createContainer(b,nameItems) }
 
             else -> null
         }

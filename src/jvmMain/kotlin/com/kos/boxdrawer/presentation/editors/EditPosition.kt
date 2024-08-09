@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Button
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.DropdownMenuState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -31,6 +33,7 @@ import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDownLine
+import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawer.presentation.template.TemplateAngleBox
 import com.kos.boxdrawer.presentation.template.TemplateBox
 import com.kos.boxdrawer.presentation.template.TemplateSimpleItemBox
@@ -52,6 +55,7 @@ import turtoise.parser.TortoiseParserStackBlock
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun EditPosition(
+    commands: State<List<HelpInfoCommand>>,
     moveListener: TemplateGeneratorSimpleListener,
     editorListener: TemplateFigureBuilderListener,
     onPickSelected: () -> String
@@ -109,13 +113,12 @@ fun EditPosition(
                     NumericUpDownLine("", "", inputPos, modifier = Modifier.weight(1f))
                 }
 
-                val commands = remember { TortoiseHelpInfo().commandList }
                 val expandedMenuState = remember { DropdownMenuState() }
                 val subMenuExpand = remember { DropdownMenuState() }
 
                 val selectedFigure = remember {
                     mutableStateOf(
-                        commands.firstOrNull() ?: HelpInfoCommand(
+                        commands.value.firstOrNull() ?: HelpInfoCommand(
                             "",
                             emptyList()
                         )
@@ -137,7 +140,7 @@ fun EditPosition(
                     }.padding(4.dp)
                 )
 
-                CommandMenu(expandedMenuState, commands) { com ->
+                CommandMenu(expandedMenuState, commands.value) { com ->
                     selectedFigure.value = com
                     selectedCommandData.value = com.data.firstOrNull() ?: HelpData("", "")
                     if (selectedFigure.value.data.size > 1) {
@@ -161,6 +164,9 @@ fun EditPosition(
                     editorListener.getForm()
                 }
                 CommandModel(form, editorListener)
+                RunButton("Готово") {
+                    editorListener.insertFigure()
+                }
             }
         }
     }

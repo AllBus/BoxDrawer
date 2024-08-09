@@ -4,15 +4,22 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.res.useResource
 import com.jsevy.jdxf.DXFDocument
+import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.drawer.DxfFigureDrawer
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import nl.adaptivity.xmlutil.StAXReader
 import nl.adaptivity.xmlutil.serialization.XML
 import turtoise.DrawerSettings
 import turtoise.DrawerSettingsList
 import turtoise.FullSettings
+import turtoise.TemplateAlgorithm
 import turtoise.TortoiseAlgorithm
+import turtoise.help.HelpData
+import turtoise.help.HelpInfoCommand
+import turtoise.help.TortoiseHelpInfo
+import turtoise.parser.TPArg
 import turtoise.parser.TortoiseParser
 import java.awt.BasicStroke
 import java.awt.Color
@@ -41,7 +48,7 @@ class Tools() : ITools, SavableData {
 
     val settingsList = mutableStateOf<DrawerSettingsList>(DrawerSettingsList(emptyList()))
 
-    val figureList = mutableStateOf<List<Pair<String, TortoiseAlgorithm>>>(emptyList())
+    val figureList = MutableStateFlow<List<Pair<String, TortoiseAlgorithm>>>(emptyList())
 
     private val lastSelectDir = MutableStateFlow<File>(File(""))
 
@@ -140,6 +147,31 @@ class Tools() : ITools, SavableData {
                 lastSelectDir.value = File(input.readLine()?:"")
             }
         }catch (_:Exception){}
+    }
+
+    private val templater = TemplateCreator
+    val helpInfoList = figureList.map {  a ->
+        val com = a.map { aa ->
+            val (n, f) = aa
+            if (f is TemplateAlgorithm) {
+                HelpData("@$n", "", emptyList(),
+                    creator = TPArg.createWithoutName(
+                        TPArg.block(
+                            TPArg.text("@$n"),
+                            templater.parse(f.template)
+                        )
+                    )
+                )
+            } else{
+                HelpData("@$n", "", emptyList(),
+                    creator = TPArg.createWithoutName(TPArg.block(TPArg.text("@$n")) ))
+            }
+        }
+        listOf(HelpInfoCommand("f",
+                com,
+            "Созданные ранее фигуры"
+        )
+        )+ TortoiseHelpInfo().commandList
     }
 
 }

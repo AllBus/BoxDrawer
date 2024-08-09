@@ -46,6 +46,9 @@ class DrawerViewModel {
         }
     }
 
+
+    val helpInfoList = tools.helpInfoList
+
     val selectedItem: StateFlow<List<FigureInfo>> get() = _selectedItem
 
 //    @OptIn(ExperimentalCoroutinesApi::class)

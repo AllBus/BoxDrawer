@@ -35,6 +35,7 @@ import com.kos.boxdrawer.template.TemplateFigureBuilderListener
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.figure.FigureInfo
+import turtoise.help.HelpInfoCommand
 
 @Composable
 fun Editor(
@@ -53,6 +54,7 @@ fun Editor(
     checkboxEditor: State<Boolean>,
     figureList: State<List<FigureInfo>>,
     selectedItem: State<List<FigureInfo>>,
+    commands: State<List<HelpInfoCommand>>,
     onRotateDisplay: () -> Unit,
     onPickSelected: () -> String
 ) {
@@ -73,7 +75,7 @@ fun Editor(
                         ),
 
                         ) {
-                        EditPosition(moveListener,editorListener, onPickSelected)
+                        EditPosition(commands, moveListener,editorListener, onPickSelected)
                     }
 
                     Text(

@@ -20,6 +20,7 @@ import turtoise.TortoiseFigureExtractor
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
+import turtoise.help.TortoiseHelpInfo
 import turtoise.memory.TwoBlockTortoiseMemory
 import turtoise.paint.PaintUtils
 import turtoise.parser.TortoiseParserStackBlock
@@ -60,8 +61,7 @@ class TemplateData(
     val figureName = mutableStateOf("")
 
 
-    val templateEditor =
-        MutableStateFlow(TemplateEditorForm(TemplateForm("", "", emptyList())))
+    val templateEditor = MutableStateFlow(TemplateEditorForm(TemplateForm("", "", true, emptyList())))
 
     val menu = combine(menu2, templateEditor, checkboxEditor) { n, e, check ->
         if (check) TemplateInfo(e.form, TortoiseParserStackBlock(), true) else n
@@ -128,10 +128,12 @@ class TemplateData(
 
         override fun editorAddItem(name: String, title: String, argument: String) {
             val arg = argument.split(".").last()
-            templater.createItem(name, title, arg,
-                TortoiseParserStackBlock(
-
-                ).apply {
+            templater.createItem(
+                name = name,
+                title = title,
+                argument = arg,
+                nameItems = true,
+                block = TortoiseParserStackBlock().apply {
                     addItems(
                         listOf(
                             TortoiseParserStackBlock().apply {
@@ -198,7 +200,6 @@ class TemplateData(
             // }
         }
     }
-
 
     suspend fun onPress(point: Vec2, button: Int, scale: Float) {
         val figure = currentFigure.value

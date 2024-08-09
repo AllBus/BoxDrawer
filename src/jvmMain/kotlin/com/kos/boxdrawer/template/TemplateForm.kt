@@ -26,10 +26,12 @@ interface TemplateItem {
 data class TemplateForm(
     override val title: String,
     override val argumentName: String,
+    val named:Boolean,
     val list: List<TemplateItem>,
     val separator: String = " ",
     val prefix:String = "",
     val suffix:String = "",
+
 ) : TemplateItem {
     fun isEmpty(): Boolean = list.isEmpty()
 
@@ -97,7 +99,9 @@ data class TemplateForm(
                 ins = TemplateForm(
                     title = "",
                     argumentName = ar,
+                    named = named,
                     list = listOf(ins),
+
                 )
             }
             return ins
