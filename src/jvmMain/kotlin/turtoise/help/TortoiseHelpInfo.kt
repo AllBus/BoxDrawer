@@ -32,7 +32,10 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
 
     override val name: String = ""
     override val title: AnnotatedString = TortoiseParser.helpTitle("Команды черепашки")
-    override val commandList = listOf<HelpInfoCommand>(
+
+    val tortleList =
+        listOf<HelpInfoCommand>(
+
         helpName(
             TortoiseCommand.TURTOISE_MOVE,
             listOf(
@@ -868,12 +871,6 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             ),
             "Цвет для фигуры"
         ),
-
-        helpInfo3dTransform(),
-        helpForArray(),
-        helpForSplash(),
-        helpForVariablesSplash(),
-
         )
 
     private fun helpForArray() = helpName(
@@ -1072,4 +1069,11 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
         SplashMap.splashList.map { it.help() },
         "Действия над фигурами"
     )
+
+    override val commandList = listOf(
+        helpForSplash(),
+        helpForVariablesSplash(),
+        helpInfo3dTransform(),
+        helpForArray(),
+    )+tortleList
 }

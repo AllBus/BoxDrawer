@@ -3,6 +3,7 @@ package turtoise
 import com.kos.boxdrawer.detal.splash.ISplashDetail
 import com.kos.boxdrawer.detal.splash.SplashApproximation
 import com.kos.boxdrawer.detal.splash.SplashApproximationPolar
+import com.kos.boxdrawer.detal.splash.SplashApproximationUser
 import com.kos.boxdrawer.detal.splash.SplashArc
 import com.kos.boxdrawer.detal.splash.SplashCircle
 import com.kos.boxdrawer.detal.splash.SplashDiamond
@@ -31,6 +32,7 @@ object SplashMap {
     val splashList = listOf(
         SplashApproximation(),
         SplashApproximationPolar(),
+        SplashApproximationUser(),
         SplashArc(),
         SplashCircle(),
         SplashDiamond(),

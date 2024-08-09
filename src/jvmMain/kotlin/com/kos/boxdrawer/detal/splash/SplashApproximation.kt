@@ -267,6 +267,15 @@ open class SplashApproximation : ISplashDetail {
         return s.toDoubleOrNull() ?: 0.0
     }
 
+    fun calc(line: MathTerm): Double {
+        val r =
+            OutExpression.apply(Calculator.fullCalc(line)) as String
+        val s = if (r.startsWith("(") && r.endsWith(")")) {
+            r.drop(1).dropLast(1)
+        } else r
+        return s.toDoubleOrNull() ?: 0.0
+    }
+
     fun parse(value: Double): MathTerm {
         return Calculator.parseWithSpace("$value")
     }
@@ -308,15 +317,17 @@ open class SplashApproximation : ISplashDetail {
     }
 
     fun podstanovka(line: String ,values:List<Pair<MathTerm, MathTerm>>): MathTerm {
-        var dif = parse(line)
-        dif = Calculator.fullCalc(dif)
-      //  println(">")
+        val dif = parse(line)
+        return podstanovka(Calculator.fullCalc(dif), values)
+    }
+
+    fun podstanovka(line: MathTerm ,values:List<Pair<MathTerm, MathTerm>>): MathTerm {
         return if (values.isNotEmpty()) {
-            values.reversed().fold(dif) { d, v ->
-              //  println("${v.first} : ${d}")
+            values.reversed().fold(line) { d, v ->
+                //  println("${v.first} : ${d}")
                 Replacement.replace(d, v.first, v.second) }
         } else
-            dif
+            line
     }
 }
 

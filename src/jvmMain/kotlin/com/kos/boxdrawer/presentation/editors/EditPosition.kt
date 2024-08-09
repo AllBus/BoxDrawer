@@ -109,7 +109,6 @@ fun EditPosition(
                     NumericUpDownLine("", "", inputPos, modifier = Modifier.weight(1f))
                 }
 
-
                 val commands = remember { TortoiseHelpInfo().commandList }
                 val expandedMenuState = remember { DropdownMenuState() }
                 val subMenuExpand = remember { DropdownMenuState() }

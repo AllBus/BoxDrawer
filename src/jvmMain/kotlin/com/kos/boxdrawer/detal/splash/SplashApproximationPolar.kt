@@ -30,7 +30,7 @@ class SplashApproximationPolar: SplashApproximation(){
                 HelpDataParam("count", "Количество точек", FIELD_INT),
 
             ),
-            creator = TPArg.create("ap",
+            creator = TPArg.create("apc",
                 TPArg.block(TPArg("ro(t)", FIELD_TEXT)),
                 TPArg.block(TPArg("fi(t)", FIELD_TEXT)),
                 TPArg.noneOrOne("app",
