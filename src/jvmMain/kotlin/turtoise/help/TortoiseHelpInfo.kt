@@ -441,6 +441,53 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             )
         ),
         helpName(
+            TortoiseCommand.TURTOISE_BEZIER_AT_POINTS,
+            listOf(
+                HelpData(
+                    "tx1 ty1 tx2 ty2 ex ey *",
+                    "Рисовать линию безье из текущей позиции по указанным координатам",
+                    listOf(
+                        HelpDataParam(
+                            "tx1",
+                            "координата x первой контрольной точки",
+                            FIELD_2
+                        ),
+                        HelpDataParam(
+                            "ty1",
+                            "координата y первой контрольной точки",
+                            FIELD_NONE
+                        ),
+                        HelpDataParam(
+                            "tx2",
+                            "координата x второй контрольной точки",
+                            FIELD_2
+                        ),
+                        HelpDataParam(
+                            "ty2",
+                            "координата y второй контрольной точки",
+                            FIELD_NONE
+                        ),
+                        HelpDataParam(
+                            "ex",
+                            "координата x конца кривой",
+                            FIELD_2
+                        ),
+                        HelpDataParam(
+                            "ey",
+                            "координата y конца кривой",
+                            FIELD_NONE
+                        ),
+                    ),
+                    creator = TPArg.create(
+                        "",
+                        TPArg("t1", FIELD_2),
+                        TPArg("t2", FIELD_2),
+                        TPArg("e", FIELD_2)
+                    )
+                )
+            )
+        ),
+        helpName(
             TortoiseCommand.TURTOISE_FIGURE,
             listOf(
                 HelpData(

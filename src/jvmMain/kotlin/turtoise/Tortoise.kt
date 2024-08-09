@@ -336,6 +336,39 @@ class Tortoise() : TortoiseSplash() {
                         builder.add(FigureBezier(points.toList()))
                     }
                 }
+                TortoiseCommand.TURTOISE_BEZIER_AT_POINTS -> {
+                    builder.saveLine()//+
+
+                    val angle = state.angle
+
+                    val points = mutableListOf<Vec2>()
+                    points.add(state.xy)
+                    for (d in 0..com.size - 6 step 6) {
+                        points.add(
+                            Vec2(
+                                com[d + 0, memory],
+                                com[d + 1, memory]
+                            ).rotate(angle) + state.xy
+                        )
+                        points.add(
+                            Vec2(
+                                com[d + 2, memory],
+                                com[d + 3, memory]
+                            ).rotate(angle) + state.xy
+                        )
+                        points.add(
+                            Vec2(
+                                com[d + 4, memory],
+                                com[d + 5, memory]
+                            ).rotate(angle) + state.xy
+                        )
+                    }
+
+                    if (points.size > 1) {
+                        state.moveTo(points.last())
+                        builder.add(FigureBezier(points.toList()))
+                    }
+                }
 
                 TortoiseCommand.TURTOISE_POLYLINE -> {
                     builder.saveLine()//+

@@ -439,5 +439,10 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             val t = ((a.x - c.x) * (c.y - d.y) - (a.y - c.y) * (c.x - d.x)) / zn
             return a + bt * t
         }
+
+
+        fun decartFromPolar(a:Vec2):Vec2{
+            return Vec2(a.x* sin(a.y), a.x*cos(a.y))
+        }
     }
 }

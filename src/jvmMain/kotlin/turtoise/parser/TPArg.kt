@@ -12,6 +12,7 @@ import com.kos.boxdrawer.template.TemplateItemMulti
 import com.kos.boxdrawer.template.TemplateItemOne
 import com.kos.boxdrawer.template.TemplateItemSelector
 import turtoise.memory.keys.MemoryKey
+import turtoise.parser.TortoiseParser.closeBrace
 
 object TPArg {
 
@@ -68,6 +69,19 @@ object TPArg {
             suffix = ")"
         )
         //TortoiseParserStackBlock('(', name, args.toList())
+    }
+
+    fun blockBrace(brace:Char, vararg args: TemplateItem): TemplateItem {
+        return TemplateItemContainer(
+            title = "",
+            argumentName = "",
+            list = args.toList(),
+            separator = " ",
+            prefix = "$brace" ,
+            suffix = "${closeBrace(brace)}"
+        )
+
+        // return TortoiseParserStackBlock(brace).apply { this.addItems(args) }
     }
 
     fun block(vararg args: TemplateItem): TemplateItem {
