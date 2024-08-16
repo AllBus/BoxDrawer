@@ -94,8 +94,8 @@ class SplashApproximationUser : SplashApproximation() {
                     val fdxt = diff("($fxt)'t")
                     val fdyt = diff("($fyt)'t")
 
-                    println("${fxt} --> ${fyt}")
-                    println("${xfgt} ->> ${yfgt}")
+                 //   println("${fxt} --> ${fyt}")
+                 //   println("${xfgt} ->> ${yfgt}")
                     val points = (0..co).mapNotNull { i ->
                         val t = ts + (te - ts) * i * 1.0 / co
                         val tv = parse(t)
@@ -120,7 +120,7 @@ class SplashApproximationUser : SplashApproximation() {
                             val xdt = calc(podstanovka(xfgt, ard))
                             val ydt = calc(podstanovka(yfgt, ard))
 
-                            println("${x} -> ${xt} ${y} -> ${yt}")
+                      //      println("${x} -> ${xt} ${y} -> ${yt}")
 
                             if (!xt.isFinite() || !yt.isFinite())
                                 null

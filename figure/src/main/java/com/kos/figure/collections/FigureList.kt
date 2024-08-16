@@ -1,14 +1,16 @@
 package com.kos.figure.collections
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.CropSide
 import com.kos.figure.Figure
+import com.kos.figure.ICropable
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
 import vectors.Matrix
 
 class FigureList(
     private val figures: List<IFigure>
-) : IFigure {
+) : IFigure, ICropable {
 
     override val count: Int
         get() = figures.size
@@ -65,6 +67,10 @@ class FigureList(
 
     override val hasTransform: Boolean
         get() = false
+
+    override fun crop(k: Double, cropSide: CropSide): FigureList {
+        return FigureList(figures.filterIsInstance<ICropable>().map { it.crop(k ,cropSide) })
+    }
 }
 
 fun <T : IFigure> Iterable<T>.toFigure(): FigureList = FigureList(this.toList())

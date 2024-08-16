@@ -59,18 +59,6 @@ data class RetroData(
     val bc: Boolean?,
 )
 
-fun calcZoom(value: Float): Float {
-
-    return kotlin.math.log(value.toDouble(), 1.2).toFloat()
-//    var i = 1
-//    var m = 1.2
-//    while (value>m){
-//        m*=1.2
-//        i++
-//    }
-//    return i.toFloat()
-}
-
 fun main(args: Array<String>) {
     Calculator.init()
   //  val component = DaggerAppComponent.builder()
@@ -98,5 +86,4 @@ fun main(args: Array<String>) {
             App(model)
         }
     }
-
 }

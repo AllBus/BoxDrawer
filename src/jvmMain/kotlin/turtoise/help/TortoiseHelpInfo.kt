@@ -695,12 +695,12 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                     "выполнить c раз команды между > <",
                     listOf(
                         HelpDataParam("c", "количество повторений", FIELD_INT),
-                        HelpDataParam("commands", "команды черепашки", FIELD_FIGURE)
+                        HelpDataParam("commands", "команды черепашки", FIELD_TEXT)
                     ),
                     creator = TPArg.create(
                         "",
                         TPArg("c", FIELD_INT),
-                        TPArg.figure("commands"),
+                        TPArg("commands", FIELD_TEXT),
                         TPArg.text("<"),
                     )
                 )

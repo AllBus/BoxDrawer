@@ -11,6 +11,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
+import androidx.compose.material.ripple
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -40,7 +41,7 @@ fun ImageButton(
                 enabled = enabled,
                 role = Role.Button,
                 interactionSource = interactionSource,
-                indication = rememberRipple(bounded = false, radius = RippleRadius)
+                indication = ripple(bounded = false, radius = RippleRadius)
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -67,7 +68,7 @@ fun CharButton(
                 enabled = enabled,
                 role = Role.Button,
                 interactionSource = interactionSource,
-                indication = rememberRipple(bounded = false, radius = RippleRadius)
+                indication = ripple(bounded = false, radius = RippleRadius)
             ),
         contentAlignment = Alignment.Center
     ) {

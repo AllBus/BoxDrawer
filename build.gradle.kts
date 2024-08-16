@@ -128,11 +128,13 @@ compose.desktop {
     application {
         mainClass = "MainKt"
         nativeDistributions {
+
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "boxdrawer"
             packageVersion = "2.4.0"
-            windows {
+            windows{
                 iconFile.set(project.file("robot.ico"))
+                includeAllModules = true
             }
         }
     }

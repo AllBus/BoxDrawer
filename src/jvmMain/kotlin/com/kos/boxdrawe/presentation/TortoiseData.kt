@@ -43,12 +43,18 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
 
     val matrix = mutableStateOf(Matrix())
 
-    @OptIn(ExperimentalFoundationApi::class)
     val text = mutableStateOf(TextFieldValue(""))
 
-    val editorListener = TemplateFigureEditor(::insertText,::toNextPosition)
+    val editorListener = TemplateFigureEditor(::temperedText,::toNextPosition)
 
     val moveListener = TemplateMoveListener(::insertText)
+
+    val insertedText = mutableStateOf("")
+
+    private fun temperedText(f: String) {
+        insertedText.value = f
+        createTortoise()
+    }
 
     private fun insertText(f: String) {
         val tv = text.value
@@ -65,22 +71,32 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
 
     private fun toNextPosition(){
         val tv = text.value
-        text.value = tv.copy(selection = TextRange(tv.selection.end))
+        val ins = insertedText.value
+        val ntext =
+            tv.getTextBeforeSelection(tv.text.length) +
+            AnnotatedString(ins) +
+            tv.getTextAfterSelection(tv.text.length)
+
+        insertedText.value = ""
+        text.value = tv.copy(annotatedString = ntext, selection = TextRange(tv.selection.end+ins.length))
     }
 
     override suspend fun createFigure(): IFigure {
-        val lines = text.value.text
+        val tv =  text.value
+        val lines =  tv.getTextBeforeSelection(tv.text.length).text + insertedText.value + tv.getTextAfterSelection(
+            tv.text.length
+        ).text  // text.value.text
         return create(lines)
     }
 
     suspend fun printCommand(): String {
         val lines = text.value.text
-        Calculator.init()
-        val dif = Calculator.parseWithSpace(lines)
-        val v =  Calculator.parseWithSpace("t")
-        val n =  Calculator.parseWithSpace("3.0")
-        val r:String = OutExpression.apply(Calculator.fullCalc(  Replacement.replace(  Calculator.fullCalc( CopositeFunction.compose(dif)), v, n))) as String
-        return r
+//        Calculator.init()
+//        val dif = Calculator.parseWithSpace(lines)
+//        val v =  Calculator.parseWithSpace("t")
+//        val n =  Calculator.parseWithSpace("3.0")
+//        val r:String = OutExpression.apply(Calculator.fullCalc(  Replacement.replace(  Calculator.fullCalc( CopositeFunction.compose(dif)), v, n))) as String
+//        return r
 
         val program = tortoiseProgram(lines)
         return program.commands.flatMap { a ->
@@ -106,9 +122,11 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
     }
 
     fun createTortoise() {
-        val lines = text.value.text
+        val tv =  text.value
+        val lines =  tv.getTextBeforeSelection(tv.text.length).text + insertedText.value + tv.getTextAfterSelection(
+            tv.text.length
+        ).text  // text.value.text
         val dr = create(lines)
-
         fig.value = dr
         figures.value = dr
     }

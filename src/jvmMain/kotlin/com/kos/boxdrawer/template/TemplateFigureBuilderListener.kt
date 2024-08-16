@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.template
 
+import androidx.compose.runtime.MutableState
 import turtoise.help.HelpData
 import turtoise.help.HelpInfoCommand
 
@@ -9,4 +10,5 @@ interface TemplateFigureBuilderListener: TemplateGeneratorListener {
     fun getForm(): TemplateForm
 
     fun insertFigure()
+    val currentText: MutableState<String>
 }

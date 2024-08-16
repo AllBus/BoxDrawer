@@ -38,36 +38,33 @@ open class FigureEllipse(
                 if (center.x + radius <= k) return FigureEmpty
                 if (center.x - radius >= k) return this
                 val s = (k - center.x) / radius
-                val s1 = acos(s) * 180 / PI
-                val s2 = -s1
-                calculateSegments(s2, s1)
+                val s1 = acos(s) /* 0 .. PI */
+
+                calculateSegments(-acos(s), 2*s1)
             }
 
             CropSide.RIGHT -> {
                 if (center.x + radius <= k) return this
                 if (center.x - radius >= k) return FigureEmpty
                 val s = (k - center.x) / radius
-                val s1 = acos(s) * 180 / PI
-                val s2 = -s1
-                calculateSegments(s1, s2)
+                val s1 = acos(s)
+                calculateSegments(s1, 2*(PI - s1))
             }
 
             CropSide.TOP -> {
-                if (center.y + radius <= k) return FigureEmpty
-                if (center.y - radius >= k) return this
-                val s = (center.y - k) / radius
-                val s1 = asin(s) * 180 / PI
-                val s2 = 180.0 - s1
-                calculateSegments(s1, s2)
+                if (center.y + radiusMinor <= k) return FigureEmpty
+                if (center.y - radiusMinor >= k) return this
+                val s = (center.y - k) / radiusMinor
+                val s1 = -asin(s) /* -PI/2 .. PI/2 */
+                calculateSegments(PI- s1, PI  + 2*s1)
             }
 
             CropSide.BOTTOM -> {
-                if (center.y + radius <= k) return this
-                if (center.y - radius >= k) return FigureEmpty
-                val s = (center.y - k) / radius
-                val s1 = asin(s) * 180 / PI
-                val s2 = 180.0 - s1
-                calculateSegments(s2, s1)
+                if (center.y + radiusMinor <= k) return this
+                if (center.y - radiusMinor >= k) return FigureEmpty
+                val s = (center.y - k) / radiusMinor
+                val s1 = -asin(s) /* -PI/2 .. PI/2 */
+                calculateSegments(s1, (PI - 2*s1))
             }
         }
     }
@@ -172,15 +169,66 @@ open class FigureEllipse(
         g.restore()
     }
 
-    protected fun calculateSegments(s1: Double, e1: Double): Figure {
+    protected fun calculateSegments(start: Double, sweep: Double): Figure {
+
+        if (isFill()) {
+            return create(
+                center = center,
+                radius = radius,
+                radiusMinor = radiusMinor,
+                rotation = rotation,
+                outSide = outSide,
+                segmentStart = start,
+                segmentSweep = sweep,
+            )
+        }
+
+        val sts = normalizeAngle(segmentStartAngle) /* 0 .. 2*PI */
+        val (aa, bb )=  normalize(sts, segmentSweepAngle) /* 0 .. 2*PI to  0 .. 4*PII */
+
+        val (cc,dd) = normalize(start, sweep)
+
+
+        val a = 0.0
+        val b = bb- aa
+        val c = cc - aa
+        val d = dd - aa
+
+        val mis = max(a ,c)
+        val mas = min(b, d)
+
+        val fa = if (mis<mas){
+            create(
+                center = center,
+                radius = radius,
+                radiusMinor = radiusMinor,
+                rotation = rotation,
+                outSide = outSide,
+                segmentStart = mis+aa,
+                segmentSweep = mas-mis,
+            )
+        } else FigureEmpty
+
+        return fa
+
+        val da = d-a
+        val ca = c-a
+        val ba = b-a
+
+        val db = d-b
+        val cb = c-b
+        val dc = d-c
+
+
+
         //Todo:
         var ls = segmentSweepAngle
         if (ls < 0) ls += PI*2
-        var le = e1 - s1
+        var le = sweep - start
         if (le < 0) le += PI*2
         var stS = normalizeAngle(segmentSweepAngle)
         var stE = stS + ls
-        val atS = normalizeAngle(s1)
+        val atS = normalizeAngle(start)
         val atE = atS + le
 
         if (stS == stE) {
@@ -210,8 +258,8 @@ open class FigureEllipse(
                 segmentSweep = normalizeAngle(min(atE, stE)),
             )
 
-            stS += 360;
-            stE += 360;
+            stS += PI*2;
+            stE += PI*2;
 
             if (atS >= stE || atE <= stS)
                 return f1;
@@ -227,6 +275,24 @@ open class FigureEllipse(
             )
 
             return FigurePath(listOf(f1, f2))
+        }
+    }
+
+    /**
+     * 0 .. 2*PI to  0 .. 4*PI
+     */
+    private fun normalize(
+        start: Double,
+        sweep: Double,
+    ) :Pair<Double, Double> {
+        val sww = sweep + start
+        return if (sweep < 0) { /* -2*PI .. 2*PI to  -2*PI .. 4*PI */
+            if (sww < 0.0)
+                Pair(sww + 2 * PI, start + 2 * PI)
+            else
+                Pair(sww, start)
+        } else {
+            Pair(start, sww)
         }
     }
 

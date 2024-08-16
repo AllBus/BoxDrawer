@@ -5,7 +5,9 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,11 +19,13 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.getSelectedText
+import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.boxdrawe.widget.TabBar
@@ -30,13 +34,14 @@ import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
-import turtoise.help.TortoiseHelpInfo
+
+
+
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 @Preview
 fun App(vm: State<DrawerViewModel>) {
-
     val figures = vm.value.figures.collectAsState(FigureEmpty)
 
     val displayScale = remember { mutableFloatStateOf(2.0f) }
@@ -58,7 +63,8 @@ fun App(vm: State<DrawerViewModel>) {
 
     val commands = vm.value.helpInfoList.collectAsState(emptyList())
 
-    val selectedItem :State<List<FigureInfo>> = vm.value.selectedItem.collectAsState(emptyList<FigureInfo>())
+    val selectedItem: State<List<FigureInfo>> =
+        vm.value.selectedItem.collectAsState(emptyList<FigureInfo>())
     val checkboxEditor = vm.value.template.checkboxEditor.collectAsState()
 
     LaunchedEffect(tabIndex.value) {
@@ -88,38 +94,47 @@ fun App(vm: State<DrawerViewModel>) {
                 )
 
                 Column {
-                    Editor(
-                        modifier = Modifier.weight(1f),
-                        tabIndex = tabIndex,
-                        moveListener =  tortoiseMoveListener,
-                        editorListener =  tortoiseListener,
-                        boxListener = vm.value.box.boxListener,
-                        helpText = helpText,
-                        menu = menu,
-                        vm = vm,
-                        alternative = alternative,
-                        dropValueX = rotateValueX,
-                        dropValueY = rotateValueY,
-                        dropValueZ = rotateValueZ,
-                        checkboxEditor = checkboxEditor,
-                        figureList = figureList,
-                        selectedItem = selectedItem,
-                        commands = commands,
-                        onRotateDisplay = {
-                            vm.value.tortoise.rotate(
-                                rotateValueX.value,
-                                rotateValueY.value,
-                                rotateValueZ.value
-                            )
-                        },
-                        onPickSelected = {
-                            vm.value.tortoise.text.value.getSelectedText().toString()
+                    val calculatorVisible = remember { mutableStateOf(false) }
+                    Row(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Editor(
+                            modifier = Modifier,
+                            tabIndex = tabIndex,
+                            moveListener = tortoiseMoveListener,
+                            editorListener = tortoiseListener,
+                            boxListener = vm.value.box.boxListener,
+                            helpText = helpText,
+                            menu = menu,
+                            vm = vm,
+                            alternative = alternative,
+                            dropValueX = rotateValueX,
+                            dropValueY = rotateValueY,
+                            dropValueZ = rotateValueZ,
+                            checkboxEditor = checkboxEditor,
+                            figureList = figureList,
+                            selectedItem = selectedItem,
+                            commands = commands,
+                            onRotateDisplay = {
+                                vm.value.tortoise.rotate(
+                                    rotateValueX.value,
+                                    rotateValueY.value,
+                                    rotateValueZ.value
+                                )
+                            },
+                            onPickSelected = {
+                                vm.value.tortoise.text.value.getSelectedText().toString()
+                            }
+                        )
+                    }
+                    AnimatedVisibility(calculatorVisible.value && tabIndex.value != BoxDrawerToolBar.TAB_GRID) {
+                        Box {
+                            CalculatorBox(modifier = Modifier.align(Alignment.BottomStart).padding(start = 8.dp), vm.value.calculatorData)
                         }
-                    )
+                    }
 
-                    val tabIndex = vm.value.tabIndex.collectAsState()
-                    AnimatedVisibility (tabIndex.value!= BoxDrawerToolBar.TAB_GRID) {
-                        StatusBar(displayScale, pos, stateText, onHomeClick = {
+                    AnimatedVisibility(tabIndex.value != BoxDrawerToolBar.TAB_GRID) {
+                        StatusBar(displayScale, stateText, onHomeClick = {
                             rotateValueX.value = 0f
                             rotateValueY.value = 0f
                             rotateValueZ.value = 0f
@@ -129,12 +144,16 @@ fun App(vm: State<DrawerViewModel>) {
                                 rotateValueY.value,
                                 rotateValueZ.value
                             )
-                        })
+                        },
+                            onCalculatorClick = {
+                                calculatorVisible.value = !calculatorVisible.value
+                            }
+                        )
                     }
+
                 }
             }
         }
     }
 }
-
 

@@ -80,3 +80,7 @@ interface IFigure {
 
     }
 }
+
+interface ICropable: IFigure{
+    fun crop(k: Double, cropSide: CropSide): ICropable
+}

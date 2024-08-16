@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation.template
 
+import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateFigureBuilderListener
 import com.kos.boxdrawer.template.TemplateForm
@@ -27,6 +28,8 @@ const val ONE_NAME = "^one_name^"
 
 class TemplateFigureEditor(val insertText: (String) -> Unit, val toNextPosition:() -> Unit) : TemplateFigureBuilderListener {
     val memory = TemplateMemory()
+
+    override val currentText = mutableStateOf("")
 
     private var selectCommand: HelpInfoCommand = HelpInfoCommand("", emptyList())
     private var selectData: HelpData = HelpData("", "")
@@ -99,6 +102,7 @@ class TemplateFigureEditor(val insertText: (String) -> Unit, val toNextPosition:
             }
             args.joinToString(" ", "$com ")
         }
+        currentText.value = text
         insertText(" $text ")
     }
 

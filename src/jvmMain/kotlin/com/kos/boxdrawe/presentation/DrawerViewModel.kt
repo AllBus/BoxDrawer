@@ -30,7 +30,7 @@ class DrawerViewModel {
     val rectData = RekaToolsData(tools)
     val dxfData = DxfToolsData(tools)
     val tabIndex = MutableStateFlow(BoxDrawerToolBar.TAB_TORTOISE)
-
+    val calculatorData = CalculatorData()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val figures = tabIndex.flatMapLatest { tab ->
@@ -137,8 +137,5 @@ class DrawerViewModel {
     fun setSelected(figures: List<FigureInfo>) {
         _selectedItem.value = figures
     }
-
-
-
 }
 

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.IntSize
 import com.kos.boxdrawe.drawer.drawFigures
 import com.kos.boxdrawe.widget.toOffset
 import com.kos.boxdrawe.widget.toVec2
+import com.kos.boxdrawer.presentation.ZoomUtils
 import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
 import vectors.Vec2
@@ -83,9 +84,10 @@ fun DisplayTortoise(
             val sp = coordAtPointer(pos.value, scale, posi)
 
             val predScale = displayScale.value.toDouble()
-            val newScale = scale(delta).toDouble()
-            val resScale = predScale * newScale
-            if (resScale in 0.01..2000.0) {
+           // val newScale = scale(delta).toDouble()
+            val resScale =  ZoomUtils.scale(displayScale.value.toDouble(), delta).toDouble()  // predScale * newScale
+            val newScale = resScale/predScale
+            if (resScale in 0.01..10000.0) {
                 val center = -pos.value.toVec2()
                 val pv = (sp - center) / newScale
                 pos.value = -(sp - pv).toOffset()

@@ -18,9 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text2.BasicTextField2
-import androidx.compose.foundation.text2.input.InputTransformation
-import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -28,10 +25,13 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -113,12 +113,15 @@ fun EditTextField(
     onChange: (TextFieldValue) -> Unit,
     onMove: (TextFieldValue) -> Unit,
 ) {
+    //val lastFocusValue = remember { mutableStateOf(value.value.selection) }
     Row(
         modifier = Modifier.fillMaxWidth()
     ) {
         OutlinedTextField(
             value = value.value,
             onValueChange = {
+
+          //      lastFocusValue.value = it.selection
                 val change = (value.value.text != it.text)
                 value.value = it
                 onMove(it)
@@ -132,91 +135,5 @@ fun EditTextField(
             modifier = Modifier.fillMaxSize(),
             enabled = enabled,
             )
-    }
-}
-
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun EditTextField2(
-    title: String,
-    value: MutableState<TextFieldState>,
-    enabled: Boolean = true,
-    onChange: (CharSequence) -> Unit
-) {
-    val scrollState = rememberScrollState()
-    Row(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-//        OutlinedTextField(
-//            value = value.value,
-//            onValueChange = {
-//                val change = (value.value.text != it.text)
-//                value.value = it
-//                if (change) {
-//                    onChange(it)
-//                }
-//            },
-//            label = { Text(title) },
-//            singleLine = false,
-//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-//            modifier = Modifier.fillMaxSize().verticalScrollbar(state)
-//                .verticalScroll(state),
-//            enabled = enabled,
-//
-//            )
-
-        Row(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-
-            val textStyle = TextStyle.Default
-            val colors = TextFieldDefaults.textFieldColors()
-            val textColor = textStyle.color.takeOrElse {
-                colors.textColor(enabled).value
-            }
-
-            val mergedTextStyle = textStyle.merge(TextStyle(color = textColor))
-//            if (title.isNotEmpty()) {
-//                Text(
-//                    text = title,
-//                    fontSize = LocalTextStyle.current.fontSize,
-//                    modifier = if (titleWeight) Modifier
-//                        .align(Alignment.CenterVertically)
-//                        .weight(1f) else Modifier,
-//                    softWrap = false,
-//                    textAlign = TextAlign.End,
-//                )
-//                Spacer(Modifier.width(4.dp))
-//            }
-
-            BasicTextField2(
-                state = value.value,
-//                onValueChange = { v ->
-//                    onChange(v)
-//                },
-                modifier = Modifier.fillMaxSize()
-                    .weight(1f)
-                    //   .background(colors.backgroundColor(enabled).value)
-                    .background(ThemeColors.inputBackgroundState(enabled), ThemeColors.inputShape)
-                    .border(1.dp, ThemeColors.inputBorder, ThemeColors.inputShape).padding(4.dp),
-                enabled = enabled,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                textStyle = mergedTextStyle,
-                cursorBrush = SolidColor(MaterialTheme.colors.primary),
-                scrollState = scrollState,
-                interactionSource = remember { MutableInteractionSource() },
-                inputTransformation = InputTransformation.byValue { current, proposed ->
-                    onChange(proposed)
-                    proposed
-                }
-            )
-            VerticalScrollbar(
-                modifier = Modifier.fillMaxHeight().width(8.dp),
-                adapter = rememberScrollbarAdapter(
-                    scrollState = scrollState
-                )
-            )
-        }
     }
 }

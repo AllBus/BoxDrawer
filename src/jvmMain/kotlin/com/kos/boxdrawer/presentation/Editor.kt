@@ -81,7 +81,7 @@ fun Editor(
                         EditPosition(expanded, commands, moveListener,editorListener, onPickSelected)
                     }
 
-                    if (expanded.value == false) {
+                    if (!expanded.value) {
                         Text(
                             text = helpText,
                             modifier = Modifier.width(350.dp).wrapContentHeight(),

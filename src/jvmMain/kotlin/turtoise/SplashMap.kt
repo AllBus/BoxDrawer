@@ -6,6 +6,7 @@ import com.kos.boxdrawer.detal.splash.SplashApproximationPolar
 import com.kos.boxdrawer.detal.splash.SplashApproximationUser
 import com.kos.boxdrawer.detal.splash.SplashArc
 import com.kos.boxdrawer.detal.splash.SplashCircle
+import com.kos.boxdrawer.detal.splash.SplashCrop
 import com.kos.boxdrawer.detal.splash.SplashDiamond
 import com.kos.boxdrawer.detal.splash.SplashDiamondAngle
 import com.kos.boxdrawer.detal.splash.SplashDrop
@@ -36,6 +37,7 @@ object SplashMap {
         SplashApproximationUser(),
         SplashArc(),
         SplashCircle(),
+        SplashCrop(),
         SplashDiamond(),
         SplashDiamondAngle(),
         SplashDrop(),

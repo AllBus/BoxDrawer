@@ -22,7 +22,7 @@ enum class CropSide {
     BOTTOM,
 }
 
-abstract class Figure : IFigure {
+abstract class Figure : IFigure, ICropable {
     override val count: Int
         get() = 1
 
@@ -42,8 +42,7 @@ abstract class Figure : IFigure {
 
     abstract fun transform(matrix: Matrix): Figure
 
-    abstract fun crop(k: Double, cropSide: CropSide): Figure
-
+    abstract override fun crop(k: Double, cropSide: CropSide): Figure
 }
 
 interface Approximation {

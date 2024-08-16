@@ -14,23 +14,29 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.DropdownMenuState
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Create
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kos.boxdrawe.icons.Expand
+import com.kos.boxdrawe.icons.IconCopy
 import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericTextFieldState
@@ -48,6 +54,7 @@ import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.boxdrawer.template.TemplateItemAngle
 import com.kos.boxdrawer.template.TemplateItemSize
+import kotlinx.coroutines.launch
 import turtoise.help.HelpData
 import turtoise.help.HelpInfoCommand
 import turtoise.help.TortoiseHelpInfo
@@ -63,7 +70,8 @@ fun EditPosition(
     editorListener: TemplateFigureBuilderListener,
     onPickSelected: () -> String
 ) {
-
+    val coroutineScope = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
     Column(
     ) {
         Row {
@@ -167,9 +175,20 @@ fun EditPosition(
                     editorListener.getForm()
                 }
                 CommandModel(form, editorListener)
-                RunButton("Готово") {
-                    editorListener.insertFigure()
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RunButton("Готово") {
+                        editorListener.insertFigure()
+                    }
+                    ImageButton(
+                        icon = IconCopy.rememberContentCopy(),
+                        onClick = {
+                            coroutineScope.launch {
+                                clipboardManager.setText(AnnotatedString(editorListener.currentText.value))
+                            }
+                        }
+                    )
                 }
+                Text(editorListener.currentText.value)
             }
         }
     }

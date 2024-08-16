@@ -1,11 +1,14 @@
 package com.kos.boxdrawer.presentation
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.onClick
 import androidx.compose.foundation.selection.triStateToggleable
+import androidx.compose.material.ripple
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -35,7 +38,7 @@ import kotlinx.coroutines.flow.map
 import vectors.Vec2
 import kotlin.math.min
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun Rotate3dController(
     modifier: Modifier,
@@ -55,13 +58,18 @@ fun Rotate3dController(
         val startZ = remember { mutableStateOf(dropValueZ.value) }
         Canvas(modifier = Modifier.size(64.dp).clickable(
             interactionSource = interactionSource,
-            indication = rememberRipple(
+            indication = ripple(
                 bounded = false,
                 radius = 32.dp
             ),
             enabled = true,
             role = Role.Button,
-            onClick = {  }
+            onClick = {
+                dropValueX.value = 0f
+                dropValueY.value = 0f
+                dropValueZ.value = 0f
+                onRotateDisplay()
+            },
         ).onPointerEvent(PointerEventType.Press) {
 
             val sz = this.size

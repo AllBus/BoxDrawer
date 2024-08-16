@@ -52,36 +52,34 @@ class FigureCircle(
                 if (center.x + radius <= k) return FigureEmpty
                 if (center.x - radius >= k) return this
                 val s = (k - center.x) / radius
-                val s1 = acos(s) * 180 / PI
-                val s2 = -s1
-                calculateSegments(s2, s1)
+                val s1 = acos(s) /* 0 .. PI */
+
+                calculateSegments(-acos(s), 2*s1)
             }
 
             CropSide.RIGHT -> {
                 if (center.x + radius <= k) return this
                 if (center.x - radius >= k) return FigureEmpty
                 val s = (k - center.x) / radius
-                val s1 = acos(s) * 180 / PI
-                val s2 = -s1
-                calculateSegments(s1, s2)
+                val s1 = acos(s)
+                calculateSegments(s1, 2*(PI - s1))
             }
 
             CropSide.TOP -> {
-                if (center.y + radius <= k) return FigureEmpty
-                if (center.y - radius >= k) return this
+                if (center.y + radius <= k) return this
+                if (center.y - radius >= k) return FigureEmpty
+
                 val s = (center.y - k) / radius
-                val s1 = asin(s) * 180 / PI
-                val s2 = 180.0 - s1
-                calculateSegments(s1, s2)
+                val s1 = -asin(s) /* -PI/2 .. PI/2 */
+                calculateSegments(PI- s1, PI  + 2*s1)
             }
 
             CropSide.BOTTOM -> {
-                if (center.y + radius <= k) return this
-                if (center.y - radius >= k) return FigureEmpty
+                if (center.y + radius <= k) return FigureEmpty
+                if (center.y - radius >= k) return this
                 val s = (center.y - k) / radius
-                val s1 = asin(s) * 180 / PI
-                val s2 = 180.0 - s1
-                calculateSegments(s2, s1)
+                val s1 = -asin(s) /* -PI/2 .. PI/2 */
+                calculateSegments(s1, (PI - 2*s1))
             }
         }
     }
