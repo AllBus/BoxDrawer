@@ -161,7 +161,6 @@ open class FigureEllipse(
         )
     }
 
-
     override fun draw(g: IFigureGraphics) {
         g.save()
         g.rotate(rotation * 180 / PI, center)
