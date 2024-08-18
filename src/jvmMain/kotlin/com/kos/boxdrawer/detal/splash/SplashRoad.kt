@@ -47,7 +47,7 @@ class SplashRoad() : ISplashDetail {
                 "s",
                 "Стиль [s|a|p|d]",
                 FIELD_SELECTOR,
-                listOf("s", "a", "p", "d")
+                listOf("s", "a", "p", "d", "n")
             ),
             HelpDataParam(
                 "l",
@@ -113,7 +113,7 @@ class SplashRoad() : ISplashDetail {
             TPArg.block(
                 TPArg("w", FIELD_1),
                 TPArg("h", FIELD_1),
-                TPArg.selector("s",  listOf("s", "a", "p", "d")),
+                TPArg.selector("s",  listOf("s", "a", "p", "d", "n")),
                 TPArg.noneOrOne("b",
                     TPArg.block(
                         TPArg.oneVariant("v",
@@ -123,9 +123,9 @@ class SplashRoad() : ISplashDetail {
                             TPArg.item("r",
                                 TPArg("r",FIELD_2)
                             ),
-//                            TPArg.item("t",
-//                                TPArg("t",FIELD_2)
-//                            ),
+                            TPArg.item("t",
+                                TPArg("t",FIELD_2)
+                            ),
                         )
                     )
                 ),

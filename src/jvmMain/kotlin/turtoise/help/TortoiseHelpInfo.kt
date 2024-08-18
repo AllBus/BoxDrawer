@@ -63,21 +63,22 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         HelpDataParam("y", "координата по оси y", FIELD_NONE),
                     )
                 )
-            )
+            ),
+            "Задать текущую координату"
         ),
         helpName(
             TortoiseCommand.TURTOISE_ANGLE,
             listOf(
                 HelpData(
                     "a",
-                    "повернуть направление движение на угол a",
+                    "повернуть направление движения на угол a",
                     listOf(
                         HelpDataParam("a", "угол в градусах", FIELD_ANGLE),
                     )
                 ),
                 HelpData(
                     "x y",
-                    "повернуть направление движение в направлении радиус-вектора x y",
+                    "повернуть направление движенияе в направлении радиус-вектора x y",
                     listOf(
                         HelpDataParam("x", "координата радиус-вектора по оси x", FIELD_2),
                         HelpDataParam(
@@ -87,21 +88,22 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         ),
                     )
                 )
-            )
+            ),
+            "Задать направление движения"
         ),
         helpName(
             TortoiseCommand.TURTOISE_ANGLE_ADD,
             listOf(
                 HelpData(
                     "a",
-                    "повернуть направление движение относительно текущего угла на угол a",
+                    "повернуть направление движения относительно текущего угла на угол a",
                     listOf(
                         HelpDataParam("a", "угол в градусах", FIELD_ANGLE),
                     )
                 ),
                 HelpData(
                     "x y",
-                    "повернуть направление движение относительно текущего угла на направлении радиус-вектора x y",
+                    "повернуть направление движения относительно текущего угла на направлении радиус-вектора x y",
                     listOf(
                         HelpDataParam("x", "координата радиус-вектора по оси x", FIELD_2),
                         HelpDataParam(
@@ -111,7 +113,8 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         ),
                     )
                 )
-            )
+            ),
+            "Повернуть направление движения относительно текущего угла"
         ),
         helpName(
             TortoiseCommand.TURTOISE_SPLIT,
@@ -123,7 +126,7 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
         ),
         helpName(
             TortoiseCommand.TURTOISE_CLOSE,
-            "закрыть многоугольник"
+            "Закрыть многоугольник"
         ),
         helpName(
             TortoiseCommand.TURTOISE_LINE,
@@ -164,7 +167,8 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         )
                     )
                 )
-            )
+            ),
+            "Полилиния по координатам"
         ),
         helpName(
             TortoiseCommand.TURTOISE_LINE_WITH_ANGLE,
@@ -591,24 +595,24 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
             listOf(
                 HelpData(
                     "(path) (edge delta*) (f) + ",
-                    "Рисовать фигуры f в доль кривой path",
+                    "Рисовать фигуры f вдоль кривой path",
                     listOf(
                         HelpDataParam(
                             "path",
-                            "Путь в доль которого рисуем фигуры", FIELD_FIGURE
+                            "Путь вдоль которого рисуем фигуры", FIELD_FIGURE
                         ),
                         HelpDataParam(
                             "edge",
-                            "Номер стороны в путь path начинается с 0",
+                            "Номер стороны в пути path начинается с 0",
                             FIELD_INT
                         ),
                         HelpDataParam(
                             "delta",
-                            "расстояние от начала линии в дмапазоне от 0 до 1 (конец линии).\n Может бть несколько"
+                            "расстояние от начала линии в диапазоне от 0 до 1 (конец линии).\n Может быть несколько"
                         ),
                         HelpDataParam(
                             "f",
-                            "Фигура рисуемая в указанной позиции (здаётся по правилам рисования фигур)",
+                            "Фигура рисуемая в указанной позиции (задаётся по правилам рисования фигур)",
                             FIELD_FIGURE
                         ),
                     ),
@@ -619,7 +623,8 @@ class TortoiseHelpInfo : SimpleHelpInfo() {
                         TPArg.figure("f"),
                     )
                 ),
-            )
+            ),
+            "Расположить фигуры вдоль кривой"
         ),
 
         helpName(

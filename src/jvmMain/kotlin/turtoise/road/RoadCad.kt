@@ -17,6 +17,7 @@ import com.kos.figure.composition.FigureTranslateWithRotate
 import turtoise.BlockTortoiseReader
 import turtoise.DrawerSettings
 import turtoise.DrawingParam
+import turtoise.FigureCreator
 import turtoise.LineInfo
 import turtoise.TortoiseFigureExtractor
 import turtoise.ZigConstructor
@@ -189,7 +190,7 @@ object RoadCad {
                     zigFigure = if (small) drawInfo.szigFigure else drawInfo.zigFigure,
                     lineInfo = li,
                     zigReverseFigure = if (small) drawInfo.szigReverseFigure else drawInfo.zigReverseFigure,
-                    leftUps =rp.ups?.left,
+                    leftUps = rp.ups?.left,
                     rightUps = rp.ups?.right,
                 )
             )
@@ -312,6 +313,25 @@ object RoadCad {
         return FigurePolyline(line.points.reversed() + p2, close = true)
     }
 
+    fun createOutline(line: List<Vec2>, roadUp: RoadUp): IFigure {
+        if (line.size<2)
+            return FigureEmpty
+        if (line.first()!= line.last()) {
+            val p2 = FigurePolyline(line).duplicationAtNormal(roadUp.height).points
+
+            return FigureList(
+                listOf(
+                    FigureLine( line.first(), p2.first()),
+                    FigureCreator.roundedLine(p2, roadUp.radius),
+                    FigureLine(p2.last(), line.last()),
+                )
+            )
+        } else {
+            val p2 = FigurePolyline(line).duplicationAtNormal(roadUp.height).points
+            return FigureCreator.roundedLine(p2, roadUp.radius)
+        }
+    }
+
     fun build(
         line: FigurePolyline,
         rp: RoadProperties,
@@ -359,15 +379,15 @@ object RoadCad {
             return FigureEmpty
         }
 
-        val tta = Vec2(0.0, bh * 3+2+(rp.ups?.right?.height?:0.0))
+        val tta = Vec2(0.0, bh * 3 + 2 + (rp.ups?.right?.height ?: 0.0))
 
         if (!line.isClose() && rp.startHeight > 0.0) {
+            //Добавляем нижний участок
             result += FigureLine(Vec2.Zero, lpoints.first())
             val pl = lpoints.last()
 
-            result += FigureLine(pl, Vec2(pl.x, 0.0))
-
-            result += ZigConstructor.zigZag(
+            val fleft = FigureLine(pl, Vec2(pl.x, 0.0))
+            val fbottom = ZigConstructor.zigZag(
                 origin = Vec2(pl.x, 0.0),
                 width = pl.x,
                 zig = drawInfo.ziIn,
@@ -378,14 +398,25 @@ object RoadCad {
             )
 
 
+            result += fleft
+            result += fbottom
+
+            rp.ups?.top?.let { topup ->
+                result.outline += FigureLine(lpoints.last(), Vec2(lpoints.last().x, 0.0))
+                result.outline += fbottom
+                result.outline += FigureLine(Vec2(lpoints.first().x, 0.0), lpoints.first())
+            }
+
+
             result.topFigures += FigureCoord(
                 Vec2.Zero,
                 rotateX = 90.0,
                 rotateY = 0.0,
-                sdvig = tta + Vec2(0.0,rp.width+
-                        (rp.ups?.right?.height?:0.0)+
-                        (rp.ups?.left?.height?:0.0)+2)
-                ,
+                sdvig = tta + Vec2(
+                    0.0, rp.width +
+                            (rp.ups?.right?.height ?: 0.0) +
+                            (rp.ups?.left?.height ?: 0.0) + 2
+                ),
                 createTopBar(
                     tp1 = Vec2(0.0, h),
                     tp2 = Vec2(0.0, rp.width - h),
@@ -397,10 +428,12 @@ object RoadCad {
                     zigFigure = drawInfo.zigFigure,
                     lineInfo = drawInfo.lineInfo,
                     zigReverseFigure = drawInfo.zigReverseFigure,
-                    leftUps=  rp.ups?.left,
+                    leftUps = rp.ups?.left,
                     rightUps = rp.ups?.right,
                 )
             )
+
+
         }
 
         var delp = 0.0
@@ -474,6 +507,11 @@ object RoadCad {
             pl = cur
         }
 
+        rp.ups?.top?.let { topup ->
+            val ou = createOutline(lpoints, topup)
+            result.outline += ou
+        }
+
         val sdvig = Vec2(0.0, delp)
         val tops = outTopFigures(result, rp, sdvig)
 
@@ -537,40 +575,55 @@ object RoadCad {
         delp: Double,
         delm: Double
     ): List<IFigure> {
-        val backEdge = FigureList(
-            if (rp.isHoleLine)
-                result.holeResult.toList()
-            else
-                result.result.toList()
-        )
+        val topup = rp.ups?.top != null
+
+
+        val backEdge = if (topup) {
+            FigureList(
+                listOf(
+                    result.holeResult.toList(),
+                    result.outline
+                ).flatten()
+            )
+        } else {
+
+            FigureList(
+                if (rp.isHoleLine)
+                    result.holeResult.toList()
+                else
+                    result.result.toList()
+            )
+        }
+
+        val frontEdge = if (topup) backEdge else FigureList(result.result.toList())
 
         val res = when (rp.outStyle) {
             EOutVariant.COLUMN -> {
-                result.result.toList() +
-                        FigureTranslate(
-                            Vec2(0.0, -(delp - delm + rp.startHeight)),
-                            backEdge
-                        )
+                listOf(
+                    frontEdge,
+                    FigureTranslate(
+                        Vec2(0.0, -(delp - delm + rp.startHeight)),
+                        backEdge
+                    )
+                )
             }
 
             EOutVariant.ALTERNATIVE -> {
-
-                result.result.toList() +
-                        FigureTranslate(
-                            Vec2(0.0, -(delp - delm + rp.startHeight)),
-                            backEdge
-                        )
+                listOf(
+                    frontEdge,
+                    FigureTranslate(
+                        Vec2(0.0, -(delp - delm + rp.startHeight)),
+                        backEdge
+                    )
+                )
 
             }
 
             EOutVariant.VOLUME -> {
                 val mm = Matrix()
                 mm.translate(0.0.toFloat(), 0.0.toFloat(), rp.width.toFloat())
-
                 listOf(
-                    FigureList(
-                        result.result.toList()
-                    ),
+                    frontEdge,
                     Figure3dTransform(
                         vectors.Matrix(mm.values),
                         backEdge
@@ -599,7 +652,15 @@ object RoadCad {
             add(FigureLine(tp1, tp2))
             leftElementKrishka(leftUps, zigzagInfo, tp2, width, drawingParam, lineInfo, zigFigure)
             add(FigureLine(tp3, tp4))
-            rightElementKrishka(rightUps, zigzagInfo, tp1, width, drawingParam, lineInfo, zigReverseFigure)
+            rightElementKrishka(
+                rightUps,
+                zigzagInfo,
+                tp1,
+                width,
+                drawingParam,
+                lineInfo,
+                zigReverseFigure
+            )
         }
     )
 
@@ -638,7 +699,7 @@ object RoadCad {
             )
             if (r > 0.0) {
                 add(
-                    FigureCircle(tt + Vec2(width - r, rhe), r, outSide = true, -PI/2, PI/2)
+                    FigureCircle(tt + Vec2(width - r, rhe), r, outSide = true, -PI / 2, PI / 2)
                 )
             }
             add(
@@ -649,7 +710,7 @@ object RoadCad {
             )
             if (r > 0.0) {
                 add(
-                    FigureCircle(tt + Vec2(r, rhe), r, true, PI, PI/2)
+                    FigureCircle(tt + Vec2(r, rhe), r, true, PI, PI / 2)
                 )
             }
             add(
@@ -719,7 +780,7 @@ object RoadCad {
             )
             if (r > 0.0) {
                 add(
-                    FigureCircle(tt + Vec2(r, rhe), r, true, PI/2, PI/2)
+                    FigureCircle(tt + Vec2(r, rhe), r, true, PI / 2, PI / 2)
                 )
             }
             add(
@@ -730,7 +791,7 @@ object RoadCad {
             )
             if (r > 0.0) {
                 add(
-                    FigureCircle(tt + Vec2(width - r, rhe), r, true, 0.0, PI/2)
+                    FigureCircle(tt + Vec2(width - r, rhe), r, true, 0.0, PI / 2)
                 )
             }
             add(
@@ -837,6 +898,7 @@ class RoadCadResult {
     val holeResult = mutableListOf<IFigure>()
     val topFigures = mutableListOf<FigureCoord>()
     val simFigures = mutableListOf<IFigure>()
+    val outline = mutableListOf<IFigure>()
 
     operator fun plusAssign(figure: IFigure) {
         result += figure

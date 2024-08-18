@@ -334,7 +334,15 @@ object FigureCreator {
             FigureEmpty
     }
 
-    fun roundedLine(points: List<Vec2>, radius: List<Double>): IFigure {
+    fun roundedLine(points: List<Vec2>, radius: Double): IFigure {
+        if (points.size < 2)
+            return FigureEmpty
+        if (radius <=0.0)
+            return FigurePolyline(points)
+        return roundedLine(points, emptyList(), radius)
+    }
+
+    fun roundedLine(points: List<Vec2>, radius: List<Double>, defaultRadius: Double = 0.0): IFigure {
         if (points.size < 2)
             return FigureEmpty
 
@@ -344,7 +352,7 @@ object FigureCreator {
 
         val isClose = points.first() == points.last()
         if (isClose) {
-            val r = radius.getOrNull(points.size - 2) ?: 0.0
+            val r = radius.getOrNull(points.size - 2) ?: defaultRadius
             val a = points[points.size - 2]
             val b = points[0]
             val c = points[1]
@@ -358,7 +366,7 @@ object FigureCreator {
             val a = points[i + 0]
             val b = points[i + 1]
             val c = points[i + 2]
-            val r = radius.getOrNull(i) ?: 0.0
+            val r = radius.getOrNull(i) ?: defaultRadius
             if (r != 0.0) {
 
                 val ci: CornerInfo = calculateRadius(a, b, c, r)

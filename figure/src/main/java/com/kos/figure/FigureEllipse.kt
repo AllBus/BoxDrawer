@@ -1,6 +1,7 @@
 package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.collections.FigureList
 import com.kos.figure.collections.FigurePath
 import vectors.BoundingRectangle
 import vectors.Matrix
@@ -189,9 +190,15 @@ open class FigureEllipse(
 
 
         val a = 0.0
-        val b = bb- aa
-        val c = cc - aa
+        val b = bb- aa // 0 .. 2*PI
+        val c = cc - aa // - 2*PI  .. 2*PI
         val d = dd - aa
+
+        val c2 = c + 2*PI
+        val d2 = d + 2*PI
+
+        val c3 = c - 2*PI
+        val d3 = d - 2*PI
 
         val mis = max(a ,c)
         val mas = min(b, d)
@@ -208,72 +215,43 @@ open class FigureEllipse(
             )
         } else FigureEmpty
 
-        return fa
+        val mis2 = max(a ,c2)
+        val mas2 = min(b, d2)
 
-        val da = d-a
-        val ca = c-a
-        val ba = b-a
-
-        val db = d-b
-        val cb = c-b
-        val dc = d-c
-
-
-
-        //Todo:
-        var ls = segmentSweepAngle
-        if (ls < 0) ls += PI*2
-        var le = sweep - start
-        if (le < 0) le += PI*2
-        var stS = normalizeAngle(segmentSweepAngle)
-        var stE = stS + ls
-        val atS = normalizeAngle(start)
-        val atE = atS + le
-
-        if (stS == stE) {
-            return create(
+        val fb = if (mis2<mas2){
+            create(
                 center = center,
                 radius = radius,
                 radiusMinor = radiusMinor,
                 rotation = rotation,
                 outSide = outSide,
-                segmentStart = atS,
-                segmentSweep = atE,
+                segmentStart = mis2+aa-2*PI,
+                segmentSweep = mas2-mis2,
             )
-        } else {
-            if (atS == atE)
-                return this
+        } else FigureEmpty
 
-            if (atS >= stE || atE <= stS)
-                return FigureEmpty;
+        val mis3 = max(a ,c3)
+        val mas3 = min(b, d3)
 
-            val f1 = create(
+        val fc = if (mis3<mas3){
+            create(
                 center = center,
                 radius = radius,
                 radiusMinor = radiusMinor,
                 rotation = rotation,
                 outSide = outSide,
-                segmentStart = normalizeAngle(max(atS, stS)),
-                segmentSweep = normalizeAngle(min(atE, stE)),
+                segmentStart = mis3+aa+2*PI,
+                segmentSweep = mas3-mis3,
             )
+        } else FigureEmpty
 
-            stS += PI*2;
-            stE += PI*2;
 
-            if (atS >= stE || atE <= stS)
-                return f1;
+        val l = listOf(fa, fb, fc).filter { it != FigureEmpty }
 
-            val f2 = create(
-                center = center,
-                radius = radius,
-                radiusMinor = radiusMinor,
-                rotation = rotation,
-                outSide = outSide,
-                segmentStart = normalizeAngle(max(atS, stS)),
-                segmentSweep = normalizeAngle(min(atE, stE)),
-            )
-
-            return FigurePath(listOf(f1, f2))
+        return when (l.size){
+            1 -> l[0]
+            2 -> FigurePath(l)
+            else -> FigureEmpty
         }
     }
 
