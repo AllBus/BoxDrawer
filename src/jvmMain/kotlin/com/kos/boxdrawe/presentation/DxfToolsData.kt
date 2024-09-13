@@ -123,13 +123,13 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
 
 
 
-    val scaleEdit = NumericTextFieldState(1.0, minValue = 0.000001) { redrawBox() }
+    val scaleEdit = NumericTextFieldState(1.0, digits = 3, minValue = 0.000001) { redrawBox() }
     val scaleColor = NumericTextFieldState(0.0, digits = 0, maxValue = 1000.0) { redrawBox() }
 
-    val scaleEdit2 = NumericTextFieldState(1.0, minValue = 0.000001) { redrawBox() }
+    val scaleEdit2 = NumericTextFieldState(1.0, digits = 3, minValue = 0.000001) { redrawBox() }
     val scaleColor2 = NumericTextFieldState(0.0, digits = 0, maxValue = 1000.0) { redrawBox() }
 
-    val scaleEdit3 = NumericTextFieldState(1.0, minValue = 0.000001) { redrawBox() }
+    val scaleEdit3 = NumericTextFieldState(1.0, digits = 3, minValue = 0.000001) { redrawBox() }
     val scaleColor3 = NumericTextFieldState(0.0, digits = 0, maxValue = 1000.0) { redrawBox() }
 
     //   val selectedItem = MutableStateFlow<List<IFigure>>(emptyList())

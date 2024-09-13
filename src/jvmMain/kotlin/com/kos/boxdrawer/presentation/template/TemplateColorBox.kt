@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jsevy.jdxf.DXFColor
 import com.kos.boxdrawe.widget.Label
+import com.kos.boxdrawe.widget.LabelLight
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
@@ -48,7 +49,7 @@ fun TemplateColorBox(
     val hoverColor = remember { mutableIntStateOf(0) }
     Column {
         Row() {
-            Label(
+            LabelLight(
                 form.title,
                 singleLine = true,
                 modifier = Modifier.align(alignment = Alignment.CenterVertically)

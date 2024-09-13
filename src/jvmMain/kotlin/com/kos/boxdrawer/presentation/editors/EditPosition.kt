@@ -9,10 +9,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.DropdownMenuState
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Create
@@ -39,9 +42,11 @@ import com.kos.boxdrawe.icons.Expand
 import com.kos.boxdrawe.icons.IconCopy
 import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.Label
+import com.kos.boxdrawe.widget.LabelLight
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawe.widget.RunButton
+import com.kos.boxdrawe.widget.verticalScrollbar
 import com.kos.boxdrawer.presentation.template.TemplateAngleBox
 import com.kos.boxdrawer.presentation.template.TemplateBox
 import com.kos.boxdrawer.presentation.template.TemplateSimpleItemBox
@@ -75,7 +80,7 @@ fun EditPosition(
     Column(
     ) {
         Row {
-            Label("Добавить перемещение", modifier = Modifier.clickable {
+            LabelLight("Добавить перемещение", modifier = Modifier.clickable {
                 expanded.value = !expanded.value
             })
             ImageButton(
@@ -87,7 +92,7 @@ fun EditPosition(
             }
         }
         AnimatedVisibility(expanded.value) {
-            Column {
+            Column(modifier = Modifier) {
                 TemplateSizeBox(
                     TemplateItemSize("x y", "xy"),
                     null, "xy",
@@ -113,7 +118,7 @@ fun EditPosition(
                     }
 
                 Row {
-                    Label(
+                    LabelLight(
                         "Вставить значение",
                         modifier = Modifier.onPointerEvent(PointerEventType.Press) {
                             val t = onPickSelected()
@@ -141,7 +146,7 @@ fun EditPosition(
                         selectedFigure.value.name
                     ) + AnnotatedString(" ") +
                             AnnotatedString(
-                                selectedCommandData.value.argument.orEmpty(),
+                                selectedCommandData.value.argument,
                                 SpanStyle(
                                     color = Color(0xFF26A530),
                                 )
@@ -163,7 +168,10 @@ fun EditPosition(
                     AnnotatedString(selectedCommandData.value.description),
                     modifier = Modifier.fillMaxWidth().clickable {
                         subMenuExpand.status = DropdownMenuState.Status.Open(Offset.Zero)
-                    }.padding(4.dp)
+                    }.padding(4.dp),
+                    fontSize = 10.sp,
+                    lineHeight = 12.sp,
+                    color = MaterialTheme.colors.onPrimary
                 )
 
                 DropDownMenuCommandData(selectedFigure.value, subMenuExpand) { f, d ->

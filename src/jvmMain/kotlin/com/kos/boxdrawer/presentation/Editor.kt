@@ -3,16 +3,20 @@ package com.kos.boxdrawer.presentation
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.foundation.ScrollbarAdapter
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -69,16 +73,29 @@ fun Editor(
                 Column(
                     Modifier.align(Alignment.TopStart).padding(8.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(end = 4.dp).width(200.dp).verticalScroll(
-                            rememberScrollState()
-                        ).background(
-                            color = ThemeColors.editorBackground,
-                            shape = ThemeColors.figureListItemShape
-                        ),
+                    val state = rememberScrollState()
+                    Box {
+                        Column(
+                            modifier = Modifier.padding(end = 4.dp).width(200.dp)
+                                .verticalScroll(state)
+                                .background(
+                                    color = ThemeColors.editorBackground,
+                                    shape = ThemeColors.figureListItemShape
+                                ),
 
-                        ) {
-                        EditPosition(expanded, commands, moveListener,editorListener, onPickSelected)
+                            ) {
+                            EditPosition(
+                                expanded,
+                                commands,
+                                moveListener,
+                                editorListener,
+                                onPickSelected
+                            )
+                        }
+                        VerticalScrollbar(
+                            adapter = rememberScrollbarAdapter(state),
+                            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+                        )
                     }
 
                     if (!expanded.value) {

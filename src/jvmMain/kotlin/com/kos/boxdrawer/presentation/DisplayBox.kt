@@ -16,6 +16,7 @@ import com.kos.boxdrawer.presentation.display.DisplayTortoise
 import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
+import vectors.MazeSolver
 
 @Composable
 fun DisplayBox(
@@ -110,6 +111,10 @@ fun DisplayBox(
                 }
             )
         }
+        BoxDrawerToolBar.TAB_IMAGE -> {
+            MazeSolver()
+            //DisplayImageProcessing(vm.value.imageData)
+        }
 
 
         else -> {
@@ -117,3 +122,4 @@ fun DisplayBox(
         }
     }
 }
+

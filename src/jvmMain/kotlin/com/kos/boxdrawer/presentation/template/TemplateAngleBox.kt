@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.CircleBox
 import com.kos.boxdrawe.widget.Label
+import com.kos.boxdrawe.widget.LabelLight
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
@@ -40,7 +41,7 @@ fun TemplateAngleBox(
             }
         }
     Row() {
-        Label(
+        LabelLight(
             form.title,
             singleLine = true,
             modifier = Modifier.align(alignment = Alignment.CenterVertically)

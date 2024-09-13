@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.template.MULTI_NAME
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.ImageButton
+import com.kos.boxdrawe.widget.LabelLight
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateItemMulti
 import turtoise.parser.TortoiseParserStackItem
@@ -53,7 +54,7 @@ fun TemplateItemMultiBox(
 
         Row() {
             if (form.title.isNotEmpty()) {
-                Text(form.title, modifier = Modifier.weight(1f))
+                LabelLight(form.title, modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(form.argumentName, color = ThemeColors.templateArgumentColor)
             } else {

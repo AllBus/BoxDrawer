@@ -1,14 +1,10 @@
 package com.kos.figure.complex
 
-import com.kos.drawer.IFigureGraphics
-import com.kos.figure.CropSide
 import com.kos.figure.Figure
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
-import com.kos.figure.collections.FigurePath
 import vectors.BoundingRectangle
-import vectors.Matrix
 import vectors.Vec2
 import kotlin.math.PI
 
@@ -33,29 +29,29 @@ class FigureRoundRect(
             right: Double,
             bottom: Double,
             radius: Double,
-        ): List<IEdge> {
+        ): List<PathElement> {
 
-            val edges: List<Edge> = listOf(
-                Edge(
+            val edges: List<Segment> = listOf(
+                Segment(
                     Vec2(left + radius, top),
                     Vec2(right - radius, top),
                 ),
 
-                Edge(
+                Segment(
                     Vec2(right, top + radius),
                     Vec2(right, bottom - radius),
                 ),
-                Edge(
+                Segment(
                     Vec2(right - radius, bottom),
                     Vec2(left + radius, bottom),
                 ),
-                Edge(
+                Segment(
                     Vec2(left, bottom - radius),
                     Vec2(left, top + radius),
                 ),
             )
 
-            val corners: List<Corner> = listOf(
+            val corners: List<Arc> = listOf(
                 Corner(
                     Vec2(left + radius, top + radius),
                     radius,

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,6 +29,7 @@ import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.InputText
 import com.kos.boxdrawe.widget.Label
+import com.kos.boxdrawe.widget.LabelLight
 import kotlinx.coroutines.launch
 
 @Composable
@@ -53,7 +55,7 @@ fun CalculatorBox(modifier: Modifier, line: CalculatorData) {
                 )
             }
             val calculator = line.result.collectAsState("")
-            Label("Посчитать")
+            LabelLight("Посчитать")
             InputText(
                 value = text.value,
                 onValueChange = {
@@ -75,7 +77,10 @@ fun CalculatorBox(modifier: Modifier, line: CalculatorData) {
                         }
                     }
                 )
-                Text(calculator.value, modifier.weight(1f, true))
+                Text(
+                    text = calculator.value,
+                    modifier = modifier.weight(1f, true),
+                    color = MaterialTheme.colors.onPrimary)
             }
         }
     }

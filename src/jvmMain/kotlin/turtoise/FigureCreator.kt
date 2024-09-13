@@ -10,11 +10,12 @@ import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.algorithms.FigureBezierList
 import com.kos.figure.collections.FigureList
+import com.kos.figure.complex.Arc
 import com.kos.figure.complex.Corner
-import com.kos.figure.complex.Edge
+import com.kos.figure.complex.Segment
 import com.kos.figure.complex.FigureRound
 import com.kos.figure.complex.FigureRoundRect
-import com.kos.figure.complex.IEdge
+import com.kos.figure.complex.PathElement
 import com.kos.figure.composition.FigureArray
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureComposition
@@ -348,7 +349,7 @@ object FigureCreator {
 
         var predPoint = points[0]
         var lastPoint = points.last()
-        val result = mutableListOf<IEdge>()
+        val result = mutableListOf<PathElement>()
 
         val isClose = points.first() == points.last()
         if (isClose) {
@@ -372,26 +373,26 @@ object FigureCreator {
                 val ci: CornerInfo = calculateRadius(a, b, c, r)
 
                 if (ci.nonZero) {
-                    result += Edge(predPoint, ci.ab)
+                    result += Segment(predPoint, ci.ab)
                     result += corner(ci, r)
                 } else {
-                    result += Edge(predPoint, ci.ab)
+                    result += Segment(predPoint, ci.ab)
                 }
                 predPoint = ci.bc
 
             } else {
-                result += Edge(predPoint, b)
+                result += Segment(predPoint, b)
                 predPoint = b
             }
         }
-        result.add(Edge(predPoint, lastPoint))
+        result.add(Segment(predPoint, lastPoint))
         return FigureRound(result.toList())
     }
 
     fun corner(
         info: CornerInfo,
         r: Double,
-    ): Corner {
+    ): Arc {
         val startAngle = atan2((info.ab.y - info.o.y), (info.ab.x - info.o.x))
         val endAngle = atan2((info.bc.y - info.o.y), (info.bc.x - info.o.x))
 
@@ -550,6 +551,10 @@ object FigureCreator {
             else -> figure
         }
 
+    }
+
+    fun figurePoint(point: Vec2, ds: DrawerSettings): IFigure {
+        return FigureCircle(point,ds.boardWeight, true)
     }
 }
 

@@ -15,7 +15,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 open class FigureRound(
-    val segments: List<IEdge>
+    val segments: List<PathElement>
 ) : Figure(), IFigurePath {
 
     override val count: Int
@@ -124,11 +124,12 @@ open class FigureRound(
     }
 
     override fun print(): String {
-        return "/round ${
+        return "/path ${
             segments.joinToString(" ") { e ->
                 when (e) {
-                    is Edge -> "${e.start} ${e.end}"
-                    is Corner -> "${e.radius}"
+                    is Segment -> "(${e.start} ${e.end})"
+                    is Arc -> "(${e.center} ${e.radius} ${e.startAngle} ${e.endAngle})"
+                    is BezierCurve -> "(${e.p0} ${e.p1} ${e.p2} ${e.p3})"
                     else -> ""
                 }
             }
@@ -178,15 +179,16 @@ open class FigureRound(
         // Todo: Нужно правильно вычислить пересечения
         val sg = segments.mapNotNull { s ->
             when (s) {
-                is Edge -> s.translate(s.positionInPath(0.0).normal * h)
-                is Corner -> if (s.radius + h < 0) null else Corner(
+                is Segment -> s.translate(s.positionInPath(0.0).normal * h)
+                is Arc -> if (s.radius + h < 0) null else Corner(
                     center = s.center,
                     radius = s.radius + h*s.normalSign,
                     outSide = s.outSide,
                     startAngle = s.startAngle,
                     sweepAngle = s.sweepAngle
                 )
-
+                //Todo:Нужно правильно вычислить перемещение
+                is BezierCurve -> s.translate(s.positionInPath(0.0).normal * h)
                 else -> null
             }
         }

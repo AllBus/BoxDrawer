@@ -100,11 +100,13 @@ kotlin {
             implementation("io.github.windedge.table:table-m3:0.1.8")
             implementation("com.github.Allbus:ArithmeticDiff:1.1.1")
             implementation( "com.google.dagger:dagger:2.51.1")
-            compileOnly( "com.google.dagger:dagger-compiler:2.51.1")
+            implementation("org.apache.commons:commons-geometry-euclidean:1.0")
+            implementation("org.apache.commons:commons-math3:3.6.1")
             compileOnly( "com.google.dagger:dagger-compiler:2.51.1")
             implementation(project(":figure"))
             implementation(project(":dxfprinter"))
             implementation(project(":commonMain"))
+
          //   implementation("androidx.compose.material3:material3:1.2.1")
 
             // implementation("com.groupdocs:groupdocs-comparison:22.3")

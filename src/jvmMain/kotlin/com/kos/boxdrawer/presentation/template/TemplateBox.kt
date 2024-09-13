@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.ImageButton
+import com.kos.boxdrawe.widget.LabelLight
 import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
@@ -88,7 +89,7 @@ fun TemplateFormBox(
     ) {
         if (form.title.isNotEmpty()) {
             Row() {
-                Text(form.title, modifier = Modifier.weight(1f))
+                LabelLight(form.title, modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.width(4.dp))
               //  Text(form.argumentName, color = ThemeColors.templateArgumentColor)
             }

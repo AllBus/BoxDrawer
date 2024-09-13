@@ -19,6 +19,18 @@ fun Label(text:String, modifier : Modifier = Modifier, singleLine: Boolean = tru
     )
 }
 
+@Composable
+fun LabelLight(text:String, modifier : Modifier = Modifier, singleLine: Boolean = true) {
+    Text(
+        text = AnnotatedString(text),
+        modifier = modifier,
+        style = MaterialTheme.typography.subtitle2,
+        maxLines = if (singleLine) 1 else Int.MAX_VALUE,
+        overflow = TextOverflow.Clip,
+        color = MaterialTheme.colors.onPrimary
+    )
+}
+
 
 @Preview
 @Composable

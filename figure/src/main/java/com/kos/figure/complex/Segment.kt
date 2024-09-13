@@ -8,10 +8,10 @@ import com.kos.figure.IFigurePath
 import com.kos.figure.PointWithNormal
 import vectors.Vec2
 
-data class Edge(
+data class Segment(
     override val start: Vec2,
     override val end: Vec2,
-) : IEdge {
+) : PathElement {
     override fun toFigure(): FigureLine {
         return FigureLine(start, end)
     }
@@ -41,8 +41,8 @@ data class Edge(
         )
     }
 
-    override fun translate(xy: Vec2): Edge {
-        return Edge(start = start+xy, end = end+xy)
+    override fun translate(xy: Vec2): Segment {
+        return Segment(start = start+xy, end = end+xy)
     }
 
     override fun draw(g: IFigureGraphics) {

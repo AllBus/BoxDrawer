@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.kos.boxdrawe.widget.Label
+import com.kos.boxdrawe.widget.LabelLight
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.NumericUpDownLine
@@ -35,7 +36,7 @@ fun TemplateIntBox(
             }
         }
     Row() {
-        Label(
+        LabelLight(
             form.title,
             singleLine = true,
             modifier = Modifier.align(alignment = Alignment.CenterVertically)

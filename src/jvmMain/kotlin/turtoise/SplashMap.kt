@@ -11,12 +11,15 @@ import com.kos.boxdrawer.detal.splash.SplashDiamond
 import com.kos.boxdrawer.detal.splash.SplashDiamondAngle
 import com.kos.boxdrawer.detal.splash.SplashDrop
 import com.kos.boxdrawer.detal.splash.SplashEdit
+import com.kos.boxdrawer.detal.splash.SplashFigureAtPoints
+import com.kos.boxdrawer.detal.splash.SplashIntersectFigures
 import com.kos.boxdrawer.detal.splash.SplashIntersectLine
 import com.kos.boxdrawer.detal.splash.SplashLine
 import com.kos.boxdrawer.detal.splash.SplashNormal
 import com.kos.boxdrawer.detal.splash.SplashObruch
 import com.kos.boxdrawer.detal.splash.SplashParallelogram
 import com.kos.boxdrawer.detal.splash.SplashPaz
+import com.kos.boxdrawer.detal.splash.SplashPoint
 import com.kos.boxdrawer.detal.splash.SplashPrintCoordinate
 import com.kos.boxdrawer.detal.splash.SplashRoad
 import com.kos.boxdrawer.detal.splash.SplashRound
@@ -59,6 +62,9 @@ object SplashMap {
         SplashText(),
         SplashTooth(),
         SplashToothReverse(),
+        SplashPoint(),
+        SplashFigureAtPoints(),
+        SplashIntersectFigures()
     )
     val splashes: Map<String, ISplashDetail> = splashList.flatMap { s -> s.names.map { it to s } }.toMap()
 }

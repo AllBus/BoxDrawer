@@ -106,6 +106,7 @@ object RoadCad {
         drawInfo: RoadDrawInfo,
         state: RoadCadState,
         longLine: RoadLongLineState,
+        index:Int,
         outResult: RoadCadResult
     ): RoadCadState {
         val pl = pred
@@ -118,15 +119,15 @@ object RoadCad {
         else
             boardUstup(next, cur, pl, boardHeight)
 
-        val dl = state.drl
-        val dr = if (longLine.longEnd) uss else drrv
+        val dropLeft = state.drl
+        val dropRight = if (longLine.longEnd) uss else drrv
 
         outResult.simFigures += FigurePolyline(
             listOf(
-                Vec2(dl, 0.0),
-                Vec2(w - dr, 0.0),
-                Vec2(w - dr, drawInfo.zihe.height),
-                Vec2(dl, drawInfo.zihe.height)
+                Vec2(dropLeft, 0.0),
+                Vec2(w - dropRight, 0.0),
+                Vec2(w - dropRight, drawInfo.zihe.height),
+                Vec2(dropLeft, drawInfo.zihe.height)
             ).map { it.rotate(a) + pl }, true
         )
 
@@ -158,19 +159,21 @@ object RoadCad {
             lineInfo = drawInfo.lineInfo,
         )
 
-        val h = drawInfo.zihe.height
+        val zighe = drawInfo.zihe.height
+        val hei = rp.heights?.heightAt(index)?:RoadHeightList.ZERO_HEIGHT
+        val he2 = rp.heights?.heightAt(index+1)?:RoadHeightList.ZERO_HEIGHT
         //Верхняя крышка
-        val wd = w - dr
-        val wrr = w - dl - dr
-        val tp1 = Vec2(dl, h)
-        val tp2 = Vec2(dl, rp.width - h)
-        val tp4 = Vec2(wd, h)
-        val tp3 = Vec2(wd, rp.width - h)
+        val wd = w - dropRight
+        val wrr = w - dropLeft - dropRight
+        val tp1 = Vec2(dropLeft, zighe-hei.right.height)
+        val tp2 = Vec2(dropLeft, rp.width - zighe+hei.left.height)
+        val tp4 = Vec2(wd, zighe-he2.right.height)
+        val tp3 = Vec2(wd, rp.width - zighe+he2.left.height)
 
         // Уменьшить отступы на ширину на которую уменьшина ширина крышки
         val li = LineInfo(
-            drawInfo.lineInfo.startOffset - dl,
-            drawInfo.lineInfo.endOffset - dr
+            drawInfo.lineInfo.startOffset - dropLeft,
+            drawInfo.lineInfo.endOffset - dropRight
         )
 
         outResult.topFigures +=
@@ -319,6 +322,7 @@ object RoadCad {
         if (line.first()!= line.last()) {
             val p2 = FigurePolyline(line).duplicationAtNormal(roadUp.height).points
 
+
             return FigureList(
                 listOf(
                     FigureLine( line.first(), p2.first()),
@@ -400,6 +404,13 @@ object RoadCad {
 
             result += fleft
             result += fbottom
+
+            val hei = rp.heights
+            if (hei!= null){
+                lpoints.drop(1).dropLast(1).forEach { p ->
+                    result+=FigureLine(p,  Vec2(p.x, 0.0))
+                }
+            }
 
             rp.ups?.top?.let { topup ->
                 result.outline += FigureLine(lpoints.last(), Vec2(lpoints.last().x, 0.0))
@@ -486,13 +497,14 @@ object RoadCad {
             }
 
             state = createKrishka(
-                pl, cur, np,
-                h,
-                rp,
-                drawInfo,
-                state,
-                longLine,
-                result
+                pred = pl, cur = cur, next = np,
+                boardHeight = h,
+                rp = rp,
+                drawInfo = drawInfo,
+                state = state,
+                longLine = longLine,
+                index = i,
+                outResult = result
             )
 
             if (isFirst) {
@@ -650,16 +662,26 @@ object RoadCad {
     ) = FigureList(
         buildList {
             add(FigureLine(tp1, tp2))
-            leftElementKrishka(leftUps, zigzagInfo, tp2, width, drawingParam, lineInfo, zigFigure)
+            leftElementKrishka(
+                leftUps = leftUps,
+                zigzagInfo = zigzagInfo,
+                startPoint = tp2,
+                endPoint = tp3,
+                wi = width,
+                drawingParam = drawingParam,
+                lineInfo = lineInfo,
+                zigFigure = zigFigure
+            )
             add(FigureLine(tp3, tp4))
             rightElementKrishka(
-                rightUps,
-                zigzagInfo,
-                tp1,
-                width,
-                drawingParam,
-                lineInfo,
-                zigReverseFigure
+                rightUps = rightUps,
+                zigzagInfo = zigzagInfo,
+                startPoint = tp4,
+                endPoint = tp1,
+                width = width,
+                drawingParam = drawingParam,
+                lineInfo = lineInfo,
+                zigReverseFigure = zigReverseFigure
             )
         }
     )
@@ -667,15 +689,16 @@ object RoadCad {
     private fun MutableList<IFigure>.rightElementKrishka(
         rightUps: RoadUp?,
         zigzagInfo: ZigzagInfo,
-        tp1: Vec2,
+        startPoint: Vec2,
+        endPoint: Vec2,
         width: Double,
         drawingParam: DrawingParam,
         lineInfo: LineInfo,
         zigReverseFigure: IFigure
     ) {
+        val tt = endPoint
         if (rightUps != null) {
             val verticalFigure = verticaliReverse(zigzagInfo)
-            val tt = tp1
             val r = abs(rightUps.radius)
             val rhe = -(zigzagInfo.height + rightUps.height - r)
 
@@ -733,7 +756,7 @@ object RoadCad {
         } else {
             add(
                 ZigConstructor.zigZag(
-                    origin = tp1,
+                    origin = tt,
                     width = width,
                     zig = zigzagInfo,
                     angle = 0.0,
@@ -748,15 +771,19 @@ object RoadCad {
     private fun MutableList<IFigure>.leftElementKrishka(
         leftUps: RoadUp?,
         zigzagInfo: ZigzagInfo,
-        tp2: Vec2,
-        width: Double,
+        startPoint: Vec2,
+        endPoint: Vec2,
+        wi: Double,
         drawingParam: DrawingParam,
         lineInfo: LineInfo,
         zigFigure: IFigure
     ) {
+        val tt = startPoint
+        val angle = Vec2.angle(startPoint, endPoint)
+        val width = Vec2.distance(startPoint, endPoint)
         if (leftUps != null) {
             val verticalFigure = verticali(zigzagInfo)
-            val tt = tp2
+
             val r = abs(leftUps.radius)
             val rhe = zigzagInfo.height + leftUps.height - r
 
@@ -765,7 +792,7 @@ object RoadCad {
                     origin = tt,
                     width = width,
                     zig = zigzagInfo,
-                    angle = 0.0,
+                    angle = angle,
                     param = drawingParam,
                     zigzagFigure = verticalFigure,
                     lineInfo = lineInfo,
@@ -805,7 +832,7 @@ object RoadCad {
                     origin = tt + Vec2(0.0, zigzagInfo.height),
                     width = width,
                     zig = zigzagInfo,
-                    angle = 0.0,
+                    angle = angle,
                     param = drawingParam,
                     zigzagFigure = FigureEmpty,
                     lineInfo = lineInfo,
@@ -814,10 +841,10 @@ object RoadCad {
         } else {
             add(
                 ZigConstructor.zigZag(
-                    origin = tp2,
+                    origin = tt,
                     width = width,
                     zig = zigzagInfo,
-                    angle = 0.0,
+                    angle = angle,
                     param = drawingParam,
                     zigzagFigure = zigFigure,
                     lineInfo = lineInfo,

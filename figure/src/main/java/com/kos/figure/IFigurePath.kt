@@ -22,6 +22,7 @@ interface IFigurePath {
     fun rect(): BoundingRectangle
     fun toFigure(): Figure
     fun transform(matrix: Matrix): IFigurePath
+
 }
 
 class PointWithNormal(

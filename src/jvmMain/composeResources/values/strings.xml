@@ -65,6 +65,7 @@
     <string name="tabReka">Река</string>
     <string name="tabDxf">DXF</string>
     <string name="tabSettings">Инструменты</string>
+    <string name="tabImage">Картинка</string>
     <string name="bezierNewLineButton">Создать линию</string>
     <string name="bezierFigureLabel">Разместить вдоль линии</string>
     <string name="bezierFigureDistance">Расстояние</string>

@@ -59,6 +59,10 @@ data class RetroData(
     val bc: Boolean?,
 )
 
+fun main2(args: Array<String>){
+    vectors.maina()
+}
+
 fun main(args: Array<String>) {
     Calculator.init()
   //  val component = DaggerAppComponent.builder()
@@ -87,3 +91,4 @@ fun main(args: Array<String>) {
         }
     }
 }
+

@@ -1,6 +1,5 @@
 package com.kos.boxdrawe.presentation
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.text.AnnotatedString
@@ -8,33 +7,20 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.getTextAfterSelection
 import androidx.compose.ui.text.input.getTextBeforeSelection
-import com.kos.ariphmetica.Calculator
-import com.kos.ariphmetica.math.algorithms.Calculate
-import com.kos.ariphmetica.math.algorithms.CopositeFunction
-import com.kos.ariphmetica.math.algorithms.OutExpression
-import com.kos.ariphmetica.math.algorithms.Replacement
-import com.kos.ariphmetica.math.terms.Digit
-import com.kos.ariphmetica.math.terms.MathConst
 import com.kos.boxdrawe.presentation.template.TemplateFigureEditor
 import com.kos.boxdrawe.presentation.template.TemplateMoveListener
-import com.kos.boxdrawer.template.TemplateFigureBuilderListener
-import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
-import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
+import sun.awt.geom.AreaOp.IntOp
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
-import turtoise.help.HelpData
-import turtoise.help.HelpInfoCommand
-import turtoise.parser.TPArg
-import turtoise.parser.TPArg.SOME
-import turtoise.parser.TPArg.VARIANT
 import turtoise.parser.TortoiseParser
-import turtoise.parser.TortoiseParserStackBlock
-import turtoise.parser.TortoiseParserStackItem
+import java.awt.geom.Area
+import java.awt.geom.Path2D
 import java.io.File
+import kotlin.math.min
 
 class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
     val figures = MutableStateFlow<IFigure>(FigureEmpty)
@@ -81,14 +67,6 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
         text.value = tv.copy(annotatedString = ntext, selection = TextRange(tv.selection.end+ins.length))
     }
 
-    override suspend fun createFigure(): IFigure {
-        val tv =  text.value
-        val lines =  tv.getTextBeforeSelection(tv.text.length).text + insertedText.value + tv.getTextAfterSelection(
-            tv.text.length
-        ).text  // text.value.text
-        return create(lines)
-    }
-
     suspend fun printCommand(): String {
         val lines = text.value.text
 //        Calculator.init()
@@ -122,13 +100,26 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
     }
 
     fun createTortoise() {
-        val tv =  text.value
-        val lines =  tv.getTextBeforeSelection(tv.text.length).text + insertedText.value + tv.getTextAfterSelection(
-            tv.text.length
-        ).text  // text.value.text
+        val lines = tortoiseLines()
         val dr = create(lines)
         fig.value = dr
         figures.value = dr
+    }
+
+    override suspend fun createFigure(): IFigure {
+        val lines = tortoiseLines()
+        return create(lines)
+    }
+
+    private fun tortoiseLines(): String {
+        val tv = text.value
+        tv.text.subSequence(tv.selection.min, tv.text.length)
+
+        val lines =
+            tv.getTextBeforeSelection(tv.text.length).text +
+            insertedText.value +
+            tv.text.subSequence(tv.selection.min, tv.text.length)  // text.value.text
+        return lines
     }
 
     private fun create(lines: String): IFigure {
@@ -139,15 +130,9 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
         return dr
     }
 
-//    fun drop(dropValueX: Float, dropValueY: Float) {
-//        figures.value =
-//            fig.value.crop(dropValueX.toDouble(), CropSide.BOTTOM)
-//                .crop(dropValueY.toDouble(), CropSide.LEFT)
-//    }
-
-
     private val helpSeparator = charArrayOf('\n', '\r')
     private val helpSpaceSeparator = charArrayOf('\n', '\r', ' ', '\t', ';', '@')
+
     fun findHelp(text: String, selection: TextRange) {
         val s = selection.min
         val p = text.lastIndexOfAny(helpSeparator, s) + 1

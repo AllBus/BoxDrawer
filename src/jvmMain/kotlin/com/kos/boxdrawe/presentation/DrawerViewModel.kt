@@ -29,6 +29,7 @@ class DrawerViewModel {
     val bublik = BublikData(tools)
     val rectData = RekaToolsData(tools)
     val dxfData = DxfToolsData(tools)
+    val imageData =  ImageToolsData(tools)
     val tabIndex = MutableStateFlow(BoxDrawerToolBar.TAB_TORTOISE)
     val calculatorData = CalculatorData()
 

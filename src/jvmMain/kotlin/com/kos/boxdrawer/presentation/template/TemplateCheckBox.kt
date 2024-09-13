@@ -3,6 +3,7 @@ package com.kos.boxdrawer.presentation.template
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.onClick
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,7 @@ fun TemplateCheckBox(
                 onClick = { onChecked(!checkState.value) }
             ),
             textAlign = TextAlign.Start,
+            color = MaterialTheme.colors.onPrimary,
             softWrap = false,
         )
         CheckboxK(

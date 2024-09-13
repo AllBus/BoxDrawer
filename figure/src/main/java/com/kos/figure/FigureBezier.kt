@@ -214,7 +214,6 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApprox
             val sec = Vec2.casteljauLine(points.subList(0, 4), a, b)
             return FigureBezier(sec)
         }else {
-            // Todo: Добавить для многосегментной линии
             val e1 = edgeAtPosition(startMM)
             val e2 = edgeAtPosition(endMM)
 

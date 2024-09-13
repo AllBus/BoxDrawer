@@ -1,6 +1,7 @@
 package com.kos.boxdrawe.widget
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -9,32 +10,41 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.icons.Expand
 import com.kos.boxdrawe.presentation.DrawerViewModel
+import com.kos.boxdrawe.presentation.ImageToolsData
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BEZIER
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BUBLIK
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_DXF
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
+import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_IMAGE
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_REKA
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
 import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TOOLS
@@ -61,12 +71,15 @@ import com.kos.boxdrawer.generated.resources.tabBezier
 import com.kos.boxdrawer.generated.resources.tabBox
 import com.kos.boxdrawer.generated.resources.tabDxf
 import com.kos.boxdrawer.generated.resources.tabGrid
+import com.kos.boxdrawer.generated.resources.tabImage
 import com.kos.boxdrawer.generated.resources.tabReka
 import com.kos.boxdrawer.generated.resources.tabSettings
 import com.kos.boxdrawer.generated.resources.tabSoft
 import com.kos.boxdrawer.generated.resources.tabTor
 import com.kos.boxdrawer.generated.resources.tabTortoise
+import com.kos.boxdrawer.generated.resources.toolsButtonOpenFile
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
@@ -81,64 +94,86 @@ val TabContentModifier =
 @Composable
 fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
     val tabIndex = vm.value.tabIndex.collectAsState()
+    val expandTools = remember{ mutableStateOf(true) }
 
     Column(
         Modifier.fillMaxWidth().wrapContentHeight().background(Color.White)
     ) {
-        ScrollableTabRow(
-            selectedTabIndex = tabIndex.value,
-            modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp),
+        Row(
+            modifier = Modifier
         ) {
-            tabs.forEach { info ->
-                Tab(
-                    selected = info.id == tabIndex.value,
-                    onClick = { vm.value.tabIndex.value = info.id },
-                    modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp),
-                    text = { Text(stringResource(info.title)) },
-                )
+            Box(
+                modifier = Modifier.background(MaterialTheme.colors.primarySurface).height(48.dp)
+            ){
+                val icon = if (expandTools.value)
+                    Expand.rememberExpandLess()
+                else
+                    Expand.rememberExpandMore()
+
+                ImageButton(
+                    icon ,
+                    modifier = Modifier,
+                    enabled = true) {
+                    expandTools.value = !expandTools.value
+                }
+            }
+            ScrollableTabRow(
+                selectedTabIndex = tabIndex.value,
+                modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp),
+            ) {
+                tabs.forEach { info ->
+                    Tab(
+                        selected = info.id == tabIndex.value,
+                        onClick = { vm.value.tabIndex.value = info.id },
+                        modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp),
+                        text = { Text(stringResource(info.title)) },
+                    )
+                }
             }
         }
-        Box(
-            Modifier.fillMaxWidth().height(220.dp).background(ThemeColors.tabBackground)
-        ) {
+        AnimatedVisibility(expandTools.value) {
+            Box(
+                Modifier.fillMaxWidth().height(220.dp).background(ThemeColors.tabBackground)
+            ) {
+                ToolbarContainer(
+                    tabIndex = tabIndex,
+                    content = {
+                        when (tabIndex.value) {
+                            TAB_BOX -> ToolbarForBox(vm.value.box)
+                            TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
+                            TAB_GRID -> ToolbarForGrid(vm.value.grid)
+                            TAB_SOFT -> ToolbarForSoft(vm.value.softRez)
+                            TAB_BEZIER -> ToolbarForBezier(vm.value.bezier)
+                            TAB_BUBLIK -> ToolbarForBublik(vm.value.bublik)
+                            TAB_REKA -> ToolbarForReka(vm.value.rectData)
+                            TAB_TOOLS -> ToolbarForTools(vm.value.options)
+                            TAB_DXF -> ToolbarForDxf(vm.value.dxfData)
+                            TAB_IMAGE -> ToolbarForImage(vm.value.imageData)
+                        }
+                    },
+                    actionsBlock = {
+                        AnimatedContent(
+                            targetState = tabIndex.value,
+                            transitionSpec = {
+                                fadeIn() togetherWith fadeOut()
+                            }) { targetIndex ->
+                            when (targetIndex) {
+                                TAB_BOX -> ToolbarActionForBox(vm.value.box)
+                                TAB_TORTOISE -> ToolbarActionForTortoise(vm.value.tortoise)
+                                TAB_GRID -> ToolbarActionForGrid(vm.value.grid)
+                                TAB_SOFT -> ToolbarActionForSoft(vm.value.softRez)
 
-
-            ToolbarContainer(
-                tabIndex = tabIndex,
-                content = {
-                    when (tabIndex.value) {
-                        TAB_BOX -> ToolbarForBox(vm.value.box)
-                        TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
-                        TAB_GRID -> ToolbarForGrid(vm.value.grid)
-                        TAB_SOFT -> ToolbarForSoft(vm.value.softRez)
-                        TAB_BEZIER -> ToolbarForBezier(vm.value.bezier)
-                        TAB_BUBLIK -> ToolbarForBublik(vm.value.bublik)
-                        TAB_REKA -> ToolbarForReka(vm.value.rectData)
-                        TAB_TOOLS -> ToolbarForTools(vm.value.options)
-                        TAB_DXF -> ToolbarForDxf(vm.value.dxfData)
-                    }
-                },
-                actionsBlock = {
-                    AnimatedContent(
-                        targetState = tabIndex.value,
-                        transitionSpec = {
-                            fadeIn() togetherWith fadeOut()
-                        }) { targetIndex ->
-                        when (targetIndex) {
-                            TAB_BOX -> ToolbarActionForBox(vm.value.box)
-                            TAB_TORTOISE -> ToolbarActionForTortoise(vm.value.tortoise)
-                            TAB_GRID -> ToolbarActionForGrid(vm.value.grid)
-                            TAB_SOFT -> ToolbarActionForSoft(vm.value.softRez)
-
-                            TAB_BEZIER -> ToolbarActionForBezier(vm.value.bezier)
-                            TAB_BUBLIK -> ToolbarActionForBublik(vm.value.bublik)
-                            TAB_REKA -> ToolbarActionForReka(vm.value.rectData)
-                            TAB_TOOLS -> ToolbarActionForTools(vm.value.options)
-                            TAB_DXF -> ToolbarActionForDxf(vm.value.dxfData)
+                                TAB_BEZIER -> ToolbarActionForBezier(vm.value.bezier)
+                                TAB_BUBLIK -> ToolbarActionForBublik(vm.value.bublik)
+                                TAB_REKA -> ToolbarActionForReka(vm.value.rectData)
+                                TAB_TOOLS -> ToolbarActionForTools(vm.value.options)
+                                TAB_DXF -> ToolbarActionForDxf(vm.value.dxfData)
+                                TAB_IMAGE -> ToolbarActionForImage(vm.value.imageData)
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
         }
         Box(
             Modifier.fillMaxWidth().height(1.dp).background(Color.DarkGray)
@@ -253,6 +288,8 @@ object BoxDrawerToolBar {
     const val TAB_REKA = 6
     const val TAB_DXF = 7
     const val TAB_TOOLS = 8
+    const val TAB_IMAGE = 9
+
 
     val tabs = listOf(
         TabInfo(TAB_BOX, Res.string.tabBox),
@@ -264,5 +301,6 @@ object BoxDrawerToolBar {
         TabInfo(TAB_REKA, Res.string.tabReka),
         TabInfo(TAB_DXF, Res.string.tabDxf),
         TabInfo(TAB_TOOLS, Res.string.tabSettings),
+        TabInfo(TAB_IMAGE, Res.string.tabImage),
     )
 }

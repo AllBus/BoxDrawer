@@ -1,5 +1,7 @@
 package com.kos.boxdrawe.icons
 
+import androidx.compose.material.Colors
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.materialPath
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -15,7 +17,7 @@ import androidx.compose.ui.unit.dp
 object Expand {
 
     @Composable
-    fun rememberExpandLess(): ImageVector {
+    fun rememberExpandLess(tint:Color = Color.Unspecified): ImageVector {
         return remember {
             ImageVector.Builder(
                 name = "expand_less",
@@ -49,14 +51,15 @@ object Expand {
         }
     }
     @Composable
-    fun rememberExpandMore(): ImageVector {
+    fun rememberExpandMore(tint:Color = Color.Unspecified): ImageVector {
         return remember {
             ImageVector.Builder(
                 name = "expand_more",
                 defaultWidth = 40.0.dp,
                 defaultHeight = 40.0.dp,
                 viewportWidth = 40.0f,
-                viewportHeight = 40.0f
+                viewportHeight = 40.0f,
+                tintColor = tint,
             ).apply {
                 materialPath {
                     moveTo(20f, 25f)

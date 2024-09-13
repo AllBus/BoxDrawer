@@ -68,6 +68,18 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
         return "($x $y)"
     }
 
+    fun distance(b: Vec2): Double = Vec2.distance(this, b)
+    fun lerp(b: Vec2, t:Double): Vec2 = Vec2.lerp(this, b, t)
+
+    fun normalize(): Vec2 {
+        val length = magnitude
+        return if (length != 0.0) {
+            Vec2(x / length,y / length)
+        } else {
+            this // Return the original vector if it's a zero vector
+        }
+    }
+
     companion object {
 
         val Zero = Vec2(0.0, 0.0)

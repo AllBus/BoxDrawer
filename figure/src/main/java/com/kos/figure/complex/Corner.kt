@@ -7,15 +7,43 @@ import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigurePath
 import com.kos.figure.PointWithNormal
 import vectors.Vec2
+import kotlin.math.PI
 import kotlin.math.abs
 
-data class Corner(
-    val center: Vec2,
-    val radius:Double,
-    val outSide: Boolean,
-    val startAngle:Double,
-    val sweepAngle:Double,
-):IEdge{
+
+fun Corner(
+    center: Vec2,
+    radius:Double,
+    outSide: Boolean,
+    startAngle:Double,
+    sweepAngle:Double,
+):Arc{
+    return Arc(
+        center = center,
+        radius = radius,
+        startAngle = startAngle,
+        endAngle = startAngle+sweepAngle,
+        outSide = outSide,
+    )
+}
+
+data class Arc(val center: Vec2, val radius: Double, val startAngle: Double, val endAngle: Double, val outSide: Boolean):
+    PathElement {
+
+    val sweepAngle : Double  get() = endAngle-startAngle
+
+    fun containsAngle(angle: Double): Boolean {
+        val normalizedAngle = (angle % (2 * PI) + 2 * PI) % (2 * PI) // Normalize angle to [0,2pi)
+        val normalizedStart = (startAngle % (2 * PI) + 2 * PI) % (2 * PI)
+        val normalizedEnd = (endAngle % (2 * PI) + 2 * PI) % (2 * PI)
+
+        return if (normalizedStart <= normalizedEnd) {
+            normalizedAngle in normalizedStart..normalizedEnd
+        } else {
+            normalizedAngle in normalizedStart..2 * PI || normalizedAngle in 0.0..normalizedEnd
+        }
+    }
+
     override fun toFigure():FigureCircle {
         return FigureCircle(
             center = center,
@@ -59,13 +87,13 @@ data class Corner(
         )
     }
 
-    override fun translate(xy: Vec2): Corner {
-        return Corner(
+    override fun translate(xy: Vec2): Arc {
+        return Arc(
             center = center+xy,
             radius = radius,
             outSide = outSide,
             startAngle = startAngle,
-            sweepAngle = sweepAngle
+            endAngle = endAngle
         )
     }
 
