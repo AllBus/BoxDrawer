@@ -29,10 +29,9 @@ class CadGrid {
 
     var currentX = 0
     var currentY = 0
+    var currentZ = 0
 
     var scale = 1f
-    var shiftX = 0
-    var shiftY = 0
 
     fun recreate(width: Int, height: Int) {
         val newGrid: Array<Array<GridCell>> = Array(width) { iy ->

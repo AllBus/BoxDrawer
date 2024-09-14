@@ -52,6 +52,7 @@ fun ToolbarForGrid(vm: GridData) {
     val innerRadius = remember { vm.innerRadius }
     val gridText = remember { vm.gridText }
     val figurePreview = vm.figurePreview.collectAsState()
+    val grid3d = vm.grid3d.collectAsState()
 
     Row(
         modifier = TabContentModifier
@@ -122,6 +123,12 @@ fun ToolbarForGrid(vm: GridData) {
                 checked = figurePreview.value,
                 title = stringResource(Res.string.gridCheckPreview),
                 onCheckedChange = { c -> vm.figurePreview.value = c },
+            )
+
+            RunCheckBox(
+                checked = grid3d.value,
+                title = "3D",
+                onCheckedChange = { c -> vm.grid3d.value = c },
             )
         }
         Column(
