@@ -30,7 +30,7 @@ interface ImageAction{
 
 class ImageToolsData(val tools: ITools) {
 
-    private var currentAction = MutableStateFlow<ImageAction>(ImageAction.ActionNone())
+    private val currentAction = MutableStateFlow<ImageAction>(ImageAction.ActionNone())
 
     val contrastState = NumericTextFieldState(
         50.0,

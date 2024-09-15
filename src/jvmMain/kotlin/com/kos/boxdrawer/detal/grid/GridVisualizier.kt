@@ -1,10 +1,15 @@
 package com.kos.boxdrawer.detal.grid
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.PointerMatcher
+import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Matrix
@@ -13,6 +18,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.input.pointer.PointerButton
 import com.kos.boxdrawer.presentation.display.colorList
 import org.kabeja.dxf.helpers.Edge
 import vectors.Vec2
@@ -20,24 +26,9 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Grid3DVisualizer(grid: Grid3D, rotationX: Float, rotationY: Float, rotationZ: Float, event: Int, current : Coordinates) {
-    val groups = remember(event) {   grid.findConnectedGroups()}
-    val planes = remember(groups) {
-        groups.map { g ->
-            val e = grid.convertToLongEdges(g.getExternalEdges())
-            g.kubik to grid.edgesInPlanes(e)
-        }
-    }
-
-    val edges = remember( planes) {
-        planes.map { (kubik, g) ->
-            val t = g.mapValues { (k, s) -> grid.createPolygon(s) }
-                .flatMap { (k, s) -> s }
-            PolygonGroup(kubik, t)
-        }
-    }
-
+fun Grid3DVisualizer(edges: List<PolygonGroup>, rotationX: Float, rotationY: Float, rotationZ: Float, event: Int, current : Coordinates) {
     val cur = remember(current) {
         with(current) {
             setOf(
@@ -57,7 +48,15 @@ fun Grid3DVisualizer(grid: Grid3D, rotationX: Float, rotationY: Float, rotationZ
         }
     }
 
-    Canvas(modifier = Modifier.fillMaxSize()) {
+    val move = remember {  mutableStateOf(Offset(0f, 0f)) }
+
+    Canvas(modifier = Modifier.fillMaxSize().clipToBounds().onDrag(
+        matcher = PointerMatcher.Primary + PointerMatcher.mouse(PointerButton.Secondary) +
+                PointerMatcher.mouse(PointerButton.Tertiary ) + PointerMatcher.stylus,
+        onDrag = { offset ->
+            move.value += offset
+        }
+    )) {
         val cubeSize = 50f
         val spacing = 10f
 
@@ -90,13 +89,13 @@ fun Grid3DVisualizer(grid: Grid3D, rotationX: Float, rotationY: Float, rotationZ
 //                    }
 //                }
 
-                drawLongEdges(cur, Color.Red, m)
+                drawLongEdges(cur, Color.Red, m, move.value)
 
                 for (e in edges) {
 
                     val c = colorList[e.kubik.color % colorList.size]
                     for (s in e.polygons) {
-                        drawPolygons(s, c , m)
+                        drawPolygons(s, c , m, move.value)
                     }
                 }
 
@@ -109,6 +108,7 @@ fun DrawScope.drawPolygons(
     polygon: Polygon,
     color: Color,
     rotationMatrix:Matrix,
+    move:Offset,
 ) {
 
     val cubeSize = 50f
@@ -119,13 +119,13 @@ fun DrawScope.drawPolygons(
     val rotatedVertices = polygon.vertices.map { rotatePoint(it, rotationMatrix) }
 
     val start = rotatedVertices.first()
-    val startX = start.x * (cubeSize + spacing)
-    val startY = start.y * (cubeSize + spacing)
+    val startX = start.x * (cubeSize + spacing)+move.x
+    val startY = start.y * (cubeSize + spacing)+move.y
     path.moveTo(startX, startY)
 
     for (vertex in rotatedVertices.drop(1)) {
-        val x = vertex.x * (cubeSize + spacing)
-        val y = vertex.y * (cubeSize + spacing)
+        val x = vertex.x * (cubeSize + spacing)+move.x
+        val y = vertex.y * (cubeSize + spacing)+move.y
         path.lineTo(x, y)
     }
 
@@ -149,6 +149,7 @@ fun rotatePoint(start : Coordinates, m:Matrix): Offset {
 fun DrawScope.drawLongEdges(longEdges: Set<LongEdge>,
                             color: Color,
                             m:Matrix,
+                            move: Offset,
                             ) {
     val cubeSize = 50f
 
@@ -156,10 +157,10 @@ fun DrawScope.drawLongEdges(longEdges: Set<LongEdge>,
 
         val start = edge.start
         val end = edge.end
-        val startX = (start.x*m[0,0]+ start.y*m[1,0]+start.z*m[2,0])*cubeSize  // start.x * (cubeSize + spacing)
-        val startY = (start.x*m[0,1]+ start.y*m[1,1]+start.z*m[2,1])*cubeSize
-        val endX = (end.x*m[0,0]+ end.y*m[1,0]+end.z*m[2,0])*cubeSize   // start.x * (cubeSize + spacing)
-        val endY = (end.x*m[0,1]+ end.y*m[1,1]+end.z*m[2,1])*cubeSize
+        val startX = (start.x*m[0,0]+ start.y*m[1,0]+start.z*m[2,0])*cubeSize+move.x  // start.x * (cubeSize + spacing)
+        val startY = (start.x*m[0,1]+ start.y*m[1,1]+start.z*m[2,1])*cubeSize+move.y
+        val endX = (end.x*m[0,0]+ end.y*m[1,0]+end.z*m[2,0])*cubeSize+move.x   // start.x * (cubeSize + spacing)
+        val endY = (end.x*m[0,1]+ end.y*m[1,1]+end.z*m[2,1])*cubeSize+move.y
 
         drawLine(
             color = color,

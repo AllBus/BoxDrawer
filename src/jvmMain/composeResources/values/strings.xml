@@ -97,4 +97,7 @@
     <string name="toolsDrawerSettingsHoleDropWidth">Уменьшение длины</string>
     <string name="toolsDrawerSettingsHoleDropHeight">Уменьшение высоты</string>
     <string name="toolsDrawerSettingsHoleOffset">Отступ от края</string>
+    <string name="editorCompleteBtn">Готово</string>
+    <string name="editorInsertValueBtn">Вставить значение</string>
+    <string name="editorInsertMoveLabel">Добавить перемещение</string>
 </resources>

@@ -1,5 +1,6 @@
 package turtoise.help
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.AnnotatedString
 import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.TemplateItem
@@ -36,6 +37,7 @@ class HelpInfoCommand(
     }
 }
 
+@Immutable
 class HelpData(
     val argument: String,
     val description: String,
@@ -43,6 +45,7 @@ class HelpData(
     val creator : TemplateForm? = null,
 )
 
+@Immutable
 class HelpDataParam(
     val name: String,
     val description: String,

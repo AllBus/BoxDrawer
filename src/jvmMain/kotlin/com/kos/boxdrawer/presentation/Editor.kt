@@ -47,10 +47,10 @@ import turtoise.help.HelpInfoCommand
 fun Editor(
     modifier: Modifier,
     tabIndex: State<Int>,
-    moveListener: TemplateGeneratorSimpleListener,
-    editorListener: TemplateFigureBuilderListener,
+    moveListener: State<TemplateGeneratorSimpleListener>,
+    editorListener: State<TemplateFigureBuilderListener>,
     boxListener: BoxSimpleListener,
-    helpText: AnnotatedString,
+    helpText:  State<AnnotatedString>,
     menu: State<TemplateInfo>,
     vm: State<DrawerViewModel>,
     alternative: MutableState<Boolean>,
@@ -100,7 +100,7 @@ fun Editor(
 
                     if (!expanded.value) {
                         Text(
-                            text = helpText,
+                            text = helpText.value,
                             modifier = Modifier.width(350.dp).wrapContentHeight(),
                             //          .verticalScroll(scrollState, enabled = false)
                             fontSize = 10.sp,

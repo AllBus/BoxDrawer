@@ -1,8 +1,10 @@
 package com.kos.boxdrawe.presentation.template
 
+import androidx.compose.runtime.Stable
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateMemory
 
+@Stable
 class TemplateMoveListener(val insertText: (String) -> Unit): TemplateGeneratorSimpleListener {
     val memory = TemplateMemory()
 

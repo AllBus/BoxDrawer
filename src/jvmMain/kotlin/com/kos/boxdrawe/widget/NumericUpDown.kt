@@ -21,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -281,6 +282,7 @@ fun NumericUpDownPreview() {
     }
 }
 
+@Immutable
 class NumericTextFieldState(
     value: Double,
     private val digits: Int = 2,

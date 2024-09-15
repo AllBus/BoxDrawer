@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.template
 
+import androidx.compose.runtime.Immutable
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_3
@@ -15,6 +16,7 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
 
+@Immutable
 interface TemplateItem {
     fun print(): TortoiseParserStackItem
 
@@ -23,6 +25,7 @@ interface TemplateItem {
     val argumentCount: Int
 }
 
+@Immutable
 data class TemplateForm(
     override val title: String,
     override val argumentName: String,

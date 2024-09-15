@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation.template
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateFigureBuilderListener
@@ -26,6 +27,7 @@ const val VARIANT_NAME = "^variant^"
 const val MULTI_NAME = "^multi_names^"
 const val ONE_NAME = "^one_name^"
 
+@Stable
 class TemplateFigureEditor(val insertText: (String) -> Unit, val toNextPosition:() -> Unit) : TemplateFigureBuilderListener {
     val memory = TemplateMemory()
 

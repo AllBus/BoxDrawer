@@ -52,7 +52,7 @@ fun App(vm: State<DrawerViewModel>) {
     val rotateValueZ = remember { mutableStateOf(0f) }
 
     val tabIndex = vm.value.tabIndex.collectAsState()
-    val helpText by remember { vm.value.tortoise.helpText }
+    val helpText = remember {vm.value.tortoise.helpText }
     val matrix = remember { vm.value.tortoise.matrix }
     val alternative = remember { vm.value.box.alternative }
     val stateText = remember { mutableStateOf("") }
@@ -71,8 +71,8 @@ fun App(vm: State<DrawerViewModel>) {
         vm.value.setSelected(emptyList())
     }
 
-    val tortoiseListener = vm.value.tortoise.editorListener
-    val tortoiseMoveListener = vm.value.tortoise.moveListener
+    val tortoiseListener = remember(vm.value) { mutableStateOf(vm.value.tortoise.editorListener) }
+    val tortoiseMoveListener = remember(vm.value) { mutableStateOf(vm.value.tortoise.moveListener)}
 
     MaterialTheme(
         typography = BoxTypography.typography

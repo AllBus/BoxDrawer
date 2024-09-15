@@ -1,12 +1,29 @@
 package com.kos.boxdrawer.detal.grid
 
 import androidx.compose.ui.graphics.Path
+import vectors.Vec2
 
 data class Kubik(val color: Int)
 
-data class Coordinates(val x: Int, val y: Int, val z: Int)
+data class Coordinates(val x: Int, val y: Int, val z: Int){
+    operator fun minus (other : Coordinates):Coordinates{
+        return Coordinates(x-other.x, y-other.y, z-other.z)
+    }
 
-data class Grid3D(val width: Int, val height: Int, val depth: Int) {
+    fun dotProduct(other: Coordinates): Int {
+        return x * other.x + y * other.y + z * other.z
+    }
+
+    fun crossProduct(other: Coordinates): Coordinates {
+        return Coordinates(
+            y * other.z - z * other.y,
+            z * other.x - x * other.z,
+            x * other.y - y * other.x
+        )
+    }
+}
+
+class Grid3D() {
     private val kubiks: MutableMap<Coordinates, Kubik> = mutableMapOf()
 
     operator fun get(x: Int, y: Int, z: Int): Kubik? {
@@ -24,6 +41,7 @@ data class Grid3D(val width: Int, val height: Int, val depth: Int) {
         kubiks.remove(Coordinates(x, y, z))
     }
 
+    /** Помк кубиков стоящих рядом */
     fun findConnectedGroups(): List<KubikGroup> {
         val visited = mutableSetOf<Coordinates>()
         val groups = mutableListOf<KubikGroup>()
@@ -249,55 +267,16 @@ data class Grid3D(val width: Int, val height: Int, val depth: Int) {
         return edgesByPlane
     }
 
-    fun findClosedLoops(edges: Set<LongEdge>): Set<List<Coordinates>> {
-        val loops = mutableSetOf<List<Coordinates>>()
-        val used = mutableSetOf<Coordinates>()
 
-        val edgeMap = edges.flatMap { listOf(it.start to it.end, it.end to it.start) }.groupBy { it.first }.mapValues { it.value.map { it.second }.toSet() }
 
-        for ((startPoint, connectedPoints) in edgeMap) {
-            if (startPoint in used)
-                continue
 
-            val endPoint = connectedPoints.first()
 
-            val loop = mutableListOf(startPoint, endPoint)
-            var lastPoint = endPoint
-            var pred = loop.first()
 
-            used.add(startPoint)
-            used.add(endPoint)
-            while (true) {
-                val nextPoint = edgeMap[lastPoint]?.find { it != pred }
-                if (nextPoint != null) {
-                    used.add(nextPoint)
-                    loop.add(nextPoint)
-                    pred = lastPoint
-                    lastPoint = nextPoint
 
-                    if (nextPoint == startPoint) {
-                        if (loop.size > 2) {
-                            loops.add(loop.toList())
-                        }
-                        break
-                    }
-                } else {
-                    break
-                }
-            }
-
-        }
-    //    println("loops ${loops.size}")
-        return loops
-    }
-
-    private fun LongEdge.isConnectedTo(other: LongEdge): Boolean {
-        return start == other.end || end == other.start || start == other.start || end == other.end
-    }
 
     fun createPolygon(edges:Set<LongEdge>): Set<Polygon> {
-        return findClosedLoops(edges).map { loop ->
-            Polygon(loop)
+        return GridLoops.findClosedLoops(edges).map { loop ->
+            Polygon(loop.points)
         }.toSet()
     }
 
@@ -338,57 +317,6 @@ data class KubikGroup(val kubik: Kubik, val group: Set<Coordinates>) {
 
         return externalEdges
     }
-
-
-    fun findClosedLoopsVarA(edges: Set<LongEdge>): Set<List<Coordinates>> {
-        val loops = mutableSetOf<List<Coordinates>>()
-        val usedEdges = mutableSetOf<LongEdge>()
-        val edgeMap = edges.flatMap { listOf(it.start to it, it.end to it) }.groupBy { it.first }.mapValues { it.value.map { it.second } }
-
-
-        fun findNextEdge(last: Coordinates): LongEdge? {
-            return edges.find { nextEdge ->
-                nextEdge !in usedEdges && (
-                        (nextEdge.start == last) || (nextEdge.end == last)
-                        )
-            }
-        }
-
-        for (edge in edges) {
-            if (edge !in usedEdges) {
-                val lf = edge.start
-                val loop = mutableListOf(edge.start, edge.end)
-                usedEdges.add(edge)
-
-                while (true) {
-                    val ll = loop.last()
-                    val nextEdge = findNextEdge(ll)
-
-                    if (nextEdge != null) {
-                        val ln: Coordinates = if (nextEdge.start == ll) {
-                            nextEdge.end
-                        } else {
-                            nextEdge.start
-                        }
-                        loop.add(ln)
-                        usedEdges.add(nextEdge)
-
-                        if (ln == lf) {
-                            // Closed loop found
-                            if (loop.size > 2) { // Add this condition to avoid degenerate loops
-                                loops.add(loop.toList()) // Add a copyof the loop to avoid modification issues
-                            }
-                            break
-                        }
-                    } else {
-                        // No closed loop found for this starting edge
-                        break
-                    }
-                }
-            }
-        }
-        return loops
-    }
 }
 
 enum class Direction { X, Y, Z }
@@ -416,10 +344,31 @@ data class KubikEdge(val start: Coordinates, val end: Coordinates) {
     }
 }
 
-data class LongEdge(val start: Coordinates, val end: Coordinates)
+data class LongEdge(val start: Coordinates, val end: Coordinates){
+    fun isConnectedTo(other: LongEdge): Boolean {
+        return start == other.end || end == other.start || start == other.start || end == other.end
+    }
+}
 
 enum class Plane { XY, XZ, YZ }
 
 data class Polygon(val vertices: List<Coordinates>)
 
 data class PolygonGroup(val kubik:Kubik, val polygons: List<Polygon>)
+
+data class Loop(val points: List<Coordinates>, val edges: List<LongEdge>){
+
+    fun toVec2List(): List<Vec2> {
+        val origin = points.first() // Choose the first point as the origin
+        val xAxis = (points[1] - origin)
+        val yAxis = xAxis.crossProduct(Coordinates(0, 0, 1))
+
+        val lengthXAxis = Math.sqrt((xAxis.x * xAxis.x + xAxis.y * xAxis.y + xAxis.z * xAxis.z).toDouble())
+        val lengthYAxis = Math.sqrt((yAxis.x * yAxis.x + yAxis.y* yAxis.y + yAxis.z * yAxis.z).toDouble())
+
+        return points.map { point ->
+            val v = point - origin
+            Vec2((v.dotProduct(xAxis) / lengthXAxis), (v.dotProduct(yAxis) / lengthYAxis))
+        }
+    }
+}

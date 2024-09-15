@@ -47,6 +47,10 @@ import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.verticalScrollbar
+import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.editorCompleteBtn
+import com.kos.boxdrawer.generated.resources.editorInsertMoveLabel
+import com.kos.boxdrawer.generated.resources.editorInsertValueBtn
 import com.kos.boxdrawer.presentation.template.TemplateAngleBox
 import com.kos.boxdrawer.presentation.template.TemplateBox
 import com.kos.boxdrawer.presentation.template.TemplateSimpleItemBox
@@ -60,6 +64,7 @@ import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.boxdrawer.template.TemplateItemAngle
 import com.kos.boxdrawer.template.TemplateItemSize
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 import turtoise.help.HelpData
 import turtoise.help.HelpInfoCommand
 import turtoise.help.TortoiseHelpInfo
@@ -71,8 +76,8 @@ import turtoise.parser.TortoiseParserStackBlock
 fun EditPosition(
     expanded: MutableState<Boolean>,
     commands: State<List<HelpInfoCommand>>,
-    moveListener: TemplateGeneratorSimpleListener,
-    editorListener: TemplateFigureBuilderListener,
+    moveListener: State<TemplateGeneratorSimpleListener>,
+    editorListener: State<TemplateFigureBuilderListener>,
     onPickSelected: () -> String
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -80,7 +85,7 @@ fun EditPosition(
     Column(
     ) {
         Row {
-            LabelLight("Добавить перемещение", modifier = Modifier.clickable {
+            LabelLight( stringResource(Res.string.editorInsertMoveLabel), modifier = Modifier.clickable {
                 expanded.value = !expanded.value
             })
             ImageButton(
@@ -96,12 +101,12 @@ fun EditPosition(
                 TemplateSizeBox(
                     TemplateItemSize("x y", "xy"),
                     null, "xy",
-                    moveListener,
+                    moveListener.value,
                 )
                 TemplateAngleBox(
                     TemplateItemAngle("a", "a"),
                     null, "a",
-                    moveListener,
+                    moveListener.value,
                 )
 
                 val inputPos =
@@ -110,7 +115,7 @@ fun EditPosition(
                             value = 0.0,
                             minValue = -1000000.0,
                         ) { v ->
-                            moveListener.put(
+                            moveListener.value.put(
                                 "pos",
                                 v.toString()
                             )
@@ -119,7 +124,7 @@ fun EditPosition(
 
                 Row {
                     LabelLight(
-                        "Вставить значение",
+                        stringResource(Res.string.editorInsertValueBtn),
                         modifier = Modifier.onPointerEvent(PointerEventType.Press) {
                             val t = onPickSelected()
                             inputPos.update(t)
@@ -162,7 +167,7 @@ fun EditPosition(
                     if (selectedFigure.value.data.size > 1) {
                         subMenuExpand.status = DropdownMenuState.Status.Open(Offset.Zero)
                     }
-                    editorListener.setFigure(selectedFigure.value, selectedCommandData.value)
+                    editorListener.value.setFigure(selectedFigure.value, selectedCommandData.value)
                 }
                 Text(
                     AnnotatedString(selectedCommandData.value.description),
@@ -176,27 +181,27 @@ fun EditPosition(
 
                 DropDownMenuCommandData(selectedFigure.value, subMenuExpand) { f, d ->
                     selectedCommandData.value = d
-                    editorListener.setFigure(selectedFigure.value, selectedCommandData.value)
+                    editorListener.value.setFigure(selectedFigure.value, selectedCommandData.value)
                 }
 
                 val form = remember(selectedFigure.value, selectedCommandData.value) {
-                    editorListener.getForm()
+                    editorListener.value.getForm()
                 }
                 CommandModel(form, editorListener)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    RunButton("Готово") {
-                        editorListener.insertFigure()
+                    RunButton( stringResource(Res.string.editorCompleteBtn)) {
+                        editorListener.value.insertFigure()
                     }
                     ImageButton(
                         icon = IconCopy.rememberContentCopy(),
                         onClick = {
                             coroutineScope.launch {
-                                clipboardManager.setText(AnnotatedString(editorListener.currentText.value))
+                                clipboardManager.setText(AnnotatedString(editorListener.value.currentText.value))
                             }
                         }
                     )
                 }
-                Text(editorListener.currentText.value)
+                Text(editorListener.value.currentText.value)
             }
         }
     }
@@ -205,7 +210,7 @@ fun EditPosition(
 @Composable
 fun CommandModel(
     form: TemplateForm,
-    listener: TemplateGeneratorListener
+    listener: State<TemplateGeneratorListener>
 ) {
 
     val menu = remember(form) {
@@ -221,7 +226,7 @@ fun CommandModel(
         TemplateBox(
             modifier = Modifier,
             menu,
-            listener
+            listener.value
         )
     }
 }

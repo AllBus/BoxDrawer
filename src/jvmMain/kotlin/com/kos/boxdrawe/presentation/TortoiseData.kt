@@ -35,11 +35,18 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
 
     val moveListener = TemplateMoveListener(::insertText)
 
+    private var tempe = ""
     val insertedText = mutableStateOf("")
 
     private fun temperedText(f: String) {
-        insertedText.value = f
-        createTortoise()
+        if (tempe != f ){
+            tempe = ""
+            insertedText.value = f
+            createTortoise()
+        } else{
+            insertedText.value = ""
+
+        }
     }
 
     private fun insertText(f: String) {
@@ -63,18 +70,13 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
             AnnotatedString(ins) +
             tv.getTextAfterSelection(tv.text.length)
 
+        tempe = ins
         insertedText.value = ""
         text.value = tv.copy(annotatedString = ntext, selection = TextRange(tv.selection.end+ins.length))
     }
 
     suspend fun printCommand(): String {
         val lines = text.value.text
-//        Calculator.init()
-//        val dif = Calculator.parseWithSpace(lines)
-//        val v =  Calculator.parseWithSpace("t")
-//        val n =  Calculator.parseWithSpace("3.0")
-//        val r:String = OutExpression.apply(Calculator.fullCalc(  Replacement.replace(  Calculator.fullCalc( CopositeFunction.compose(dif)), v, n))) as String
-//        return r
 
         val program = tortoiseProgram(lines)
         return program.commands.flatMap { a ->

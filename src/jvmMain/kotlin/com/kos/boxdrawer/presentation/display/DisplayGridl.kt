@@ -7,7 +7,6 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -64,6 +63,7 @@ internal val colorList = listOf(
 @Composable
 fun DisplayGrid(gridData: GridData) {
     val requester = remember { FocusRequester() }
+    val edges = gridData.gridEdges.collectAsState(emptyList())
 
     val grid = gridData.cad
 
@@ -80,7 +80,7 @@ fun DisplayGrid(gridData: GridData) {
     val dropValueX = remember { mutableStateOf(0f) }
     val dropValueY = remember { mutableStateOf(0f) }
     val dropValueZ = remember { mutableStateOf(0f) }
-    val grid3d = gridData.grid3d.collectAsState(false)
+    val grid3d = gridData.useGrid3d.collectAsState(false)
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -156,9 +156,9 @@ fun DisplayGrid(gridData: GridData) {
                             grid.currentY = Math.max(grid.currentY - 1, 0);
 
                         Key.Q ->
-                            grid.currentZ = Math.max(grid.currentZ - 1, 0);
+                            grid.currentZ = Math.max(grid.currentZ - 1, -100);
                         Key.E ->
-                            grid.currentZ = Math.max(grid.currentZ + 1, 0);
+                            grid.currentZ = Math.min(grid.currentZ + 1, 100);
                         Key.One ->
                             grid.currentColor = 1;
                         Key.Two ->
@@ -180,9 +180,15 @@ fun DisplayGrid(gridData: GridData) {
                         Key.Zero ->
                             grid.currentColor = 0;
                         Key.C ->
-                            grid.currentColor = grid.colorAt(grid.currentX, grid.currentY);
+                            if (!grid3d.value) {
+                                grid.currentColor = grid.colorAt(grid.currentX, grid.currentY)
+                            }else{
+                                grid.currentColor = gridData.grid[grid.currentX, grid.currentY, grid.currentZ]?.color?:0
+                            }
                         Key.F ->
-                            grid.fillColor(grid.currentX, grid.currentY, grid.currentColor);
+                            if (!grid3d.value) {
+                                grid.fillColor(grid.currentX, grid.currentY, grid.currentColor);
+                            }
                         Key.A ->
                             grid.currentX = Math.max(grid.currentX - 1, 0);
                         Key.D ->
@@ -211,7 +217,7 @@ fun DisplayGrid(gridData: GridData) {
 
     ){
         if (grid3d.value) {
-            Grid3DVisualizer(gridData.grid, dropValueX.value, dropValueY.value, dropValueZ.value, redrawEvent.value,
+            Grid3DVisualizer(edges.value, dropValueX.value, dropValueY.value, dropValueZ.value, redrawEvent.value,
                 Coordinates(grid.currentX, grid.currentY, grid.currentZ))
             val modifier = Modifier.align(Alignment.TopEnd).padding(end = 120.dp)
             Rotate3dController(modifier, dropValueX, dropValueY, dropValueZ, {})

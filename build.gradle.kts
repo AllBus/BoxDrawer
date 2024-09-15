@@ -63,6 +63,12 @@ kotlin {
 
     //jvm("desktop")
 
+    composeCompiler {
+        enableStrongSkippingMode = true
+        reportsDestination = layout.buildDirectory.dir("compose_compiler")
+        metricsDestination = layout.buildDirectory.dir("compose_compiler")
+    }
+
     sourceSets {
       //  val desktopMain by getting
    //     val jvmTest by getting

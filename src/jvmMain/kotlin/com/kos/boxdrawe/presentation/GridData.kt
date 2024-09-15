@@ -1,9 +1,6 @@
 package com.kos.boxdrawe.presentation
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.grid.CadGrid
 import com.kos.boxdrawer.detal.grid.Grid3D
@@ -12,8 +9,6 @@ import com.kos.boxdrawer.detal.grid.Kubik
 import com.kos.boxdrawer.detal.grid.Plane
 import com.kos.boxdrawer.detal.grid.PolygonGroup
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureLine
-import com.kos.figure.FigurePolygon
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
@@ -21,8 +16,8 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
 import vectors.Vec2
-import java.io.File
 
 class GridData(override val tools: ITools):SaveFigure {
 
@@ -39,47 +34,27 @@ class GridData(override val tools: ITools):SaveFigure {
     val innerRadius = NumericTextFieldState(0.5, 2)
     val gridText = mutableStateOf("")
     val figurePreview = MutableStateFlow(false)
-    val grid3d = MutableStateFlow(false)
-
+    val useGrid3d = MutableStateFlow(false)
 
     val redrawEvent = MutableStateFlow(0)
 
-    val grid = Grid3D(30, 30 ,30)
+    val grid = Grid3D()
 
-    init {
-        val c = Kubik(1)
-        val c2 = Kubik(2)
-        val c3= Kubik(3)
-        grid[2 ,2, 3] = c2
-        grid[2 ,6, 3] = c
-        grid[2 ,5, 3] = c
-        grid[2 ,5, 4] = c
-        grid[3 ,5, 4] = c
-        grid[2 ,5, 5] = c
-        grid[3 ,5, 5] = c
-
-        grid[6 ,6, 2] = c3
-        grid[6 ,6, 3] = c3
-        grid[6 ,7, 2] = c3
-        grid[6 ,7, 3] = c3
-        grid[6 ,8, 3] = c3
-        grid[6 ,9, 3] = c3
-        grid[7 ,7, 2] = c3
-        grid[7 ,7, 3] = c3
-        grid[8 ,7, 2] = c3
-        grid[8 ,7, 3] = c3
-        grid[9 ,7, 2] = c3
-        grid[9 ,7, 3] = c3
-        grid[8 ,7, 4] = c3
-        grid[9 ,7, 4] = c3
-        grid[9 ,7, 5] = c3
-        grid[9 ,6, 5] = c3
-        grid[9 ,5, 5] = c3
-        grid[9 ,5, 6] = c3
-        grid[9 ,8, 2] = c3
-        grid[9 ,8, 3] = c3
+    val gridPlanes = redrawEvent.map {
+        val groups =  grid.findConnectedGroups()
+        val planes = groups.map { g ->
+            val e = grid.convertToLongEdges(g.getExternalEdges())
+            g.kubik to grid.edgesInPlanes(e)
+        }
+        planes
     }
-
+    val gridEdges = gridPlanes.map{ planes ->
+        planes.map { (kubik, g) ->
+            val t = g.mapValues { (k, s) -> grid.createPolygon(s) }
+                .flatMap { (k, s) -> s }
+            PolygonGroup(kubik, t)
+        }
+    }
 
     @OptIn(FlowPreview::class)
     val figure = redrawEvent.debounce(500L).combine(figurePreview){ r, p ->
@@ -135,7 +110,7 @@ class GridData(override val tools: ITools):SaveFigure {
     }
 
     override suspend fun createFigure(): IFigure {
-        if (grid3d.value){
+        if (useGrid3d.value){
 
             val groups =  grid.findConnectedGroups()
             val planes = groups.map { g ->

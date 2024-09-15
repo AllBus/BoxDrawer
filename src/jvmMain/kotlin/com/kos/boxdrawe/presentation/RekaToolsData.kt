@@ -55,8 +55,8 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
         ))
     })
     private val rekaFigure = MutableStateFlow<IFigure>(FigureEmpty)
-    private val rekaPodoshva = MutableStateFlow<IFigure>(FigureEmpty)
-    var current: MutableStateFlow<RectBlockPosition> = MutableStateFlow(
+
+    val current: MutableStateFlow<RectBlockPosition> = MutableStateFlow(
         RectBlockPosition(
             reka = topReka.value,
             position = RekaStoronaPosition(

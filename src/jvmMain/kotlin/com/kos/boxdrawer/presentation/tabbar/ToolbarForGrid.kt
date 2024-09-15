@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -52,7 +51,7 @@ fun ToolbarForGrid(vm: GridData) {
     val innerRadius = remember { vm.innerRadius }
     val gridText = remember { vm.gridText }
     val figurePreview = vm.figurePreview.collectAsState()
-    val grid3d = vm.grid3d.collectAsState()
+    val grid3d = vm.useGrid3d.collectAsState()
 
     Row(
         modifier = TabContentModifier
@@ -128,7 +127,7 @@ fun ToolbarForGrid(vm: GridData) {
             RunCheckBox(
                 checked = grid3d.value,
                 title = "3D",
-                onCheckedChange = { c -> vm.grid3d.value = c },
+                onCheckedChange = { c -> vm.useGrid3d.value = c },
             )
         }
         Column(

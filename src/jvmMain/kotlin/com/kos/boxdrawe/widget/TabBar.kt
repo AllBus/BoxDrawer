@@ -25,6 +25,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.primarySurface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -124,7 +125,9 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                 tabs.forEach { info ->
                     Tab(
                         selected = info.id == tabIndex.value,
-                        onClick = { vm.value.tabIndex.value = info.id },
+                        onClick = { vm.value.tabIndex.value = info.id
+                                    expandTools.value = true
+                                  },
                         modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp),
                         text = { Text(stringResource(info.title)) },
                     )
@@ -278,6 +281,7 @@ class TabInfo(
     val title: StringResource,
 )
 
+@Immutable
 object BoxDrawerToolBar {
     const val TAB_BOX = 0
     const val TAB_TORTOISE = 1
@@ -289,7 +293,6 @@ object BoxDrawerToolBar {
     const val TAB_DXF = 7
     const val TAB_TOOLS = 8
     const val TAB_IMAGE = 9
-
 
     val tabs = listOf(
         TabInfo(TAB_BOX, Res.string.tabBox),
