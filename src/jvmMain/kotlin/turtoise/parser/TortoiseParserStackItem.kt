@@ -45,5 +45,27 @@ abstract class TortoiseParserStackItem(
     abstract fun arguments(): List<MemoryKey>
 
     abstract val size: Int
+
+    fun<T> map(block: (MemoryKey) -> T): List<T>{
+        val result = mutableListOf<T>()
+        for (i in 0 until size){
+            val v = get(i)
+            if (v != null){
+                result.add(block(v))
+            }
+        }
+        return result.toList()
+    }
+
+    fun<T> mapValues(block: (MemoryKey) -> T): List<T>{
+        val result = mutableListOf<T>()
+        for (i in 1 until size){
+            val v = get(i)
+            if (v != null){
+                result.add(block(v))
+            }
+        }
+        return result.toList()
+    }
 }
 

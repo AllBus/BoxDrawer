@@ -13,14 +13,60 @@ import kotlin.math.abs
 
 class FigureCubik(
     val size: Double,
-    val countX: Int,
-    val countY: Int,
+    sides: List<Int>,
     val zigInfo: ZigzagInfo,
     val cornerRadius:Double,
     val enableDrop: Boolean,
     val reverseX: Boolean,
     val reverseY: Boolean,
 ) : IFigure {
+
+    val bound : BoundingRectangle
+    val lastX : Int
+    val lastY: Int
+    val sideCounter : List<Int>
+
+    init {
+        var minX = 0
+        var maxX =0
+        var minY = 0
+        var maxY = 0
+        var x = 0
+        var y = 0
+        var isX = true
+        val preSides = if (sides.size == 1) listOf(sides[0], sides[0]) else sides
+        preSides.forEach { p ->
+            if (isX){
+                x+=p
+                if (x< minX)
+                    minX = x
+
+                if (x> maxX)
+                    maxX = x
+            }else{
+                y+=p
+                if (y<minY)
+                    minY = y
+
+                if (y>maxY)
+                    maxY = y
+            }
+            isX = !isX
+        }
+
+        bound = BoundingRectangle(
+            Vec2(minX*size, minY*size),
+            Vec2(maxX*size, maxY*size)
+        )
+        lastX = -x
+        lastY = -y
+        if (preSides.size %2 == 1) {
+            sideCounter = preSides.dropLast(1) + listOf(lastX+preSides.last(), lastY)
+        }else {
+            sideCounter = preSides + listOf(lastX, lastY)
+        }
+    }
+
     override val count: Int
         get() = 1
 
@@ -29,7 +75,7 @@ class FigureCubik(
     }
 
     override fun rect(): BoundingRectangle {
-        return BoundingRectangle(Vec2.Zero, Vec2(size*countX, size*countY))
+        return bound
     }
 
     private val zigX : IFigure by lazy {
@@ -65,6 +111,9 @@ class FigureCubik(
 
     override fun draw(g: IFigureGraphics) {
 
+
+        if (sideCounter.size<2) return
+
         val he = abs(zigInfo.height)
 
         val hex = (enableDrop && reverseX)
@@ -75,15 +124,74 @@ class FigureCubik(
 
         val s2 = (size-zigInfo.width)/2
         g.save()
-        drawX(g, s2, countX, zigX,hee, hex, hey, hey)
-        g.rotate(90.0, Vec2.Zero)
-        drawX(g, s2, countY, zigY, hee, hey, hex , hex)
-        g.rotate(90.0, Vec2.Zero)
-        drawX(g, s2, countX, zigX, hee,  hex, hey, hey)
-        g.rotate(90.0, Vec2.Zero)
-        drawX(g, s2, countY, zigY, hee, hey, hex , hex)
+
+        var isX: Boolean = true
+
+
+
+        for (si in sideCounter.indices) {
+            val s = sideCounter[si]
+            val next = sideCounter[(si+1)%sideCounter.size]
+
+            val pred = if (si==0) lastY else sideCounter[si-1 ]
+
+            if (s<0) {
+                g.rotate(180.0, Vec2.Zero)
+            }
+
+            val nextReverse = getNextReverse(isX, s, next)
+            val predReverse = getNextReverse(!isX, pred, s)
+
+            val count = abs(s)
+            if (isX) {
+                drawX(g, s2, count, zigX, hee, hex, hey, hey,nextReverse,predReverse)
+                g.rotate(90.0, Vec2.Zero)
+            } else {
+                drawX(g, s2, count, zigY, hee, hey, hex, hex,nextReverse,predReverse)
+                g.rotate(-90.0, Vec2.Zero)
+            }
+            if (s<0) {
+                g.rotate(-180.0, Vec2.Zero)
+            }
+
+            isX = !isX
+
+        }
+//
+//        if (!isX){
+//            g.rotate(-90.0, Vec2.Zero)
+//        }
+//        val nn = getNextReverse(!isX, sideCounter[sideCounter.size-1], lastX)
+//        val nextReverse =  getNextReverse(isX, lastX, lastY)
+//        val firstReverse = getNextReverse(!isX, lastY, sideCounter[0])
+//
+//        if (-lastX> 0.0){
+//            g.rotate(180.0, Vec2.Zero)
+//        }
+//        drawX(g, s2, abs(lastX), zigX, hee, hex, hey, hey, nextReverse, nn)
+//        if (-lastX> 0.0){
+//            g.rotate(180.0, Vec2.Zero)
+//        }
+//        g.rotate(90.0, Vec2.Zero)
+//        if (-lastY > 0.0){
+//            g.rotate(180.0, Vec2.Zero)
+//        }
+//        drawX(g, s2, abs(lastY), zigY, hee, hey, hex, hex, firstReverse,nextReverse)
+//
 
         g.restore()
+    }
+
+    private fun getNextReverse(isX: Boolean, s: Int, next: Int) = if (isX) {
+        when {
+            s < 0 -> next > 0
+            else -> next < 0
+        }
+    } else {
+        when {
+            s < 0 -> next < 0
+            else -> next > 0
+        }
     }
 
 //    private fun drawY(g: IFigureGraphics, s2: Double, count: Int, boardHeight: Double) {
@@ -104,17 +212,45 @@ class FigureCubik(
 //        }
 //    }
 
-    private fun drawX(g: IFigureGraphics, s2: Double, count: Int, zig:IFigure, boardHeight: Double, isDrop:Boolean, isPredDrop:Boolean, isNextDrop: Boolean) {
+    private fun drawX(g: IFigureGraphics, s2: Double, count: Int, zig:IFigure, boardHeight: Double, isDrop:Boolean, isPredDrop:Boolean, isNextDrop: Boolean, nextReverse: Boolean, predReverse:Boolean) {
 
         if (isDrop && boardHeight>0.0){
             g.translate( 0.0, boardHeight)
         }
         for (x in 0 until count) {
             val st = if (x == 0) {
-                val p =  if (isPredDrop) {
-                        boardHeight+cornerRadius
-                    }else {
+                if (predReverse){
+              //      g.drawCircle(Vec2.Zero, 3.0)
+                    if (isPredDrop) {
+                        -boardHeight
+                    }
+                    else 0.0
+                }else {
+
+                    val p = if (isPredDrop) {
+                        boardHeight + cornerRadius
+                    } else {
                         cornerRadius
+                    }
+                    p
+                }
+            } else {
+                0.0
+            }
+
+            val en = if (x == count - 1) {
+                if (nextReverse){
+                  //  g.drawCircle(Vec2(size, 0.0), 5.0)
+                    if (isNextDrop) {
+                        size + boardHeight
+                    } else {
+                        size
+                    }
+                }else {
+                    val p = if (isNextDrop) {
+                        size - cornerRadius - boardHeight
+                    } else {
+                        size - cornerRadius
                     }
 
                     if (cornerRadius > 0.0) {
@@ -122,22 +258,14 @@ class FigureCubik(
                             Vec2(p, cornerRadius),
                             cornerRadius,
                             cornerRadius,
-                            PI,
+                            -PI / 2,
                             PI / 2
                         )
                     }
                     p
-
-            } else {
-                0.0
-            }
-
-            val en = if (x == count - 1) {
-                if (isNextDrop) {
-                    size - cornerRadius-boardHeight
-                } else {
-                    size - cornerRadius
                 }
+
+
             } else {
                 size
             }
@@ -164,7 +292,7 @@ class FigureCubik(
     }
 
     override fun print(): String {
-        return "/cube $size $countX $countY (${zigInfo.commandLine()})"
+        return "/cube $size (${sideCounter.joinToString(" ")}) (${zigInfo.commandLine()})"
     }
 
     override fun collection(): List<IFigure> {
@@ -172,7 +300,7 @@ class FigureCubik(
     }
 
     override fun name(): String {
-        return "cube $size $countX $countY"
+        return "кубик $size ${sideCounter.size}"
     }
 
     override val transform: Matrix
