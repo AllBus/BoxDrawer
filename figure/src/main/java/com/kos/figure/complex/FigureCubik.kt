@@ -12,9 +12,14 @@ import kotlin.math.PI
 import kotlin.math.abs
 
 class FigureCubik(
-    val size: Double, val countX: Int, val countY: Int, val zigInfo: ZigzagInfo,
+    val size: Double,
+    val countX: Int,
+    val countY: Int,
+    val zigInfo: ZigzagInfo,
     val cornerRadius:Double,
-    val  enableDrop: Boolean
+    val enableDrop: Boolean,
+    val reverseX: Boolean,
+    val reverseY: Boolean,
 ) : IFigure {
     override val count: Int
         get() = 1
@@ -28,21 +33,16 @@ class FigureCubik(
     }
 
     private val zigX : IFigure by lazy {
-        val s2 = (size-zigInfo.dropedWidth)/2
-        val s1 = (size-zigInfo.width)/2
-            FigurePolyline(listOf(
-                Vec2(s1, 0.0),
-                Vec2(s2, 0.0),
-                Vec2(s2, zigInfo.height),
-                Vec2(size - s2, zigInfo.height),
-                Vec2(size - s2, 0.0),
-                Vec2(size- s1, 0.0),
-            ))
+        if (reverseX) creteFigureReverse() else createFigure()
     }
 
     private val zigY : IFigure by lazy {
+        if (reverseY) creteFigureReverse() else createFigure()
+    }
+
+    fun creteFigureReverse():IFigure{
         val s2 = (size-zigInfo.width)/2
-        FigurePolyline(listOf(
+        return FigurePolyline(listOf(
             Vec2( s2,0.0),
             Vec2( s2, -zigInfo.height),
             Vec2(  size - s2, -zigInfo.height),
@@ -50,12 +50,26 @@ class FigureCubik(
         ))
     }
 
+    fun createFigure():Figure{
+        val s2 = (size-zigInfo.dropedWidth)/2
+        val s1 = (size-zigInfo.width)/2
+        return FigurePolyline(listOf(
+            Vec2(s1, 0.0),
+            Vec2(s2, 0.0),
+            Vec2(s2, zigInfo.height),
+            Vec2(size - s2, zigInfo.height),
+            Vec2(size - s2, 0.0),
+            Vec2(size- s1, 0.0),
+        ))
+    }
+
     override fun draw(g: IFigureGraphics) {
 
-        val he =zigInfo.height
+        val he = abs(zigInfo.height)
 
-        val hey = (enableDrop && he>0.0)
-        val hex = (enableDrop && -he>0.0)
+        val hex = (enableDrop && reverseX)
+        val hey = (enableDrop && reverseY)
+
 
         val hee = if (enableDrop) abs(he) else 0.0
 

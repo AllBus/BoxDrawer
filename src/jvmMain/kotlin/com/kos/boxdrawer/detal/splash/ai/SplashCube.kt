@@ -42,8 +42,10 @@ class SplashCube : ISplashDetail {
         val zigInfo = BlockTortoiseReader.readZigInfo(com.takeBlock(4),memory, figureExtractor.ds)
         val cornerRadius = abs(com[5, 0.0, memory])
         val hasDrop = com[6, 1.0, memory] > 0.0
+        val reverseX = com[7, 0.0, memory] > 0.0
+        val reverseY = com[8, 1.0, memory] > 0.0
 
-       builder.addProduct(FigureCubik(size, countX, countY, zigInfo, cornerRadius, hasDrop))
+       builder.addProduct(FigureCubik(size, countX, countY, zigInfo, cornerRadius, hasDrop, reverseX, reverseY))
 
     }
 }
