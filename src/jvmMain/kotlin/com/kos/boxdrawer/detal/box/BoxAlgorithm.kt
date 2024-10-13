@@ -6,13 +6,11 @@ import turtoise.TortoiseAlgorithm
 import turtoise.TortoiseBlock
 import turtoise.TortoiseFigureExtractor
 import turtoise.parser.TortoiseParser.asDouble
-import turtoise.TortoiseRunner
 import turtoise.TortoiseState
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
-import turtoise.ZigzagInfo
+import com.kos.tortoise.ZigzagInfo
 import turtoise.memory.keys.MemoryKey
-import turtoise.memory.TortoiseMemory
 import turtoise.road.EBoardConnectStyle
 import turtoise.road.ERoadStyle
 

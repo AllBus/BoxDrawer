@@ -1,4 +1,4 @@
-package com.kos.figure.complex
+package com.kos.figure.complex.model
 
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.Figure

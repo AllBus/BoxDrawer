@@ -8,6 +8,11 @@ import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
 import com.kos.figure.PointWithNormal
 import com.kos.figure.collections.FigurePath
+import com.kos.figure.complex.model.Arc
+import com.kos.figure.complex.model.BezierCurve
+import com.kos.figure.complex.model.Corner
+import com.kos.figure.complex.model.PathElement
+import com.kos.figure.complex.model.Segment
 import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2

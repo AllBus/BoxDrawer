@@ -112,8 +112,8 @@ fun DisplayBox(
             )
         }
         BoxDrawerToolBar.TAB_IMAGE -> {
-            MazeSolver()
-            //DisplayImageProcessing(vm.value.imageData)
+            //MazeSolver()
+            DisplayImageProcessing(vm.value.imageData)
         }
 
 

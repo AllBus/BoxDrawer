@@ -1,9 +1,7 @@
 package com.kos.boxdrawer.detal.box
 
 import turtoise.Orientation
-import turtoise.TortoiseAlgorithm
-import turtoise.TortoiseBlock
-import turtoise.ZigzagInfo
+import com.kos.tortoise.ZigzagInfo
 import kotlin.math.max
 import kotlin.math.min
 

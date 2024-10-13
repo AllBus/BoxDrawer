@@ -9,6 +9,7 @@ import com.kos.boxdrawer.detal.splash.SplashCircle
 import com.kos.boxdrawer.detal.splash.SplashCrop
 import com.kos.boxdrawer.detal.splash.SplashDiamond
 import com.kos.boxdrawer.detal.splash.SplashDiamondAngle
+import com.kos.boxdrawer.detal.splash.ai.SplashDirigible
 import com.kos.boxdrawer.detal.splash.SplashDrop
 import com.kos.boxdrawer.detal.splash.SplashEdit
 import com.kos.boxdrawer.detal.splash.SplashFigureAtPoints
@@ -19,6 +20,7 @@ import com.kos.boxdrawer.detal.splash.SplashNormal
 import com.kos.boxdrawer.detal.splash.SplashObruch
 import com.kos.boxdrawer.detal.splash.SplashParallelogram
 import com.kos.boxdrawer.detal.splash.SplashPaz
+import com.kos.boxdrawer.detal.splash.ai.SplashPetal
 import com.kos.boxdrawer.detal.splash.SplashPoint
 import com.kos.boxdrawer.detal.splash.SplashPrintCoordinate
 import com.kos.boxdrawer.detal.splash.SplashRoad
@@ -31,6 +33,9 @@ import com.kos.boxdrawer.detal.splash.SplashTake
 import com.kos.boxdrawer.detal.splash.SplashText
 import com.kos.boxdrawer.detal.splash.SplashTooth
 import com.kos.boxdrawer.detal.splash.SplashToothReverse
+import com.kos.boxdrawer.detal.splash.ai.SplashAxis
+import com.kos.boxdrawer.detal.splash.ai.SplashChamomile
+import com.kos.boxdrawer.detal.splash.ai.SplashCube
 
 object SplashMap {
 
@@ -64,7 +69,12 @@ object SplashMap {
         SplashToothReverse(),
         SplashPoint(),
         SplashFigureAtPoints(),
-        SplashIntersectFigures()
+        SplashIntersectFigures(),
+        SplashChamomile(),
+        SplashPetal(),
+        SplashDirigible(),
+        SplashAxis(),
+        SplashCube(),
     )
     val splashes: Map<String, ISplashDetail> = splashList.flatMap { s -> s.names.map { it to s } }.toMap()
 }

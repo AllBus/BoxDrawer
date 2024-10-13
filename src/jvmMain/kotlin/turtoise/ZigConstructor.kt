@@ -5,7 +5,7 @@ import com.kos.figure.FigureLine
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
 import com.kos.figure.composition.FigureArray
-import com.kos.figure.composition.FigureRotate
+import com.kos.tortoise.ZigzagInfo
 import vectors.Vec2
 import kotlin.math.truncate
 

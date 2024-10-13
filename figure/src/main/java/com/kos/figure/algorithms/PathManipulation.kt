@@ -1,9 +1,9 @@
 package com.kos.figure.algorithms
 
-import com.kos.figure.complex.Arc
-import com.kos.figure.complex.BezierCurve
-import com.kos.figure.complex.PathElement
-import com.kos.figure.complex.Segment
+import com.kos.figure.complex.model.Arc
+import com.kos.figure.complex.model.BezierCurve
+import com.kos.figure.complex.model.PathElement
+import com.kos.figure.complex.model.Segment
 import vectors.Vec2
 
 data class IntersectionInfo(val point: Vec2, val element1: PathElement, val element2: PathElement)

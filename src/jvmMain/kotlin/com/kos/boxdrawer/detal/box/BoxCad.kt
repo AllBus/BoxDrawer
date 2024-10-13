@@ -16,6 +16,7 @@ import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslate
+import com.kos.tortoise.ZigzagInfo
 import turtoise.*
 import turtoise.FigureCreator.holes
 import turtoise.FigureCreator.rectangle

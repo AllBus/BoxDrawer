@@ -2,7 +2,6 @@ package turtoise
 
 import com.jsevy.jdxf.DXFColor
 import com.kos.figure.FigureBezier
-import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
@@ -15,12 +14,10 @@ import com.kos.figure.composition.booleans.FigureUnion
 import com.kos.figure.matrix.FigureMatrixRotate
 import com.kos.figure.matrix.FigureMatrixScale
 import com.kos.figure.matrix.FigureMatrixTranslate
-import turtoise.memory.TortoiseMemory
+import com.kos.tortoise.ZigzagInfo
 import vectors.Vec2
 import java.util.Stack
-import kotlin.math.abs
 import kotlin.math.min
-import kotlin.math.sign
 
 private const val MAX_REGULAR_POLYGON_EDGES = 500
 

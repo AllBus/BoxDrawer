@@ -1,10 +1,17 @@
 package com.kos.boxdrawer.detal.grid
 
 import androidx.compose.ui.graphics.Path
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import vectors.BoundingRectangle
 import vectors.Vec2
 
+@Serializable
 data class Kubik(val color: Int)
 
+@Serializable
 data class Coordinates(val x: Int, val y: Int, val z: Int){
     operator fun minus (other : Coordinates):Coordinates{
         return Coordinates(x-other.x, y-other.y, z-other.z)
@@ -23,6 +30,7 @@ data class Coordinates(val x: Int, val y: Int, val z: Int){
     }
 }
 
+@Serializable
 class Grid3D() {
     private val kubiks: MutableMap<Coordinates, Kubik> = mutableMapOf()
 
@@ -39,6 +47,15 @@ class Grid3D() {
 
     fun remove(x: Int, y: Int, z: Int) {
         kubiks.remove(Coordinates(x, y, z))
+    }
+
+    fun saveToText():String {
+        return  " "//Json.encodeToString(this)
+        // Use a suitable method to write the jsonString to a file (e.g., using java.io.FileWriter)
+    }
+
+    fun loadFromText(text: String): Grid3D {
+        return this //Json.decodeFromString(text)
     }
 
     /** Помк кубиков стоящих рядом */
@@ -372,3 +389,14 @@ data class Loop(val points: List<Coordinates>, val edges: List<LongEdge>){
         }
     }
 }
+
+data class PolyInfo(val points: List<Vec2>, val plane: Int, val orientation:Plane, val min:Double, val width:Double)
+
+data class GroupedPolygons(
+    val plane: Int,
+    val orientation: Plane,
+    val polygons: List<PolyInfo>
+)
+
+data class PolyLayer(val polygons : List<List<Vec2>>, val bounds: BoundingRectangle)
+

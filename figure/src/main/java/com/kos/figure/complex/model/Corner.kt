@@ -1,4 +1,4 @@
-package com.kos.figure.complex
+package com.kos.figure.complex.model
 
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.Figure
@@ -17,7 +17,7 @@ fun Corner(
     outSide: Boolean,
     startAngle:Double,
     sweepAngle:Double,
-):Arc{
+): Arc {
     return Arc(
         center = center,
         radius = radius,

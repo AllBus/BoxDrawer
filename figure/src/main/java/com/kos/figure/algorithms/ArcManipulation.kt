@@ -1,7 +1,7 @@
 package com.kos.figure.algorithms
 
-import com.kos.figure.complex.Arc
-import com.kos.figure.complex.Segment
+import com.kos.figure.complex.model.Arc
+import com.kos.figure.complex.model.Segment
 import vectors.Vec2
 import kotlin.math.abs
 import kotlin.math.atan2

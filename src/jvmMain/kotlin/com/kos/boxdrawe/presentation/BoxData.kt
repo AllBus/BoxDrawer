@@ -12,13 +12,12 @@ import androidx.compose.ui.text.input.getTextBeforeSelection
 import com.jsevy.jdxf.DXFColor
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.box.*
-import com.kos.figure.Figure
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import com.kos.figure.composition.FigureColor
 import kotlinx.coroutines.flow.MutableStateFlow
 import turtoise.DrawerSettings
-import turtoise.ZigzagInfo
+import com.kos.tortoise.ZigzagInfo
 import vectors.Vec2
 
 class BoxData(override val tools: ITools): SaveFigure {
@@ -195,7 +194,8 @@ class ZigZagState(val redrawBox: () -> Unit){
     val height = NumericTextFieldState(0.0) { redrawBox() }
     val enable = mutableStateOf(true)
 
-    val zigInfo : ZigzagInfo get() {
+    val zigInfo : ZigzagInfo
+        get() {
         return ZigzagInfo(
             width = width.decimal,
             delta = delta.decimal,

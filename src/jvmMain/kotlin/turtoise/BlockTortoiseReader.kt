@@ -1,5 +1,6 @@
 package turtoise
 
+import com.kos.tortoise.ZigzagInfo
 import turtoise.memory.TortoiseMemory
 import turtoise.memory.keys.MemoryKey
 import turtoise.parser.TortoiseParserStackItem

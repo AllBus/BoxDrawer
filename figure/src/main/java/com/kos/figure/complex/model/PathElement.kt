@@ -1,4 +1,4 @@
-package com.kos.figure.complex
+package com.kos.figure.complex.model
 
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.Figure
@@ -12,7 +12,7 @@ interface PathElement {
     fun perimeter(): Double
     fun positionInPath(delta: Double): PointWithNormal
     fun take(startMM:Double, endMM:Double):Figure
-    fun translate(xy: Vec2):PathElement
+    fun translate(xy: Vec2): PathElement
     fun draw(g: IFigureGraphics)
     val start:Vec2
     val end:Vec2

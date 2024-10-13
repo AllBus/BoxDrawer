@@ -1,4 +1,4 @@
-package turtoise
+package com.kos.tortoise
 
 /**
  *
@@ -18,6 +18,8 @@ data class ZigzagInfo(
     val drop: Double = 0.0,
     val fromCorner: Boolean = false,
 ) {
+    val dropedWidth = width - drop
+
     fun commandLine(): String {
         return "$width $delta $height ${if (!enable) "false" else ""}"
     }

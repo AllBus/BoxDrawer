@@ -57,49 +57,24 @@ fun Grid3DVisualizer(edges: List<PolygonGroup>, rotationX: Float, rotationY: Flo
             move.value += offset
         }
     )) {
-        val cubeSize = 50f
-        val spacing = 10f
 
         val m = Matrix()
         m.rotateX(rotationX)
         m.rotateY(rotationY)
         m.rotateZ(rotationZ)
-//
-//        rotate(45f) { // Rotate the canvas for a3D-like view
-            translate(left = size.width/4, top = size.height/4) { // Translate for better positioning
-//                for (group in groups) {
-//                    val firstKubikColor = group.firstOrNull()?.let { grid[it.x, it.y, it.z]?.color }
-//                    val groupColor = firstKubikColor?.let { Color(it) } ?: Color.Gray
-//
-//                    val polygons = grid.createPolygonsForGroup(group, grid)
-//                    for (polygon in polygons) {
-//                        drawPath(
-//                            path = polygon,
-//                            color = groupColor,
-//                            style = Stroke(width = 2f)
-//                        )
-//                    }
-//                }
-//            }
 
-//                planes.forEach { (k,p) ->
-//
-//                    p.values.forEach { e ->
-//                        drawLongEdges(e, Color(k.color), m)
-//                    }
-//                }
 
-                drawLongEdges(cur, Color.Red, m, move.value)
+            drawLongEdges(cur, Color.Red, m, move.value)
 
-                for (e in edges) {
+            for (e in edges) {
 
-                    val c = colorList[e.kubik.color % colorList.size]
-                    for (s in e.polygons) {
-                        drawPolygons(s, c , m, move.value)
-                    }
+                val c = colorList[e.kubik.color % colorList.size]
+                for (s in e.polygons) {
+                    drawPolygons(s, c , m, move.value)
                 }
-
             }
+
+
     }
 }
 
@@ -129,7 +104,7 @@ fun DrawScope.drawPolygons(
         path.lineTo(x, y)
     }
 
-    path.close()
+  //  path.close()
 
     drawPath(
         path = path,

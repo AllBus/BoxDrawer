@@ -21,7 +21,7 @@ import turtoise.FigureCreator
 import turtoise.LineInfo
 import turtoise.TortoiseFigureExtractor
 import turtoise.ZigConstructor
-import turtoise.ZigzagInfo
+import com.kos.tortoise.ZigzagInfo
 import turtoise.parser.TortoiseParserStackItem
 import vectors.Vec2
 import kotlin.math.PI

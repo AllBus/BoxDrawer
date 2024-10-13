@@ -1,9 +1,7 @@
 package turtoise.road
 
 import com.kos.boxdrawer.detal.box.BoxCad
-import com.kos.figure.Figure
-import turtoise.ZigzagInfo
-import turtoise.parser.TortoiseParserStackBlock
+import com.kos.tortoise.ZigzagInfo
 import turtoise.parser.TortoiseParserStackItem
 
 class RoadProperties(
