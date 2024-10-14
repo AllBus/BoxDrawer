@@ -19,6 +19,8 @@ class FigureCubik(
     val enableDrop: Boolean,
     val reverseX: Boolean,
     val reverseY: Boolean,
+    val zigFirstIndex: Int,
+    val zigDistance: Int,
 ) : IFigure {
 
     val bound : BoundingRectangle
@@ -71,7 +73,7 @@ class FigureCubik(
         get() = 1
 
     override fun list(): List<Figure> {
-        return emptyList()
+        return listOf()
     }
 
     override fun rect(): BoundingRectangle {
@@ -130,8 +132,6 @@ class FigureCubik(
         g.save()
 
         var isX: Boolean = true
-
-
 
         for (si in sideCounter.indices) {
             val s = sideCounter[si]
@@ -269,13 +269,35 @@ class FigureCubik(
                 size
             }
 
-            drawZig(g, st, s2, en, zig)
+            if (isLine(x, count)) {
+                g.drawLine(Vec2(st, 0.0), Vec2(en, 0.0))
+            } else {
+                drawZig(g, st, s2, en, zig)
+            }
             g.translate(size, 0.0)
         }
         if (isDrop && boardHeight>0.0){
             g.translate( 0.0, -boardHeight)
         }
 
+    }
+
+    private fun isLine(x: Int, count: Int): Boolean {
+        if (zigFirstIndex> count/2){
+            return !(if(count %2 == 0) {
+                (x == count / 2 || x == count/2-1)
+            }else{
+                (x == count/2)
+            })
+        }
+        return !(if (x == zigFirstIndex || x == count - zigFirstIndex-1)
+            true
+        else {
+            if (zigDistance<=0)
+                true
+            else
+                (x> zigFirstIndex && x<count - zigFirstIndex-1 ) && (x - zigFirstIndex) % zigDistance == 0
+        })
     }
 
     private fun drawZig(
@@ -295,7 +317,7 @@ class FigureCubik(
     }
 
     override fun collection(): List<IFigure> {
-        return listOf(this)
+        return emptyList()
     }
 
     override fun name(): String {

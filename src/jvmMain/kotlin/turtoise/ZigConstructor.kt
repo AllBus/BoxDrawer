@@ -4,6 +4,7 @@ import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureLine
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
+import com.kos.figure.complex.FigureZigZag
 import com.kos.figure.composition.FigureArray
 import com.kos.tortoise.ZigzagInfo
 import vectors.Vec2
@@ -110,9 +111,6 @@ object ZigConstructor {
         return FigureList(points.toList())
     }
 
-
-
-
     fun zigZag(
         origin: Vec2,
         width: Double,
@@ -164,6 +162,44 @@ object ZigConstructor {
     }
 
     fun zigZag(
+        origin: Vec2,
+        width: Double,
+        zig: ZigzagInfo,
+        angle: Double,
+        param: DrawingParam,
+        zigzagFigure: IFigure,
+    ): IFigure{
+        val bot = if (param.back) -1 else 1
+        val z = 0.0
+        val angleV = angle
+
+        /* Зигзаг выключен нарисуем прямую */
+        if (!zig.enable) {
+            return FigureLine(origin, Vec2(width * bot, z).rotate(angleV) + origin)
+        }
+        val zigzagWidthV = zig.width
+        var deltaV = zig.delta
+
+        if (deltaV > width) {
+            deltaV = width
+        }
+        if (zigzagWidthV+zig.drop > deltaV) {
+            /* Места недостаточно даже для одного зигзага, нарисуем прямую */
+            return FigureLine(origin, Vec2(width * bot, z).rotate(angleV) + origin)
+        }
+
+        return FigureZigZag(
+            origin = origin,
+            width = width,
+            angle = angle,
+            zig = zig,
+            zigFigure = zigzagFigure,
+            reverse = param.reverse,
+            back = param.back
+        )
+    }
+
+    fun zigZagOld(
         origin: Vec2,
         width: Double,
         zig: ZigzagInfo,
