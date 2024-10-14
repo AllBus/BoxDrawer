@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.boxdrawe.widget.TabBar
+import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.boxdrawer.presentation.theme.BoxTypography
 import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.figure.FigureEmpty
@@ -60,6 +61,7 @@ fun App(vm: State<DrawerViewModel>) {
     val figureList = remember(figures) {
         derivedStateOf { IFigure.tree(figures.value) }
     }
+    val images = vm.value.images.collectAsState(ImageMap.EMPTY)
 
     val commands = vm.value.helpInfoList.collectAsState(emptyList())
 
@@ -87,6 +89,7 @@ fun App(vm: State<DrawerViewModel>) {
                     pos = pos,
                     matrix = matrix,
                     figures = figures,
+                    images = images,
                     stateText = stateText,
                     alternative = alternative,
                     vm = vm,

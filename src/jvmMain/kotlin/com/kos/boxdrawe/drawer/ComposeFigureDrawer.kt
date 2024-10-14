@@ -4,6 +4,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PointMode
@@ -16,6 +17,9 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.drawer.IFigureGraphics
 import vectors.Vec2
 import kotlin.math.PI
@@ -27,6 +31,7 @@ class ComposeFigureDrawer(
     var style: Stroke = Stroke(width = 1.0f),
     val measurer: TextMeasurer,
     var simplification: Boolean = false,
+    var imageMap: ImageMap = ImageMap.EMPTY
 ) : IFigureGraphics {
 
     override fun drawLine(a: Vec2, b: Vec2) {
@@ -220,5 +225,21 @@ class ComposeFigureDrawer(
 
     override fun setSimple(value: Boolean) {
         simplification = value
+    }
+
+    override fun drawImage(
+        origin: Vec2,
+        size: Vec2,
+        uri: String,
+    ) {
+        imageMap[uri]?.let{ img ->
+            scope.drawImage(
+                image = img,
+                srcOffset = IntOffset(0, 0),
+                srcSize = IntSize(img.width, img.height),
+                dstOffset = IntOffset(origin.x.toInt(), origin.y.toInt()),
+                dstSize = IntSize(size.x.toInt(), size.y.toInt()),
+            )
+        }
     }
 }

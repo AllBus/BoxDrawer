@@ -55,6 +55,7 @@
     <string name="toolsButtonCopyCode">Скопировать код</string>
     <string name="toolsButtonCopyProgram">Скопировать как программу</string>
     <string name="toolsButtonOpenFile">Открыть файл</string>
+    <string name="toolsButtonSaveFile">Сохранить файл</string>
     <string name="tortoiseFigureField">Фигуры</string>
     <string name="tabBox">Коробка</string>
     <string name="tabTortoise">Фигуры</string>

@@ -20,6 +20,7 @@ data class TemplateField(val name:String) {
         const val FIELD_NONE = "-"
         const val FIELD_ONE = "noneOrMore"
         const val FIELD_TEXT = "text"
+        const val FIELD_FILE = "file"
         const val FIELD_SELECTOR = "selector"
         const val FIELD_HIDDEN_TEXT = "hiddenText"
     }

@@ -27,9 +27,15 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntSize
 import com.kos.boxdrawe.drawer.drawFigures
+import com.kos.boxdrawe.presentation.ImageUtils.bufferedImageToImageBitmap
+import com.kos.boxdrawe.presentation.ImageUtils.collectImages
+import com.kos.boxdrawe.presentation.ImageUtils.formatOfData
+import com.kos.boxdrawe.presentation.ImageUtils.loadImageFromFile
+import com.kos.boxdrawe.presentation.ImageUtils.supportedFormats
 import com.kos.boxdrawe.widget.toOffset
 import com.kos.boxdrawe.widget.toVec2
 import com.kos.boxdrawer.presentation.ZoomUtils
+import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
 import vectors.Vec2
@@ -44,6 +50,7 @@ fun DisplayTortoise(
     matrix: State<Matrix>,
     enableMatrix: Boolean,
     figures: IFigure,
+    images: ImageMap,
     selectedItem: State<List<FigureInfo>>,
     onStateChange: (String) -> Unit,
     onPress: (Vec2, Int, Float) -> Unit
@@ -84,9 +91,10 @@ fun DisplayTortoise(
             val sp = coordAtPointer(pos.value, scale, posi)
 
             val predScale = displayScale.value.toDouble()
-           // val newScale = scale(delta).toDouble()
-            val resScale =  ZoomUtils.scale(displayScale.value.toDouble(), delta).toDouble()  // predScale * newScale
-            val newScale = resScale/predScale
+            // val newScale = scale(delta).toDouble()
+            val resScale = ZoomUtils.scale(displayScale.value.toDouble(), delta)
+                .toDouble()  // predScale * newScale
+            val newScale = resScale / predScale
             if (resScale in 0.01..10000.0) {
                 val center = -pos.value.toVec2()
                 val pv = (sp - center) / newScale
@@ -143,7 +151,7 @@ fun DisplayTortoise(
                     }
                 }
             ) {
-                this.drawFigures(figures,  selectedItem.value, measurer)
+                this.drawFigures(figures, selectedItem.value, measurer, images)
             }
         })
 

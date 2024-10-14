@@ -1,10 +1,16 @@
 package com.kos.boxdrawe.presentation
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.loadImageBitmap
+import com.kos.boxdrawe.corutine.DispatcherList
+import com.kos.boxdrawe.presentation.ImageUtils.bufferedImageToImageBitmap
+import com.kos.boxdrawe.presentation.ImageUtils.convertToBmp
+import com.kos.boxdrawe.presentation.ImageUtils.formatOfData
+import com.kos.boxdrawe.presentation.ImageUtils.loadImageFromFile
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.withContext
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -76,42 +82,40 @@ class ImageToolsData(val tools: ITools) {
 
     val sourceBitmap = MutableStateFlow<ImageBitmap?>(null)
 
-    val currentImage = currentAction.mapLatest { act ->
-        modifierImage?.let { mi ->
-            try {
-                when (act) {
-                    is ImageAction.ActionRotate -> rotateBitmap(mi, act.degrees)
-                    is ImageAction.ActionContrast -> changeContrast(mi, act.contrastFactor)
-                    is ImageAction.ActionGrayScale -> convertToBlackAndWhite(mi)
-                    is ImageAction.ActionGaussian -> gaussianBlur(mi, 5, act.sigma)
-                    is ImageAction.ActionBounds -> grad(mi)
-                    else -> mi
+    private val currentImage = currentAction.mapLatest { act ->
+        withContext(DispatcherList.IO) {
+            modifierImage?.let { mi ->
+                try {
+                    when (act) {
+                        is ImageAction.ActionRotate -> rotateBitmap(mi, act.degrees)
+                        is ImageAction.ActionContrast -> changeContrast(mi, act.contrastFactor)
+                        is ImageAction.ActionGrayScale -> convertToBlackAndWhite(mi)
+                        is ImageAction.ActionGaussian -> gaussianBlur(mi, 5, act.sigma)
+                        is ImageAction.ActionBounds -> grad(mi)
+                        else -> mi
+                    }
+                } catch (e: Exception) {
+                    null
                 }
-            }catch (e:Exception){
-                null
             }
         }
 
     }
 
-    val currentBitmap = currentImage.mapLatest { it?.let{ v -> bufferedImageToImageBitmap(v) } }
+    val currentBitmap = currentImage.mapLatest { it?.let{ v -> bufferedImageToImageBitmap(v, "bmp") } }
 
     fun loadImage(file: String) {
         sourceImage= loadImageFromFile(file)
-        sourceBitmap.value =sourceImage?.let{ bufferedImageToImageBitmap(it)}
+        sourceBitmap.value =sourceImage?.let{ bufferedImageToImageBitmap(it, formatOfData(file, it) )}
 
-        modifierImage = sourceImage
+        modifierImage = sourceImage?.let{ convertToBmp(it, formatOfData(file, it))}
         currentAction.value = ImageAction.ActionNone()
 
     }
 
-    fun loadImageFromFile(filePath:String): BufferedImage? {
-        val imageFile = File(filePath)
-        return try {
-            ImageIO.read(imageFile)
-        } catch (e: Exception) {
-            println("Error loading image: ${e.message}")
-            null
+    fun save(file: String) {
+        modifierImage?.let {
+            ImageIO.write(it, formatOfData(file, it), File(file))
         }
     }
 
@@ -185,30 +189,7 @@ class ImageToolsData(val tools: ITools) {
         return resultImage
     }
 
-    fun bufferedImageToImageBitmap(bufferedImage: BufferedImage): ImageBitmap? {
-        try {
-            val argbArray = IntArray(bufferedImage.width * bufferedImage.height)
-            bufferedImage.getRGB(
-                0,
-                0,
-                bufferedImage.width,
-                bufferedImage.height,
-                argbArray,
-                0,
-                bufferedImage.width
-            )
 
-
-            val outputStream = ByteArrayOutputStream()
-            ImageIO.write(bufferedImage, "bmp", outputStream)
-            val byteArray = outputStream.toByteArray()
-            val bitmap = loadImageBitmap(ByteArrayInputStream(byteArray))
-
-            return bitmap
-        }catch (e:Exception){
-            return null
-        }
-    }
 
     suspend fun applyChanges() {
         modifierImage = currentImage.first()

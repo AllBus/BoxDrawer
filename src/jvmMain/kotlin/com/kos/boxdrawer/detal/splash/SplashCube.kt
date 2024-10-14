@@ -1,6 +1,5 @@
-package com.kos.boxdrawer.detal.splash.ai
+package com.kos.boxdrawer.detal.splash
 
-import com.kos.boxdrawer.detal.splash.ISplashDetail
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT

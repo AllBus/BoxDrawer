@@ -13,6 +13,7 @@ import com.kos.boxdrawe.widget.BoxDrawerToolBar
 import com.kos.boxdrawer.presentation.display.DisplayBezier
 import com.kos.boxdrawer.presentation.display.DisplayGrid
 import com.kos.boxdrawer.presentation.display.DisplayTortoise
+import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
@@ -25,6 +26,7 @@ fun DisplayBox(
     pos:MutableState<Offset>,
     matrix: MutableState<Matrix>,
     figures: State<IFigure>,
+    images: State<ImageMap>,
     stateText: MutableState<String>,
     alternative: MutableState<Boolean>,
     vm: State<DrawerViewModel>,
@@ -44,6 +46,7 @@ fun DisplayBox(
                 matrix = matrix,
                 enableMatrix = true,
                 figures = figures.value,
+                images = images.value,
                 selectedItem = selectedItem,
                 onStateChange =  { text ->
                     stateText.value = text
@@ -63,6 +66,7 @@ fun DisplayBox(
                 matrix = matrix,
                 enableMatrix = !alternative.value,
                 figures = figures.value,
+                images = images.value,
                 selectedItem = selectedItem,
                 onStateChange =  { text ->
                     stateText.value = text
@@ -100,6 +104,7 @@ fun DisplayBox(
                 matrix = matrix,
                 enableMatrix = false,
                 figures = figures.value,
+                images = images.value,
                 selectedItem = selectedItem,
                 onStateChange =  { text ->
                     stateText.value = text

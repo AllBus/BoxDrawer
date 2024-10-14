@@ -37,7 +37,7 @@ class SplashAxis : ISplashDetail {
         figureExtractor: TortoiseFigureExtractor
     ) {
         val memory = figureExtractor.memory
-        val center = builder.xy
+        val center = Vec2.Zero
         val size = com[1,100.0, memory] // Read size from command
 
         val arrowSize = size * 0.05 // Adjust arrow size as needed

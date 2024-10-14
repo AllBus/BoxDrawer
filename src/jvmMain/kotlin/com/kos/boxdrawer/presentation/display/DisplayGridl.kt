@@ -41,6 +41,7 @@ import com.kos.boxdrawer.detal.grid.Coordinates
 import com.kos.boxdrawer.detal.grid.Grid3DVisualizer
 import com.kos.boxdrawer.detal.grid.Kubik
 import com.kos.boxdrawer.presentation.Rotate3dController
+import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.figure.FigureEmpty
 import vectors.Vec2
 import kotlin.math.sign
@@ -250,7 +251,7 @@ fun DisplayGrid(gridData: GridData) {
                                 sc,
                                 Offset(0.0f, 0.0f)
                             ) {
-                                drawFigures(figure.value, emptyList(), measurer)
+                                drawFigures(figure.value, emptyList(), measurer, ImageMap.EMPTY)
                             }
 
                         }

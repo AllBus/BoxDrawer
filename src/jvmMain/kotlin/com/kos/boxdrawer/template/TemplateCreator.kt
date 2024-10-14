@@ -9,6 +9,7 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_COLOR
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CONTAINER
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
+import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FILE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FORM
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_LABEL
@@ -188,7 +189,7 @@ object TemplateCreator {
                 argumentName = argument,
             )
 
-            FIELD_TEXT, "string" -> TemplateItemString(
+            FIELD_TEXT, FIELD_FILE, "string" -> TemplateItemString(
                 title = title,
                 argumentName = argument,
             )

@@ -148,4 +148,12 @@ class DxfFigureDrawer(
     override fun setSimple(value: Boolean) {
         // nothing
     }
+
+    override fun drawImage(
+        origin: Vec2,
+        size: Vec2,
+        uri: String,
+    ) {
+        // nothing
+    }
 }

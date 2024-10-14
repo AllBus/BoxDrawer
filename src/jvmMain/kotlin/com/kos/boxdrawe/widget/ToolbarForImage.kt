@@ -5,17 +5,22 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.ImageToolsData
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.toolsButtonOpenFile
+import com.kos.boxdrawer.generated.resources.toolsButtonSaveFile
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import java.io.File
+import java.io.FilenameFilter
 
 @Composable
 fun ToolbarForImage(data: ImageToolsData){
@@ -63,11 +68,46 @@ fun ToolbarActionForImage(data:ImageToolsData){
     val clipboardManager = LocalClipboardManager.current
     Column(
     ) {
-        Spacer(Modifier.height(4.dp))
+
+
+        val isDialogVisible = remember { mutableStateOf(false) }
+        val isSaveDialogVisible = remember { mutableStateOf(false) }
+        if (isDialogVisible.value) {
+            FileDialog(title = "Выберите картинку",
+                initialDirectory = data.tools.chooserDir().absolutePath,
+                onCloseRequest = { f ->
+                    isDialogVisible.value = false
+                    coroutineScope.launch {
+                        if (f != null) {
+                            data.loadImage(f)
+                        }
+                    }
+                }
+            )
+        }
+
+        if (isSaveDialogVisible.value) {
+            SaveFileDialog(title = "Сохранить картинку как...",
+                initialDirectory = data.tools.chooserDir().absolutePath,
+                onCloseRequest = { f ->
+                    isSaveDialogVisible.value = false
+                    coroutineScope.launch {
+                        if (f != null) {
+                            data.save(f)
+                        }
+                    }
+                }
+            )
+        }
+
+
         RunButton(stringResource(Res.string.toolsButtonOpenFile)) {
-            coroutineScope.launch {
-                showLoadFileChooser(data.tools.chooserDir()) { f -> data.loadImage(f) }
-            }
+            isDialogVisible.value = true
+
+        }
+        Spacer(Modifier.height(4.dp))
+        RunButton(stringResource(Res.string.toolsButtonSaveFile)) {
+            isSaveDialogVisible.value = true
         }
     }
 }

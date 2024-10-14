@@ -36,4 +36,5 @@ interface IFigureGraphics {
     fun isSimple():Boolean
 
     fun setSimple(value:Boolean)
+    fun drawImage(origin: Vec2, size: Vec2, uri: String)
 }

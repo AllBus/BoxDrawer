@@ -1,18 +1,36 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
+import com.kos.boxdrawe.corutine.DispatcherList
+import com.kos.boxdrawe.presentation.ImageUtils.bufferedImageToImageBitmap
+import com.kos.boxdrawe.presentation.ImageUtils.collectImages
+import com.kos.boxdrawe.presentation.ImageUtils.formatOfData
+import com.kos.boxdrawe.presentation.ImageUtils.loadImageFromFile
+import com.kos.boxdrawe.presentation.ImageUtils.supportedFormats
 import com.kos.boxdrawe.widget.BoxDrawerToolBar
+import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 import vectors.Vec2
 import java.awt.datatransfer.Transferable
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DrawerViewModel {
 
     private val noneFigure = MutableStateFlow(FigureEmpty).asStateFlow()
@@ -33,7 +51,6 @@ class DrawerViewModel {
     val tabIndex = MutableStateFlow(BoxDrawerToolBar.TAB_TORTOISE)
     val calculatorData = CalculatorData()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     val figures = tabIndex.flatMapLatest { tab ->
         when (tab) {
             BoxDrawerToolBar.TAB_TORTOISE -> tortoise.figures
@@ -47,6 +64,38 @@ class DrawerViewModel {
         }
     }
 
+    @OptIn(FlowPreview::class)
+    val imagesList = figures.debounce(100L).mapLatest{ f ->
+        collectImages(f).toList()
+    }.distinctUntilChanged()
+
+    private var previousImages : ImageMap = ImageMap.EMPTY
+    val images = imagesList.mapLatest { imageFigures ->
+        withContext(DispatcherList.IO) {
+            var changeImgList: Boolean = false
+            val r = imageFigures.mapNotNull { f ->
+                println(f.uri)
+                val pv = previousImages[f.uri]
+                if (pv != null) {
+                    f.uri to pv
+                } else {
+                    changeImgList = true
+                    loadImageFromFile(f.uri)?.let {
+                        bufferedImageToImageBitmap(
+                            it,
+                            formatOfData(f.uri, it)
+                        )
+                    }?.let {
+                        f.uri to it
+                    }
+                }
+            }.toMap().let(::ImageMap)
+            if (changeImgList) {
+                previousImages = r
+            }
+            r
+        }
+    }
 
     val helpInfoList = tools.helpInfoList
 
