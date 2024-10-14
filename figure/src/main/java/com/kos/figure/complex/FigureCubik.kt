@@ -293,10 +293,13 @@ class FigureCubik(
         return !(if (x == zigFirstIndex || x == count - zigFirstIndex-1)
             true
         else {
-            if (zigDistance<=0)
-                true
-            else
-                (x> zigFirstIndex && x<count - zigFirstIndex-1 ) && (x - zigFirstIndex) % zigDistance == 0
+            if (x> zigFirstIndex && x<count - zigFirstIndex-1 ) {
+                if (zigDistance <= 0)
+                    true
+                else
+                    (x - zigFirstIndex) % zigDistance == 0
+            } else
+                 false
         })
     }
 
