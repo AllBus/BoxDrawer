@@ -33,5 +33,7 @@ interface IFigureGraphics {
 
     fun getColor():Int
 
+    fun isSimple():Boolean
 
+    fun setSimple(value:Boolean)
 }

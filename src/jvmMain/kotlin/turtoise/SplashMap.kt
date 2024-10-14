@@ -26,6 +26,7 @@ import com.kos.boxdrawer.detal.splash.SplashPrintCoordinate
 import com.kos.boxdrawer.detal.splash.SplashRoad
 import com.kos.boxdrawer.detal.splash.SplashRound
 import com.kos.boxdrawer.detal.splash.SplashRoundLine
+import com.kos.boxdrawer.detal.splash.SplashSimple
 import com.kos.boxdrawer.detal.splash.SplashSoftRez
 import com.kos.boxdrawer.detal.splash.SplashSpiral
 import com.kos.boxdrawer.detal.splash.SplashStena
@@ -75,6 +76,7 @@ object SplashMap {
         SplashDirigible(),
         SplashAxis(),
         SplashCube(),
+        SplashSimple(),
     )
     val splashes: Map<String, ISplashDetail> = splashList.flatMap { s -> s.names.map { it to s } }.toMap()
 }

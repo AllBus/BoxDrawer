@@ -140,4 +140,12 @@ class DxfFigureDrawer(
     override fun transform(m: Matrix, actions: () -> Unit) {
 
     }
+
+    override fun isSimple(): Boolean {
+        return false
+    }
+
+    override fun setSimple(value: Boolean) {
+        // nothing
+    }
 }

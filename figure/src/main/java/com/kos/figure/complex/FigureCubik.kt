@@ -110,9 +110,13 @@ class FigureCubik(
     }
 
     override fun draw(g: IFigureGraphics) {
-
-
         if (sideCounter.size<2) return
+
+        if (g.isSimple()){
+            drawSimple(g)
+            return
+        }
+
 
         val he = abs(zigInfo.height)
 
@@ -153,33 +157,28 @@ class FigureCubik(
             if (s<0) {
                 g.rotate(-180.0, Vec2.Zero)
             }
-
             isX = !isX
-
         }
-//
-//        if (!isX){
-//            g.rotate(-90.0, Vec2.Zero)
-//        }
-//        val nn = getNextReverse(!isX, sideCounter[sideCounter.size-1], lastX)
-//        val nextReverse =  getNextReverse(isX, lastX, lastY)
-//        val firstReverse = getNextReverse(!isX, lastY, sideCounter[0])
-//
-//        if (-lastX> 0.0){
-//            g.rotate(180.0, Vec2.Zero)
-//        }
-//        drawX(g, s2, abs(lastX), zigX, hee, hex, hey, hey, nextReverse, nn)
-//        if (-lastX> 0.0){
-//            g.rotate(180.0, Vec2.Zero)
-//        }
-//        g.rotate(90.0, Vec2.Zero)
-//        if (-lastY > 0.0){
-//            g.rotate(180.0, Vec2.Zero)
-//        }
-//        drawX(g, s2, abs(lastY), zigY, hee, hey, hex, hex, firstReverse,nextReverse)
-//
 
         g.restore()
+    }
+
+    private fun drawSimple(g: IFigureGraphics) {
+        var x = 0
+        var y = 0
+        var isX = true
+
+        val res = mutableListOf<Vec2>(Vec2.Zero)
+        for(s in sideCounter){
+            if (isX){
+                x+=s
+            } else{
+                y+=s
+            }
+            res.add(Vec2(x*size, y*size))
+            isX = !isX
+        }
+        g.drawPolyline(res)
     }
 
     private fun getNextReverse(isX: Boolean, s: Int, next: Int) = if (isX) {

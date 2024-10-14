@@ -26,6 +26,7 @@ class ComposeFigureDrawer(
     var penColor: Color = Color.Gray,
     var style: Stroke = Stroke(width = 1.0f),
     val measurer: TextMeasurer,
+    var simplification: Boolean = false,
 ) : IFigureGraphics {
 
     override fun drawLine(a: Vec2, b: Vec2) {
@@ -213,4 +214,11 @@ class ComposeFigureDrawer(
         }
     }
 
+    override fun isSimple(): Boolean {
+        return simplification
+    }
+
+    override fun setSimple(value: Boolean) {
+        simplification = value
+    }
 }
