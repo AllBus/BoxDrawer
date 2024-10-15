@@ -65,12 +65,12 @@ fun DisplayTortoise(
     val scale = displayScale.value
 
     Canvas(modifier = Modifier.fillMaxSize().clipToBounds()
-        .onPointerEvent(PointerEventType.Press) {
+        .onPointerEvent(PointerEventType.Press) { event ->
 
-            val posi = it.changes.first().position.toVec2()
+            val posi = event.changes.first().position.toVec2()
             val sp = coordAtPointer(pos.value, scale, posi)
 
-            val pt = when (it.button) {
+            val pt = when (event.button) {
                 PointerButton.Primary -> 1
                 PointerButton.Secondary -> 2
                 PointerButton.Tertiary -> 3

@@ -1,6 +1,5 @@
 package com.kos.boxdrawer.presentation.tabbar
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -9,14 +8,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.BezierData
 import com.kos.boxdrawe.widget.*
 import com.kos.boxdrawe.widget.model.ButtonDoubleData
-import com.kos.boxdrawer.generated.resources.*
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.bezierFigure
 import com.kos.boxdrawer.generated.resources.bezierFigureCount

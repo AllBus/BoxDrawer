@@ -109,9 +109,9 @@ fun DisplayBezier(
         octagon
     }
 
-    Canvas(modifier = Modifier.fillMaxSize().clipToBounds().onPointerEvent(PointerEventType.Press) {
+    Canvas(modifier = Modifier.fillMaxSize().clipToBounds().onPointerEvent(PointerEventType.Press) { event ->
         val sp =
-            (it.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.value.toVec2() / scale.toDouble()
+            (event.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.value.toVec2() / scale.toDouble()
         // if (it.button == PointerButton.Primary) {
         selectIndex.value = indexOfPoint(c1.value, sp, 20.0)
         lastSelectedPoint.value =  selectIndex.value
@@ -119,27 +119,27 @@ fun DisplayBezier(
 
         if (selectIndex.value < 0) {
             if (Vec2.distance(cst.value, sp) < 20.0) {
-                if (it.button == PointerButton.Secondary)
+                if (event.button == PointerButton.Secondary)
                     vm.deleteStart()
                 else
                     vm.addStartBezier()
             }
             if (Vec2.distance(cen.value, sp) < 20.0) {
-                if (it.button == PointerButton.Secondary)
+                if (event.button == PointerButton.Secondary)
                     vm.deleteEnd()
                 else
                     vm.addEndBezier()
             }
         }
-        if (it.keyboardModifiers.isAltPressed) {
+        if (event.keyboardModifiers.isAltPressed) {
             selectedType.value = 3
             vm.movePointLine(selectIndex.value)
         } else
-            if (it.keyboardModifiers.isCtrlPressed) {
+            if (event.keyboardModifiers.isCtrlPressed) {
                 selectedType.value = 1
                 vm.movePointLine(selectIndex.value)
             } else {
-                when (it.button) {
+                when (event.button) {
                     PointerButton.Primary -> selectedType.value = 0
                     PointerButton.Secondary -> selectedType.value = 1
                     PointerButton.Tertiary -> selectedType.value = 2

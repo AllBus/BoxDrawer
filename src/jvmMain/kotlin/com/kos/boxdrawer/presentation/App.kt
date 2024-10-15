@@ -8,13 +8,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,8 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.getSelectedText
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.DrawerViewModel
-import com.kos.boxdrawe.widget.BoxDrawerToolBar
-import com.kos.boxdrawe.widget.TabBar
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar
+import com.kos.boxdrawer.presentation.tabbar.TabBar
 import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.boxdrawer.presentation.theme.BoxTypography
 import com.kos.boxdrawer.template.TemplateInfo

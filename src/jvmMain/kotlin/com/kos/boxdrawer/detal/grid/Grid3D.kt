@@ -2,9 +2,6 @@ package com.kos.boxdrawer.detal.grid
 
 import androidx.compose.ui.graphics.Path
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import vectors.BoundingRectangle
 import vectors.Vec2
 import java.lang.Math.abs
@@ -13,6 +10,9 @@ import kotlin.math.min
 
 @Serializable
 data class Kubik(val color: Int)
+
+data class Parallelepiped(val minX: Int, val minY: Int, val minZ: Int, val maxX: Int, val maxY: Int, val maxZ: Int, val color: Int)
+
 
 @Serializable
 data class Coordinates(val x: Int, val y: Int, val z: Int){
@@ -48,6 +48,10 @@ class Grid3D() {
         return kubiks[Coordinates(x, y, z)]
     }
 
+    operator fun get(xyz: Coordinates): Kubik? {
+        return kubiks[xyz]
+    }
+
     operator fun set(x: Int, y: Int, z: Int, kubik: Kubik?) {
         if (kubik == null)
             kubiks.remove(Coordinates(x, y, z))
@@ -59,18 +63,33 @@ class Grid3D() {
         kubiks.remove(Coordinates(x, y, z))
     }
 
-    fun saveToText():String {
-        return  " "//Json.encodeToString(this)
-        // Use a suitable method to write the jsonString to a file (e.g., using java.io.FileWriter)
+    fun saveToText(): String {
+        val sb = StringBuilder()
+        val parallelepipeds = findParallelepipedsWithOneColor()
+
+        for (parallelepiped in parallelepipeds) {
+            sb.append("C${parallelepiped.color} ")
+            sb.append("M")
+            sb.append("X${parallelepiped.minX}")
+            sb.append("Y${parallelepiped.minY}")
+            sb.append("Z${parallelepiped.minZ}")
+            sb.append(" ")
+            sb.append("F")
+            sb.append("X${parallelepiped.maxX - parallelepiped.minX + 1}")
+            sb.append("Y${parallelepiped.maxY - parallelepiped.minY + 1}")
+            sb.append("Z${parallelepiped.maxZ - parallelepiped.minZ + 1}")
+            sb.append(" \n")
+        }
+
+        return sb.toString().trim()
     }
 
-    fun loadFromText(text: String): Grid3D {
-        val com = ' '
+    fun loadFromText(lines: String): Grid3D {
         var i = 0
         var color = 1
         var current= Coordinates(0,0,0)
+        val text = lines +" "
         while (i < text.length) {
-            println("> $i ${text[i]}")
             val c= text[i]
             when (c){
                 'C' -> {
@@ -121,12 +140,12 @@ class Grid3D() {
                     val cx = max(abs(current.x - pp.x),1)
                     val cy = max(abs(current.y - pp.y),1)
                     val cz = max(abs(current.z - pp.z),1)
-                    val drawKubik =  Kubik(color)
+                    val drawKubik = if (color == 0) null else Kubik(color)
 
                     for (x in 0 until cx) {
                         for (y in 0 until cy) {
                             for (z in 0 until cz) {
-                                set(pp.x+x, pp.y+y, pp.z+z,drawKubik)
+                                set(pp.x+x, pp.y+y, pp.z+z, drawKubik)
                             }
                         }
                     }
@@ -153,6 +172,91 @@ class Grid3D() {
         return ResultInt(text.substring(i, j).toInt(), j)
     }
 
+    fun findParallelepipedsWithOneColor(): List<Parallelepiped> {
+        val parallelepipeds = mutableListOf<Parallelepiped>()
+        val visited = mutableSetOf<Coordinates>() // Keep track of visited kubiks
+
+        for ((coordinates, kubik) in kubiks) {
+            if (coordinates !in visited) {
+                val (maxX, maxY, maxZ) = findMaxDimensions(coordinates, kubik.color)
+                parallelepipeds.add(
+                    Parallelepiped(
+                        coordinates.x, coordinates.y, coordinates.z,
+                        maxX, maxY, maxZ, kubik.color
+                    )
+                )
+                // Mark all kubiks within the parallelepiped as visited
+                for (x in coordinates.x..maxX) {
+                    for (y in coordinates.y..maxY) {
+                        for (z in coordinates.z..maxZ) {
+                            visited.add(Coordinates(x, y, z))
+                        }
+                    }
+                }
+            }
+        }
+
+        return parallelepipeds
+    }
+
+    private fun findMaxDimensions(startCoordinates: Coordinates, color: Int): Coordinates {
+        var maxX = startCoordinates.x
+        var maxY = startCoordinates.y
+        var maxZ = startCoordinates.z
+
+        // Iterate to find maximum X dimension
+        while (this[maxX + 1, startCoordinates.y, startCoordinates.z]?.color == color) {
+            maxX++
+        }
+
+        // Iterate to find maximum Y dimension
+        // Мне нужно проверить только заполнение новой строки так как предудущую я проверил на предыдущей итерации
+        while (isFilledXLineWithColor(startCoordinates.x, Coordinates(maxX, maxY + 1, maxZ), color)) {
+            maxY++
+        }
+
+        // Iterate to find maximum Z dimension
+        // Мне нужно проверить толко один слой так как я проверял на предыдущей итерации
+        while (isFilledXYWithColor(startCoordinates, Coordinates(maxX, maxY, maxZ + 1), color)) {
+            maxZ++
+        }
+
+        return Coordinates(maxX, maxY, maxZ)
+    }
+
+    private fun isFilledXLineWithColor(minX: Int, maxCoordinates: Coordinates, color: Int): Boolean {
+        for (x in minX..maxCoordinates.x) {
+            if (this[x, maxCoordinates.y, maxCoordinates.z]?.color != color) {
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun isFilledXYWithColor(minCoordinates: Coordinates, maxCoordinates: Coordinates, color: Int): Boolean {
+        for (x in minCoordinates.x..maxCoordinates.x) {
+            for (y in minCoordinates.y..maxCoordinates.y) {
+                if (this[x, y, maxCoordinates.z]?.color != color) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    private fun isParallelepipedFilledWithColor(minCoordinates: Coordinates, maxCoordinates: Coordinates, color: Int): Boolean {
+        for (x in minCoordinates.x..maxCoordinates.x) {
+            for (y in minCoordinates.y..maxCoordinates.y) {
+                for (z in minCoordinates.z..maxCoordinates.z) {
+                    if (this[x, y, z]?.color != color) {
+                        return false
+                    }
+                }
+            }
+        }
+        return true
+    }
+
     /** Поиск кубиков стоящих рядом */
     fun findConnectedGroups(): List<KubikGroup> {
         val visited = mutableSetOf<Coordinates>()
@@ -171,29 +275,35 @@ class Grid3D() {
                     val (x, y, z) = current
 
                     // Check neighbors with the same color
-                    if (Coordinates(x - 1, y, z) !in visited && this[x - 1, y, z]?.color == kubik.color) {
-                        queue.add(Coordinates(x - 1, y, z))
-                        visited.add(Coordinates(x - 1, y, z))
+                    val cl = Coordinates(x - 1, y, z)
+                    if (cl !in visited && this[cl]?.color == kubik.color) {
+                        queue.add(cl)
+                        visited.add(cl)
                     }
-                    if (Coordinates(x + 1, y, z) !in visited && this[x + 1, y, z]?.color == kubik.color) {
-                        queue.add(Coordinates(x + 1, y, z))
-                        visited.add(Coordinates(x + 1, y, z))
+                    val cr = Coordinates(x + 1, y, z)
+                    if (cr !in visited && this[cr]?.color == kubik.color) {
+                        queue.add(cr)
+                        visited.add(cr)
                     }
-                    if (Coordinates(x, y - 1, z) !in visited && this[x, y - 1, z]?.color == kubik.color) {
-                        queue.add(Coordinates(x, y - 1, z))
-                        visited.add(Coordinates(x, y - 1, z))
+                    val cu = Coordinates(x, y - 1, z)
+                    if (cu !in visited && this[cu]?.color == kubik.color) {
+                        queue.add(cu)
+                        visited.add(cu)
                     }
-                    if (Coordinates(x, y + 1, z) !in visited && this[x, y + 1, z]?.color == kubik.color) {
-                        queue.add(Coordinates(x, y + 1, z))
-                        visited.add(Coordinates(x, y + 1, z))
+                    val cd = Coordinates(x, y + 1, z)
+                    if (cd !in visited && this[cd]?.color == kubik.color) {
+                        queue.add(cd)
+                        visited.add(cd)
                     }
-                    if (Coordinates(x, y, z - 1) !in visited && this[x, y, z - 1]?.color == kubik.color) {
-                        queue.add(Coordinates(x, y, z - 1))
-                        visited.add(Coordinates(x, y, z - 1))
+                    val cf = Coordinates(x, y, z - 1)
+                    if (cf !in visited && this[cf]?.color == kubik.color) {
+                        queue.add(cf)
+                        visited.add(cf)
                     }
-                    if (Coordinates(x, y, z + 1) !in visited && this[x, y, z + 1]?.color == kubik.color) {
-                        queue.add(Coordinates(x, y, z + 1))
-                        visited.add(Coordinates(x, y, z + 1))
+                    val cb = Coordinates(x, y, z + 1)
+                    if (cb !in visited && this[cb]?.color == kubik.color) {
+                        queue.add(cb)
+                        visited.add(cb)
                     }
                 }
                 groups.add(KubikGroup(kubik,  group))

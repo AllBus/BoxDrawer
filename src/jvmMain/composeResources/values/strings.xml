@@ -101,4 +101,5 @@
     <string name="editorCompleteBtn">Готово</string>
     <string name="editorInsertValueBtn">Вставить значение</string>
     <string name="editorInsertMoveLabel">Добавить перемещение</string>
+    <string name="boardInfoTooltip">Толщина доски</string>
 </resources>

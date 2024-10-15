@@ -1,26 +1,28 @@
-package com.kos.boxdrawe.widget
+package com.kos.boxdrawer.presentation.tabbar
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.ImageToolsData
+import com.kos.boxdrawe.widget.CheckboxK
+import com.kos.boxdrawe.widget.FileDialog
+import com.kos.boxdrawe.widget.Label
+import com.kos.boxdrawe.widget.NumericUpDownLine
+import com.kos.boxdrawe.widget.RunButton
+import com.kos.boxdrawe.widget.SaveFileDialog
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.toolsButtonOpenFile
 import com.kos.boxdrawer.generated.resources.toolsButtonSaveFile
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
-import java.io.File
-import java.io.FilenameFilter
 
 @Composable
 fun ToolbarForImage(data: ImageToolsData){

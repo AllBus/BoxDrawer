@@ -87,6 +87,8 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
+            implementation(compose.material3)
+            implementation(compose.material3AdaptiveNavigationSuite)
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3")
@@ -97,9 +99,9 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
             implementation("io.github.pdvrieze.xmlutil:core:0.86.3")
             implementation("io.github.pdvrieze.xmlutil:serialization:0.86.3")
-            implementation("androidx.collection:collection:1.4.0-rc01")
-            implementation("androidx.collection:collection-ktx:1.4.0-rc01")
-            implementation("org.jetbrains.skiko:skiko-awt-runtime-$target:0.8.4")
+            implementation("androidx.collection:collection:1.4.4")
+            implementation("androidx.collection:collection-ktx:1.4.4")
+            implementation("org.jetbrains.skiko:skiko-awt-runtime-$target:0.8.15")
             implementation("com.darkrockstudios:mpfilepicker:3.1.0")
             implementation("org.lwjgl:lwjgl-tinyfd:${lwjglVersion}")
             implementation("org.locationtech.jts:jts-core:1.19.0")
@@ -112,9 +114,7 @@ kotlin {
             implementation(project(":figure"))
             implementation(project(":dxfprinter"))
             implementation(project(":commonMain"))
-
-         //   implementation("androidx.compose.material3:material3:1.2.1")
-
+            implementation( "com.google.android.material:material:1.12.0")
             // implementation("com.groupdocs:groupdocs-comparison:22.3")
         }
 
@@ -139,7 +139,7 @@ compose.desktop {
 
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "boxdrawer"
-            packageVersion = "2.4.0"
+            packageVersion = "2.5.0"
             windows{
                 iconFile.set(project.file("robot.ico"))
                 includeAllModules = true

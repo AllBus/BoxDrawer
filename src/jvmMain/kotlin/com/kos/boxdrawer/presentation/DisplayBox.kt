@@ -9,7 +9,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Matrix
 import com.kos.boxdrawe.presentation.DrawerViewModel
-import com.kos.boxdrawe.widget.BoxDrawerToolBar
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar
 import com.kos.boxdrawer.presentation.display.DisplayBezier
 import com.kos.boxdrawer.presentation.display.DisplayGrid
 import com.kos.boxdrawer.presentation.display.DisplayTortoise
@@ -17,7 +17,6 @@ import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
-import vectors.MazeSolver
 
 @Composable
 fun DisplayBox(

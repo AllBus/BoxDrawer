@@ -46,7 +46,6 @@ import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.SimpleEditText
-import com.kos.boxdrawe.widget.TabContentModifier
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.rekaAlertClearCancel
 import com.kos.boxdrawer.generated.resources.rekaAlertClearSuccess

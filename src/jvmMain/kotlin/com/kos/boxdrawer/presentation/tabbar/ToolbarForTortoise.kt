@@ -17,7 +17,6 @@ import com.kos.boxdrawe.presentation.TortoiseData
 import com.kos.boxdrawe.widget.EditTextField
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SaveToFileButton
-import com.kos.boxdrawe.widget.TabContentModifier
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.toolsButtonCopyProgram
 import com.kos.boxdrawer.generated.resources.tortoiseFigureField

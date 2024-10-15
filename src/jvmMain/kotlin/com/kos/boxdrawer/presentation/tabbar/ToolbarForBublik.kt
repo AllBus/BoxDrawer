@@ -1,16 +1,16 @@
-package com.kos.boxdrawe.widget
+package com.kos.boxdrawer.presentation.tabbar
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.kos.boxdrawe.presentation.BublikData
-import kotlinx.coroutines.launch
+import com.kos.boxdrawe.widget.NumericUpDownLine
+import com.kos.boxdrawe.widget.RunCheckBox
+import com.kos.boxdrawe.widget.SaveToFileButton
 
 @Composable
 fun ToolbarForBublik(vm: BublikData) {

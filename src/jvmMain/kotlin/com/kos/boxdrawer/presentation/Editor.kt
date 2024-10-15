@@ -3,7 +3,6 @@ package com.kos.boxdrawer.presentation
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.foundation.ScrollbarAdapter
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.kos.boxdrawe.presentation.BoxSimpleListener
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.themes.ThemeColors
-import com.kos.boxdrawe.widget.BoxDrawerToolBar
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar
 import com.kos.boxdrawer.presentation.editors.EditBoxPolka
 import com.kos.boxdrawer.presentation.editors.EditPosition
 import com.kos.boxdrawer.presentation.template.TemplateEditorBox

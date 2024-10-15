@@ -24,7 +24,9 @@ fun FileDialog(
             override fun setVisible(value: Boolean) {
                 super.setVisible(value)
                 if (value) {
-                    onCloseRequest(File(directory, file).absolutePath)
+                    file?.let { file ->
+                        onCloseRequest(File(directory, file).absolutePath)
+                    }
                 }
             }
         }
@@ -47,7 +49,9 @@ fun SaveFileDialog(
             override fun setVisible(value: Boolean) {
                 super.setVisible(value)
                 if (value) {
-                    onCloseRequest(File(directory, file).absolutePath)
+                    file?.let { file ->
+                        onCloseRequest(File(directory, file).absolutePath)
+                    }
                 }
             }
         }

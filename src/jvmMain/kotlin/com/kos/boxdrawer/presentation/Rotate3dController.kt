@@ -56,6 +56,7 @@ fun Rotate3dController(
         val startX = remember { mutableStateOf(dropValueX.value) }
         val startY = remember { mutableStateOf(dropValueY.value) }
         val startZ = remember { mutableStateOf(dropValueZ.value) }
+        val isMoved = remember { mutableStateOf(false) }
         Canvas(modifier = Modifier.size(64.dp).clickable(
             interactionSource = interactionSource,
             indication = ripple(
@@ -65,13 +66,13 @@ fun Rotate3dController(
             enabled = true,
             role = Role.Button,
             onClick = {
-                dropValueX.value = 0f
-                dropValueY.value = 0f
-                dropValueZ.value = 0f
-                onRotateDisplay()
+//                dropValueX.value = 0f
+//                dropValueY.value = 0f
+//                dropValueZ.value = 0f
+//                onRotateDisplay()
             },
         ).onPointerEvent(PointerEventType.Press) {
-
+            isMoved.value = false
             val sz = this.size
             val posi = it.changes.first().position.toVec2()
             val pos = (posi - sz.center.toOffset().toVec2())
@@ -92,10 +93,17 @@ fun Rotate3dController(
             startZ.value = dropValueZ.value - Math.toDegrees(pos.angle).toFloat()
         }.onPointerEvent(PointerEventType.Release) {
             selectedType.value = 0
+            if (!isMoved.value){
+                dropValueX.value = 0f
+                dropValueY.value = 0f
+                dropValueZ.value = 0f
+                onRotateDisplay()
+            }
         }.onPointerEvent(PointerEventType.Move) {
             val sz = this.size
             val posi = it.changes.first().position.toVec2()
             val pos = posi - starPosition.value
+            isMoved.value = true
 
             when (selectedType.value) {
                 1 -> {

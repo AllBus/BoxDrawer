@@ -29,7 +29,6 @@ import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
-import com.kos.boxdrawe.widget.TabContentModifier
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.metricMM
 import com.kos.boxdrawer.generated.resources.toolsButtonCopyCode

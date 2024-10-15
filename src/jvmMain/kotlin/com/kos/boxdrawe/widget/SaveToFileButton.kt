@@ -10,6 +10,7 @@ import com.kos.boxdrawe.presentation.SaveFigure
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.copyFileButton
 import com.kos.boxdrawer.generated.resources.createFileButton
+import com.kos.boxdrawer.presentation.tabbar.showFileChooser
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import java.awt.Toolkit

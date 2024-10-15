@@ -8,6 +8,7 @@ object ThemeColors {
 
     val inputBorder = Color(0xFF204020)
     val inputShape = RoundedCornerShape(8.dp)
+
     val inputBackground = Color(0xFFFFffff)
     val displayLabelColor = Color(0x8FFFffff)
     val controllerBackground = Color(0x40909090)
@@ -29,5 +30,9 @@ object ThemeColors {
     val bezierPointSelect = Color(0xAA00C609)
     val bezierPointButton = Color(0xAAFFD800)
 
+    val tooltipShape = RoundedCornerShape(4.dp)
+    val tooltipBackground = Color(0xC0343434)
+    val tooltipBorder = Color(0x20000000)
+    val tooltipTextColor = Color(0xFFFFFFFF)
     val NumericFieldHeight = 30.dp
 }

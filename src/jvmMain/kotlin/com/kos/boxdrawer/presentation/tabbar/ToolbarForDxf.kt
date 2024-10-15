@@ -16,8 +16,6 @@ import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SaveToFileButton
-import com.kos.boxdrawe.widget.TabContentModifier
-import com.kos.boxdrawe.widget.showLoadFileChooser
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.dxfScaleColor
 import com.kos.boxdrawer.generated.resources.dxfScaleValue

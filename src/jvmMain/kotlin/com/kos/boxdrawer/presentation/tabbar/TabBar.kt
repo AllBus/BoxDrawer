@@ -1,4 +1,4 @@
-package com.kos.boxdrawe.widget
+package com.kos.boxdrawer.presentation.tabbar
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,10 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScrollableTabRow
-import androidx.compose.material.Tab
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material.Text
 import androidx.compose.material.primarySurface
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.State
@@ -33,18 +33,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.icons.Expand
 import com.kos.boxdrawe.presentation.DrawerViewModel
-import com.kos.boxdrawe.presentation.Tools
 import com.kos.boxdrawe.themes.ThemeColors
-import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BEZIER
-import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BOX
-import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_BUBLIK
-import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_DXF
-import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_GRID
-import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_IMAGE
-import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_REKA
-import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_SOFT
-import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TOOLS
-import com.kos.boxdrawe.widget.BoxDrawerToolBar.TAB_TORTOISE
+import com.kos.boxdrawe.widget.ImageButton
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_BEZIER
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_BOX
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_BUBLIK
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_DXF
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_GRID
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_IMAGE
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_REKA
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_SOFT
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_TOOLS
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_TORTOISE
 import com.kos.boxdrawe.widget.tabbar.ToolbarContainer
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.tabBezier
@@ -57,22 +57,6 @@ import com.kos.boxdrawer.generated.resources.tabSettings
 import com.kos.boxdrawer.generated.resources.tabSoft
 import com.kos.boxdrawer.generated.resources.tabTor
 import com.kos.boxdrawer.generated.resources.tabTortoise
-import com.kos.boxdrawer.presentation.tabbar.ToolbarActionForBezier
-import com.kos.boxdrawer.presentation.tabbar.ToolbarActionForBox
-import com.kos.boxdrawer.presentation.tabbar.ToolbarActionForDxf
-import com.kos.boxdrawer.presentation.tabbar.ToolbarActionForGrid
-import com.kos.boxdrawer.presentation.tabbar.ToolbarActionForReka
-import com.kos.boxdrawer.presentation.tabbar.ToolbarActionForSoft
-import com.kos.boxdrawer.presentation.tabbar.ToolbarActionForTools
-import com.kos.boxdrawer.presentation.tabbar.ToolbarActionForTortoise
-import com.kos.boxdrawer.presentation.tabbar.ToolbarForBezier
-import com.kos.boxdrawer.presentation.tabbar.ToolbarForBox
-import com.kos.boxdrawer.presentation.tabbar.ToolbarForDxf
-import com.kos.boxdrawer.presentation.tabbar.ToolbarForGrid
-import com.kos.boxdrawer.presentation.tabbar.ToolbarForReka
-import com.kos.boxdrawer.presentation.tabbar.ToolbarForSoft
-import com.kos.boxdrawer.presentation.tabbar.ToolbarForTools
-import com.kos.boxdrawer.presentation.tabbar.ToolbarForTortoise
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -97,7 +81,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
             modifier = Modifier
         ) {
             Box(
-                modifier = Modifier.background(MaterialTheme.colors.primarySurface).height(48.dp)
+                modifier = Modifier.background(TabRowDefaults.primaryContainerColor).height(48.dp)
             ) {
                 val icon = if (expandTools.value)
                     Expand.rememberExpandLess()
@@ -186,16 +170,6 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
             Modifier.fillMaxWidth().height(1.dp).background(Color.DarkGray)
         )
     }
-}
-
-@Composable
-fun BoardInfoBlock(modifier: Modifier, tools: Tools, onClick: () -> Unit) {
-    val selectedMovie = remember { tools.settings }
-    val boardWeight = String.format("%1$,.2f", selectedMovie.value.boardWeight)
-    Text(
-        "${selectedMovie.value.name} ($boardWeight)",
-        modifier = modifier.clickable { onClick() }
-    )
 }
 
 
