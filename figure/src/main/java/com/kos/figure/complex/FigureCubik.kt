@@ -23,10 +23,10 @@ class FigureCubik(
     val zigDistance: Int,
 ) : IFigure {
 
-    val bound : BoundingRectangle
-    val lastX : Int
-    val lastY: Int
-    val sideCounter : List<Int>
+    private val bound : BoundingRectangle
+    private val lastX : Int
+    private val lastY: Int
+    private val sideCounter : List<Int>
 
     init {
         var minX = 0
@@ -62,10 +62,18 @@ class FigureCubik(
         )
         lastX = -x
         lastY = -y
-        if (preSides.size %2 == 1) {
-            sideCounter = preSides.dropLast(1) + listOf(lastX+preSides.last(), lastY)
-        }else {
-            sideCounter = preSides + listOf(lastX, lastY)
+
+        sideCounter = if (preSides.size %2 == 1) {
+             preSides.dropLast(1) + listOf(lastX+preSides.last(), lastY)
+        } else {
+            when {
+                lastX == 0 && lastY == 0 -> preSides
+                lastY == 0 -> preSides + lastX
+                lastX == 0 -> {
+                    preSides.dropLast(1) + preSides.last()+lastY
+                }
+                else -> preSides + listOf(lastX, lastY)
+            }
         }
     }
 

@@ -3,6 +3,7 @@ package com.kos.boxdrawe.presentation
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.grid.CadGrid
+import com.kos.boxdrawer.detal.grid.Coordinates
 import com.kos.boxdrawer.detal.grid.Grid3D
 import com.kos.boxdrawer.detal.grid.GridLoops.arrangePolygons
 import com.kos.boxdrawer.detal.grid.GridOption
@@ -13,6 +14,8 @@ import com.kos.figure.FigureEmpty
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
+import com.kos.figure.complex.FigureCubik
+import com.kos.figure.composition.FigureTranslate
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -128,80 +131,43 @@ class GridData(override val tools: ITools) : SaveFigure {
 
     }
 
+    fun polygonToSideLengths(vertices: List<Coordinates>): List<Int> {
+        val sideLengths = mutableListOf<Int>()
+        var currentLength = 0
+        var previousIsHorizontal: Boolean? = null // Initialize to null
+
+        for (i in vertices.indices) {
+            val current = vertices[i]
+            val next = vertices[(i + 1) % vertices.size]
+
+            val isHorizontal = current.y == next.y
+            val sideLength = if (isHorizontal) {
+                next.x - current.x
+            } else {
+                next.y - current.y
+            }
+
+            if (previousIsHorizontal == null) { // First side
+                currentLength = sideLength
+                previousIsHorizontal = isHorizontal
+            } else if (isHorizontal == previousIsHorizontal) { // Same direction
+                currentLength += sideLength
+            } else { // Different direction
+                sideLengths.add(currentLength)
+                currentLength = sideLength
+                previousIsHorizontal = isHorizontal
+            }
+        }
+
+        sideLengths.add(currentLength) // Add the last side length
+        return sideLengths
+
+    }
+
     override suspend fun createFigure(): IFigure {
         if (useGrid3d.value) {
 
-            val planes = gridPlanes.first()
-
-            val ds = tools.ds()
-            val edges = planes.flatMap { (kubik, g) ->
-                val t = g.mapValues { (k, s) -> grid.createPolygon(s) }
-                    .flatMap { (k, s) ->
-                        when (k) {
-                            Plane.XY -> s.map { p ->
-                                val pt = p.vertices.map { it.x }
-                                val v = (pt.max() - pt.min())
-                                val m = pt.min()
-                                PolyInfo(
-                                    p.vertices.map {
-                                        Vec2(
-                                            it.x.toDouble(),
-                                            it.y.toDouble()
-                                        ) * widthCell.decimal
-                                    },
-                                    p.vertices.first().z,
-                                    k,
-                                    m * widthCell.decimal,
-                                    v * widthCell.decimal
-                                )
-                            }
-
-                            Plane.XZ -> s.map { p ->
-                                val pt = p.vertices.map { it.x }
-                                val v = (pt.max() - pt.min())
-                                val m = pt.min()
-                                PolyInfo(
-                                    p.vertices.map {
-                                        Vec2(
-                                            it.x.toDouble(),
-                                            it.z.toDouble()
-                                        ) * widthCell.decimal
-                                    },
-                                    p.vertices.first().y,
-                                    k,
-                                    m * widthCell.decimal,
-                                    v * widthCell.decimal
-                                )
-                            }
-
-                            Plane.YZ -> s.map { p ->
-                                val pt = p.vertices.map { it.y }
-                                val v = (pt.max() - pt.min())
-                                val m = pt.min()
-                                PolyInfo(
-                                    p.vertices.map {
-                                        Vec2(
-                                            it.y.toDouble(),
-                                            it.z.toDouble()
-                                        ) * widthCell.decimal
-                                    },
-                                    p.vertices.first().x,
-                                    k,
-                                    m * widthCell.decimal,
-                                    v * widthCell.decimal
-                                )
-                            }
-                        }
-                    }
-                t
-            }.map { v -> v.copy(points =  createPolygon(v, ds, widthCell.decimal))}
-
-            val v = arrangePolygons(edges)
-
-
-            // return Fi edges.map {  p -> createPolygon(p, ds, widthCell.decimal) }
-
-            return FigureList(v.polygons.map { p -> FigurePolyline(p, true) })
+            return create3dFigure()
 
 
         } else {
@@ -223,6 +189,96 @@ class GridData(override val tools: ITools) : SaveFigure {
                 drawerSettings = tools.ds()
             )
         }
+    }
+
+    private suspend fun create3dFigure(): FigureList {
+        val planes = gridPlanes.first()
+
+        val ds = tools.ds()
+
+        val cornerRadius = if (roundChecked.value) cellRadius.decimal else 0.0
+        val zigInfo = ZigzagInfo(
+            width = widthCell.decimal * 2 / 3,
+            delta = widthCell.decimal,
+            height = ds.boardWeight
+        )
+
+        val edges = planes.flatMap { (kubik, g) ->
+            val t = g.mapValues { (k, s) -> grid.createPolygon(s) }
+                .flatMap { (k, s) ->
+                    when (k) {
+                        Plane.XY ->
+                            s.map { p ->
+                                val res = polygonToSideLengths(p.vertices.map { Coordinates(it.x, it.y, 0) })
+                                println(p.vertices.joinToString(" "))
+                                println(res.joinToString(" "))
+                                FigureCubik(
+                                    size = widthCell.decimal,
+                                    sides = res.toList(),
+                                    zigInfo = zigInfo,
+                                    cornerRadius = cornerRadius,
+                                    enableDrop = true,
+                                    reverseX = true,
+                                    reverseY = false,
+                                    zigFirstIndex = 0,
+                                    zigDistance = 0,
+                                )
+                            }
+
+                        Plane.XZ ->
+                            s.map { p ->
+                                val res = polygonToSideLengths(p.vertices.map { Coordinates(it.x, it.z, 0) })
+                                FigureCubik(
+                                    size = widthCell.decimal,
+                                    sides = res.toList(),
+                                    zigInfo = zigInfo,
+                                    cornerRadius = cornerRadius,
+                                    enableDrop = true,
+                                    reverseX = true,
+                                    reverseY = false,
+                                    zigFirstIndex = 0,
+                                    zigDistance = 0,
+                                )
+
+                            }
+
+                        Plane.YZ ->
+                            s.map { p ->
+                                val res = polygonToSideLengths(p.vertices.map { Coordinates(it.y, it.z, 0) })
+                                FigureCubik(
+                                    size = widthCell.decimal,
+                                    sides = res.toList(),
+                                    zigInfo = zigInfo,
+                                    cornerRadius = cornerRadius,
+                                    enableDrop = true,
+                                    reverseX = true,
+                                    reverseY = false,
+                                    zigFirstIndex = 0,
+                                    zigDistance = 0,
+                                )
+                            }
+
+                    }
+                }
+            t
+        }
+
+        //   val v = arrangePolygons(edges)
+
+
+        // return Fi edges.map {  p -> createPolygon(p, ds, widthCell.decimal) }
+
+        var cur = Vec2.Zero
+        val res = mutableListOf<IFigure>()
+        for (edge in edges) {
+            val w = edge.rect().width
+
+            res += FigureTranslate(edge, cur)
+            cur += Vec2(w + 1.0, 0.0)
+
+        }
+
+        return FigureList(res.toList())
     }
 
     private fun createPolygon(p: PolyInfo, ds: DrawerSettings, width:Double): List<Vec2> {

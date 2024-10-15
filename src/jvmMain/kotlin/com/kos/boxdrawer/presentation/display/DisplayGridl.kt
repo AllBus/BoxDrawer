@@ -44,6 +44,7 @@ import com.kos.boxdrawer.presentation.Rotate3dController
 import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.figure.FigureEmpty
 import vectors.Vec2
+import kotlin.math.abs
 import kotlin.math.sign
 
 
@@ -235,7 +236,7 @@ fun DisplayGrid(gridData: GridData) {
                         val k = redrawEvent.value
                         for (x in 0 until grid.width) {
                             for (y in 0 until grid.height) {
-                                val cell = grid.colorAt(x, y)
+                                val cell = abs(grid.colorAt(x, y))
                                 val penColor = colorList[cell % colorList.size]
                                 drawRect(penColor, Offset(x * d, y * d), rectSize, style = style)
                             }

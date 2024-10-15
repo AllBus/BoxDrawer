@@ -7,6 +7,9 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import vectors.BoundingRectangle
 import vectors.Vec2
+import java.lang.Math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 @Serializable
 data class Kubik(val color: Int)
@@ -28,7 +31,14 @@ data class Coordinates(val x: Int, val y: Int, val z: Int){
             x * other.y - y * other.x
         )
     }
+
+    override fun toString(): String {
+        return "($x, $y, $z)"
+    }
 }
+
+
+class ResultInt(val value:Int, val move:Int)
 
 @Serializable
 class Grid3D() {
@@ -55,10 +65,95 @@ class Grid3D() {
     }
 
     fun loadFromText(text: String): Grid3D {
-        return this //Json.decodeFromString(text)
+        val com = ' '
+        var i = 0
+        var color = 1
+        var current= Coordinates(0,0,0)
+        while (i < text.length) {
+            println("> $i ${text[i]}")
+            val c= text[i]
+            when (c){
+                'C' -> {
+                    i++
+                    color = (text[i]-'0')
+                }
+                'M' -> {
+                    i++
+                    var n = text[i]
+
+                    while (n in "XYZ") {
+                        i++
+                        val resX = readInt(text, i)
+                        i = resX.move
+
+                        when (n) {
+                            'X' -> current = current.copy(x = resX.value)
+                            'Y' -> current = current.copy(y = resX.value)
+                            'Z' -> current = current.copy(z = resX.value)
+                        }
+                        n = text[i]
+                    }
+                }
+                'F' -> {
+                    i++
+                    val prev = current
+
+                    var n = text[i]
+                    while (n in "XYZ") {
+                        i++
+                        val resX = readInt(text, i)
+                        i = resX.move
+
+                        when (n) {
+                            'X' -> current = current.copy(x = current.x + resX.value)
+                            'Y' -> current = current.copy(y = current.y + resX.value)
+                            'Z' -> current = current.copy(z = current.z + resX.value)
+                        }
+
+                        n = text[i]
+                    }
+
+                    val pp = Coordinates(
+                        min(prev.x, current.x),
+                        min(prev.y, current.y),
+                        min(prev.z, current.z)
+                    )
+                    val cx = max(abs(current.x - pp.x),1)
+                    val cy = max(abs(current.y - pp.y),1)
+                    val cz = max(abs(current.z - pp.z),1)
+                    val drawKubik =  Kubik(color)
+
+                    for (x in 0 until cx) {
+                        for (y in 0 until cy) {
+                            for (z in 0 until cz) {
+                                set(pp.x+x, pp.y+y, pp.z+z,drawKubik)
+                            }
+                        }
+                    }
+                }
+            }
+            i++
+        }
+        return this
     }
 
-    /** Помк кубиков стоящих рядом */
+
+
+    fun readInt(text: String, i: Int): ResultInt{
+        var j =i
+        if (j<text.length && text[j]=='-'){
+            j++
+        }
+
+        while(j <text.length && text[j] in '0'..'9'){
+            j++
+        }
+        if (j == i)
+            return ResultInt(0, j)
+        return ResultInt(text.substring(i, j).toInt(), j)
+    }
+
+    /** Поиск кубиков стоящих рядом */
     fun findConnectedGroups(): List<KubikGroup> {
         val visited = mutableSetOf<Coordinates>()
         val groups = mutableListOf<KubikGroup>()
