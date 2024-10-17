@@ -1,7 +1,7 @@
 package com.kos.boxdrawer.detal.grid
 
 object GridEx {
-    fun findClosedLoopsV2(edges: Set<LongEdge>): Set<List<Coordinates>> {
+    fun findClosedLoopsV2(edges: Set<KubikEdge>): Set<List<Coordinates>> {
         val loops = mutableSetOf<List<Coordinates>>()
         val used = mutableSetOf<Coordinates>()
 
@@ -43,13 +43,13 @@ object GridEx {
         return loops
     }
 
-    fun findClosedLoopsVarA(edges: Set<LongEdge>): Set<List<Coordinates>> {
+    fun findClosedLoopsVarA(edges: Set<KubikEdge>): Set<List<Coordinates>> {
         val loops = mutableSetOf<List<Coordinates>>()
-        val usedEdges = mutableSetOf<LongEdge>()
+        val usedEdges = mutableSetOf<KubikEdge>()
         val edgeMap = edges.flatMap { listOf(it.start to it, it.end to it) }.groupBy { it.first }.mapValues { it.value.map { it.second } }
 
 
-        fun findNextEdge(last: Coordinates): LongEdge? {
+        fun findNextEdge(last: Coordinates): KubikEdge? {
             return edges.find { nextEdge ->
                 nextEdge !in usedEdges && (
                         (nextEdge.start == last) || (nextEdge.end == last)

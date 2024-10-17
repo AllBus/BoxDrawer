@@ -32,18 +32,18 @@ fun Grid3DVisualizer(edges: List<PolygonGroup>, rotationX: Float, rotationY: Flo
     val cur = remember(current) {
         with(current) {
             setOf(
-                LongEdge(current, Coordinates(x + 1, y, z)),
-                LongEdge(current, Coordinates(x, y + 1, z)),
-                LongEdge(current, Coordinates(x, y, z + 1)),
-                LongEdge(Coordinates(x + 1, y, z), Coordinates(x + 1, y + 1, z)),
-                LongEdge(Coordinates(x + 1, y, z), Coordinates(x + 1, y, z + 1)),
-                LongEdge(Coordinates(x, y + 1, z), Coordinates(x + 1, y + 1, z)),
-                LongEdge(Coordinates(x, y + 1, z), Coordinates(x, y + 1, z + 1)),
-                LongEdge(Coordinates(x, y, z + 1), Coordinates(x + 1, y, z + 1)),
-                LongEdge(Coordinates(x, y, z + 1), Coordinates(x, y + 1, z + 1)),
-                LongEdge(Coordinates(x + 1, y + 1, z), Coordinates(x + 1, y + 1, z + 1)),
-                LongEdge(Coordinates(x + 1, y, z + 1), Coordinates(x + 1, y + 1, z + 1)),
-                LongEdge(Coordinates(x, y + 1, z + 1), Coordinates(x + 1, y + 1, z + 1))
+                KubikEdge(current, Coordinates(x + 1, y, z)),
+                KubikEdge(current, Coordinates(x, y + 1, z)),
+                KubikEdge(current, Coordinates(x, y, z + 1)),
+                KubikEdge(Coordinates(x + 1, y, z), Coordinates(x + 1, y + 1, z)),
+                KubikEdge(Coordinates(x + 1, y, z), Coordinates(x + 1, y, z + 1)),
+                KubikEdge(Coordinates(x, y + 1, z), Coordinates(x + 1, y + 1, z)),
+                KubikEdge(Coordinates(x, y + 1, z), Coordinates(x, y + 1, z + 1)),
+                KubikEdge(Coordinates(x, y, z + 1), Coordinates(x + 1, y, z + 1)),
+                KubikEdge(Coordinates(x, y, z + 1), Coordinates(x, y + 1, z + 1)),
+                KubikEdge(Coordinates(x + 1, y + 1, z), Coordinates(x + 1, y + 1, z + 1)),
+                KubikEdge(Coordinates(x + 1, y, z + 1), Coordinates(x + 1, y + 1, z + 1)),
+                KubikEdge(Coordinates(x, y + 1, z + 1), Coordinates(x + 1, y + 1, z + 1))
             )
         }
     }
@@ -121,7 +121,7 @@ fun rotatePoint(start : Coordinates, m:Matrix): Offset {
     )
 }
 
-fun DrawScope.drawLongEdges(longEdges: Set<LongEdge>,
+fun DrawScope.drawLongEdges(longEdges: Set<KubikEdge>,
                             color: Color,
                             m:Matrix,
                             move: Offset,

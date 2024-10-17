@@ -391,120 +391,29 @@ class Grid3D() {
         path.close()
         return path
     }
-
-
-    fun convertToLongEdges(edges: Set<KubikEdge>): Set<LongEdge> {
-        val longEdges = mutableSetOf<LongEdge>()
-        val processedEdges = mutableSetOf<KubikEdge>()
-
-        // Divide edges into directions (x, y, z) using the direction property
-        val xEdges = edges.filter { it.direction == Direction.X }
-        val yEdges = edges.filter { it.direction == Direction.Y }
-        val zEdges = edges.filter { it.direction == Direction.Z }
-
-        longEdges.addAll(processEdgesInDirection(xEdges, processedEdges))
-        longEdges.addAll(processEdgesInDirection(yEdges, processedEdges))
-        longEdges.addAll(processEdgesInDirection(zEdges, processedEdges))
-
-        return longEdges
-    }
-
-    private fun processEdgesInDirection(
-        edges: List<KubikEdge>,
-        processedEdges: MutableSet<KubikEdge>
-    ): Set<LongEdge> {
-        val longEdges = mutableSetOf<LongEdge>()
-
-        for (edge in edges) {
-            if (edge !in processedEdges) {
-                val connectedEdges = mutableListOf(edge.start, edge.end)
-                processedEdges.add(edge)
-
-                var hasChanged = true
-                while (hasChanged) {
-                    hasChanged = false
-                    for (otherEdge in edges - processedEdges) {
-                        if (isCollinearAndConnects(edge, otherEdge, connectedEdges)) {
-                            processedEdges.add(otherEdge)
-                            hasChanged = true
-                        }
-                    }
-                }
-
-                longEdges.add(LongEdge(connectedEdges.first(), connectedEdges.last()))
-            }
-        }
-
-        return longEdges
-    }
-
-    private fun isCollinearAndConnects(
-        edge: KubikEdge,
-        otherEdge: KubikEdge,
-        connectedEdges: MutableList<Coordinates>
-    ): Boolean {
-        if (!edge.isCollinearWith(otherEdge)) return false
-
-        return when (edge.direction) {
-            Direction.X -> {
-                if (otherEdge.start.x == connectedEdges.last().x) {
-                    connectedEdges.add(otherEdge.end)
-                    true
-                } else if (otherEdge.end.x == connectedEdges.first().x) {
-                    connectedEdges.add(0, otherEdge.start)
-                    true
-                } else false
-            }
-            Direction.Y -> {
-                if (otherEdge.start.y == connectedEdges.last().y) {
-                    connectedEdges.add(otherEdge.end)
-                    true
-                } else if (otherEdge.end.y == connectedEdges.first().y) {
-                    connectedEdges.add(0, otherEdge.start)
-                    true
-                } else false
-            }
-            Direction.Z -> {
-                if (otherEdge.start.z == connectedEdges.last().z) {
-                    connectedEdges.add(otherEdge.end)
-                    true
-                } else if (otherEdge.end.z == connectedEdges.first().z) {
-                    connectedEdges.add(0, otherEdge.start)
-                    true
-                } else false
-            }
-        }
-    }
-
-    fun edgesInPlanes(longEdges: Set<LongEdge>): Map<Plane,Set<LongEdge>>{
-        val edgesByPlane: MutableMap<Plane,MutableSet<LongEdge>> = mutableMapOf()
-
-        for (edge in longEdges) {
-            if (edge.start.x == edge.end.x) edgesByPlane.computeIfAbsent(Plane.YZ){ mutableSetOf()}.add(edge)
-            if (edge.start.y == edge.end.y) edgesByPlane.computeIfAbsent(Plane.XZ){ mutableSetOf()}.add(edge)
-            if (edge.start.z == edge.end.z) edgesByPlane.computeIfAbsent(Plane.XY){ mutableSetOf()}.add(edge)
-        }
-
-     //   println(edgesByPlane.map { "> ${it.key} : ${it.value.size}  "}.joinToString(","))
-        return edgesByPlane
-    }
-
-
-
-
-
-
-
-
-    fun createPolygon(edges:Set<LongEdge>): Set<Polygon> {
-        return GridLoops.findClosedLoops(edges).map { loop ->
-            Polygon(loop.points)
-        }.toSet()
-    }
-
 }
 
 data class KubikGroup(val kubik: Kubik, val group: Set<Coordinates>) {
+
+    fun findExternalEdges(): Set<Pair<Coordinates, Coordinates>> {
+        val externalEdges = mutableSetOf<Pair<Coordinates, Coordinates>>()
+
+        for (coordinate in group) {
+            for (dx in -1..1) {
+                for (dy in -1..1) {
+                    for (dz in -1..1) {
+                        if (kotlin.math.abs(dx) + kotlin.math.abs(dy) + kotlin.math.abs(dz) != 1) continue // Only consider direct neighbors
+
+                        val neighborCoordinate = Coordinates(coordinate.x + dx, coordinate.y + dy, coordinate.z + dz)
+                        if (neighborCoordinate !in group) {
+                            externalEdges.add(Pair(coordinate, neighborCoordinate))
+                        }}
+                }
+            }
+        }
+
+        return externalEdges
+    }
 
     fun getExternalEdges(): Set<KubikEdge> {
         val externalEdges = mutableSetOf<KubikEdge>()
@@ -543,42 +452,13 @@ data class KubikGroup(val kubik: Kubik, val group: Set<Coordinates>) {
 
 enum class Direction { X, Y, Z }
 
-data class KubikEdge(val start: Coordinates, val end: Coordinates) {
-    val direction: Direction = when {
-        start.x != end.x -> Direction.X
-        start.y != end.y -> Direction.Y
-        start.z != end.z -> Direction.Z
-        else -> throw IllegalArgumentException("Invalid KubikEdge: start and end coordinates must be adjacent.")
-    }
-
-    init {
-        require(
-            (start.x == end.x && start.y == end.y && Math.abs(start.z - end.z) == 1) ||
-                    (start.x == end.x && start.z == end.z && Math.abs(start.y - end.y) == 1) ||
-                    (start.y == end.y&& start.z == end.z && Math.abs(start.x - end.x) == 1)
-        ) { "Invalid KubikEdge: start and end coordinates must be adjacent." }
-    }
-
-
-    fun isCollinearWith(other: KubikEdge): Boolean {
-        return direction== other.direction &&
-                (start == other.start || start == other.end || end == other.start || end == other.end)
-    }
-}
-
-data class LongEdge(val start: Coordinates, val end: Coordinates){
-    fun isConnectedTo(other: LongEdge): Boolean {
-        return start == other.end || end == other.start || start == other.start || end == other.end
-    }
-}
-
 enum class Plane { XY, XZ, YZ }
 
 data class Polygon(val vertices: List<Coordinates>)
 
 data class PolygonGroup(val kubik:Kubik, val polygons: List<Polygon>)
 
-data class Loop(val points: List<Coordinates>, val edges: List<LongEdge>){
+data class Loop(val points: List<Coordinates>, val edges: List<KubikEdge>){
 
     fun toVec2List(): List<Vec2> {
         val origin = points.first() // Choose the first point as the origin

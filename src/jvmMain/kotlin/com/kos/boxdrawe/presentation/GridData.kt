@@ -5,13 +5,12 @@ import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.grid.CadGrid
 import com.kos.boxdrawer.detal.grid.Coordinates
 import com.kos.boxdrawer.detal.grid.Grid3D
-import com.kos.boxdrawer.detal.grid.GridLoops.arrangePolygons
+import com.kos.boxdrawer.detal.grid.Grid3dUtils
+import com.kos.boxdrawer.detal.grid.GridLoops
 import com.kos.boxdrawer.detal.grid.GridOption
 import com.kos.boxdrawer.detal.grid.Plane
-import com.kos.boxdrawer.detal.grid.PolyInfo
 import com.kos.boxdrawer.detal.grid.PolygonGroup
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
 import com.kos.figure.complex.FigureCubik
@@ -22,11 +21,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import turtoise.DrawerSettings
-import turtoise.DrawingParam
-import turtoise.FigureCreator
 import com.kos.tortoise.ZigzagInfo
 import vectors.Vec2
+import kotlin.math.max
 
 class GridData(override val tools: ITools) : SaveFigure {
 
@@ -52,14 +49,15 @@ class GridData(override val tools: ITools) : SaveFigure {
     val gridPlanes = redrawEvent.map {
         val groups = grid.findConnectedGroups()
         val planes = groups.map { g ->
-            val e = grid.convertToLongEdges(g.getExternalEdges())
-            g.kubik to grid.edgesInPlanes(e)
+            val e = g.getExternalEdges()
+            g.kubik to Grid3dUtils.edgesInPlanes(e)
         }
         planes
     }
+
     val gridEdges = gridPlanes.map { planes ->
         planes.map { (kubik, g) ->
-            val t = g.mapValues { (k, s) -> grid.createPolygon(s) }
+            val t = g.mapValues { (k, s) -> GridLoops.findPolygons(s) }
                 .flatMap { (k, s) -> s }
             PolygonGroup(kubik, t)
         }
@@ -135,6 +133,7 @@ class GridData(override val tools: ITools) : SaveFigure {
         val sideLengths = mutableListOf<Int>()
         var currentLength = 0
         var previousIsHorizontal: Boolean? = null // Initialize to null
+        var firstHorizontal: Boolean = true
 
         for (i in vertices.indices) {
             val current = vertices[i]
@@ -150,6 +149,7 @@ class GridData(override val tools: ITools) : SaveFigure {
             if (previousIsHorizontal == null) { // First side
                 currentLength = sideLength
                 previousIsHorizontal = isHorizontal
+                firstHorizontal = isHorizontal
             } else if (isHorizontal == previousIsHorizontal) { // Same direction
                 currentLength += sideLength
             } else { // Different direction
@@ -159,7 +159,11 @@ class GridData(override val tools: ITools) : SaveFigure {
             }
         }
 
-        sideLengths.add(currentLength) // Add the last side length
+        if (!firstHorizontal){
+            sideLengths.add(0, currentLength)
+        } else {
+            sideLengths.add(currentLength) // Add the last side length
+        }
         return sideLengths
 
     }
@@ -168,8 +172,6 @@ class GridData(override val tools: ITools) : SaveFigure {
         if (useGrid3d.value) {
 
             return create3dFigure()
-
-
         } else {
             return cad.createEntities(
                 // cellWidthCount = cellWidthCount .decimal,
@@ -192,6 +194,10 @@ class GridData(override val tools: ITools) : SaveFigure {
     }
 
     private suspend fun create3dFigure(): FigureList {
+        val xDistance = 3.0
+        val yDistance = 3.0
+        val kubikDistance = 5.0
+
         val planes = gridPlanes.first()
 
         val ds = tools.ds()
@@ -203,15 +209,15 @@ class GridData(override val tools: ITools) : SaveFigure {
             height = ds.boardWeight
         )
 
-        val edges = planes.flatMap { (kubik, g) ->
-            val t = g.mapValues { (k, s) -> grid.createPolygon(s) }
-                .flatMap { (k, s) ->
+        val kubiks = planes.map { (kubik, g) ->
+            val t = g.mapValues { (k, s) -> GridLoops.findPolygons(s) }
+                .mapValues { (k, s) ->
                     when (k) {
                         Plane.XY ->
                             s.map { p ->
                                 val res = polygonToSideLengths(p.vertices.map { Coordinates(it.x, it.y, 0) })
-                                println(p.vertices.joinToString(" "))
-                                println(res.joinToString(" "))
+                              //  println(p.vertices.joinToString(" "))
+                               // println(res.joinToString(" "))
                                 FigureCubik(
                                     size = widthCell.decimal,
                                     sides = res.toList(),
@@ -270,46 +276,22 @@ class GridData(override val tools: ITools) : SaveFigure {
 
         var cur = Vec2.Zero
         val res = mutableListOf<IFigure>()
-        for (edge in edges) {
-            val w = edge.rect().width
+        for (k in kubiks){
+            for (edges in k.values) {
+                var maxHe = 0.0
+                for (edge in edges) {
+                    val w = edge.rect().width
+                    maxHe = max(maxHe, edge.rect().height)
 
-            res += FigureTranslate(edge, cur)
-            cur += Vec2(w + 1.0, 0.0)
-
+                    res += FigureTranslate(edge, cur - edge.rect().min)
+                    cur += Vec2(w + xDistance, 0.0)
+                }
+                cur = Vec2(0.0,  cur.y+maxHe+yDistance)
+            }
+            cur= Vec2( 0.0, cur.y+ kubikDistance)
         }
 
         return FigureList(res.toList())
-    }
-
-    private fun createPolygon(p: PolyInfo, ds: DrawerSettings, width:Double): List<Vec2> {
-
-        val param = DrawingParam(
-            reverse = false,
-            back = false,
-        )
-
-        val a = ZigzagInfo(width/2, width, ds.boardWeight)
-        val b = ZigzagInfo(width/2 - ds.holeDrop, width, -ds.boardWeight)
-        val (zig1, zig2) = when (p.orientation) {
-            Plane.XY -> a to a
-            Plane.XZ -> b to b
-            Plane.YZ -> a to b
-        }
-
-        val result = mutableListOf<Vec2>()
-        p.points.windowed(2).forEachIndexed { i, t ->
-            val zig = if (i % 2 == 0) zig1 else zig2
-            FigureCreator.zigzag(
-                points = result,
-                origin = t[0],
-                width = Vec2.distance(t[1], t[0]),
-                zig = zig,
-                angle = Vec2.angle(t[0], t[1]),
-                param = param,
-                boardWeight = ds.boardWeight
-            )
-        }
-        return result.toList()
     }
 
     fun createFigureOff(): IFigure {

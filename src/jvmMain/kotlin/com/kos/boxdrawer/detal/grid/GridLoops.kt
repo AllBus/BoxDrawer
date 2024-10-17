@@ -59,7 +59,43 @@ object GridLoops {
     }
 
 
-    fun findClosedLoops(edges: Set<LongEdge>): Set<Loop> {
+    fun findPolygons(edges: Set<KubikEdge>): List<Polygon> {
+        val polygons = mutableListOf<Polygon>()
+        val unusedEdges = edges.toMutableSet()
+
+        while (unusedEdges.isNotEmpty()) {
+            val startEdge = unusedEdges.first()
+            unusedEdges.remove(startEdge)
+
+            val currentPolygon = mutableListOf(startEdge.start, startEdge.end)
+            var currentPoint = startEdge.end
+//            var previousPoint = startEdge.start
+
+            while (currentPoint != startEdge.start) {
+                val nextEdge = unusedEdges.find { it.start == currentPoint || it.end == currentPoint }
+
+                if (nextEdge != null) {
+                    unusedEdges.remove(nextEdge)
+                    val nextPoint = if (nextEdge.start == currentPoint) nextEdge.end else nextEdge.start
+                    currentPolygon.add(nextPoint)
+  //                  previousPoint = currentPoint
+                    currentPoint = nextPoint
+                } else {
+                    // Handle case where a closed polygon cannot be formed
+                    break
+                }
+            }
+
+            if (currentPoint == startEdge.start) {
+                polygons.add(Polygon(currentPolygon))
+            }
+        }
+
+        return polygons
+    }
+
+
+    fun findClosedLoops(edges: Set<KubikEdge>): Set<Loop> {
         val loops = mutableSetOf<Loop>()
         val used = mutableSetOf<Coordinates>()
 
@@ -74,7 +110,7 @@ object GridLoops {
             val (endPoint, firstEdge) = connectedPoints.first()
 
             val loopPoints = mutableListOf(startPoint, endPoint)
-            val loopEdges = mutableListOf<LongEdge>()
+            val loopEdges = mutableListOf<KubikEdge>()
             loopEdges.add(firstEdge)
 
             var lastPoint = endPoint
