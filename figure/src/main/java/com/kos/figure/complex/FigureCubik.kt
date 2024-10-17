@@ -24,8 +24,6 @@ class FigureCubik(
 ) : IFigure {
 
     private val bound : BoundingRectangle
-    private val lastX : Int
-    private val lastY: Int
     private val sideCounter : List<Int>
 
     init {
@@ -60,8 +58,8 @@ class FigureCubik(
             Vec2(minX*size, minY*size),
             Vec2(maxX*size, maxY*size)
         )
-        lastX = -x
-        lastY = -y
+        val lastX = -x
+        val lastY = -y
 
         sideCounter = if (preSides.size %2 == 1) {
              preSides.dropLast(1) + listOf(lastX+preSides.last(), lastY)
@@ -145,7 +143,7 @@ class FigureCubik(
             val s = sideCounter[si]
             val next = sideCounter[(si+1)%sideCounter.size]
 
-            val pred = if (si==0) lastY else sideCounter[si-1 ]
+            val pred = if (si==0) sideCounter.last() else sideCounter[si-1 ]
 
             if (s<0) {
                 g.rotate(180.0, Vec2.Zero)

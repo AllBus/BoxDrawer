@@ -454,7 +454,9 @@ enum class Direction { X, Y, Z }
 
 enum class Plane { XY, XZ, YZ }
 
-data class Polygon(val vertices: List<Coordinates>)
+data class Polygon(val vertices: List<Coordinates>){
+
+}
 
 data class PolygonGroup(val kubik:Kubik, val polygons: List<Polygon>)
 

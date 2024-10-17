@@ -17,10 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
-import androidx.compose.material.Text
-import androidx.compose.material.primarySurface
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -35,17 +31,9 @@ import com.kos.boxdrawe.icons.Expand
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.ImageButton
-import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_BEZIER
-import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_BOX
-import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_BUBLIK
-import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_DXF
-import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_GRID
-import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_IMAGE
-import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_REKA
-import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_SOFT
-import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_TOOLS
-import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_TORTOISE
+import com.kos.boxdrawe.widget.tabbar.ScrollableTabRowWithHotkeys
 import com.kos.boxdrawe.widget.tabbar.ToolbarContainer
+import com.kos.boxdrawe.widget.tabbar.TopTab
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.tabBezier
 import com.kos.boxdrawer.generated.resources.tabBox
@@ -57,6 +45,16 @@ import com.kos.boxdrawer.generated.resources.tabSettings
 import com.kos.boxdrawer.generated.resources.tabSoft
 import com.kos.boxdrawer.generated.resources.tabTor
 import com.kos.boxdrawer.generated.resources.tabTortoise
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_BEZIER
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_BOX
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_BUBLIK
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_DXF
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_GRID
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_IMAGE
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_REKA
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_SOFT
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_TOOLS
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_TORTOISE
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -68,20 +66,19 @@ import javax.swing.filechooser.FileNameExtensionFilter
 val TabContentModifier =
     Modifier.fillMaxWidth().fillMaxHeight().padding(vertical = 4.dp, horizontal = 16.dp)
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
     val tabIndex = vm.value.tabIndex.collectAsState()
     val expandTools = remember { mutableStateOf(true) }
 
     Column(
-        Modifier.fillMaxWidth().wrapContentHeight().background(Color.White)
+        Modifier.fillMaxWidth().background(ThemeColors.tabBackground)
     ) {
         Row(
             modifier = Modifier
         ) {
             Box(
-                modifier = Modifier.background(TabRowDefaults.primaryContainerColor).height(48.dp)
+                modifier = Modifier.background(TabRowDefaults.primaryContainerColor).height(32.dp)
             ) {
                 val icon = if (expandTools.value)
                     Expand.rememberExpandLess()
@@ -96,26 +93,32 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                     expandTools.value = !expandTools.value
                 }
             }
-            ScrollableTabRow(
+            ScrollableTabRowWithHotkeys(
                 selectedTabIndex = tabIndex.value,
                 modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp),
+                onTabSelected = { id ->
+                    if (id >=0 && id < tabs.size) {
+                        vm.value.tabIndex.value = id
+                        expandTools.value = true
+                    }
+                }
             ) {
                 tabs.forEach { info ->
-                    Tab(
+                    TopTab(
                         selected = info.id == tabIndex.value,
                         onClick = {
                             vm.value.tabIndex.value = info.id
                             expandTools.value = true
                         },
-                        modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp),
-                        text = { Text(stringResource(info.title)) },
+                        modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp).wrapContentHeight(),
+                        text = stringResource(info.title), //{ Text(stringResource(info.title)) },
                     )
                 }
             }
         }
         AnimatedVisibility(expandTools.value) {
             Box(
-                Modifier.fillMaxWidth().height(220.dp).background(ThemeColors.tabBackground)
+                Modifier.fillMaxWidth().height(220.dp)
             ) {
                 ToolbarContainer(
                     tabIndex = tabIndex,

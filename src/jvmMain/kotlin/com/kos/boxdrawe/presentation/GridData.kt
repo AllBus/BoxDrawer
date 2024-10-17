@@ -129,7 +129,8 @@ class GridData(override val tools: ITools) : SaveFigure {
 
     }
 
-    fun polygonToSideLengths(vertices: List<Coordinates>): List<Int> {
+    fun polygonToSideLengths(coordinates: List<Coordinates>): List<Int> {
+        val vertices = GridLoops.ensureClockwise(coordinates)
         val sideLengths = mutableListOf<Int>()
         var currentLength = 0
         var previousIsHorizontal: Boolean? = null // Initialize to null
@@ -146,6 +147,9 @@ class GridData(override val tools: ITools) : SaveFigure {
                 next.y - current.y
             }
 
+            if (sideLength == 0)
+                continue
+
             if (previousIsHorizontal == null) { // First side
                 currentLength = sideLength
                 previousIsHorizontal = isHorizontal
@@ -159,13 +163,23 @@ class GridData(override val tools: ITools) : SaveFigure {
             }
         }
 
-        if (!firstHorizontal){
-            sideLengths.add(0, currentLength)
-        } else {
-            sideLengths.add(currentLength) // Add the last side length
-        }
-        return sideLengths
+        sideLengths.add(currentLength) // Add the last side length
 
+        return if (!firstHorizontal && sideLengths.size>0) {
+            val l = sideLengths.first()
+            val e = sideLengths.last()
+            if (sideLengths.size%2 ==1){
+                sideLengths.drop(1).dropLast(1)+(l+e)
+            } else
+                sideLengths.drop(1)+l
+        } else{
+            if (sideLengths.size %2 ==1){
+                val l = sideLengths.first()
+                val e = sideLengths.last()
+                listOf(l+e) +sideLengths.drop(1).dropLast(1)
+            } else
+                sideLengths
+        }
     }
 
     override suspend fun createFigure(): IFigure {
@@ -233,15 +247,17 @@ class GridData(override val tools: ITools) : SaveFigure {
 
                         Plane.XZ ->
                             s.map { p ->
-                                val res = polygonToSideLengths(p.vertices.map { Coordinates(it.x, it.z, 0) })
+                                val v = p.vertices.map { Coordinates(it.x, it.z, 0) }
+                          //      println(v.joinToString(" "))
+                                val res = polygonToSideLengths(v)
                                 FigureCubik(
                                     size = widthCell.decimal,
                                     sides = res.toList(),
                                     zigInfo = zigInfo,
                                     cornerRadius = cornerRadius,
                                     enableDrop = true,
-                                    reverseX = true,
-                                    reverseY = false,
+                                    reverseX = false,
+                                    reverseY = true,
                                     zigFirstIndex = 0,
                                     zigDistance = 0,
                                 )
@@ -250,15 +266,15 @@ class GridData(override val tools: ITools) : SaveFigure {
 
                         Plane.YZ ->
                             s.map { p ->
-                                val res = polygonToSideLengths(p.vertices.map { Coordinates(it.y, it.z, 0) })
+                                val res = polygonToSideLengths(p.vertices.map { Coordinates(it.z, it.y,  0) })
                                 FigureCubik(
                                     size = widthCell.decimal,
                                     sides = res.toList(),
                                     zigInfo = zigInfo,
                                     cornerRadius = cornerRadius,
                                     enableDrop = true,
-                                    reverseX = true,
-                                    reverseY = false,
+                                    reverseX = false,
+                                    reverseY = true,
                                     zigFirstIndex = 0,
                                     zigDistance = 0,
                                 )

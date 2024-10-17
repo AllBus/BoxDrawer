@@ -66,7 +66,7 @@ class DrawerViewModel {
         withContext(DispatcherList.IO) {
             var changeImgList: Boolean = false
             val r = imageFigures.mapNotNull { f ->
-                println(f.uri)
+            //    println(f.uri)
                 val pv = previousImages[f.uri]
                 if (pv != null) {
                     f.uri to pv
