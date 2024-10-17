@@ -102,4 +102,10 @@
     <string name="editorInsertValueBtn">Вставить значение</string>
     <string name="editorInsertMoveLabel">Добавить перемещение</string>
     <string name="boardInfoTooltip">Толщина доски</string>
+    <string name="torRadiusOuter">Радиус тора</string>
+    <string name="torRadius">Радиус</string>
+    <string name="torRadiusInner">Радиус отверстия</string>
+    <string name="torSegmentsCount">Число сегментов</string>
+    <string name="torSidesCount">Число сторон</string>
+    <string name="torPazLocation">Положение пазов</string>
 </resources>

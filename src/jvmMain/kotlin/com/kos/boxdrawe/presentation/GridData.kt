@@ -218,9 +218,10 @@ class GridData(override val tools: ITools) : SaveFigure {
 
         val cornerRadius = if (roundChecked.value) cellRadius.decimal else 0.0
         val zigInfo = ZigzagInfo(
-            width = widthCell.decimal * 2 / 3,
+            width = widthCell.decimal * 2 / 5,
             delta = widthCell.decimal,
-            height = ds.boardWeight
+            height = ds.boardWeight,
+            drop = ds.holeDrop
         )
 
         val kubiks = planes.map { (kubik, g) ->
