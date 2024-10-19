@@ -28,7 +28,7 @@ class FigureImage(val origin:Vec2, val uri:String,  val size: Vec2) : IFigure{
     }
 
     override fun collection(): List<IFigure> {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 
     override fun name(): String {
