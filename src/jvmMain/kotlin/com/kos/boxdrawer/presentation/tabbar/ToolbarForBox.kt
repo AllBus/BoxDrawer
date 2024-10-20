@@ -59,13 +59,14 @@ fun ToolbarForBox(vm: BoxData) {
     val text = rememberSaveable(key = "ToolbarForBox.Text") { vm.text }
 
 
-    val rowArrange = remember { mutableStateOf(1) }
+    val rowArrange = remember { mutableStateOf(0) }
     val density = LocalDensity.current
 
     Row(
         modifier = TabContentModifier.onSizeChanged {
             rowArrange.value = if (it.width < 600*density.density) 2 else 1
-        },
+        }
+        ,
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         if (rowArrange.value == 1 ) {

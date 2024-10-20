@@ -96,6 +96,7 @@ fun DisplayBox(
         BoxDrawerToolBar.TAB_SOFT,
         BoxDrawerToolBar.TAB_BUBLIK,
         BoxDrawerToolBar.TAB_DXF,
+        BoxDrawerToolBar.TAB_FORMULA,
         BoxDrawerToolBar.TAB_TOOLS -> {
             DisplayTortoise(
                 displayScale = displayScale,

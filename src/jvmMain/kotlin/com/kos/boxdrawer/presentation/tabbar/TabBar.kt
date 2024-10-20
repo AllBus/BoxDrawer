@@ -38,6 +38,7 @@ import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.tabBezier
 import com.kos.boxdrawer.generated.resources.tabBox
 import com.kos.boxdrawer.generated.resources.tabDxf
+import com.kos.boxdrawer.generated.resources.tabFormula
 import com.kos.boxdrawer.generated.resources.tabGrid
 import com.kos.boxdrawer.generated.resources.tabImage
 import com.kos.boxdrawer.generated.resources.tabReka
@@ -49,6 +50,7 @@ import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_BEZIER
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_BOX
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_BUBLIK
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_DXF
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_FORMULA
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_GRID
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_IMAGE
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_REKA
@@ -134,6 +136,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                             TAB_TOOLS -> ToolbarForTools(vm.value.options)
                             TAB_DXF -> ToolbarForDxf(vm.value.dxfData)
                             TAB_IMAGE -> ToolbarForImage(vm.value.imageData)
+                            TAB_FORMULA -> ToolbarForFormula(vm.value.formulaData)
                         }
                     },
                     actionsBlock = {
@@ -156,6 +159,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                                     TAB_TOOLS -> ToolbarActionForTools(vm.value.options)
                                     TAB_DXF -> ToolbarActionForDxf(vm.value.dxfData)
                                     TAB_IMAGE -> ToolbarActionForImage(vm.value.imageData)
+                                    TAB_FORMULA -> ToolbarActionForFormula(vm.value.formulaData)
                                 }
                             }
                             BoardInfoBlock(
@@ -284,6 +288,7 @@ object BoxDrawerToolBar {
     const val TAB_DXF = 7
     const val TAB_TOOLS = 8
     const val TAB_IMAGE = 9
+    const val TAB_FORMULA = 10
 
     val tabs = listOf(
         TabInfo(TAB_BOX, Res.string.tabBox),
@@ -296,5 +301,6 @@ object BoxDrawerToolBar {
         TabInfo(TAB_DXF, Res.string.tabDxf),
         TabInfo(TAB_TOOLS, Res.string.tabSettings),
         TabInfo(TAB_IMAGE, Res.string.tabImage),
+        TabInfo(TAB_FORMULA, Res.string.tabFormula),
     )
 }

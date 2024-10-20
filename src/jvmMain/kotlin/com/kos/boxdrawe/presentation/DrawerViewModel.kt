@@ -40,6 +40,7 @@ class DrawerViewModel {
     val rectData = RekaToolsData(tools)
     val dxfData = DxfToolsData(tools)
     val imageData =  ImageToolsData(tools)
+    val formulaData =  FormulaData(tools)
     val tabIndex = MutableStateFlow(BoxDrawerToolBar.TAB_TORTOISE)
     val calculatorData = CalculatorData()
 
@@ -52,6 +53,7 @@ class DrawerViewModel {
             BoxDrawerToolBar.TAB_REKA -> rectData.figures
             BoxDrawerToolBar.TAB_TOOLS -> template.currentFigure
             BoxDrawerToolBar.TAB_DXF -> dxfData.currentFigure
+            BoxDrawerToolBar.TAB_FORMULA -> formulaData.figures
             else -> noneFigure
         }
     }

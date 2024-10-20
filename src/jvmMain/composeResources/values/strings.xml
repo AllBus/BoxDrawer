@@ -67,6 +67,12 @@
     <string name="tabDxf">DXF</string>
     <string name="tabSettings">Инструменты</string>
     <string name="tabImage">Картинка</string>
+    <string name="tabFormula">Формула</string>
+    <string name="formulaSystem">Система координат</string>
+    <string name="formulaEuclide">Декартова</string>
+    <string name="formulaCylinder">Полярная</string>
+    <string name="formulaSferic">Сферическая</string>
+    <string name="formulaCustom">Произвольная</string>
     <string name="bezierNewLineButton">Создать линию</string>
     <string name="bezierFigureLabel">Разместить вдоль линии</string>
     <string name="bezierFigureDistance">Расстояние</string>
