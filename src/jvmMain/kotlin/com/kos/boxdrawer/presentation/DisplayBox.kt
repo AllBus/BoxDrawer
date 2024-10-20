@@ -5,12 +5,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Matrix
 import com.kos.boxdrawe.presentation.DrawerViewModel
+import com.kos.boxdrawe.presentation.Instruments
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar
 import com.kos.boxdrawer.presentation.display.DisplayBezier
+import com.kos.boxdrawer.presentation.display.DisplayDxf
 import com.kos.boxdrawer.presentation.display.DisplayGrid
 import com.kos.boxdrawer.presentation.display.DisplayTortoise
 import com.kos.boxdrawer.presentation.model.ImageMap
@@ -95,7 +98,6 @@ fun DisplayBox(
         BoxDrawerToolBar.TAB_REKA,
         BoxDrawerToolBar.TAB_SOFT,
         BoxDrawerToolBar.TAB_BUBLIK,
-        BoxDrawerToolBar.TAB_DXF,
         BoxDrawerToolBar.TAB_FORMULA,
         BoxDrawerToolBar.TAB_TOOLS -> {
             DisplayTortoise(
@@ -120,8 +122,35 @@ fun DisplayBox(
             //MazeSolver()
             DisplayImageProcessing(vm.value.imageData)
         }
-
-
+        BoxDrawerToolBar.TAB_DXF ->
+            DisplayDxf(
+                displayScale = displayScale,
+                pos = pos,
+                matrix = matrix,
+                enableMatrix = false,
+                figures = figures.value,
+                images = images.value,
+                selectedItem = selectedItem,
+                onStateChange =  { text ->
+                    stateText.value = text
+                },
+                onPress = { point, button , scale ->
+                    coroutineScope.launch {
+                        vm.value.onPress(point, button, scale)
+                    }
+                },
+                onMove = { point, button , scale ->
+                    coroutineScope.launch {
+                        vm.value.onMove(point, button, scale)
+                    }
+                },
+                onRelease = { point, button , scale ->
+                    coroutineScope.launch {
+                        vm.value.onRelease(point, button, scale)
+                    }
+                },
+                instrument = vm.value.dxfData.instrumentState.collectAsState(Instruments.NONE)
+            )
         else -> {
 
         }

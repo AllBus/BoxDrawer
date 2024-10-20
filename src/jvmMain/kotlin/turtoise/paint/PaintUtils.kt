@@ -9,12 +9,39 @@ import com.kos.figure.collections.SimpleFigure
 import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslate
 import com.kos.figure.composition.FigureTranslateWithRotate
+import nl.adaptivity.xmlutil.core.impl.multiplatform.name
 import turtoise.TortoiseState
 import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
 
 object PaintUtils {
+
+    fun findPointAtCursor(
+        transform: Matrix,
+        position: Vec2,
+        eps: Double,
+        figures: List<IFigure>
+    ):Vec2?{
+        figures.forEach { f ->
+            val mt = transform.copyWithTransform(f.transform)
+            val ptf = f.transform.getInvert()
+            val posp = ptf * position
+
+            //if ( check(posp, eps, f) ) {
+                val r = blizPoint(posp, eps, f)
+                if (r != null) {
+                    return r
+                }
+         //   }else{
+                val p = findPointAtCursor(mt, posp, eps, f.collection())
+                if (p!= null)
+                    return  p
+           // }
+        }
+
+        return null
+    }
 
     fun findFiguresAtCursor(
         transform: Matrix,
@@ -41,6 +68,31 @@ object PaintUtils {
                     }
                 ) + findFiguresAtCursor(transform, position, eps, f.collection())
             }
+        }
+    }
+
+    private fun blizPoint(position: Vec2, eps: Double, figure: IFigure): Vec2? {
+        println("blizPoint $position $eps ${figure::class.name}")
+        return when (figure) {
+            is Figure -> {
+                val b:Vec2? = if (inRect(position, eps, figure.rect())) {
+                    when (figure) {
+                        is FigureCircle ->
+                            if (Vec2.distance(figure.center, position) < eps) figure.center else null
+
+                        is FigurePolyline -> {
+                            println(figure.points.joinToString(" "))
+                            val minValue = figure.points.minBy { Vec2.distance(it, position) }
+                            if (Vec2.distance(minValue, position)<eps) minValue else null
+                        }
+                        else -> null
+                    }
+                } else
+                    null
+                b
+            }
+
+            else -> null
         }
     }
 

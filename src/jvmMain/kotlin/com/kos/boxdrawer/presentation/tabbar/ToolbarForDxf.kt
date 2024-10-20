@@ -4,6 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -12,6 +18,8 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.DxfToolsData
+import com.kos.boxdrawe.presentation.Instruments
+import com.kos.boxdrawe.presentation.Instruments.INSTRUMENT_RECTANGLE
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawe.widget.RunButton
@@ -33,6 +41,10 @@ fun ToolbarForDxf(vm: DxfToolsData) {
     val colorValue2 = remember { vm.scaleColor2 }
     val scaleValue3 = remember { vm.scaleEdit3 }
     val colorValue3 = remember { vm.scaleColor3 }
+
+    val instrument = remember { vm.instrument }
+
+
     Row(
         modifier = TabContentModifier
     ) {
@@ -50,7 +62,30 @@ fun ToolbarForDxf(vm: DxfToolsData) {
                 NumericUpDownLine(stringResource(Res.string.dxfScaleValue), "", scaleValue3, modifier = Modifier.weight(3f))
             }
         }
-        Column(modifier = Modifier.weight(1f)) {  }
+        Column(modifier = Modifier.weight(1f)) {
+            Button(onClick= {
+                if (instrument.value != INSTRUMENT_RECTANGLE)
+                    instrument.value = INSTRUMENT_RECTANGLE
+                else
+                    instrument.value = Instruments.INSTRUMENT_NONE
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.AccountBox,
+                    contentDescription = "Rectangle"
+                )
+            }
+            Button(onClick= {
+                if (instrument.value != Instruments.INSTRUMENT_LINE)
+                    instrument.value = Instruments.INSTRUMENT_LINE
+                else
+                    instrument.value = Instruments.INSTRUMENT_NONE
+            }) {
+                Icon(
+                    imageVector = Icons.Filled.Menu,
+                    contentDescription = "Line"
+                )
+            }
+        }
     }
 }
 

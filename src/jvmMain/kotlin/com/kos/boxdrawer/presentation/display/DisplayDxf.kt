@@ -4,7 +4,13 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.PointerMatcher
 import androidx.compose.foundation.gestures.onDrag
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
@@ -21,19 +27,20 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerButton
+import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.drawer.drawFigures
-import com.kos.boxdrawe.presentation.ImageUtils.bufferedImageToImageBitmap
-import com.kos.boxdrawe.presentation.ImageUtils.collectImages
-import com.kos.boxdrawe.presentation.ImageUtils.formatOfData
-import com.kos.boxdrawe.presentation.ImageUtils.loadImageFromFile
-import com.kos.boxdrawe.presentation.ImageUtils.supportedFormats
 import com.kos.boxdrawe.presentation.InstrumentState
 import com.kos.boxdrawe.presentation.Instruments
+import com.kos.boxdrawe.presentation.Instruments.POINTER_LEFT
+import com.kos.boxdrawe.presentation.Instruments.POINTER_MIDDLE
+import com.kos.boxdrawe.presentation.Instruments.POINTER_NONE
+import com.kos.boxdrawe.presentation.Instruments.POINTER_RIGHT
 import com.kos.boxdrawe.widget.toOffset
 import com.kos.boxdrawe.widget.toVec2
 import com.kos.boxdrawer.presentation.ZoomUtils
@@ -41,12 +48,11 @@ import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
 import vectors.Vec2
-import kotlin.math.exp
 import kotlin.math.sign
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun DisplayTortoise(
+fun DisplayDxf(
     displayScale: MutableFloatState,
     pos: MutableState<Offset>,
     matrix: State<Matrix>,
@@ -56,6 +62,9 @@ fun DisplayTortoise(
     selectedItem: State<List<FigureInfo>>,
     onStateChange: (String) -> Unit,
     onPress: (Vec2, Int, Float) -> Unit,
+    onMove: (Vec2, Int, Float) -> Unit,
+    onRelease: (Vec2, Int, Float) -> Unit,
+    instrument: State<InstrumentState>  = remember { mutableStateOf(Instruments.NONE) },
 ) {
 
 //    var pos by rememberSaveable("DisplayTortoiseOffset") { mutableStateOf(Offset.Zero) }
@@ -66,24 +75,26 @@ fun DisplayTortoise(
 
     val scale = displayScale.value
 
+    val points = remember { mutableStateOf(listOf<Vec2>()) }
+
     Canvas(modifier = Modifier.fillMaxSize().clipToBounds()
         .onPointerEvent(PointerEventType.Press) { event ->
 
             val posi = event.changes.first().position.toVec2()
             val sp = coordAtPointer(pos.value, scale, posi)
 
-            val pt = when (event.button) {
-                PointerButton.Primary -> 1
-                PointerButton.Secondary -> 2
-                PointerButton.Tertiary -> 3
-                else -> 0
-            }
+            val pt = pointerButtonToId(event)
             selectedType.value = pt
             onPress(sp, pt, scale)
 
 
-        }.onPointerEvent(PointerEventType.Release) {
+        }.onPointerEvent(PointerEventType.Release) { event ->
             selectedType.value = 0
+
+            val posi = event.changes.first().position.toVec2()
+            val sp = coordAtPointer(pos.value, scale, posi)
+            val pt = pointerButtonToId(event)
+            onRelease(sp,pt, scale)
         }
         .onPointerEvent(PointerEventType.Scroll) {
             val change = it.changes.first()
@@ -103,8 +114,8 @@ fun DisplayTortoise(
                 pos.value = -(sp - pv).toOffset()
                 displayScale.value = resScale.toFloat()
             }
-        }.onPointerEvent(PointerEventType.Move) {
-            val posi = it.changes.first().position.toVec2()
+        }.onPointerEvent(PointerEventType.Move) { event->
+            val posi = event.changes.first().position.toVec2()
             val sp = coordAtPointer(pos.value, scale, posi)
             val ds = displayScale.value.toDouble()
             val dz = displaySize.value.toVec2() / ds
@@ -117,10 +128,11 @@ fun DisplayTortoise(
                     dz.y
                 )
             )
+            onMove(sp,  selectedType.value , scale)
         }.onDrag(
-            matcher = PointerMatcher.Primary + PointerMatcher.mouse(PointerButton.Secondary) + PointerMatcher.mouse(
+            matcher = PointerMatcher.mouse(PointerButton.Secondary) + PointerMatcher.mouse(
                 PointerButton.Tertiary
-            ) + PointerMatcher.stylus,
+            ),
             onDrag = { offset ->
                 pos.value += offset / displayScale.value
             }
@@ -156,7 +168,20 @@ fun DisplayTortoise(
                 this.drawFigures(figures, selectedItem.value, measurer, images)
             }
         })
+    Box(modifier = Modifier.padding(8.dp)){
+        DrawInstrumentIcon(instrument.value.selectedInstrument)
+    }
+}
 
+@OptIn(ExperimentalComposeUiApi::class)
+private fun pointerButtonToId(event: PointerEvent): Int {
+    val pt = when (event.button) {
+        PointerButton.Primary -> POINTER_LEFT
+        PointerButton.Secondary -> POINTER_RIGHT
+        PointerButton.Tertiary -> POINTER_MIDDLE
+        else -> POINTER_NONE
+    }
+    return pt
 }
 
 private fun AwaitPointerEventScope.coordAtPointer(
@@ -167,6 +192,21 @@ private fun AwaitPointerEventScope.coordAtPointer(
     return (-translate.toVec2() + (pointerPosition - size.toVec2() / 2.0) / scale.toDouble())
 }
 
-fun scale(delta: Int): Float {
-    return exp(delta * 0.2f) // (value * exp(delta * 0.2f)).coerceIn(0.02f, 50f)
+@Composable
+fun DrawInstrumentIcon(instrument:Int){
+    when (instrument){
+        Instruments.INSTRUMENT_NONE -> {}
+        Instruments.INSTRUMENT_LINE -> {
+            Icon(
+                imageVector = Icons.Filled.Menu,
+                contentDescription = "Line"
+            )
+        }
+        Instruments.INSTRUMENT_RECTANGLE -> {
+            Icon(
+                imageVector = Icons.Filled.AccountBox,
+                contentDescription = "Rectangle"
+            )
+        }
+    }
 }
