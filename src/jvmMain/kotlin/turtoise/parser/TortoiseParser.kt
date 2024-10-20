@@ -24,6 +24,8 @@ import turtoise.help.IHelpInfo
 import turtoise.help.TortoiseHelpInfo
 import turtoise.memory.keys.MemoryKey
 import turtoise.rect.RekaAlgorithm
+import turtoise.svg.SvgAlgorithm
+import turtoise.svg.SvgHelpInfo
 import java.util.Stack
 
 
@@ -56,6 +58,7 @@ object TortoiseParser {
         BoxHelpInfo(),
         PolkaHelpInfo(),
         DxfHelpInfo(),
+        SvgHelpInfo(),
         //RekaHelpInfo(),
         //TemplateHelpInfo(),
         HideHelpInfo(),
@@ -77,6 +80,9 @@ object TortoiseParser {
                 "box" -> BoxAlgorithm.parseBox(items, f.drop(1).dropLast(1).toTypedArray())
                 "dxf" -> DxfFileAlgorithm(
                     items.blocks.firstOrNull()?.innerLine.orEmpty()
+                )
+                "svg" -> SvgAlgorithm(
+                    items.blocks.map{it.innerLine }
                 )
 
                 "template" -> TemplateAlgorithm.create(f.getOrElse(1) { "figure" }, items)
@@ -303,7 +309,7 @@ object TortoiseParser {
         sb.appendLine()
 
         sb.append(helpName("dxf"))
-        sb.append(helpDescr(" - Рисовать срдержимое dxf файла"))
+        sb.append(helpDescr(" - Рисовать содержимое dxf файла"))
         sb.appendLine()
         sb.appendLine()
 

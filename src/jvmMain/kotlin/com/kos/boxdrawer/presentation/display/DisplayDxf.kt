@@ -7,10 +7,6 @@ import androidx.compose.foundation.gestures.onDrag
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
@@ -192,21 +188,3 @@ private fun AwaitPointerEventScope.coordAtPointer(
     return (-translate.toVec2() + (pointerPosition - size.toVec2() / 2.0) / scale.toDouble())
 }
 
-@Composable
-fun DrawInstrumentIcon(instrument:Int){
-    when (instrument){
-        Instruments.INSTRUMENT_NONE -> {}
-        Instruments.INSTRUMENT_LINE -> {
-            Icon(
-                imageVector = Icons.Filled.Menu,
-                contentDescription = "Line"
-            )
-        }
-        Instruments.INSTRUMENT_RECTANGLE -> {
-            Icon(
-                imageVector = Icons.Filled.AccountBox,
-                contentDescription = "Rectangle"
-            )
-        }
-    }
-}

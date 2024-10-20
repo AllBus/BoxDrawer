@@ -2,6 +2,7 @@ package com.kos.boxdrawe.presentation
 
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.figure.FigureExtractor
+import com.kos.figure.FigureBezier
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureInfo
@@ -13,6 +14,7 @@ import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureComposition
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
 import org.kabeja.dxf.DXFDocument
@@ -34,14 +36,21 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
     private val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
     val dxfPreview = MutableStateFlow(false)
 
-    val instrument = MutableStateFlow(Instruments.INSTRUMENT_NONE)
+    private val _instrument = MutableStateFlow(Instruments.INSTRUMENT_NONE)
+    val instrument :StateFlow<Int> = _instrument
+
+    fun changeInstrument(value:Int){
+        appendFigure()
+        _instrument.value = value
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val instrumentState = instrument.mapLatest { v ->
+    val instrumentState = _instrument.mapLatest { v ->
         InstrumentState(v)
     }
 
     private var startPoint: Vec2 = Vec2.Zero
+    private var pointList = mutableListOf<Vec2>()
     private var endPoint: Vec2 = Vec2.Zero
 
     private val editFigure: MutableStateFlow<IFigure> = MutableStateFlow(FigureEmpty)
@@ -58,7 +67,8 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
     }
 
     fun recalcFigure() {
-        val r = when (instrument.value) {
+        val delta = (endPoint - startPoint)
+        val r = when (_instrument.value) {
             Instruments.INSTRUMENT_LINE -> FigureLine(startPoint, endPoint)
             Instruments.INSTRUMENT_RECTANGLE -> FigurePolyline(
                 listOf(
@@ -68,7 +78,18 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                     Vec2(startPoint.x, endPoint.y)
                 ), true
             )
+            Instruments.INSTRUMENT_CIRCLE -> FigureCircle(startPoint, delta.magnitude, true)
+            Instruments.INSTRUMENT_POLYGON -> FigureCreator.regularPolygon(startPoint,6, delta.angle, delta.magnitude )
+            Instruments.INSTRUMENT_POLYLINE -> FigurePolyline(pointList+endPoint, false)
+            Instruments.INSTRUMENT_BEZIER -> {
+                val c = (pointList.size-2) %3
+                val add = if (c != 0){
+                    (1 ..(3-c)).map{endPoint}
+                } else emptyList()
 
+                FigureBezier(pointList + endPoint+add)
+            }
+            Instruments.INSTRUMENT_NONE -> FigureEmpty
             else -> FigureEmpty
 
         }
@@ -76,13 +97,25 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         editFigure.value = r
     }
 
-    fun appendFigure() {
-        val v = currentFigure.value
-        currentFigure.value = if (v is FigureList) {
-            FigureList(v.collection() + editFigure.value)
-        } else {
-            FigureList(listOf(v, editFigure.value))
+    fun appendPoint(){
+        if (pointList.isEmpty() || pointList.last() != endPoint){
+            pointList.add(endPoint)
         }
+    }
+
+    fun appendFigure() {
+        val ev = editFigure.value
+        val v = currentFigure.value
+        if (ev == FigureEmpty)
+            return
+
+        currentFigure.value = if (v is FigureList) {
+            FigureList(v.collection() + ev)
+        } else {
+            FigureList(listOf(v, ev))
+        }
+        editFigure.value = FigureEmpty
+        pointList.clear()
     }
 
     fun loadDxf(fileName: String) {
@@ -117,7 +150,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         scale: Float,
         selectedItem: MutableStateFlow<List<FigureInfo>>
     ) {
-        if (instrument.value == Instruments.INSTRUMENT_NONE) {
+        if (_instrument.value == Instruments.INSTRUMENT_NONE) {
             val figure = currentFigure.value
             val result = PaintUtils.findFiguresAtCursor(Matrix.identity, point, 1.0, listOf(figure))
 
@@ -127,7 +160,10 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
             //   println("point -> $point $button")
             if (button == Instruments.POINTER_LEFT) {
                 startPoint = findPoint(point, scale)
-                endPoint = findPoint(point, scale)
+                endPoint = startPoint
+                if (pointList.isEmpty()){
+                    pointList.add(startPoint)
+                }
                 recalcFigure()
             }
         }
@@ -157,8 +193,14 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         if (button == Instruments.POINTER_LEFT) {
             endPoint = findPoint(point, scale)
             recalcFigure()
-        }else{
-            findPoint(point, scale)
+        } else {
+            val fp = findPoint(point, scale)
+            when (_instrument.value) {
+                Instruments.INSTRUMENT_POLYLINE,
+                Instruments.INSTRUMENT_BEZIER ->
+                    endPoint = fp
+                else -> {}
+            }
         }
     }
 
@@ -169,8 +211,24 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         selectedItem: MutableStateFlow<List<FigureInfo>>
     ) {
         //   println("onRelease -> $point $button")
-        if (button == Instruments.POINTER_LEFT) {
-            appendFigure()
+        when (button){
+            Instruments.POINTER_LEFT ->
+                when (_instrument.value) {
+                    Instruments.INSTRUMENT_POLYLINE,
+                    Instruments.INSTRUMENT_BEZIER ->
+                        appendPoint()
+                    else ->
+                        appendFigure()
+                }
+            Instruments.POINTER_RIGHT -> {
+                if (pointList.isNotEmpty()) {
+                    pointList.removeLast()
+                    recalcFigure()
+                }
+            }
+            Instruments.POINTER_MIDDLE -> {
+                appendFigure()
+            }
         }
     }
 

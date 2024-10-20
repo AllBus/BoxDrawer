@@ -72,7 +72,7 @@ object PaintUtils {
     }
 
     private fun blizPoint(position: Vec2, eps: Double, figure: IFigure): Vec2? {
-        println("blizPoint $position $eps ${figure::class.name}")
+       // println("blizPoint $position $eps ${figure::class.name}")
         return when (figure) {
             is Figure -> {
                 val b:Vec2? = if (inRect(position, eps, figure.rect())) {
@@ -81,7 +81,7 @@ object PaintUtils {
                             if (Vec2.distance(figure.center, position) < eps) figure.center else null
 
                         is FigurePolyline -> {
-                            println(figure.points.joinToString(" "))
+                         //   println(figure.points.joinToString(" "))
                             val minValue = figure.points.minBy { Vec2.distance(it, position) }
                             if (Vec2.distance(minValue, position)<eps) minValue else null
                         }

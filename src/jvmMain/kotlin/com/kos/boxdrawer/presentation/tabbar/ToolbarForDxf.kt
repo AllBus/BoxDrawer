@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.icons.InstrumentIcon
 import com.kos.boxdrawe.presentation.DxfToolsData
 import com.kos.boxdrawe.presentation.Instruments
 import com.kos.boxdrawe.presentation.Instruments.INSTRUMENT_RECTANGLE
@@ -29,6 +30,7 @@ import com.kos.boxdrawer.generated.resources.dxfScaleColor
 import com.kos.boxdrawer.generated.resources.dxfScaleValue
 import com.kos.boxdrawer.generated.resources.toolsButtonCopyCode
 import com.kos.boxdrawer.generated.resources.toolsButtonOpenFile
+import com.kos.boxdrawer.presentation.display.DrawInstrumentIcon
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -44,6 +46,14 @@ fun ToolbarForDxf(vm: DxfToolsData) {
 
     val instrument = remember { vm.instrument }
 
+    val instrumentList = remember { listOf(
+        Instruments.INSTRUMENT_CIRCLE,
+        Instruments.INSTRUMENT_LINE,
+        Instruments.INSTRUMENT_RECTANGLE,
+        Instruments.INSTRUMENT_POLYGON,
+        Instruments.INSTRUMENT_POLYLINE,
+        Instruments.INSTRUMENT_BEZIER
+    )}
 
     Row(
         modifier = TabContentModifier
@@ -63,27 +73,17 @@ fun ToolbarForDxf(vm: DxfToolsData) {
             }
         }
         Column(modifier = Modifier.weight(1f)) {
-            Button(onClick= {
-                if (instrument.value != INSTRUMENT_RECTANGLE)
-                    instrument.value = INSTRUMENT_RECTANGLE
-                else
-                    instrument.value = Instruments.INSTRUMENT_NONE
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.AccountBox,
-                    contentDescription = "Rectangle"
-                )
-            }
-            Button(onClick= {
-                if (instrument.value != Instruments.INSTRUMENT_LINE)
-                    instrument.value = Instruments.INSTRUMENT_LINE
-                else
-                    instrument.value = Instruments.INSTRUMENT_NONE
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.Menu,
-                    contentDescription = "Line"
-                )
+            Row {
+                instrumentList.forEach { i ->
+                    Button(onClick = {
+                        if (instrument.value != i)
+                            vm.changeInstrument(i)
+                        else
+                            vm.changeInstrument(Instruments.INSTRUMENT_NONE)
+                    }) {
+                        DrawInstrumentIcon(i)
+                    }
+                }
             }
         }
     }
