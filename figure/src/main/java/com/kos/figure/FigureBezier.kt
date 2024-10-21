@@ -2,13 +2,17 @@ package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.algorithms.FigureBezierList
+import com.kos.figure.complex.model.CurveList
+import com.kos.figure.complex.model.PathIterator
+import com.kos.figure.complex.model.SegmentList
+import com.kos.figure.complex.model.SimpleElement
 import vectors.Vec2
 import vectors.Vec2.Companion.casteljauLine
 import vectors.Vec2.Companion.getCubicRoots
 
 private const val DEFAULT_STEP_SIZE = 1000
 
-class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApproximation {
+class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApproximation, SimpleElement {
     override fun create(points: List<Vec2>): FigurePolygon {
         return FigureBezier(points)
     }
@@ -244,6 +248,10 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApprox
         if (mm > pathLength())
             return edgeCount()+1
         return length.indexOfLast { it <= mm }
+    }
+
+    override fun segments(): PathIterator {
+        return CurveList(points)
     }
 }
 

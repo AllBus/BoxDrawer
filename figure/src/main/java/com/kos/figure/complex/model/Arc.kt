@@ -10,25 +10,12 @@ import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.abs
 
-
-fun Corner(
-    center: Vec2,
-    radius:Double,
-    outSide: Boolean,
-    startAngle:Double,
-    sweepAngle:Double,
-): Arc {
-    return Arc(
-        center = center,
-        radius = radius,
-        startAngle = startAngle,
-        endAngle = startAngle+sweepAngle,
-        outSide = outSide,
-    )
-}
-
-data class Arc(val center: Vec2, val radius: Double, val startAngle: Double, val endAngle: Double, val outSide: Boolean):
-    PathElement {
+interface Arc: PathElement {
+    val center: Vec2
+    val radius: Double
+    val startAngle: Double
+    val endAngle: Double
+    val outSide: Boolean
 
     val sweepAngle : Double  get() = endAngle-startAngle
 
@@ -88,7 +75,7 @@ data class Arc(val center: Vec2, val radius: Double, val startAngle: Double, val
     }
 
     override fun translate(xy: Vec2): Arc {
-        return Arc(
+        return ArcImpl(
             center = center+xy,
             radius = radius,
             outSide = outSide,
@@ -105,4 +92,30 @@ data class Arc(val center: Vec2, val radius: Double, val startAngle: Double, val
         get() = center + Vec2(radius, 0.0).rotate(startAngle)
     override val end: Vec2
         get() = center + Vec2(radius, 0.0).rotate(startAngle+sweepAngle)
+
+    companion object {
+        operator fun invoke(
+            center: Vec2,
+            radius:Double,
+            outSide: Boolean,
+            startAngle:Double,
+            sweepAngle:Double,
+        ): Arc {
+            return ArcImpl(
+                center = center,
+                radius = radius,
+                startAngle = startAngle,
+                endAngle = startAngle+sweepAngle,
+                outSide = outSide,
+            )
+        }
+    }
 }
+
+data class ArcImpl(
+    override val center: Vec2,
+    override val radius: Double,
+    override val startAngle: Double,
+    override val endAngle: Double,
+    override val outSide: Boolean
+): Arc

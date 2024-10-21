@@ -1,7 +1,7 @@
 package com.kos.figure.algorithms
 
 import com.kos.figure.complex.model.Arc
-import com.kos.figure.complex.model.BezierCurve
+import com.kos.figure.complex.model.Curve
 import com.kos.figure.complex.model.PathElement
 import com.kos.figure.complex.model.Segment
 import vectors.Vec2
@@ -25,7 +25,7 @@ fun findPathIntersections(path1: List<PathElement>, path2: List<PathElement>): L
                     val intersection =  findSegmentArcIntersections(element1, element2)
                     intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
                 }
-                element1 is Segment && element2 is BezierCurve -> {
+                element1 is Segment && element2 is Curve -> {
                     val intersection =  findSegmentBezierIntersections(element1, element2)
                     intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
                 }
@@ -37,19 +37,19 @@ fun findPathIntersections(path1: List<PathElement>, path2: List<PathElement>): L
                     val intersection = findArcIntersections(element1, element2)
                     intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
                 }
-                element1 is Arc && element2 is BezierCurve -> {
+                element1 is Arc && element2 is Curve -> {
                     val intersection = findBezierArcIntersections(element2, element1)
                     intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
                 }
-                element1 is BezierCurve && element2 is Segment -> {
+                element1 is Curve && element2 is Segment -> {
                     val intersection =  findSegmentBezierIntersections(element2, element1)
                     intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
                 }
-                element1 is BezierCurve && element2 is Arc -> {
+                element1 is Curve && element2 is Arc -> {
                     val intersection = findBezierArcIntersections(element1, element2)
                     intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
                 }
-                element1 is BezierCurve && element2 is BezierCurve -> {
+                element1 is Curve && element2 is Curve -> {
                     val intersection = findBezierIntersections(element1, element2, 0.001)
                     intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
                 }

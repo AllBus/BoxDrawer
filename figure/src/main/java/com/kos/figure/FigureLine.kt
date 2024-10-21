@@ -1,13 +1,18 @@
 package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.complex.model.PathIterator
+import com.kos.figure.complex.model.Segment
+import com.kos.figure.complex.model.SegmentList
+import com.kos.figure.complex.model.SimpleElement
 import vectors.Vec2
 import vectors.Vec2.Companion.calcXPosition
 import vectors.Vec2.Companion.calcYPosition
 import kotlin.math.max
 import kotlin.math.min
 
-class FigureLine private constructor(points: List<Vec2>) : FigurePolyline(points), FigureWithApproximation {
+class FigureLine private constructor(points: List<Vec2>) : FigurePolyline(points), FigureWithApproximation
+    {
 
     constructor(a: Vec2, b: Vec2) : this(listOf(a, b))
 
@@ -155,5 +160,9 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolyline(points
             Vec2.lerp(a, b, sm / d),
             Vec2.lerp(a, b, em / d)
         )
+    }
+
+    override fun segments(): PathIterator {
+        return SegmentList(points)
     }
 }

@@ -8,10 +8,8 @@ import com.kos.figure.IFigurePath
 import com.kos.figure.PointWithNormal
 import vectors.Vec2
 
-data class Segment(
-    override val start: Vec2,
-    override val end: Vec2,
-) : PathElement {
+interface Segment : PathElement {
+
     override fun toFigure(): FigureLine {
         return FigureLine(start, end)
     }
@@ -48,4 +46,23 @@ data class Segment(
     override fun draw(g: IFigureGraphics) {
         g.drawLine(start, end)
     }
+
+    companion object {
+        operator fun invoke(start: Vec2,end: Vec2): Segment {
+            return SegmentImpl(start, end)
+        }
+    }
+
+}
+
+data class SegmentImpl(
+    override val start: Vec2,
+    override val end: Vec2,
+) : Segment
+
+class SegmentIter(private val points: List<Vec2>, var index: Int) : Segment {
+    override val start: Vec2
+        get() = points[index]
+    override val end: Vec2
+        get() = points[index+1]
 }

@@ -3,6 +3,9 @@ package com.kos.figure
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.collections.FigureList
 import com.kos.figure.collections.FigurePath
+import com.kos.figure.utils.EllipseUtils.normalize
+import com.kos.figure.utils.EllipseUtils.normalizeAngle
+//import org.apache.commons.math3.util.MathUtils.normalizeAngle
 import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
@@ -41,7 +44,7 @@ open class FigureEllipse(
                 val s = (k - center.x) / radius
                 val s1 = acos(s) /* 0 .. PI */
 
-                calculateSegments(-acos(s), 2*s1)
+                calculateSegments(-acos(s), 2 * s1)
             }
 
             CropSide.RIGHT -> {
@@ -49,7 +52,7 @@ open class FigureEllipse(
                 if (center.x - radius >= k) return FigureEmpty
                 val s = (k - center.x) / radius
                 val s1 = acos(s)
-                calculateSegments(s1, 2*(PI - s1))
+                calculateSegments(s1, 2 * (PI - s1))
             }
 
             CropSide.TOP -> {
@@ -57,7 +60,7 @@ open class FigureEllipse(
                 if (center.y - radiusMinor >= k) return this
                 val s = (center.y - k) / radiusMinor
                 val s1 = -asin(s) /* -PI/2 .. PI/2 */
-                calculateSegments(PI- s1, PI  + 2*s1)
+                calculateSegments(PI - s1, PI + 2 * s1)
             }
 
             CropSide.BOTTOM -> {
@@ -65,7 +68,7 @@ open class FigureEllipse(
                 if (center.y - radiusMinor >= k) return FigureEmpty
                 val s = (center.y - k) / radiusMinor
                 val s1 = -asin(s) /* -PI/2 .. PI/2 */
-                calculateSegments(s1, (PI - 2*s1))
+                calculateSegments(s1, (PI - 2 * s1))
             }
         }
     }
@@ -90,7 +93,7 @@ open class FigureEllipse(
             rotation = rotation,
             outSide = outSide,
             segmentStartAngle = segmentStart,
-            segmentSweepAngle = if (segmentSweep == 0.0) PI*2 else segmentSweep
+            segmentSweepAngle = if (segmentSweep == 0.0) PI * 2 else segmentSweep
         )
     }
 
@@ -145,17 +148,16 @@ open class FigureEllipse(
         } else if (c != 0.0 || d != 0.0) {
             val s = Math.sqrt(c * c + d * d);
             Math.PI / 2.0 - (if (d > 0.0) Math.acos(-c / s) else -Math.acos(c / s))
-        } else
-        {
+        } else {
             0.0
         }
 
 
         return FigureEllipse(
             center = matrix.map(center),
-            radius = radius*matrix[0,0],
-            radiusMinor = radiusMinor*matrix[1,1],
-            rotation = rotation+newRot*180.0/Math.PI,
+            radius = radius * matrix[0, 0],
+            radiusMinor = radiusMinor * matrix[1, 1],
+            rotation = rotation + newRot * 180.0 / Math.PI,
             outSide = outSide,
             segmentStartAngle = segmentStartAngle,
             segmentSweepAngle = segmentSweepAngle
@@ -184,98 +186,75 @@ open class FigureEllipse(
         }
 
         val sts = normalizeAngle(segmentStartAngle) /* 0 .. 2*PI */
-        val (aa, bb )=  normalize(sts, segmentSweepAngle) /* 0 .. 2*PI to  0 .. 4*PII */
+        val (aa, bb) = normalize(sts, segmentSweepAngle) /* 0 .. 2*PI to  0 .. 4*PII */
 
-        val (cc,dd) = normalize(start, sweep)
+        val (cc, dd) = normalize(start, sweep)
 
 
         val a = 0.0
-        val b = bb- aa // 0 .. 2*PI
+        val b = bb - aa // 0 .. 2*PI
         val c = cc - aa // - 2*PI  .. 2*PI
         val d = dd - aa
 
-        val c2 = c + 2*PI
-        val d2 = d + 2*PI
+        val c2 = c + 2 * PI
+        val d2 = d + 2 * PI
 
-        val c3 = c - 2*PI
-        val d3 = d - 2*PI
+        val c3 = c - 2 * PI
+        val d3 = d - 2 * PI
 
-        val mis = max(a ,c)
+        val mis = max(a, c)
         val mas = min(b, d)
 
-        val fa = if (mis<mas){
+        val fa = if (mis < mas) {
             create(
                 center = center,
                 radius = radius,
                 radiusMinor = radiusMinor,
                 rotation = rotation,
                 outSide = outSide,
-                segmentStart = mis+aa,
-                segmentSweep = mas-mis,
+                segmentStart = mis + aa,
+                segmentSweep = mas - mis,
             )
         } else FigureEmpty
 
-        val mis2 = max(a ,c2)
+        val mis2 = max(a, c2)
         val mas2 = min(b, d2)
 
-        val fb = if (mis2<mas2){
+        val fb = if (mis2 < mas2) {
             create(
                 center = center,
                 radius = radius,
                 radiusMinor = radiusMinor,
                 rotation = rotation,
                 outSide = outSide,
-                segmentStart = mis2+aa-2*PI,
-                segmentSweep = mas2-mis2,
+                segmentStart = mis2 + aa - 2 * PI,
+                segmentSweep = mas2 - mis2,
             )
         } else FigureEmpty
 
-        val mis3 = max(a ,c3)
+        val mis3 = max(a, c3)
         val mas3 = min(b, d3)
 
-        val fc = if (mis3<mas3){
+        val fc = if (mis3 < mas3) {
             create(
                 center = center,
                 radius = radius,
                 radiusMinor = radiusMinor,
                 rotation = rotation,
                 outSide = outSide,
-                segmentStart = mis3+aa+2*PI,
-                segmentSweep = mas3-mis3,
+                segmentStart = mis3 + aa + 2 * PI,
+                segmentSweep = mas3 - mis3,
             )
         } else FigureEmpty
 
 
         val l = listOf(fa, fb, fc).filter { it != FigureEmpty }
 
-        return when (l.size){
+        return when (l.size) {
             1 -> l[0]
             2 -> FigurePath(l)
             else -> FigureEmpty
         }
-    }
-
-    /**
-     * 0 .. 2*PI to  0 .. 4*PI
-     */
-    private fun normalize(
-        start: Double,
-        sweep: Double,
-    ) :Pair<Double, Double> {
-        val sww = sweep + start
-        return if (sweep < 0) { /* -2*PI .. 2*PI to  -2*PI .. 4*PI */
-            if (sww < 0.0)
-                Pair(sww + 2 * PI, start + 2 * PI)
-            else
-                Pair(sww, start)
-        } else {
-            Pair(start, sww)
-        }
-    }
-
-    protected fun normalizeAngle(angle: Double): Double {
-        val pi2 = PI*2
-        return (angle % pi2 + pi2) % pi2
     }
 
     override fun print(): String {

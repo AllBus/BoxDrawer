@@ -324,6 +324,10 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             }
         }
 
+        fun bezierLength(points: List<Vec2>, startIndex:Int): Double {
+            val p = points.subList(startIndex, startIndex+4)
+            return bezierSingleLength(p.toTypedArray())
+        }
 
         fun bezierPosition(
             points: List<Vec2>,

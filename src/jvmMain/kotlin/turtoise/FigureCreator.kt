@@ -11,7 +11,6 @@ import com.kos.figure.IFigure
 import com.kos.figure.algorithms.FigureBezierList
 import com.kos.figure.collections.FigureList
 import com.kos.figure.complex.model.Arc
-import com.kos.figure.complex.model.Corner
 import com.kos.figure.complex.model.Segment
 import com.kos.figure.complex.FigureRound
 import com.kos.figure.complex.FigureRoundRect
@@ -409,7 +408,7 @@ object FigureCreator {
             } else
                 sweep
 
-        return Corner(
+        return Arc(
             center = info.o,
             radius = r,
             outSide = re > 0,
@@ -512,7 +511,15 @@ object FigureCreator {
                 // println("Super $scale")
                 figure.create(points)
             }
-
+            is FigureCircle -> {
+                figure.create(
+                    center = figure.center,
+                    radius = figure.radius * scale,
+                    outSide = figure.outSide,
+                    segmentStart = figure.segmentStartAngle,
+                    segmentSweep = figure.segmentSweepAngle,
+                )
+            }
             is FigureEllipse -> {
                 figure.create(
                     center = figure.center,

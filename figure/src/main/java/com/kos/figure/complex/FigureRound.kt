@@ -9,10 +9,12 @@ import com.kos.figure.IFigurePath
 import com.kos.figure.PointWithNormal
 import com.kos.figure.collections.FigurePath
 import com.kos.figure.complex.model.Arc
-import com.kos.figure.complex.model.BezierCurve
-import com.kos.figure.complex.model.Corner
+import com.kos.figure.complex.model.Curve
+import com.kos.figure.complex.model.CustomPathIterator
 import com.kos.figure.complex.model.PathElement
+import com.kos.figure.complex.model.PathIterator
 import com.kos.figure.complex.model.Segment
+import com.kos.figure.complex.model.SimpleElement
 import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
@@ -21,7 +23,7 @@ import kotlin.math.min
 
 open class FigureRound(
     val segments: List<PathElement>
-) : Figure(), IFigurePath {
+) : Figure(), IFigurePath, SimpleElement {
 
     override val count: Int
         get() = 1
@@ -132,7 +134,7 @@ open class FigureRound(
                 when (e) {
                     is Segment -> "(${e.start} ${e.end})"
                     is Arc -> "(${e.center} ${e.radius} ${e.startAngle} ${e.endAngle})"
-                    is BezierCurve -> "(${e.p0} ${e.p1} ${e.p2} ${e.p3})"
+                    is Curve -> "(${e.p0} ${e.p1} ${e.p2} ${e.p3})"
                     else -> ""
                 }
             }
@@ -183,7 +185,7 @@ open class FigureRound(
         val sg = segments.mapNotNull { s ->
             when (s) {
                 is Segment -> s.translate(s.positionInPath(0.0).normal * h)
-                is Arc -> if (s.radius + h < 0) null else Corner(
+                is Arc -> if (s.radius + h < 0) null else Arc(
                     center = s.center,
                     radius = s.radius + h*s.normalSign,
                     outSide = s.outSide,
@@ -191,7 +193,7 @@ open class FigureRound(
                     sweepAngle = s.sweepAngle
                 )
                 //Todo:Нужно правильно вычислить перемещение
-                is BezierCurve -> s.translate(s.positionInPath(0.0).normal * h)
+                is Curve -> s.translate(s.positionInPath(0.0).normal * h)
                 else -> null
             }
         }
@@ -223,5 +225,9 @@ open class FigureRound(
 
     override fun rect(): BoundingRectangle {
         return bound
+    }
+
+    override fun segments(): PathIterator {
+        return CustomPathIterator(segments)
     }
 }

@@ -2,11 +2,15 @@ package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.collections.FigurePath
+import com.kos.figure.complex.model.PathIterator
+import com.kos.figure.complex.model.SegmentList
+import com.kos.figure.complex.model.SimpleElement
 import vectors.Vec2
 import vectors.Vec2.Companion.coordForX
 import vectors.Vec2.Companion.coordForY
 
-open class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWithApproximation {
+open class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWithApproximation,
+    SimpleElement {
 
     constructor(points: List<Vec2>, close: Boolean) : this(
         if (close) (points + listOfNotNull(points.firstOrNull()))
@@ -325,5 +329,9 @@ open class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWit
                 )
             )
         }
+    }
+
+    override fun segments(): PathIterator {
+        return SegmentList(points)
     }
 }

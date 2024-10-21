@@ -5,7 +5,6 @@ import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
 import com.kos.figure.complex.model.Arc
-import com.kos.figure.complex.model.Corner
 import com.kos.figure.complex.model.PathElement
 import com.kos.figure.complex.model.Segment
 import vectors.BoundingRectangle
@@ -56,28 +55,28 @@ class FigureRoundRect(
             )
 
             val corners: List<Arc> = listOf(
-                Corner(
+                Arc(
                     Vec2(left + radius, top + radius),
                     radius,
                     true,
                     Math.toRadians(180.0),
                     PI / 2
                 ),
-                Corner(
+                Arc(
                     Vec2(right - radius, top + radius),
                     radius,
                     true,
                     Math.toRadians(270.0),
                     PI / 2
                 ),
-                Corner(
+                Arc(
                     Vec2(right - radius, bottom - radius),
                     radius,
                     true,
                     Math.toRadians(00.0),
                     PI / 2
                 ),
-                Corner(
+                Arc(
                     Vec2(left + radius, bottom - radius),
                     radius,
                     true,
