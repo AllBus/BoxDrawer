@@ -11,10 +11,6 @@ class FigureImage(val origin:Vec2, val uri:String,  val size: Vec2) : IFigure{
     override val count: Int
         get() = 0
 
-    override fun list(): List<Figure> {
-        return emptyList()
-    }
-
     override fun rect(): BoundingRectangle {
         return BoundingRectangle(origin, origin+size)
     }

@@ -16,10 +16,6 @@ class FigureRing(
     override val count: Int
         get() = figures.size
 
-    override fun list(): List<Figure> {
-        return figures.flatMap { it.list() }
-    }
-
     override fun rect(): BoundingRectangle {
         return BoundingRectangle.union(figures.map { it.rect() })
     }

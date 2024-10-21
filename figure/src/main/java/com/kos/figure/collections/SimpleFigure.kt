@@ -36,10 +36,6 @@ class SimpleFigure(val figures:List<Figure>): Figure() {
         return figures
     }
 
-    override fun list(): List<Figure> {
-        return figures
-    }
-
     override fun rect(): BoundingRectangle {
         return BoundingRectangle.union(figures.map { it.rect() })
     }

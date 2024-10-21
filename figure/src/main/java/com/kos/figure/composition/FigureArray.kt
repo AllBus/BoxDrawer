@@ -26,10 +26,6 @@ class FigureArray(
     override val count: Int
         get() = 1
 
-    override fun list(): List<Figure> {
-        return figure.list() + figureStart?.list().orEmpty() + figureEnd?.list().orEmpty()
-    }
-
     override fun rect(): BoundingRectangle {
         val r = figure.rect().scale(scaleX, scaleY)
         val u = if (figureStart == null) 0.0 else 1.0

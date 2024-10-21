@@ -26,8 +26,6 @@ open class FigureRound(
     override val count: Int
         get() = 1
 
-    override fun list(): List<Figure> = emptyList()
-
     protected val fullLength by lazy { segments.sumOf { it.perimeter() } }
 
     override fun positionInPath(delta: Double): PointWithNormal {

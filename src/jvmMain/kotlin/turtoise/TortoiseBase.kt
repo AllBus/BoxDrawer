@@ -444,7 +444,7 @@ abstract class TortoiseBase {
             ?: 0 //com.take(0, 2.0, memory).toInt()
         if (count > 0) {
             return figureList(block, figureExtractor)?.let { f ->
-                f.list().filterIsInstance(IFigurePath::class.java).firstOrNull()
+                figureExtractor.collectPaths(f).firstOrNull()
                     ?.let { path ->
                         figureList(
                             blockFigure,

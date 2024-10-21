@@ -86,10 +86,6 @@ class FigureZigZag(
     override val count: Int
         get() = 1
 
-    override fun list(): List<Figure> {
-        return listOf()
-    }
-
     override fun rect(): BoundingRectangle {
         return BoundingRectangle.apply(listOf(origin, origin+Vec2(width,0.0).rotate(angle)))
     }

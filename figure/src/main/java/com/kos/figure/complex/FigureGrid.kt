@@ -16,10 +16,6 @@ class FigureGrid(
     override val count: Int
         get() = 1
 
-    override fun list(): List<Figure> {
-        return emptyList()
-    }
-
     override fun rect(): BoundingRectangle {
         return BoundingRectangle(Vec2.Zero, Vec2(cellWidth * columnCount, cellHeight * rowCount))
     }

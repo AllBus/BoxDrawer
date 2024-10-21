@@ -11,10 +11,6 @@ class FigureText(val text:String, transform : Matrix = Matrix.identity): IFigure
     override val count: Int
         get() = 1
 
-    override fun list(): List<Figure> {
-        return emptyList()
-    }
-
     override val hasTransform: Boolean
         get() = false
 

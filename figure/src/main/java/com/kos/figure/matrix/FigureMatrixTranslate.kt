@@ -23,10 +23,6 @@ abstract class FigureMatrix() : IFigure {
         return ""
     }
 
-    override fun list(): List<Figure> {
-        return emptyList()
-    }
-
     override fun collection(): List<IFigure> {
         return emptyList()
     }

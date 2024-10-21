@@ -78,10 +78,6 @@ class FigureCubik(
     override val count: Int
         get() = 1
 
-    override fun list(): List<Figure> {
-        return listOf()
-    }
-
     override fun rect(): BoundingRectangle {
         return bound
     }

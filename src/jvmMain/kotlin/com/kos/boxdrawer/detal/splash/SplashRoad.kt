@@ -187,7 +187,7 @@ class SplashRoad() : ISplashDetail {
     ) {
         com.takeBlock(1)?.let { block ->
             figureExtractor.figure(block)?.let { f ->
-                f.list()
+                f.collection()
             }?.fold(Vec2.Zero) { acc, f ->
                 if (f is FigurePolyline) {
                     val a = com.takeBlock(2)

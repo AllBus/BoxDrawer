@@ -106,10 +106,6 @@ class FigurePath(val figures: List<Figure>): Figure(), IFigurePath {
    override val count: Int
        get() = figures.size
 
-   override fun list(): List<Figure> {
-       return figures.flatMap { it.list() }
-   }
-
    override fun positionInPath(delta: Double): PointWithNormal {
      //  TODO("Not yet implemented")
        return PointWithNormal.EMPTY

@@ -1,10 +1,13 @@
 package turtoise.paint
 
 import com.kos.figure.Figure
+import com.kos.figure.FigureBezier
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureInfo
+import com.kos.figure.FigureLine
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
+import com.kos.figure.algorithms.FigureBezierList
 import com.kos.figure.collections.SimpleFigure
 import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslate
@@ -77,11 +80,28 @@ object PaintUtils {
             is Figure -> {
                 val b:Vec2? = if (inRect(position, eps, figure.rect())) {
                     when (figure) {
-                        is FigureCircle ->
-                            if (Vec2.distance(figure.center, position) < eps) figure.center else null
+                        is FigureCircle -> {
+                            val dist = Vec2.distance(
+                                figure.center,
+                                position)
 
+                            if (dist< eps) figure.center else
+                            {
+                               if (dist < figure.radius+ eps && dist > figure.radius - eps){
+                                   val angle = Vec2.angle(figure.center, position)
+                                   figure.center+Vec2(figure.radius,0.0).rotate(angle)
+                               } else null
+                            }
+                        }
                         is FigurePolyline -> {
                          //   println(figure.points.joinToString(" "))
+                            val minValue = figure.points.minBy { Vec2.distance(it, position) }
+                            if (Vec2.distance(minValue, position)<eps) minValue else {
+                                val dot = PolygonUtils.findClosestPointOnPolygon(figure.points, position)
+                                if (Vec2.distance(dot, position)<eps) dot else null
+                            }
+                        }
+                        is FigureBezier -> {
                             val minValue = figure.points.minBy { Vec2.distance(it, position) }
                             if (Vec2.distance(minValue, position)<eps) minValue else null
                         }
@@ -104,6 +124,10 @@ object PaintUtils {
                         is FigureCircle ->
                             Vec2.distance(figure.center, position) < eps + figure.radius
 
+                        is FigureLine -> {
+                            val p = PolygonUtils.findClosestPointOnPolygon(figure.points, position)
+                            if (Vec2.distance(p, position)<2*eps) true else false
+                        }
                         is FigurePolyline ->
                             if (figure.isClose()) {
                                 inside(position, figure.points)

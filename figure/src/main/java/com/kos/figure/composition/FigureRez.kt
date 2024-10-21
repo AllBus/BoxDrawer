@@ -21,10 +21,6 @@ class FigureRez(
     override val count: Int
         get() = 1
 
-    override fun list(): List<Figure> {
-        return emptyList()
-    }
-
     override fun rect(): BoundingRectangle {
         return BoundingRectangle(
             Vec2(0.0, 0.0),

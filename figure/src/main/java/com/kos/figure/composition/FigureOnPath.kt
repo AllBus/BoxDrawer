@@ -21,10 +21,6 @@ class FigureOnPath(
     var pivot: Vec2,
 ) : IFigure {
 
-    override fun list(): List<Figure> {
-        return figure.list()
-    }
-
     override fun rect(): BoundingRectangle {
         val fr = figure.rect()
         val pr = figure.rect()// path.rect()

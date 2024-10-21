@@ -3,6 +3,7 @@ package com.kos.figure.collections
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.CropSide
 import com.kos.figure.Figure
+import com.kos.figure.FigureEmpty
 import com.kos.figure.ICropable
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
@@ -27,10 +28,6 @@ class FigureList(
         return FigureList(this.figures + list)
     }
 
-    override fun list(): List<Figure> {
-        return figures.flatMap { it.list() }
-    }
-
     override fun rect(): BoundingRectangle {
         val l = figures.map { it.rect() }
 
@@ -46,7 +43,19 @@ class FigureList(
     }
 
     fun simple(): FigureList {
-        return FigureList(list())
+        val l = mutableListOf<IFigure>()
+            simpleList(this, l)
+        return FigureList(l.toList())
+    }
+
+    private fun simpleList(figure: FigureList, resultList:MutableList<IFigure>){
+        figure.figures.forEach { f ->
+            when (f) {
+                is FigureList -> simpleList(f, resultList)
+                is FigureEmpty -> {}
+                else -> resultList.add(f)
+            }
+        }
     }
 
     override fun print(): String {

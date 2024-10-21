@@ -26,10 +26,6 @@ abstract class Figure : IFigure, ICropable {
     override val count: Int
         get() = 1
 
-    override fun list(): List<Figure> {
-        return listOf(this)
-    }
-
     override fun collection(): List<IFigure> = emptyList()
 
     override val transform: Matrix
@@ -92,8 +88,6 @@ object FigureEmpty : Figure(), IFigurePath, IRotable {
         get() = 0
 
     override fun crop(k: Double, cropSide: CropSide): Figure = this
-
-    override fun list(): List<Figure> = emptyList()
 
     override fun rect(): BoundingRectangle = BoundingRectangle.Empty
 

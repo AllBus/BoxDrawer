@@ -16,10 +16,6 @@ abstract class FigureComposition : IFigure {
     override val count: Int
         get() = figure.count
 
-    override fun list(): List<Figure> {
-        return figure.list()
-    }
-
     override fun rect(): BoundingRectangle {
         return figure.rect()
     }

@@ -58,8 +58,12 @@ class TortoiseFigureExtractor(
         return (maxStackSize <= 0)
     }
 
-    fun collectPolygons(f: IFigure): List<FigurePolygon> =
-        f.list().filterIsInstance<FigurePolygon>()
+    fun collectPolygons(f: IFigure): List<FigurePolygon> {
+        return if (f is FigurePolygon)
+            listOf(f)
+        else
+            f.collection().filterIsInstance<FigurePolygon>()
+    }
 
     fun collectPaths(f: IFigure): List<IFigurePath> {
         return IFigure.path(f)

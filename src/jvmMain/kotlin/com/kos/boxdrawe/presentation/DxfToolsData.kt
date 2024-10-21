@@ -197,8 +197,10 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
             val fp = findPoint(point, scale)
             when (_instrument.value) {
                 Instruments.INSTRUMENT_POLYLINE,
-                Instruments.INSTRUMENT_BEZIER ->
+                Instruments.INSTRUMENT_BEZIER -> {
                     endPoint = fp
+                    recalcFigure()
+                }
                 else -> {}
             }
         }

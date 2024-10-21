@@ -7,7 +7,7 @@ import vectors.Matrix
 interface IFigure {
 
     val count: Int
-    fun list(): List<Figure>
+    //fun list(): List<Figure>
     fun rect(): BoundingRectangle
 
     fun draw(g: IFigureGraphics)
@@ -48,7 +48,7 @@ interface IFigure {
         }
 
         fun path(figure: IFigure, matrix: Matrix): List<IFigurePath> {
-            val nm = matrix.copyWithTransform(figure.transform)
+            val nm = if (figure.hasTransform) matrix.copyWithTransform(figure.transform) else matrix
 
             val l: List<IFigurePath> = if (figure is IFigurePath) {
                 if (nm.isIdentity())

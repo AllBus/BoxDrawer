@@ -25,7 +25,7 @@ open class FigureUnion(
     }
 
     protected fun approximations(figure: IFigure): List<Approximation> {
-        return figure.list().filterIsInstance(Approximation::class.java)
+        return figure.collection().filterIsInstance(Approximation::class.java)
     }
 
     protected open fun recalculate(): IFigure {
