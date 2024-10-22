@@ -164,7 +164,7 @@ private fun findClosestPointOnEllipseLocal(ellipse: Ellipse, point: Vec2): Vec2 
 
 
 fun findClosestPointOnCircle(radius:Double, point: Vec2): Vec2 {
-    val distanceToCenter = distance(point, Vec2(0.0, 0.0))
+    val distanceToCenter = Vec2.distance(point, Vec2(0.0, 0.0))
 
     if (distanceToCenter == 0.0) {
         // Point is at the center of the circle, return any point on the circle
@@ -247,6 +247,11 @@ private fun findSegmentEllipseIntersectionLocal(segment: Segment, ellipse: Ellip
 }
 
 fun findEllipseEllipseIntersection(ellipse1: Ellipse, ellipse2: Ellipse): List<Vec2> {
+    val b1 = ellipseBoundingBox(ellipse1)
+    val b2 = ellipseBoundingBox(ellipse2)
+
+    if (intersectBoundingBoxes(b1, b2) == Vec4.EMPTY)
+        return emptyList()
 
     val intersectionPoints = mutableListOf<Vec2>()
 
@@ -260,10 +265,12 @@ fun findEllipseEllipseIntersection(ellipse1: Ellipse, ellipse2: Ellipse): List<V
 
     val segmentCount = 1000
 
-    for (i in 0 until segmentCount){
+    var pred = ellipse1.start
+    for (i in 1 .. segmentCount){
         val t = i.toDouble() / segmentCount
-        val t2 = (i+1).toDouble() / segmentCount
-        val segment = Segment(ellipse1.position(t), ellipse1.position(t2))
+        val n = ellipse1.position(t)
+        val segment = Segment(pred, n)
+        pred = n
         findIntersections(segment)
     }
 
@@ -272,41 +279,47 @@ fun findEllipseEllipseIntersection(ellipse1: Ellipse, ellipse2: Ellipse): List<V
 
 
 // Helper function to calculate the bounding box of an ellipse
-private fun getEllipseBoundingBox(ellipse: Ellipse): BoundingRectangle {
-    val extremePoints = listOf(
-        ellipse.center + Vec2(ellipse.radiusX, 0.0).rotate(ellipse.rotation),
-        ellipse.center + Vec2(-ellipse.radiusX, 0.0).rotate(ellipse.rotation),
-        ellipse.center + Vec2(0.0, ellipse.radiusY).rotate(ellipse.rotation),
-        ellipse.center + Vec2(0.0, -ellipse.radiusY).rotate(ellipse.rotation)
+fun ellipseBoundingBox(ellipse: Ellipse): Vec4 {
+//    val extremePoints = listOf(
+//        ellipse.center + Vec2(ellipse.radiusX, 0.0).rotate(ellipse.rotation),
+//        ellipse.center + Vec2(-ellipse.radiusX, 0.0).rotate(ellipse.rotation),
+//        ellipse.center + Vec2(0.0, ellipse.radiusY).rotate(ellipse.rotation),
+//        ellipse.center + Vec2(0.0, -ellipse.radiusY).rotate(ellipse.rotation)
+//    )
+//
+//    // 2. Find the minimum and maximum x and y values
+//    val minX = extremePoints.minOf { it.x }
+//    val minY = extremePoints.minOf { it.y }
+//    val maxX = extremePoints.maxOf { it.x }
+//    val maxY = extremePoints.maxOf { it.y }
+
+    val maxRadius = max(abs(ellipse.radiusX), abs(ellipse.radiusY))
+
+    return Vec4(
+        ellipse.center.x-maxRadius,
+        ellipse.center.y-maxRadius,
+        ellipse.center.x+maxRadius,
+        ellipse.center.y+maxRadius
     )
-
-    // 2. Find the minimum and maximum x and y values
-    val minX = extremePoints.minOf { it.x }
-    val minY = extremePoints.minOf { it.y }
-    val maxX = extremePoints.maxOf { it.x }
-    val maxY = extremePoints.maxOf { it.y }
-
-    // 3. Return the bounding box
-    return BoundingRectangle(Vec2(minX, minY), Vec2(maxX, maxY))
 }
 
 // Helper function to calculate the intersection of two bounding boxes
-private fun intersectBoundingBoxes(bbox1: BoundingRectangle, bbox2: BoundingRectangle): BoundingRectangle {
-    val minX = maxOf(bbox1.min.x, bbox2.min.x)
-    val minY = maxOf(bbox1.min.y, bbox2.min.y)
-    val maxX = minOf(bbox1.max.x, bbox2.max.x)
-    val maxY = minOf(bbox1.max.y, bbox2.max.y)
+private fun intersectBoundingBoxes(bbox1: Vec4, bbox2: Vec4): Vec4 {
+    val minX = maxOf(bbox1.minX, bbox2.minX)
+    val minY = maxOf(bbox1.minY, bbox2.minY)
+    val maxX = minOf(bbox1.maxX, bbox2.maxX)
+    val maxY = minOf(bbox1.maxY, bbox2.maxY)
 
     // 2. Check if the intersection is valid
     if (maxX < minX || maxY < minY) {
         // Bounding boxes do not intersect
         // You might want to throw an exception or handle this case differently
         // For now, we'll return an empty rectangle
-        return BoundingRectangle.Empty
+        return Vec4.EMPTY
     }
 
     // 3. Return the intersection bounding box
-    return BoundingRectangle(Vec2(minX, minY), Vec2(maxX, maxY))
+    return Vec4(minX, minY, maxX, maxY)
 }
 
 
@@ -340,7 +353,6 @@ fun findCircleEllipseIntersectionSubdivision(
     circle: Arc,
     ellipse: Ellipse,
 ): List<Vec2> {
-
     val intersectionPoints = mutableListOf<Vec2>()
 
     fun findIntersections(segment: Segment) {
@@ -353,13 +365,14 @@ fun findCircleEllipseIntersectionSubdivision(
 
     val segmentCount = 1000
 
-    for (i in 0 until segmentCount){
+    var pred = ellipse.start
+    for (i in 1 .. segmentCount){
         val t = i.toDouble() / segmentCount
-        val t2 = (i+1).toDouble() / segmentCount
-        val segment = Segment(ellipse.position(t), ellipse.position(t2))
+        val n = ellipse.position(t)
+        val segment = Segment(pred, n)
+        pred = n
         findIntersections(segment)
     }
 
     return intersectionPoints.filter {  p -> circle.containsAngle(Vec2.angle(circle.center, p))  }
 }
-

@@ -49,5 +49,7 @@ fun DrawScope.drawFigures(
     val bound = figureLine.rect()
     drawer.penColor = Color.Green
     drawer.style = Stroke()
-    drawer.drawRect(bound.min- Vec2(10.0, 10.0), bound.max-bound.min+Vec2(20.0, 20.0))
+    if (bound.isFinite()) {
+        drawer.drawRect(bound.min - Vec2(10.0, 10.0), bound.max - bound.min + Vec2(20.0, 20.0))
+    }
 }

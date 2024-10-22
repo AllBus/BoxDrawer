@@ -278,7 +278,9 @@ class CurveIter(private val points: List<Vec2>,var index:Int): Curve {
     override fun draw(g: IFigureGraphics) {
         g.drawBezier(points.subList(index, index+4))
     }
-
+    override fun toString(): String {
+        return "Curve($p0 $p1 $p2 $p3):$index"
+    }
 }
 
 data class CurveImpl(
@@ -319,5 +321,9 @@ data class CurveImpl(
 
     override fun draw(g: IFigureGraphics) {
         g.drawBezier(points)
+    }
+
+    override fun toString(): String {
+        return "Curve($p0 $p1 $p2 $p3)"
     }
 }

@@ -1,5 +1,7 @@
 package com.kos.figure.algorithms
 
+import com.kos.figure.algorithms.BezierManipulation.findBezierArcIntersections
+import com.kos.figure.algorithms.BezierManipulation.findBezierEllipseIntersection
 import com.kos.figure.complex.model.Arc
 import com.kos.figure.complex.model.Curve
 import com.kos.figure.complex.model.Ellipse
@@ -127,6 +129,14 @@ private fun findIntersection(
         }
         element1 is Arc && element2 is Ellipse -> {
             val intersection = findCircleEllipseIntersectionSubdivision(element1, element2)
+            intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
+        }
+        element1 is Ellipse && element2 is Curve -> {
+            val intersection = findBezierEllipseIntersection(element2, element1)
+            intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
+        }
+        element1 is Curve && element2 is Ellipse -> {
+            val intersection = findBezierEllipseIntersection(element1, element2)
             intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
         }
     }

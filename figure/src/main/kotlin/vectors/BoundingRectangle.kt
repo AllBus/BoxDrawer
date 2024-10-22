@@ -45,12 +45,17 @@ data class BoundingRectangle(val min: Vec2, val max: Vec2) {
         return apply(points)
     }
 
+    fun isFinite():Boolean {
+        return min.x.isFinite() &&
+        min.y.isFinite() &&
+        max.x.isFinite() &&
+        max.y.isFinite()
+    }
+
     constructor(center: Vec2, radius: Double) : this(
         Vec2(center.x - radius, center.y - radius),
         Vec2(center.x + radius, center.y + radius)
-    ) {
-
-    }
+    )
 
     companion object {
         val Empty: BoundingRectangle = BoundingRectangle(Vec2(0.0, 0.0), Vec2(0.0, 0.0))

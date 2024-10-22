@@ -11,6 +11,7 @@ import com.kos.figure.collections.FigurePath
 import com.kos.figure.complex.model.Arc
 import com.kos.figure.complex.model.Curve
 import com.kos.figure.complex.model.CustomPathIterator
+import com.kos.figure.complex.model.Ellipse
 import com.kos.figure.complex.model.PathElement
 import com.kos.figure.complex.model.PathIterator
 import com.kos.figure.complex.model.Segment
@@ -133,8 +134,9 @@ open class FigureRound(
             segments.joinToString(" ") { e ->
                 when (e) {
                     is Segment -> "(${e.start} ${e.end})"
-                    is Arc -> "(${e.center} ${e.radius} ${e.startAngle} ${e.endAngle})"
+                    is Arc -> "(${e.center} ${e.radius} ${e.startAngle} ${e.endAngle} ${e.outSide})"
                     is Curve -> "(${e.p0} ${e.p1} ${e.p2} ${e.p3})"
+                    is Ellipse -> "(${e.center} ${Vec2(e.radiusX, e.radiusY)} ${e.startAngle} ${e.endAngle} ${e.outSide} ${e.rotation})"
                     else -> ""
                 }
             }
