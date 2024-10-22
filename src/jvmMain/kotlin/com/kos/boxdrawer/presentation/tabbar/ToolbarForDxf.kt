@@ -48,6 +48,7 @@ fun ToolbarForDxf(vm: DxfToolsData) {
 
     val instrumentList = remember { listOf(
         Instruments.INSTRUMENT_CIRCLE,
+        Instruments.INSTRUMENT_ELLIPSE,
         Instruments.INSTRUMENT_LINE,
         Instruments.INSTRUMENT_RECTANGLE,
         Instruments.INSTRUMENT_POLYGON,

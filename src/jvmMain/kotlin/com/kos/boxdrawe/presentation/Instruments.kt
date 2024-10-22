@@ -5,8 +5,10 @@ object Instruments {
     const val INSTRUMENT_RECTANGLE = 2
     const val INSTRUMENT_POLYGON = 3
     const val INSTRUMENT_CIRCLE = 4
-    const val INSTRUMENT_POLYLINE = 5
-    const val INSTRUMENT_BEZIER = 6
+    const val INSTRUMENT_ELLIPSE = 5
+    const val INSTRUMENT_POLYLINE = 6
+    const val INSTRUMENT_BEZIER = 7
+    const val INSTRUMENT_TRIANGLE = 8
     const val INSTRUMENT_NONE = 0
 
     val NONE = InstrumentState(INSTRUMENT_NONE)

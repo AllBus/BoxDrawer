@@ -13,7 +13,7 @@ class SegmentList(points: List<Vec2>) : PathIterator {
 
     private val item = SegmentIter(points, 0)
 
-    override fun get(index: Int): PathElement {
+    override fun get(index: Int): Segment {
         item.index = index
         return item
     }
@@ -24,18 +24,26 @@ class CurveList(points: List<Vec2>) : PathIterator {
 
     private val item = CurveIter(points, 0)
 
-    override fun get(index: Int): PathElement {
+    override fun get(index: Int): Curve {
         item.index = index*3
         return item
     }
 }
 
-class CustomPathIterator(val elements: List<PathElement>) : PathIterator{
+class CustomPathIterator(private val elements: List<PathElement>) : PathIterator{
     override val size: Int
         get() = elements.size
 
     override fun get(index: Int): PathElement {
         return elements[index]
     }
+}
 
+class OnePathIterator<T: PathElement>(val element: T) : PathIterator{
+    override val size: Int
+        get() = 1
+
+    override fun get(index: Int): PathElement {
+        return element
+    }
 }

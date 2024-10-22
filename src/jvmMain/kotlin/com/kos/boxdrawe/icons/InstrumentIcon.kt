@@ -75,6 +75,28 @@ object InstrumentIcon {
     }
 
     @Composable
+    fun rememberEllipse():ImageVector {
+        return remember {
+            ImageVector.Builder(
+                name = "ellipse",
+                defaultWidth = 24.dp,
+                defaultHeight = 24.dp,
+                viewportWidth = 24.0f,
+                viewportHeight = 24.0f
+            ).apply {
+                materialPath {
+                    this.moveTo(12f, 12f)
+                    this.moveToRelative(-10f, 0f)
+                    this.arcToRelative(10f, 6f, 0f, true, true, 20f, 0f)
+                    this.arcToRelative(10f, 6f, 0f, true, true, -20f, 0f)
+
+                }
+            }.build()
+        }
+
+    }
+
+    @Composable
     fun rememberTriangle():ImageVector {
         return remember {
             ImageVector.Builder(

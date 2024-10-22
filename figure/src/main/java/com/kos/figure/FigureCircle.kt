@@ -5,6 +5,7 @@ import com.kos.figure.FigureEllipse.Companion.digitFormatter
 import com.kos.figure.collections.FigurePath
 import com.kos.figure.complex.model.Arc
 import com.kos.figure.complex.model.CustomPathIterator
+import com.kos.figure.complex.model.OnePathIterator
 import com.kos.figure.complex.model.PathIterator
 import com.kos.figure.complex.model.SimpleElement
 import com.kos.figure.utils.EllipseUtils
@@ -258,14 +259,14 @@ class FigureCircle(
         )
     }
 
-    override fun segments(): PathIterator {
-        return CustomPathIterator(listOf(Arc(
+    override fun segments(): OnePathIterator<Arc> {
+        return OnePathIterator(Arc(
             center = center,
             radius = radius,
             outSide = outSide,
             startAngle = segmentStartAngle,
             sweepAngle = segmentSweepAngle
-        )))
+        ))
     }
 
     protected fun calculateSegments(start: Double, sweep: Double): Figure {

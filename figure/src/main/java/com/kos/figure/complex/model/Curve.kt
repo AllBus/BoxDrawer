@@ -10,6 +10,7 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix
 import org.apache.commons.math3.linear.ArrayRealVector
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression
 import vectors.Vec2
+import kotlin.math.pow
 
 private const val DEFAULT_STEP_SIZE = 1000
 
@@ -31,6 +32,19 @@ interface Curve : PathElement {
             p2 + xy,
             p3 + xy
         )
+    }
+
+    fun function(t: Double): Vec2 {
+        val mt = 1-t
+        val x = mt.pow(3) * p0.x +
+                3 * mt.pow(2) * t * p1.x +
+                3 * mt * t.pow(2) * p2.x +
+                t.pow(3) * p3.x
+        val y = mt.pow(3) * p0.y +
+                3 * mt.pow(2) * t * p1.y +
+                3 * mt * t.pow(2) * p2.y +
+                t.pow(3) * p3.y
+        return Vec2(x, y)
     }
 
     /**
@@ -264,6 +278,7 @@ class CurveIter(private val points: List<Vec2>,var index:Int): Curve {
     override fun draw(g: IFigureGraphics) {
         g.drawBezier(points.subList(index, index+4))
     }
+
 }
 
 data class CurveImpl(

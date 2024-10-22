@@ -2,6 +2,8 @@ package com.kos.figure.algorithms
 
 import com.kos.figure.complex.model.Arc
 import com.kos.figure.complex.model.Curve
+import com.kos.figure.complex.model.CurveIter
+import com.kos.figure.complex.model.CurveList
 import com.kos.figure.complex.model.Segment
 import vectors.Vec2
 import vectors.Vec2.Companion.lerp
@@ -10,6 +12,7 @@ import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.math.sin
 
 data class Vec4(val minX: Double, val maxX: Double, val minY: Double, val maxY: Double)
@@ -137,25 +140,22 @@ fun findSegmentBezierIntersections(segment: Segment, bezier: Curve, tolerance: D
     }
 
     // 2. Subdivision and Intersection Finding (using a recursive helper function)
-    findIntersectionsRecursive(segment, bezier, 0.0, 1.0, tolerance, intersections)
+    findIntersectionsRecursive(segment, bezier,  tolerance, intersections)
 
     return intersections
 }
 
-fun findIntersectionsRecursive(
+private fun findIntersectionsRecursive(
     segment: Segment,
     bezier: Curve,
-    tStart: Double,
-    tEnd: Double,
     tolerance: Double,
     intersections: MutableList<Vec2>
 ) {
-    val midT = (tStart + tEnd) / 2
-    val subs = subdivideBezier(bezier, midT)
+    val subs = subdivideBezier(bezier, 0.5)
 
     // 3. Flatness Check (you'll need to implement a flatness check function)
     fun checkFlat(subBezier: Curve){
-        if (isBezierFlat(subBezier, tolerance)) {
+        if (isSmallEnough(subBezier, tolerance)) {
             val approxSegment = Segment(subBezier.p0, subBezier.p3)
             val intersection = findLineIntersection(segment.start, segment.end, approxSegment.start, approxSegment.end)
             if (intersection != null) {
@@ -163,7 +163,7 @@ fun findIntersectionsRecursive(
             }
         } else {
             // 4. Recursive Refinement
-            findIntersectionsRecursive(segment, subBezier, tStart, midT, tolerance, intersections)
+            findIntersectionsRecursive(segment, subBezier, tolerance, intersections)
         }
     }
 
@@ -180,29 +180,26 @@ fun findBezierArcIntersections(bezier: Curve, arc: Arc, tolerance: Double = 1e-6
     }
 
     // 2. Bézier Subdivision and Intersection Finding
-    findIntersectionsRecursive(bezier, arc, 0.0, 1.0, tolerance, intersections)
+    findIntersectionsRecursive(bezier, arc, tolerance, intersections)
 
     return intersections
 }
 
-fun findIntersectionsRecursive(
+private fun findIntersectionsRecursive(
     bezier: Curve,
     arc: Arc,
-    tStart: Double,
-    tEnd: Double,
     tolerance: Double,
     intersections: MutableList<Vec2>
 ) {
-    val midT = (tStart + tEnd) / 2
-    val subs = subdivideBezier(bezier, midT)
+    val subs = subdivideBezier(bezier, 0.5)
 
     fun checkFlat(subBezier: Curve){
-        if (isBezierFlat(subBezier, tolerance)) {
+        if (isSmallEnough(subBezier, tolerance)) {
             val approxSegment = Segment(subBezier.p0, subBezier.p3)
             intersections.addAll(findSegmentArcIntersections(approxSegment, arc))
         } else {
             // 4. Recursive Refinement
-            findIntersectionsRecursive(subBezier, arc, tStart, midT, tolerance, intersections)
+            findIntersectionsRecursive(subBezier, arc, tolerance, intersections)
         }
     }
 
@@ -276,5 +273,350 @@ fun isBezierFlat(bezier: Curve, tolerance: Double): Boolean {
     return controlPointDistance <= tolerance
 }
 
-class BezierManipulation {
+fun isMinimalBezier(start:Double, end:Double, tolerance: Double): Boolean {
+    return end-start <= tolerance
 }
+
+object BezierManipulation {
+
+    fun findClosestPointOnPolygon(polygon: List<Vec2>, point: Vec2): Vec2 {
+        var closestPoint = polygon[0]
+        var minDistance = Double.MAX_VALUE
+
+        val iter = CurveList(polygon)
+        for (i in 0 until iter.size) {
+            val pp = findClosestPoint(iter[i], point)
+            val nd = Vec2.distance(point,pp)
+            if (nd< minDistance){
+                minDistance = nd
+                closestPoint = pp
+            }
+        }
+
+        return closestPoint
+    }
+
+    private fun findClosestPoint(curve: Curve, point: Vec2): Vec2 {
+        val tolerance = 1e-6
+
+        val res = mutableListOf<Vec2>()
+
+        fun subdivide(curve: Curve, depth: Int) {
+            // 1. Check if the curve's bounding box intersects the segment's bounding box
+            if (!boundingBoxesIntersect(curve, point)) return
+
+            if (depth > 10) {
+                // Maximum recursion depth
+                res.add(distancedPointOnCurve(curve, point))
+                return
+
+            }
+
+            // 2. Check if the curve and segment are close enough to be considered intersecting
+            if (isSmallEnough(curve, tolerance)) {
+                res.add(distancedPointOnCurve(curve, point))
+                return
+            }
+
+            // 3. Subdivide the curve into two halves
+            val (leftCurve, rightCurve) = subdivideCurve(curve)
+
+            // 4. Recursively check for intersections with the subdivided curves
+            subdivide(leftCurve, depth + 1)
+            subdivide(rightCurve,  depth + 1)
+        }
+
+        subdivide(curve,  0)
+        return res.minByOrNull { Vec2.distance(point, it) } ?: curve.p0 // Remove duplicate points
+    }
+
+
+    fun findBezierSegmentIntersectionSubdivision(curve: Curve, segment: Segment, tolerance: Double): List<Vec2> {
+        val intersectionPoints = mutableListOf<Vec2>()
+
+        fun subdivide(curve: Curve, segment: Segment, depth: Int) {
+            if (depth > 10) {
+                // Maximum recursion depth
+                findLineIntersection(curve.start, curve.end, segment.start, segment.end)?.let { p ->
+                    intersectionPoints.add(p)
+                }
+                return
+            }
+
+            // 1. Check if the curve's bounding box intersects the segment's bounding box
+            if (!boundingBoxesIntersect(curve, segment)) return
+
+            // 2. Check if the curve and segment are close enough to be considered intersecting
+            if (curveIsCloseToSegment(curve, segment, tolerance)) {
+                findLineIntersection(curve.start, curve.end, segment.start, segment.end)?.let { p ->
+                    intersectionPoints.add(p)
+                }
+                return
+            }
+
+            // 3. Subdivide the curve into two halves
+            val (leftCurve, rightCurve) = subdivideCurve(curve)
+
+            // 4. Recursively check for intersections with the subdivided curves
+            subdivide(leftCurve, segment, depth + 1)
+            subdivide(rightCurve, segment, depth + 1)
+        }
+
+        subdivide(curve, segment, 0)
+        return intersectionPoints.distinct() // Remove duplicate points
+    }
+
+    // Helper function to check if the bounding boxes of a curve and a segment intersect
+    private fun boundingBoxesIntersect(curve: Curve, segment: Segment): Boolean {
+        // 1. Calculate the bounding box of the curve
+        val curveMinX = minOf(curve.p0.x, curve.p1.x, curve.p2.x,curve.p3.x)
+        val curveMaxX = maxOf(curve.p0.x, curve.p1.x, curve.p2.x, curve.p3.x)
+        val curveMinY = minOf(curve.p0.y, curve.p1.y, curve.p2.y, curve.p3.y)
+        val curveMaxY = maxOf(curve.p0.y, curve.p1.y, curve.p2.y, curve.p3.y)
+
+        // 2. Calculatethe bounding box of the segment
+        val segmentMinX = minOf(segment.start.x, segment.end.x)
+        val segmentMaxX = maxOf(segment.start.x, segment.end.x)
+        val segmentMinY = minOf(segment.start.y, segment.end.y)
+        val segmentMaxY = maxOf(segment.start.y, segment.end.y)
+
+        // 3. Check if the bounding boxes overlap
+        return (curveMinX <= segmentMaxX && curveMaxX >= segmentMinX &&
+                curveMinY <= segmentMaxY && curveMaxY >= segmentMinY)
+    }
+
+    private fun boundingBoxesIntersect(curve: Curve, point: Vec2): Boolean {
+        // 1. Calculate the bounding box of the curve
+        val curveMinX = minOf(curve.p0.x, curve.p1.x, curve.p2.x,curve.p3.x)
+        val curveMaxX = maxOf(curve.p0.x, curve.p1.x, curve.p2.x, curve.p3.x)
+        val curveMinY = minOf(curve.p0.y, curve.p1.y, curve.p2.y, curve.p3.y)
+        val curveMaxY = maxOf(curve.p0.y, curve.p1.y, curve.p2.y, curve.p3.y)
+
+
+        // 3. Check if the bounding boxes overlap
+        return (point.x in curveMinX..curveMaxX &&
+                point.y in curveMinY .. curveMaxY)
+    }
+
+    // Helper function to check if a curve is close enough to a segment to be considered intersecting
+    private fun curveIsCloseToSegment(curve: Curve, segment: Segment, tolerance: Double): Boolean {
+        // 1. Calculate the distance from each control point of the curve to the segment
+        val distances = listOf(
+            distancePointToSegment(curve.p0, segment),
+            distancePointToSegment(curve.p1, segment),
+            distancePointToSegment(curve.p2, segment),
+            distancePointToSegment(curve.p3, segment)
+        )
+
+        // 2. Check if any of the distances are less than the tolerance
+        return distances.any { it < tolerance }
+    }
+
+    // Helper function to subdivide a Bézier curve into two halves
+    private fun subdivideCurve(curve: Curve): Pair<Curve, Curve> {
+        // 1. Calculate the midpoint of each line segment formed by the control points
+        val q0 = curve.p0
+        val q1 = (curve.p0 + curve.p1) / 2.0
+        val q2 = (curve.p1 + curve.p2) / 2.0
+        val q3 = (curve.p2 + curve.p3) / 2.0
+
+        // 2. Calculate the midpoint of the line segments formed by the midpoints from step 1
+        val r0 = (q0 + q1) / 2.0
+        val r1 = (q1 + q2) / 2.0
+        val r2 = (q2 + q3) / 2.0
+
+        // 3. Calculate the midpoint of the line segment formed by the midpoints from step 2
+        val s0 = (r0 + r1) / 2.0
+        val s1 = (r1 + r2) / 2.0
+
+        // 4. The midpoint of the line segment formed by the midpoints from step 3 is the midpoint of the curve
+        val midpoint = (s0 + s1) / 2.0
+
+        // 5. Construct the two subdivided curves
+        val leftCurve = Curve(q0, r0, s0, midpoint) // or appropriate curve type
+        val rightCurve = Curve(midpoint, s1, r2, q3) // or appropriate curve type
+
+        return Pair(leftCurve, rightCurve)
+    }
+
+
+    fun findBezierSegmentIntersection(curve: Curve, segment: Segment): List<Vec2> {
+        // 1. Define a function to represent the Bézier curve equation
+        val bezierFunction: (Double) -> Vec2 = { t ->
+            val x = (1 - t).pow(3) * curve.p0.x +
+                    3* (1 - t).pow(2) * t * curve.p1.x +
+                    3 * (1 - t) * t.pow(2) * curve.p2.x +
+                    t.pow(3) * curve.p3.x
+            val y = (1 - t).pow(3) * curve.p0.y +
+                    3 * (1 - t).pow(2) * t * curve.p1.y +
+                    3 * (1 - t) * t.pow(2) * curve.p2.y +
+                    t.pow(3) * curve.p3.y
+            Vec2(x, y)
+        }
+
+        // 2. Define a function to represent the distance between a point on the curve and the line segment
+        val distanceFunction: (Double) -> Double = { t ->
+            val pointOnCurve = bezierFunction(t)
+            distancePointToSegment(pointOnCurve, segment)
+        }
+
+        // 3. Find the roots of the distance function (where the distance is 0)
+        val roots = findRoots(distanceFunction, 0.0, 1.0, tolerance = 1e-6)
+
+        // 4. Calculate the intersection points using the roots
+        val intersectionPoints = roots.map { t -> bezierFunction(t) }
+
+        return intersectionPoints
+    }
+
+    fun findCircleBezierIntersection(circle: Arc, curve: Curve): List<Vec2> {
+        // 1. Define a function to represent theBézier curve equation
+        val bezierFunction: (Double) -> Vec2 = { t ->
+            val mt = 1-t
+            val x = mt.pow(3) * curve.p0.x +
+                    3 * mt.pow(2) * t * curve.p1.x +
+                    3 * mt * t.pow(2) * curve.p2.x +
+                    t.pow(3) * curve.p3.x
+            val y = mt.pow(3) * curve.p0.y +
+                    3 * mt.pow(2) * t * curve.p1.y +
+                    3 * mt * t.pow(2) * curve.p2.y +
+                    t.pow(3) * curve.p3.y
+            Vec2(x, y)
+        }
+
+        val distanceDifferential: (Double) -> Double = { t ->
+            val pointOnCurve = bezierFunction(t)
+            val mt = 1-t
+            val derivativeX = 3 * mt.pow(2) * (curve.p1.x - curve.p0.x) +
+                    6 * mt * t * (curve.p2.x - curve.p1.x) +
+                    3 * t.pow(2) * (curve.p3.x - curve.p2.x)
+            val derivativeY = 3 * mt.pow(2) * (curve.p1.y - curve.p0.y) +
+                    6 * mt * t * (curve.p2.y - curve.p1.y) +
+                    3 * t.pow(2) * (curve.p3.y - curve.p2.y)
+
+            val distanceToCenter = distance(pointOnCurve, circle.center)
+            ((pointOnCurve.x - circle.center.x) * derivativeX + (pointOnCurve.y - circle.center.y) * derivativeY) / distanceToCenter
+        }
+
+        // 2. Define a function to represent the distance between a point on the curve and the circle center
+        val distanceFunction: (Double) -> Double = { t ->
+            val pointOnCurve = bezierFunction(t)
+            distance(pointOnCurve, circle.center) - circle.radius
+        }
+
+        // 3. Find the roots of the distance function (where the distance is 0)
+        val roots = findRoots(distanceFunction,  0.0, 1.0, tolerance = 1e-6)
+
+        // 4. Calculate the intersection points using the roots
+        val intersectionPoints = roots.map { t -> bezierFunction(t) }
+
+        return intersectionPoints
+    }
+
+
+    private fun findRoots(
+        function: (Double) -> Double,
+        start: Double,
+        end: Double,
+        tolerance: Double
+    ): List<Double> {
+        val roots = mutableListOf<Double>()
+        var t = start
+
+        while (t <= end) {
+            var x = t
+            var fx = function(x)
+
+            while (Math.abs(fx) > tolerance) {
+                val dfx = (function(x + tolerance) - function(x - tolerance)) / (2 * tolerance) // Numerical derivative
+                x -= fx / dfx
+                fx = function(x)
+            }
+
+            if (x in (start + tolerance)..(end - tolerance) && !roots.contains(x)) {
+                roots.add(x)
+            }
+
+            t += tolerance * 10 //Adjust step size for efficiency
+        }
+
+        return roots
+    }
+
+    private fun distancedPointOnCurve(curve:Curve,  point: Vec2): Vec2 {
+        val segmentStart:Vec2 = curve.p0
+        val segmentEnd:Vec2 = curve.p3
+
+        val segmentVector = Vec2(segmentEnd.x - segmentStart.x, segmentEnd.y - segmentStart.y)
+        val pointVector = Vec2(point.x - segmentStart.x, point.y - segmentStart.y)
+
+        val dotProduct = Vec2.dot(segmentVector, pointVector)
+        val segmentLengthSquared = segmentVector.x * segmentVector.x + segmentVector.y * segmentVector.y
+
+        if (segmentLengthSquared == 0.0) {
+            return curve.pointAt(0.5)
+        }
+
+        val t = dotProduct / segmentLengthSquared
+
+        return if (t < 0) {
+            curve.pointAt(0.0)
+        } else if (t > 1) {
+            curve.pointAt(1.0)
+        } else {
+            curve.pointAt(t)
+        }
+    }
+
+    private fun distancePointToSegment(point: Vec2, segmentStart:Vec2, segmentEnd:Vec2): Double {
+        val segmentVector = Vec2(segmentEnd.x - segmentStart.x, segmentEnd.y - segmentStart.y)
+        val pointVector = Vec2(point.x - segmentStart.x, point.y - segmentStart.y)
+
+        val dotProduct = Vec2.dot(segmentVector, pointVector)
+        val segmentLengthSquared = segmentVector.x * segmentVector.x + segmentVector.y * segmentVector.y
+
+        if (segmentLengthSquared == 0.0) {
+            return distance(point, segmentStart) // Segment is a point
+        }
+
+        val t = dotProduct / segmentLengthSquared
+
+        return if (t < 0) {
+            distance(point, segmentStart) // Before the segment
+        } else if (t > 1) {
+            distance(point, segmentEnd) // After the segment
+        } else {
+            val closestPointOnSegment = Vec2(segmentStart.x + t * segmentVector.x, segmentStart.y + t * segmentVector.y)
+            distance(point, closestPointOnSegment) // On the segment
+        }
+    }
+
+    // Helper function to calculate the distance from a point to a line segment
+    private fun distancePointToSegment(point: Vec2, segment: Segment): Double {
+        val segmentVector = Vec2(segment.end.x - segment.start.x, segment.end.y - segment.start.y)
+        val pointVector = Vec2(point.x - segment.start.x, point.y - segment.start.y)
+
+        val dotProduct = Vec2.dot(segmentVector, pointVector)
+        val segmentLengthSquared = segmentVector.x * segmentVector.x + segmentVector.y * segmentVector.y
+
+        if (segmentLengthSquared == 0.0) {
+            return distance(point, segment.start) // Segment is a point
+        }
+
+        val t = dotProduct / segmentLengthSquared
+
+        return if (t < 0) {
+            distance(point, segment.start) // Before the segment
+        } else if (t > 1) {
+            distance(point, segment.end) // After the segment
+        } else {
+            val closestPointOnSegment = Vec2(segment.start.x + t * segmentVector.x, segment.start.y + t * segmentVector.y)
+            distance(point, closestPointOnSegment) // On the segment
+        }
+    }
+
+    private fun distance(p1: Vec2, p2: Vec2): Double {
+        return Vec2.distance(p1, p2)
+    }
+}
+

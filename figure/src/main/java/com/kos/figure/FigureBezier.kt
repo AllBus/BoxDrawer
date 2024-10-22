@@ -9,6 +9,7 @@ import com.kos.figure.complex.model.SimpleElement
 import vectors.Vec2
 import vectors.Vec2.Companion.casteljauLine
 import vectors.Vec2.Companion.getCubicRoots
+import kotlin.math.pow
 
 private const val DEFAULT_STEP_SIZE = 1000
 
@@ -252,6 +253,20 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApprox
 
     override fun segments(): PathIterator {
         return CurveList(points)
+    }
+
+    fun function(t: Double, index:Int): Vec2 {
+        val mt = 1-t
+        val i3 = index*3
+        val x = mt.pow(3) * points[i3].x +
+                3 * mt.pow(2) * t * points[i3+1].x +
+                3 * mt * t.pow(2) * points[i3+2].x +
+                t.pow(3) * points[i3+3].x
+        val y = mt.pow(3) * points[i3].y +
+                3 * mt.pow(2) * t * points[i3+1].y +
+                3 * mt * t.pow(2) * points[i3+2].y +
+                t.pow(3) * points[i3+3].y
+        return Vec2(x, y)
     }
 }
 

@@ -30,6 +30,18 @@ fun DrawInstrumentIcon(instrument:Int){
                 contentDescription = "Circle"
             )
         }
+        Instruments.INSTRUMENT_ELLIPSE -> {
+            Icon(
+                imageVector = InstrumentIcon.rememberEllipse(),
+                contentDescription = "Ellipse"
+            )
+        }
+        Instruments.INSTRUMENT_TRIANGLE -> {
+            Icon(
+                imageVector = InstrumentIcon.rememberTriangle(),
+                contentDescription = "Triangle"
+            )
+        }
         Instruments.INSTRUMENT_POLYGON ->{
             Icon(
                 imageVector = InstrumentIcon.rememberPolygon(),

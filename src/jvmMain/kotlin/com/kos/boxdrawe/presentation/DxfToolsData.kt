@@ -4,12 +4,14 @@ import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.figure.FigureExtractor
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureCircle
+import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureInfo
 import com.kos.figure.FigureLine
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
+import com.kos.figure.collections.FigurePoints
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureComposition
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,6 +29,7 @@ import vectors.Matrix
 import vectors.Vec2
 import java.io.File
 import java.io.FileInputStream
+import kotlin.math.abs
 
 class DxfToolsData(override val tools: ITools) : SaveFigure {
 
@@ -40,7 +43,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
     val instrument :StateFlow<Int> = _instrument
 
     fun changeInstrument(value:Int){
-        appendFigure()
+        appendFigure(1f)
         _instrument.value = value
     }
 
@@ -53,6 +56,8 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
     private var pointList = mutableListOf<Vec2>()
     private var endPoint: Vec2 = Vec2.Zero
 
+    private var intersectPoint :List<Vec2> = emptyList()
+
     private val editFigure: MutableStateFlow<IFigure> = MutableStateFlow(FigureEmpty)
     private val vspomogatelnieFigure: MutableStateFlow<IFigure> = MutableStateFlow(FigureEmpty)
 
@@ -61,7 +66,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
             listOf(
                 figure,
                 pomo,
-                editFigure
+                editFigure,
             )
         )
     }
@@ -78,16 +83,36 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                     Vec2(startPoint.x, endPoint.y)
                 ), true
             )
-            Instruments.INSTRUMENT_CIRCLE -> FigureCircle(startPoint, delta.magnitude, true)
+            Instruments.INSTRUMENT_CIRCLE -> FigureCircle(
+                center = startPoint,
+                radius = delta.magnitude,
+                outSide = true
+            )
+            Instruments.INSTRUMENT_ELLIPSE -> {
+                FigureEllipse(
+                    center = (endPoint + startPoint) / 2.0,
+                    radius = abs(delta.x)/2.0,
+                    radiusMinor = abs(delta.y)/2.0,
+                    rotation = 0.0,
+                    outSide = true
+                )
+            }
+
             Instruments.INSTRUMENT_POLYGON -> FigureCreator.regularPolygon(startPoint,6, delta.angle, delta.magnitude )
             Instruments.INSTRUMENT_POLYLINE -> FigurePolyline(pointList+endPoint, false)
             Instruments.INSTRUMENT_BEZIER -> {
-                val c = (pointList.size-2) %3
-                val add = if (c != 0){
-                    (1 ..(3-c)).map{endPoint}
-                } else emptyList()
+                val pp = pointList.toList()
+                if (pp.isEmpty())
+                    FigureEmpty
+                else {
+                    val pr = if (pp.last() != endPoint) {
+                        pp + endPoint
+                    } else pp
+                    val cou = (pr.size-1) % 3
 
-                FigureBezier(pointList + endPoint+add)
+
+                    FigureBezier(pr.dropLast(cou))
+                }
             }
             Instruments.INSTRUMENT_NONE -> FigureEmpty
             else -> FigureEmpty
@@ -103,7 +128,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         }
     }
 
-    fun appendFigure() {
+    fun appendFigure(scale:Float) {
         val ev = editFigure.value
         val v = currentFigure.value
         if (ev == FigureEmpty)
@@ -116,6 +141,14 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         }
         editFigure.value = FigureEmpty
         pointList.clear()
+
+        recalcIntersectPoints()
+        vspomogatelnieFigure.value = intersectFigures(scale)
+    }
+
+    fun recalcIntersectPoints(){
+        intersectPoint = PaintUtils.findAllIntersects(listOf(currentFigure.value))
+
     }
 
     fun loadDxf(fileName: String) {
@@ -174,14 +207,22 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         val figure = currentFigure.value
         val newPoint = PaintUtils.findPointAtCursor(Matrix.identity, point, magnetDistance/scale, listOf(figure))
         if (newPoint != null){
-            vspomogatelnieFigure.value = FigureCreator.colorDxf(2, FigureCircle(newPoint, magnetDistance/scale,true))
+            vspomogatelnieFigure.value = FigureList(listOf(  magentPoint(newPoint, scale), intersectFigures(scale)))
             return newPoint
         } else {
-            vspomogatelnieFigure.value = FigureEmpty
+            vspomogatelnieFigure.value = intersectFigures(scale)
         }
 
         return point
     }
+
+    private fun magentPoint(
+        newPoint: Vec2,
+        scale: Float
+    ) = FigureCreator.colorDxf(2, FigureCircle(newPoint, magnetDistance / scale, true))
+
+    private fun intersectFigures(scale: Float) =
+        FigureCreator.colorDxf(3, FigurePoints(intersectPoint, magnetDistance / scale))
 
     suspend fun onMove(
         point: Vec2,
@@ -220,7 +261,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                     Instruments.INSTRUMENT_BEZIER ->
                         appendPoint()
                     else ->
-                        appendFigure()
+                        appendFigure(scale)
                 }
             Instruments.POINTER_RIGHT -> {
                 if (pointList.isNotEmpty()) {
@@ -229,7 +270,8 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                 }
             }
             Instruments.POINTER_MIDDLE -> {
-                appendFigure()
+                appendFigure(scale)
+
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.kos.figure.algorithms
 
+import com.kos.figure.complex.model.Segment
 import vectors.Vec2
 
 data class SegmentInfo(val polygonIndex: Int, val edgeIndex: Int)
@@ -197,6 +198,27 @@ fun traverseGraphForSubtract(graph: Map<Vertex, List<Vertex>>, start: Vec2, subt
     return result
 }
 
+fun findClosestPointOnSegment(segment: Segment, point: Vec2): Vec2 {
+    val segmentVector = Vec2(segment.end.x - segment.start.x, segment.end.y - segment.start.y)
+    val pointVector = Vec2(point.x - segment.start.x, point.y - segment.start.y)
+
+    val dotProduct = Vec2.dot(segmentVector, pointVector)
+    val segmentLengthSquared = segmentVector.x * segmentVector.x + segmentVector.y * segmentVector.y
+
+    if (segmentLengthSquared == 0.0) {
+        return segment.start // Segment is a point
+    }
+
+    val t = dotProduct / segmentLengthSquared
+
+    return if (t < 0){
+        segment.start // Before the segment
+    } else if (t > 1) {
+        segment.end // After the segment
+    } else {
+        Vec2(segment.start.x + t * segmentVector.x, segment.start.y + t * segmentVector.y) // On the segment
+    }
+}
 
 class PolygonManipulation {
 }

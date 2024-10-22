@@ -20,10 +20,21 @@ interface Arc: PathElement {
     val sweepAngle : Double  get() = endAngle-startAngle
 
     fun containsAngle(angle: Double): Boolean {
-        val normalizedAngle = (angle % (2 * PI) + 2 * PI) % (2 * PI) // Normalize angle to [0,2pi)
-        val normalizedStart = (startAngle % (2 * PI) + 2 * PI) % (2 * PI)
-        val normalizedEnd = (endAngle % (2 * PI) + 2 * PI) % (2 * PI)
+        if (abs(sweepAngle) >= 2* PI) return true
 
+        val minus = endAngle < startAngle
+
+        val normalizedAngle = (angle % (2 * PI) + 2 * PI) % (2 * PI) // Normalize angle to [0,2pi)
+        var normalizedStart = (startAngle % (2 * PI) + 2 * PI) % (2 * PI)
+        var normalizedEnd = (endAngle % (2 * PI) + 2 * PI) % (2 * PI)
+
+        if (minus) {
+            val tmp = normalizedStart
+            normalizedStart = normalizedEnd
+            normalizedEnd = tmp
+        }
+
+        //println("contain ${angle} $normalizedAngle : $normalizedStart $normalizedEnd")
         return if (normalizedStart <= normalizedEnd) {
             normalizedAngle in normalizedStart..normalizedEnd
         } else {

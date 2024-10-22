@@ -1,11 +1,13 @@
 package com.kos.figure
 
+//import org.apache.commons.math3.util.MathUtils.normalizeAngle
 import com.kos.drawer.IFigureGraphics
-import com.kos.figure.collections.FigureList
 import com.kos.figure.collections.FigurePath
+import com.kos.figure.complex.model.Ellipse
+import com.kos.figure.complex.model.OnePathIterator
+import com.kos.figure.complex.model.SimpleElement
 import com.kos.figure.utils.EllipseUtils.normalize
 import com.kos.figure.utils.EllipseUtils.normalizeAngle
-//import org.apache.commons.math3.util.MathUtils.normalizeAngle
 import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
@@ -32,8 +34,8 @@ open class FigureEllipse(
     val rotation: Double,
     val outSide: Boolean,
     val segmentStartAngle: Double = 0.0,
-    val segmentSweepAngle: Double = PI*2,
-) : Figure(), IFigurePath, FigureWithApproximation, IRotable {
+    val segmentSweepAngle: Double = PI * 2,
+) : Figure(), IFigurePath, FigureWithApproximation, IRotable, SimpleElement {
 
     override fun crop(k: Double, cropSide: CropSide): Figure {
         //Todo: Правильно отрезать
@@ -258,16 +260,20 @@ open class FigureEllipse(
     }
 
     override fun print(): String {
-        return "M ${center.x} ${center.y} a ${Math.toDegrees(rotation)} e ${radius} ${radiusMinor} ${Math.toDegrees(segmentStartAngle)} ${Math.toDegrees(segmentSweepAngle)}"
+        return "M ${center.x} ${center.y} a ${Math.toDegrees(rotation)} e ${radius} ${radiusMinor} ${
+            Math.toDegrees(
+                segmentStartAngle
+            )
+        } ${Math.toDegrees(segmentSweepAngle)}"
     }
 
     fun isFill(): Boolean {
-        return (segmentSweepAngle == 0.0 || abs(segmentSweepAngle) >= PI*2)
+        return (segmentSweepAngle == 0.0 || abs(segmentSweepAngle) >= PI * 2)
     }
 
     fun endAngle(): Double {
         return if (isFill()) {
-            segmentStartAngle + PI*2
+            segmentStartAngle + PI * 2
         } else
             segmentStartAngle + segmentSweepAngle
     }
@@ -361,7 +367,7 @@ open class FigureEllipse(
 
         val normal = Vec2.normalize(
             Vec2.Zero,
-            Vec2(radiusMinor * radiusMinor * pos.x, radius * radius * pos.y)*normalSign
+            Vec2(radiusMinor * radiusMinor * pos.x, radius * radius * pos.y) * normalSign
         ).rotate(rotation)
         return PointWithNormal(pr, normal)
     }
@@ -370,16 +376,16 @@ open class FigureEllipse(
         return positionInPath(delta)
     }
 
-    val normalSign :  Double get() = if (outSide) 1.0 else -1.0
+    val normalSign: Double get() = if (outSide) 1.0 else -1.0
 
     companion object {
-        val digitFormatter =  DecimalFormat().apply{ setMaximumFractionDigits(3) }
+        val digitFormatter = DecimalFormat().apply { setMaximumFractionDigits(3) }
     }
 
     override fun name(): String {
-        if (isFill()){
+        if (isFill()) {
             return "Эллипс ${digitFormatter.format(radius)} x ${digitFormatter.format(radiusMinor)}"
-        }else {
+        } else {
             return "Эллипс ${digitFormatter.format(radius)} x ${digitFormatter.format(radiusMinor)} : ${
                 digitFormatter.format(
                     Math.toDegrees(segmentStartAngle)
@@ -418,15 +424,15 @@ open class FigureEllipse(
     }
 
     override fun endPoint(): Vec2 {
-        val t = (segmentStartAngle+segmentSweepAngle)
+        val t = (segmentStartAngle + segmentSweepAngle)
         return center + Vec2(radius * cos(t), radiusMinor * sin(t)).rotate(rotation)
     }
 
     override fun duplicationAtNormal(h: Double): Figure {
         return FigureEllipse(
             center = center,
-            radius = radius+h*normalSign,
-            radiusMinor = radiusMinor+h*normalSign,
+            radius = radius + h * normalSign,
+            radiusMinor = radiusMinor + h * normalSign,
             rotation = rotation,
             outSide = outSide,
             segmentStartAngle = segmentStartAngle,
@@ -435,8 +441,8 @@ open class FigureEllipse(
     }
 
     override fun take(startMM: Double, endMM: Double): Figure {
-        val st = startMM/pathLength()
-        val end = endMM/pathLength()
+        val st = startMM / pathLength()
+        val end = endMM / pathLength()
         //Todo: Вычислить правильный сегмент
         return FigureEllipse(
             center = center,
@@ -444,13 +450,26 @@ open class FigureEllipse(
             radiusMinor = radiusMinor,
             rotation = rotation,
             outSide = outSide,
-            segmentStartAngle = segmentStartAngle+segmentSweepAngle*st,
-            segmentSweepAngle = segmentSweepAngle*(end-st),
+            segmentStartAngle = segmentStartAngle + segmentSweepAngle * st,
+            segmentSweepAngle = segmentSweepAngle * (end - st),
         )
     }
 
     override fun toFigure(): Figure = this
 
+    override fun segments(): OnePathIterator<Ellipse> {
+        return OnePathIterator(
+            Ellipse(
+                center = center,
+                radiusX = radius,
+                radiusY = radiusMinor,
+                rotation = rotation,
+                startAngle = segmentStartAngle,
+                endAngle = segmentStartAngle + segmentSweepAngle,
+                outSide = outSide,
+            )
+        )
+    }
 }
 
 
