@@ -6,6 +6,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.kos.boxdrawer.detal.box.BoxAlgorithm
 import com.kos.boxdrawer.detal.box.BoxHelpInfo
+import com.kos.boxdrawer.detal.grid.GridAlgorithm
 import com.kos.boxdrawer.detal.polka.PolkaHelpInfo
 import com.kos.boxdrawer.detal.polka.PolkaLine
 import com.kos.boxdrawer.detal.robot.RobotHelpInfo
@@ -90,6 +91,7 @@ object TortoiseParser {
                 "reka" -> RekaAlgorithm(
                     items, f.drop(1).dropLast(1).toTypedArray()
                 )
+                "grid" -> GridAlgorithm(items)
 
                 "" -> TortoiseFigureAlgorithm(f.getOrElse(1) { "figure" }, items)
                 else -> parseSimpleLine(items)

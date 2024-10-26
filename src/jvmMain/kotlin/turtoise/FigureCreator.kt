@@ -10,11 +10,11 @@ import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.algorithms.FigureBezierList
 import com.kos.figure.collections.FigureList
-import com.kos.figure.complex.model.Arc
-import com.kos.figure.complex.model.Segment
 import com.kos.figure.complex.FigureRound
 import com.kos.figure.complex.FigureRoundRect
+import com.kos.figure.complex.model.Arc
 import com.kos.figure.complex.model.PathElement
+import com.kos.figure.complex.model.Segment
 import com.kos.figure.composition.FigureArray
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureComposition
@@ -335,15 +335,35 @@ object FigureCreator {
             FigureEmpty
     }
 
+    /**
+     * Построит кривую Безье из трех точек
+     * @param a Первая точка
+     * @param b Средняя точка
+     * @param c Третья точка
+     * @param smoothness Сглаженность кривой принимает значения в диапазоне от 0.0 до 1.0
+     * @return IFigure - кривая Безье
+     */
+    fun cubicBezierForThreePoints(a: Vec2, b: Vec2, c: Vec2, smoothness: Double = 0.5): FigureBezier {
+        val p0 = a
+        val p1 = a + (b - a) * smoothness
+        val p2 = c + (b - c) * smoothness
+        val p3 = c
+        return FigureBezier(listOf(p0, p1, p2, p3))
+    }
+
     fun roundedLine(points: List<Vec2>, radius: Double): IFigure {
         if (points.size < 2)
             return FigureEmpty
-        if (radius <=0.0)
+        if (radius <= 0.0)
             return FigurePolyline(points)
         return roundedLine(points, emptyList(), radius)
     }
 
-    fun roundedLine(points: List<Vec2>, radius: List<Double>, defaultRadius: Double = 0.0): IFigure {
+    fun roundedLine(
+        points: List<Vec2>,
+        radius: List<Double>,
+        defaultRadius: Double = 0.0
+    ): IFigure {
         if (points.size < 2)
             return FigureEmpty
 
@@ -415,6 +435,13 @@ object FigureCreator {
             startAngle = startAngle,
             sweepAngle = sr
         )
+    }
+
+    fun figureCircle(
+        center: Vec2,
+        radius: Double
+    ): FigureCircle {
+        return FigureCircle(center, radius, true)
     }
 
     fun figureCircle(
@@ -511,6 +538,7 @@ object FigureCreator {
                 // println("Super $scale")
                 figure.create(points)
             }
+
             is FigureCircle -> {
                 figure.create(
                     center = figure.center,
@@ -520,6 +548,7 @@ object FigureCreator {
                     segmentSweep = figure.segmentSweepAngle,
                 )
             }
+
             is FigureEllipse -> {
                 figure.create(
                     center = figure.center,
@@ -562,7 +591,7 @@ object FigureCreator {
     }
 
     fun figurePoint(point: Vec2, ds: DrawerSettings): IFigure {
-        return FigureCircle(point,ds.boardWeight, true)
+        return FigureCircle(point, ds.boardWeight, true)
     }
 }
 

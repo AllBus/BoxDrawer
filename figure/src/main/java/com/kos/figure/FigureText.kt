@@ -73,4 +73,8 @@ class FigureText(val text:String, transform : Matrix = Matrix.identity): IFigure
 
     override val transform: Matrix
         get() = Matrix.identity
+
+    override fun removeInner(inner: IFigure): IFigure = this
+
+    override fun replaceInner(newCollection: List<IFigure>): IFigure = this
 }

@@ -251,7 +251,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApprox
         return length.indexOfLast { it <= mm }
     }
 
-    override fun segments(): PathIterator {
+    override fun segments(): CurveList {
         return CurveList(points)
     }
 

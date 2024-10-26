@@ -67,6 +67,12 @@ interface Arc: PathElement {
         return PointWithNormal(pos, normal)
     }
 
+    override fun pointAt(t: Double): Vec2 {
+        val rot = (startAngle + t * sweepAngle)
+        val pos = center + Vec2(radius, 0.0).rotate(rot)
+        return pos
+    }
+
     override fun take(startMM: Double, endMM: Double): Figure {
         val pe = perimeter()
         if (pe<=0 || endMM<=startMM)

@@ -24,6 +24,10 @@ interface Segment : PathElement {
         return PointWithNormal.from(Vec2.lerp(start, end, delta), start, end)
     }
 
+    override fun pointAt(t: Double): Vec2 {
+        return Vec2.lerp(start, end, t)
+    }
+
     override fun take(startMM: Double, endMM: Double): Figure {
         val d = Vec2.distance(start, end)
 

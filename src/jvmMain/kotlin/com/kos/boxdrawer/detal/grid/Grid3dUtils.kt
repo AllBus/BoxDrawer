@@ -21,6 +21,38 @@ object Grid3dUtils {
         )
     }
 
+    fun findIntersection(polygon:Polygon): Set<Polygon> {
+        val intersections = mutableSetOf<Polygon>()
+        val pv = polygon.vertices
+        val hasElement = mutableSetOf<Coordinates>()
+        val currentSeq = mutableListOf<Coordinates>()
+     //   println(pv.joinToString("+"))
+        for (i in pv.indices) {
+            val p1 = pv[i]
+            if (hasElement.contains(p1)){
+                var j = currentSeq.size-1
+                val newSeq = mutableListOf<Coordinates>()
+                newSeq.add(pv[i])
+                while (j>= 0 && currentSeq[j]!= p1){
+                    val pj = currentSeq[j]
+                    newSeq.add(pj)
+                    hasElement.remove(pj)
+                    currentSeq.removeLast()
+                    j--
+                }
+                newSeq.add(pv[i])
+
+     //           println(newSeq.reversed().joinToString(" "))
+                intersections.add(Polygon(newSeq.reversed()))
+
+            } else {
+                hasElement.add(p1)
+                currentSeq.add(p1)
+            }
+        }
+        return intersections
+    }
+
     fun createPolygon(edges:Set<KubikEdge>): Set<Polygon> {
         return GridLoops.findClosedLoops(edges).map { loop ->
             Polygon(loop.points)

@@ -10,7 +10,6 @@ import org.apache.commons.math3.linear.Array2DRowRealMatrix
 import org.apache.commons.math3.linear.ArrayRealVector
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression
 import vectors.Vec2
-import kotlin.math.pow
 
 private const val DEFAULT_STEP_SIZE = 1000
 
@@ -34,19 +33,6 @@ interface Curve : PathElement {
         )
     }
 
-    fun function(t: Double): Vec2 {
-        val mt = 1-t
-        val x = mt.pow(3) * p0.x +
-                3 * mt.pow(2) * t * p1.x +
-                3 * mt * t.pow(2) * p2.x +
-                t.pow(3) * p3.x
-        val y = mt.pow(3) * p0.y +
-                3 * mt.pow(2) * t * p1.y +
-                3 * mt * t.pow(2) * p2.y +
-                t.pow(3) * p3.y
-        return Vec2(x, y)
-    }
-
     /**
      * Creates a sub-Bezier curve from the current curve based on start and end offsets as percentages of the curve's length.
      *
@@ -55,9 +41,6 @@ interface Curve : PathElement {
      * @return A new BezierCurve representing the sub-curve.
      */
     fun subBezier(startOffset: Double, endOffset: Double): Curve {
-        require(startOffset in 0.0..1.0) { "Start offset must be between 0.0 and 1.0" }
-        require(endOffset in 0.0..1.0) { "End offset must be between 0.0 and 1.0" }
-        require(startOffset <= endOffset) { "Start offset must be less than or equal to end offset" }
 
         // Calculate intermediate points using De Casteljau's algorithm
         val t1 = startOffset
@@ -160,7 +143,7 @@ interface Curve : PathElement {
      * @param t The parameter value (0.0 to 1.0).
      * @return The point on the curve at the specified parameter.
      */
-    fun pointAt(t: Double): Vec2 {
+    override fun pointAt(t: Double): Vec2 {
         val oneMinusT = 1 - t
         val tSquared = t * t
         val oneMinusTSquared = oneMinusT * oneMinusT
@@ -170,13 +153,19 @@ interface Curve : PathElement {
                 p3 * tSquared * t)
     }
 
+    fun derivative(t: Double): Vec2 {
+        val oneMinusT = 1 - t
+        return (p1 - p0) * (3 * oneMinusT * oneMinusT) +
+                (p2 - p1) * (6 * oneMinusT * t) +
+                (p3 - p2) * (3 * t * t)
+    }
 
     companion object {
         operator fun invoke(p0: Vec2, p1: Vec2, p2: Vec2, p3: Vec2): Curve {
             return CurveImpl(p0, p1, p2, p3)
         }
 
-        fun fitBezierCurveToPoints(points: List<Vec2>, startIndex:Int): Curve {
+        fun fitBezierCurveToPoints(points: List<Vec2>, startIndex: Int): Curve {
             val size = 4
             // Calculate parameter values for each point (assuming uniform distribution)
             val tValues = (0..points.size - 1).map { it.toDouble() / (points.size - 1) }
@@ -240,17 +229,17 @@ interface Curve : PathElement {
 }
 
 
-class CurveIter(private val points: List<Vec2>,var index:Int): Curve {
+class CurveIter(private val points: List<Vec2>, var index: Int) : Curve {
     // Todo Need optimize get point list
-    override val p0: Vec2 get() = points[index+0]
-    override val p1: Vec2 get() = points[index+1]
-    override val p2: Vec2 get() = points[index+2]
-    override val p3: Vec2 get() = points[index+3]
+    override val p0: Vec2 get() = points[index + 0]
+    override val p1: Vec2 get() = points[index + 1]
+    override val p2: Vec2 get() = points[index + 2]
+    override val p3: Vec2 get() = points[index + 3]
 
     private val length: Double by lazy { Vec2.bezierLength(points, index) }
 
     override fun toFigure(): FigureBezier {
-        return FigureBezier(points.subList(index, index+4))
+        return FigureBezier(points.subList(index, index + 4))
     }
 
     override fun toPath(): IFigurePath = toFigure()
@@ -260,7 +249,12 @@ class CurveIter(private val points: List<Vec2>,var index:Int): Curve {
     }
 
     override fun positionInPath(delta: Double): PointWithNormal {
-        return Vec2.bezierPosition(points.subList(index, index+4), delta, DEFAULT_STEP_SIZE, length)
+        return Vec2.bezierPosition(
+            points.subList(index, index + 4),
+            delta,
+            DEFAULT_STEP_SIZE,
+            length
+        )
     }
 
     override fun take(startMM: Double, endMM: Double): Figure {
@@ -271,13 +265,14 @@ class CurveIter(private val points: List<Vec2>,var index:Int): Curve {
         val a = (startMM / pe).coerceIn(0.0, 1.0)
         val b = (endMM / pe).coerceIn(0.0, 1.0)
 
-        val sec = Vec2.casteljauLine(points.subList(index, index+4), a, b)
+        val sec = Vec2.casteljauLine(points.subList(index, index + 4), a, b)
         return FigureBezier(sec)
     }
 
     override fun draw(g: IFigureGraphics) {
-        g.drawBezier(points.subList(index, index+4))
+        g.drawBezier(points.subList(index, index + 4))
     }
+
     override fun toString(): String {
         return "Curve($p0 $p1 $p2 $p3):$index"
     }

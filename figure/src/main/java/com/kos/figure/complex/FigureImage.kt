@@ -35,4 +35,8 @@ class FigureImage(val origin:Vec2, val uri:String,  val size: Vec2) : IFigure{
         get() = Matrix.identity
     override val hasTransform: Boolean
         get() = false
+
+    override fun removeInner(inner: IFigure): IFigure  = this
+
+    override fun replaceInner(newCollection: List<IFigure>): IFigure = this
 }

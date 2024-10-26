@@ -3,7 +3,6 @@ package com.kos.figure.algorithms
 import com.kos.figure.complex.model.Arc
 import com.kos.figure.complex.model.Ellipse
 import com.kos.figure.complex.model.Segment
-import vectors.BoundingRectangle
 import vectors.Vec2
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -22,10 +21,10 @@ fun findArcIntersections(arc1: Arc, arc2: Arc): List<Vec2> {
         return intersections // Circles don't intersect
     }
 
-    val a = (arc1.radius.pow(2) - arc2.radius.pow(2) +d.pow(2)) / (2 * d)
+    val a = (arc1.radius.pow(2) - arc2.radius.pow(2) + d.pow(2)) / (2 * d)
     val h = sqrt(arc1.radius.pow(2) - a.pow(2))
 
-    val p2 = Vec2.lerp( arc1.center, arc2.center, a / d)
+    val p2 = Vec2.lerp(arc1.center, arc2.center, a / d)
     val p3x = p2.x + h * (arc2.center.y - arc1.center.y) / d
     val p3y = p2.y - h * (arc2.center.x - arc1.center.x) / d
     val p3 = Vec2(p3x, p3y)
@@ -129,6 +128,18 @@ fun findClosestPointOnEllipse(ellipse: Ellipse, point: Vec2): Vec2 {
     return transformPointFromEllipseLocal(ellipse, closestPointLocal)
 }
 
+// Helper function to transform a point from the ellipse's local coordinate system back to the original coordinate system
+private fun transformPointFromEllipseLocal(ellipse: Ellipse, point: Vec2): Vec2 {
+    val cosRotation = cos(ellipse.rotation)
+    val sinRotation = sin(ellipse.rotation)
+
+    val transformedX = cosRotation * point.x - sinRotation * point.y + ellipse.center.x
+    val transformedY = sinRotation * point.x + cosRotation * point.y + ellipse.center.y
+
+    return Vec2(transformedX, transformedY)
+}
+
+
 // Helper function to transform a point to the ellipse's local coordinate system
 private fun transformPointToEllipseLocal(ellipse: Ellipse, point: Vec2): Vec2 {
     val dx = point.x - ellipse.center.x
@@ -142,28 +153,140 @@ private fun transformPointToEllipseLocal(ellipse: Ellipse, point: Vec2): Vec2 {
     return Vec2(transformedX, transformedY)
 }
 
+
+fun findNearestPointOnEllipse(ellipse: Ellipse, point: Vec2): Vec2 {
+    // 1. Rotate the given point
+    val rotatedPoint = rotatePoint(point, ellipse.center, -ellipse.rotation)
+
+    if (rotatedPoint == Vec2.Zero)
+        return ellipse.center
+    // 2. Apply Newton-Raphson
+    var t = atan2(rotatedPoint.y, rotatedPoint.x)/ 2*Math.PI+0.5  //   0.0 // Initial guess for the parameter t
+    val tolerance = 1e-6
+    var iterations = 0
+    val maxIterations = 5
+
+    while (iterations < maxIterations) {
+        // Calculate the point on the ellipse corresponding to the current t
+        val ellipsePoint = ellipsePointAtParameter(ellipse, t)
+
+        // Calculate the vector from the ellipse point to the rotated point
+        val vector = rotatedPoint - ellipsePoint
+
+        // Calculate the derivative of the ellipse equation with respect to t
+        val derivative = ellipseDerivativeAtParameter(ellipse, t)
+
+        // Calculate the next value of t using the Newton-Raphson formula
+        val nextT = t - Vec2.dot(vector, derivative) / - Vec2.dot(derivative , derivative)
+
+        // Check for convergence
+        if (abs(nextT - t) < tolerance) {
+            break
+        }
+
+        t = nextT
+        iterations++
+    }
+
+    // 3. Calculate the nearest point on the ellipse
+    val nearestPoint = ellipsePointAtParameter(ellipse, t)
+
+    // 4. Rotate the nearest point back to the original coordinate system
+    val rotatedNearestPoint = rotatePoint(nearestPoint, ellipse.center, ellipse.rotation)
+
+    return rotatedNearestPoint
+}
+
+// Helper functions
+fun ellipsePointAtParameter(ellipse: Ellipse, t: Double): Vec2 {
+    val x = ellipse.center.x + ellipse.radiusX * cos(t)
+    val y = ellipse.center.y + ellipse.radiusY * sin(t)
+    return Vec2(x, y)
+}
+
+fun ellipseDerivativeAtParameter(ellipse: Ellipse, t: Double): Vec2 {
+    val dx = -ellipse.radiusX * sin(t)
+    val dy = ellipse.radiusY * cos(t)
+    return Vec2(dx, dy)
+}
+
+fun rotatePoint(point: Vec2, center: Vec2, angle: Double): Vec2 {
+    val x = (point.x - center.x) * cos(angle) + (point.y - center.y) * sin(angle) + center.x
+    val y = (point.x - center.x) * sin(angle) - (point.y - center.y) * cos(angle) + center.y
+    return Vec2(x, y)
+}
+
 // Helper function to find the closest point on the ellipse in the local coordinate system
 private fun findClosestPointOnEllipseLocal(ellipse: Ellipse, point: Vec2): Vec2 {
-    if (ellipse.radiusX == 0.0)
+    val eps = 1e-6
+    if (abs(ellipse.radiusX) < eps)
         return findClosestPointOnSegment(
             Segment(
                 Vec2(ellipse.center.x, ellipse.center.y - ellipse.radiusY),
-                Vec2(ellipse.center.x, ellipse.center.y + ellipse.radiusY))
-            , point
+                Vec2(ellipse.center.x, ellipse.center.y + ellipse.radiusY)
+            ), point
         )
 
-    // 1. Transform the ellipse to a circle by scaling the y-coordinate
-    val scaledPoint = Vec2(point.x, point.y / (ellipse.radiusY / ellipse.radiusX))
+    if (abs(ellipse.radiusY) < eps) {
+        return findClosestPointOnSegment(
+            Segment(
+                Vec2(ellipse.center.x - ellipse.radiusX, ellipse.center.y),
+                Vec2(ellipse.center.x + ellipse.radiusX, ellipse.center.y)
+            ), point
+        )
+    }
 
-    // 2. Find the closest point on the circle
-    val closestPointOnCircle = findClosestPointOnCircle(ellipse.radiusX, scaledPoint)
+    // val sqrX = ellipse.radiusX.pow(2)
+    // val sqrY = ellipse.radiusY.pow(2)
 
+
+    var t = 0.0 // Initial guess for the parameter t
+    val tolerance = 1e-6
+    var iterations = 0
+    val maxIterations = 5
+
+
+    while (iterations < maxIterations) {
+        // Calculate the point on the ellipse corresponding to the current t
+        val ellipsePoint = Vec2(ellipse.radiusX * cos(t), ellipse.radiusY * sin(t))
+
+        // Calculate the vector from the ellipse point to the rotated point
+        val vector = point - ellipsePoint
+
+
+
+        // Calculate the derivative of the ellipse equation with respect to t
+        val derivative = Vec2(-ellipse.radiusX*sin(t), ellipse.radiusY*cos(t))
+
+        // Calculate the next value of t using the Newton-Raphson formula
+        val nextT = t - Vec2.dot(vector, derivative) / Vec2.dot(derivative, derivative)
+
+        // Check for convergence
+        if (abs(nextT - t) < tolerance) {
+            break
+        }
+
+        t = nextT
+        iterations++
+    }
+
+    // 3. Calculate the nearest point on the ellipse
+    val nearestPoint = Vec2(ellipse.radiusX * cos(t), ellipse.radiusY * sin(t))
+
+    return nearestPoint
+
+//    // 1. Transform the ellipse to a circle by scaling the y-coordinate
+//    val scaledPoint = Vec2(point.x, point.y / (ellipse.radiusY / ellipse.radiusX))
+//
+//    // 2. Find the closest point on the circle
+//    val closestPointOnCircle = findClosestPointOnCircle(ellipse.radiusX, scaledPoint)
+//
     // 3. Transform the closest point back to the ellipse's local coordinate system
-    return Vec2(closestPointOnCircle.x, closestPointOnCircle.y * (ellipse.radiusY / ellipse.radiusX))
+//    return Vec2(closestPointOnCircle.x, closestPointOnCircle.y * (ellipse.radiusY / ellipse.radiusX))
 }
 
 
-fun findClosestPointOnCircle(radius:Double, point: Vec2): Vec2 {
+fun findClosestPointOnCircle(radius: Double, point: Vec2): Vec2 {
     val distanceToCenter = Vec2.distance(point, Vec2(0.0, 0.0))
 
     if (distanceToCenter == 0.0) {
@@ -175,18 +298,6 @@ fun findClosestPointOnCircle(radius:Double, point: Vec2): Vec2 {
     return Vec2(point.x * radius / distanceToCenter, point.y * radius / distanceToCenter)
 }
 
-// Helper function to transform a point from the ellipse's local coordinate system back to the original coordinate system
-private fun transformPointFromEllipseLocal(ellipse: Ellipse, point: Vec2): Vec2 {
-    val cosRotation = cos(ellipse.rotation)
-    val sinRotation = sin(ellipse.rotation)
-
-    val transformedX = cosRotation * point.x - sinRotation * point.y + ellipse.center.x
-    val transformedY = sinRotation * point.x +cosRotation * point.y + ellipse.center.y
-
-    return Vec2(transformedX, transformedY)
-}
-
-
 fun findSegmentEllipseIntersection(segment: Segment, ellipse: Ellipse): List<Vec2> {
     // 1. Transform the segment to the ellipse'slocal coordinate system
     val transformedSegment = transformSegmentToEllipseLocal(ellipse, segment)
@@ -195,7 +306,8 @@ fun findSegmentEllipseIntersection(segment: Segment, ellipse: Ellipse): List<Vec
     val intersectionPointsLocal = findSegmentEllipseIntersectionLocal(transformedSegment, ellipse)
 
     // 3. Transform the intersection points back to the original coordinate system
-    return intersectionPointsLocal.map { transformPointFromEllipseLocal(ellipse, it) }.filter {  p -> ellipse.containsAngle(Vec2.angle(ellipse.center, p))  }
+    return intersectionPointsLocal.map { transformPointFromEllipseLocal(ellipse, it) }
+        .filter { p -> ellipse.containsAngle(Vec2.angle(ellipse.center, p)) }
 }
 
 private fun transformSegmentToEllipseLocal(ellipse: Ellipse, segment: Segment): Segment {
@@ -218,7 +330,7 @@ private fun findSegmentEllipseIntersectionLocal(segment: Segment, ellipse: Ellip
     val a = ellipse.radiusX
     val b = ellipse.radiusY
     val x1 = segment.start.x
-    val y1 =segment.start.y
+    val y1 = segment.start.y
     val x2 = segment.end.x
     val y2 = segment.end.y
 
@@ -266,7 +378,7 @@ fun findEllipseEllipseIntersection(ellipse1: Ellipse, ellipse2: Ellipse): List<V
     val segmentCount = 1000
 
     var pred = ellipse1.start
-    for (i in 1 .. segmentCount){
+    for (i in 1..segmentCount) {
         val t = i.toDouble() / segmentCount
         val n = ellipse1.position(t)
         val segment = Segment(pred, n)
@@ -296,10 +408,10 @@ fun ellipseBoundingBox(ellipse: Ellipse): Vec4 {
     val maxRadius = max(abs(ellipse.radiusX), abs(ellipse.radiusY))
 
     return Vec4(
-        ellipse.center.x-maxRadius,
-        ellipse.center.y-maxRadius,
-        ellipse.center.x+maxRadius,
-        ellipse.center.y+maxRadius
+        ellipse.center.x - maxRadius,
+        ellipse.center.y - maxRadius,
+        ellipse.center.x + maxRadius,
+        ellipse.center.y + maxRadius
     )
 }
 
@@ -366,7 +478,7 @@ fun findCircleEllipseIntersectionSubdivision(
     val segmentCount = 1000
 
     var pred = ellipse.start
-    for (i in 1 .. segmentCount){
+    for (i in 1..segmentCount) {
         val t = i.toDouble() / segmentCount
         val n = ellipse.position(t)
         val segment = Segment(pred, n)
@@ -374,5 +486,5 @@ fun findCircleEllipseIntersectionSubdivision(
         findIntersections(segment)
     }
 
-    return intersectionPoints.filter {  p -> circle.containsAngle(Vec2.angle(circle.center, p))  }
+    return intersectionPoints.filter { p -> circle.containsAngle(Vec2.angle(circle.center, p)) }
 }

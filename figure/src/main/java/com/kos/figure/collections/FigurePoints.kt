@@ -37,4 +37,8 @@ class FigurePoints(val points: List<Vec2>, val radius: Double) : IFigure {
         get() = Matrix.identity
     override val hasTransform: Boolean
         get() = false
+
+    override fun removeInner(inner: IFigure): IFigure = this
+
+    override fun replaceInner(newCollection: List<IFigure>): IFigure = this
 }

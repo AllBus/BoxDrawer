@@ -17,6 +17,8 @@ interface IFigure {
     /** Список фигур внутри этой фигуры */
     fun collection(): List<IFigure>
     fun name(): String
+    fun removeInner(inner: IFigure): IFigure
+    fun replaceInner(newCollection: List<IFigure>): IFigure
 
     val transform: Matrix
     val hasTransform: Boolean

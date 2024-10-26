@@ -90,6 +90,10 @@ class FigureWithPosition(
 
     override val hasTransform: Boolean
         get() = false
+
+    override fun removeInner(inner: IFigure): IFigure = this
+
+    override fun replaceInner(newCollection: List<IFigure>): IFigure = this
 }
 
 data class PositionOnFigure(

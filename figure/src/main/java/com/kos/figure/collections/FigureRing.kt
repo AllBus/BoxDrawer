@@ -62,4 +62,17 @@ class FigureRing(
         }
         return listOf(fl)
     }
+
+    override fun removeInner(inner: IFigure): IFigure {
+        val fm = figures.filter { it !== inner }
+        return if (fm.size != figures.size)
+            replaceInner(fm)
+        else
+            replaceInner(figures.map { it.removeInner(inner) })
+
+    }
+
+    override fun replaceInner(newCollection: List<IFigure>): IFigure {
+        return FigureRing(newCollection.filterIsInstance<FigureWithApproximation>())
+    }
 }

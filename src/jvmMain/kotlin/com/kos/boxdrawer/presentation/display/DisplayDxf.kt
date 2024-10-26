@@ -25,6 +25,9 @@ import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isAltPressed
+import androidx.compose.ui.input.pointer.isCtrlPressed
+import androidx.compose.ui.input.pointer.isShiftPressed
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -176,7 +179,10 @@ private fun pointerButtonToId(event: PointerEvent): Int {
         PointerButton.Secondary -> POINTER_RIGHT
         PointerButton.Tertiary -> POINTER_MIDDLE
         else -> POINTER_NONE
-    }
+    } or
+    (if (event.keyboardModifiers.isAltPressed) Instruments.MODIFIER_ALT else 0) or
+    (if (event.keyboardModifiers.isCtrlPressed) Instruments.MODIFIER_CTRL else 0) or
+    (if (event.keyboardModifiers.isShiftPressed) Instruments.MODIFIER_SHIFT else 0)
     return pt
 }
 

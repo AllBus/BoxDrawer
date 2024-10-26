@@ -59,7 +59,18 @@ fun DrawInstrumentIcon(instrument:Int){
                 imageVector = InstrumentIcon.rememberBezier(),
                 contentDescription = "Bezier"
             )
-
+        }
+        Instruments.INSTRUMENT_BEZIER_TREE_POINT -> {
+            Icon(
+                imageVector = InstrumentIcon.rememberCurve(),
+                contentDescription = "Bezier on three point"
+            )
+        }
+        Instruments.INSTRUMENT_POINTER -> {
+            Icon(
+                imageVector = InstrumentIcon.rememberPointerArrow(),
+                contentDescription = "Pointer"
+            )
         }
     }
 }

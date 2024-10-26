@@ -29,6 +29,10 @@ abstract class FigureMatrix() : IFigure {
 
     override val hasTransform: Boolean
         get() = true
+
+    override fun removeInner(inner: IFigure): IFigure = this
+
+    override fun replaceInner(newCollection: List<IFigure>): IFigure = this
 }
 
 /**

@@ -33,6 +33,27 @@ fun findPathIntersections(paths: List<PathIterator>): List<Vec2>{
     return intersections.map { it.point }
 }
 
+fun pathInteratorIntersections(path1: List<PathIterator>, path2: List<PathIterator>): List<Vec2>{
+    val intersections = mutableListOf<IntersectionInfo>()
+    for (av in path1.indices){
+        val a = path1[av]
+        for (bv in path2.indices){
+            val b = path2[bv]
+            if (a == b)
+                continue
+
+            for (ai in 0 until a.size){
+                val aa = a[ai]
+                for (bi in 0 until b.size){
+                    val bb = b[bi]
+                    findIntersection(aa, bb, intersections)
+                }
+            }
+        }
+    }
+    return intersections.map { it.point }
+}
+
 fun findPathIntersections(path1: List<PathElement>, path2: List<PathElement>): List<IntersectionInfo> {
     val intersections = mutableListOf<IntersectionInfo>()
 

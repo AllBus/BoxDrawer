@@ -1,8 +1,6 @@
 package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
-import com.kos.figure.composition.FigureRotate
-import com.kos.figure.composition.FigureTranslate
 import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
@@ -39,6 +37,10 @@ abstract class Figure : IFigure, ICropable {
     abstract fun transform(matrix: Matrix): Figure
 
     abstract override fun crop(k: Double, cropSide: CropSide): Figure
+
+    override fun removeInner(inner: IFigure): IFigure = this
+
+    override fun replaceInner(newCollection: List<IFigure>): IFigure = this
 }
 
 interface Approximation {

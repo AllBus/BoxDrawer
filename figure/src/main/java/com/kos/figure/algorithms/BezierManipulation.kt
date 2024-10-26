@@ -17,6 +17,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 data class Vec4(val minX: Double, val maxX: Double, val minY: Double, val maxY: Double){
     companion object {
@@ -193,16 +194,19 @@ fun boundingBoxesIntersect(bezier: Curve, arc: Arc): Boolean {
     val bezierMinY = minOf(bezier.p0.y, bezier.p1.y, bezier.p2.y, bezier.p3.y)
     val bezierMaxY = maxOf(bezier.p0.y, bezier.p1.y, bezier.p2.y, bezier.p3.y)
 
-    val arcMinX = arc.center.x - arc.radius
-    val arcMaxX = arc.center.x + arc.radius
-    val arcMinY = arc.center.y - arc.radius
-    val arcMaxY = arc.center.y + arc.radius
+    val arcRadius = abs(arc.radius)
+    val arcMinX = arc.center.x - arcRadius
+    val arcMaxX = arc.center.x + arcRadius
+    val arcMinY = arc.center.y - arcRadius
+    val arcMaxY = arc.center.y + arcRadius
 
     // Check for overlap in x and y dimensions
     if (bezierMaxX < arcMinX || arcMaxX < bezierMinX || bezierMaxY < arcMinY || arcMaxY < bezierMinY) {
         return false // No overlap
     }
 
+    return true
+/*
     // Additional check for cases where the arc's bounding box is entirely within the Bézier's
     if (bezierMinX <= arcMinX && arcMaxX <= bezierMaxX && bezierMinY <= arcMinY && arcMaxY <= bezierMaxY) {
         return true // Arc's bounding box is inside Bézier's
@@ -218,6 +222,8 @@ fun boundingBoxesIntersect(bezier: Curve, arc: Arc): Boolean {
     }
 
     return false // No clear intersection based on bounding boxes
+
+ */
 }
 
 // Helper function to check if a point is within the bounding box of a Bézier curve
@@ -242,6 +248,59 @@ fun isMinimalBezier(start:Double, end:Double, tolerance: Double): Boolean {
 }
 
 object BezierManipulation {
+
+    fun findNearestPointOnCubicBezier(bezier: CurveList, point: Vec2): Vec2 {
+        if (bezier.size == 0){
+            return point
+        }
+        var res = bezier[0].p0
+        for (i in 0 until bezier.size){
+            val b = bezier[i]
+            val p = findNearestPointOnCubicBezier(b, point)
+            if (Vec2.distance(p, point) < Vec2.distance(res, point)){
+                res = p
+            }
+        }
+        return res
+    }
+
+    fun findNearestPointOnCubicBezier(bezier: Curve, point: Vec2): Vec2 {
+        // 1. Define the distance function
+        val distanceFunction = { t: Double ->
+            val curvePoint = bezier.pointAt(t)
+            (curvePoint.x - point.x).pow(2) + (curvePoint.y - point.y).pow(2)
+        }
+
+        fun distanceDerivative(t: Double): Double {
+            val curvePoint = bezier.pointAt(t)
+            val curveDerivative = bezier.derivative(t)
+            val distance = distanceFunction(t)
+
+            return (1 / (2 * distance)) * (2 * (curvePoint.x - point.x) * curveDerivative.x + 2 * (curvePoint.y - point.y) * curveDerivative.y)
+        }
+
+        // 2. Apply Newton-Raphson to find the minimum ofthe distance function
+        var t = 0.5 // Initial guess
+        val tolerance = 1e-6
+        var iterations = 0
+        val maxIterations = 10
+
+        while (iterations < maxIterations) {
+            // ... (calculate the derivative of the distance function)
+            val nextT = t - distanceFunction(t) / distanceDerivative(t)
+
+            if (abs(nextT - t) < tolerance) {
+                break
+            }
+
+            t = nextT
+            iterations++
+        }
+
+        // 3. Return the nearest point on the curve
+        return bezier.pointAt(t)
+    }
+
 
     fun findBezierArcIntersections(bezier: Curve, arc: Arc, tolerance: Double = 0.0001): List<Vec2> {
         val intersections = mutableListOf<Vec2>()
@@ -314,8 +373,7 @@ object BezierManipulation {
         tolerance: Double,
         intersections: MutableList<Vec2>
     ) {
-
-
+        println("check curve ${bezier.p0} ${bezier.p3} circle ${arc.center} ${arc.radius} ${arc.sweepAngle}")
         fun checkFlat(subBezier: Curve, depth: Int){
             if (!boundingBoxesIntersect(subBezier, arc)) return
 
@@ -563,16 +621,21 @@ object BezierManipulation {
         function: (Double) -> Double,
         start: Double,
         end: Double,
-        tolerance: Double
+        tolerance: Double,
+        stepCount: Int = 100,
+        iterationCount: Int = 5
     ): List<Double> {
         val roots = mutableListOf<Double>()
         var t = start
 
+        val stepSize = abs((end-start)/ stepCount)
         while (t <= end) {
             var x = t
             var fx = function(x)
 
-            while (Math.abs(fx) > tolerance) {
+            var i = 0
+            while (Math.abs(fx) > tolerance && i<iterationCount) {
+                i++
                 val dfx = (function(x + tolerance) - function(x - tolerance)) / (2 * tolerance) // Numerical derivative
                 x -= fx / dfx
                 fx = function(x)
@@ -582,7 +645,7 @@ object BezierManipulation {
                 roots.add(x)
             }
 
-            t += tolerance * 10 //Adjust step size for efficiency
+            t += stepSize
         }
 
         return roots

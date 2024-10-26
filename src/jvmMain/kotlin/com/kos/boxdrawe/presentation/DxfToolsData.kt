@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import com.kos.boxdrawe.presentation.model.BindingType
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.figure.FigureExtractor
 import com.kos.figure.FigureBezier
@@ -25,6 +26,7 @@ import org.kabeja.parser.ParserBuilder
 import turtoise.FigureCreator
 import turtoise.FigureCreator.changeScale
 import turtoise.paint.PaintUtils
+import turtoise.paint.PointInfo
 import vectors.Matrix
 import vectors.Vec2
 import java.io.File
@@ -60,6 +62,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
 
     private val editFigure: MutableStateFlow<IFigure> = MutableStateFlow(FigureEmpty)
     private val vspomogatelnieFigure: MutableStateFlow<IFigure> = MutableStateFlow(FigureEmpty)
+    private var currentPointInfo: PointInfo? = null
 
     val figures = combine(currentFigure, editFigure, vspomogatelnieFigure) { figure, editFigure, pomo ->
         FigureList(
@@ -114,6 +117,15 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                     FigureBezier(pr.dropLast(cou))
                 }
             }
+            Instruments.INSTRUMENT_BEZIER_TREE_POINT -> {
+                val st = pointList.getOrNull(0)
+                val pp = pointList.getOrNull(1)
+                if (pp == null || st == null){
+                    FigureLine(startPoint, endPoint)
+                } else{
+                    FigureCreator.cubicBezierForThreePoints(st, endPoint, pp)
+                }
+            }
             Instruments.INSTRUMENT_NONE -> FigureEmpty
             else -> FigureEmpty
 
@@ -122,11 +134,21 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         editFigure.value = r
     }
 
+    fun appendPointOrFigure(count:Int, scale:Float){
+        if (pointList.size>= count){
+            appendFigure(scale)
+        } else {
+            appendPoint()
+        }
+    }
+
     fun appendPoint(){
         if (pointList.isEmpty() || pointList.last() != endPoint){
             pointList.add(endPoint)
         }
     }
+
+
 
     fun appendFigure(scale:Float) {
         val ev = editFigure.value
@@ -142,8 +164,15 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         editFigure.value = FigureEmpty
         pointList.clear()
 
-        recalcIntersectPoints()
+        recalcIntersectPoints(intersectPoint, v, ev)
         vspomogatelnieFigure.value = intersectFigures(scale)
+    }
+
+    private fun recalcIntersectPoints(oldPoint: List<Vec2>, v: IFigure, ev: IFigure) {
+        if (ev == FigureEmpty || v == FigureEmpty)
+            return
+
+        intersectPoint = oldPoint + PaintUtils.findAllIntersects(listOf(v),listOf(ev))
     }
 
     fun recalcIntersectPoints(){
@@ -183,16 +212,25 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         scale: Float,
         selectedItem: MutableStateFlow<List<FigureInfo>>
     ) {
-        if (_instrument.value == Instruments.INSTRUMENT_NONE) {
-            val figure = currentFigure.value
-            val result = PaintUtils.findFiguresAtCursor(Matrix.identity, point, 1.0, listOf(figure))
+        when (_instrument.value){
+            Instruments.INSTRUMENT_NONE -> {
+                val figure = currentFigure.value
+                val result = PaintUtils.findFiguresAtCursor(Matrix.identity, point, 1.0, listOf(figure))
 
-            selectedItem.value = result
-        } else {
+                selectedItem.value = result
+            }
+            Instruments.INSTRUMENT_POINTER -> {
+                val info: PointInfo? = PaintUtils.takePoint(selectedItem.value, point, 1.0)
+                currentPointInfo = info
+                if (info!= null){
+                    removeFigure(info.figure)
+                }
+            }
+            else -> {
 
             //   println("point -> $point $button")
-            if (button == Instruments.POINTER_LEFT) {
-                startPoint = findPoint(point, scale)
+            if (Instruments.button(button) == Instruments.POINTER_LEFT) {
+                startPoint = findPoint(point,createBinding(button), scale)
                 endPoint = startPoint
                 if (pointList.isEmpty()){
                     pointList.add(startPoint)
@@ -200,20 +238,62 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                 recalcFigure()
             }
         }
+        }
+    }
+
+    fun createBinding(button: Int): BindingType {
+        return BindingType(
+            intersection = (button and Instruments.MODIFIER_CTRL) == 0,
+            nearest = (button and Instruments.MODIFIER_SHIFT) == 0,
+            grid = false,
+            points =  (button and Instruments.MODIFIER_SHIFT) == 0,
+        )
+    }
+
+    private fun removeFigure(figure: IFigure) {
+        currentFigure.value = PaintUtils.removeFigure( currentFigure.value,figure)
     }
 
     val magnetDistance = 10.0
-    private fun findPoint(point: Vec2, scale: Float): Vec2 {
+
+    private fun findPoint(point: Vec2, binding: BindingType, scale: Float): Vec2 {
         val figure = currentFigure.value
-        val newPoint = PaintUtils.findPointAtCursor(Matrix.identity, point, magnetDistance/scale, listOf(figure))
-        if (newPoint != null){
-            vspomogatelnieFigure.value = FigureList(listOf(  magentPoint(newPoint, scale), intersectFigures(scale)))
-            return newPoint
-        } else {
-            vspomogatelnieFigure.value = intersectFigures(scale)
+
+        if (binding.intersection) {
+            val ip = intersectPoint
+
+            val minip = if (ip.isEmpty())
+                null
+            else
+                ip.minBy { Vec2.distance(point, it) }
+                    .takeIf { Vec2.distance(point, it) < magnetDistance / scale }
+
+            if (minip != null) {
+                updateVspomogatelnie(minip, scale)
+                return minip
+            }
         }
 
+        if (binding.nearest) {
+            val newPoint = PaintUtils.findPointAtCursor(
+                Matrix.identity,
+                point,
+                magnetDistance / scale,
+                listOf(figure)
+            )
+            if (newPoint != null) {
+                updateVspomogatelnie(newPoint, scale)
+                return newPoint
+            }
+        }
+
+        vspomogatelnieFigure.value = FigureList(listOf(intersectFigures(scale), currentPoints(scale)))
         return point
+    }
+
+    private fun updateVspomogatelnie(minip: Vec2, scale: Float) {
+        vspomogatelnieFigure.value =
+            FigureList(listOf(magentPoint(minip, scale), currentPoints(scale)))
     }
 
     private fun magentPoint(
@@ -224,18 +304,22 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
     private fun intersectFigures(scale: Float) =
         FigureCreator.colorDxf(3, FigurePoints(intersectPoint, magnetDistance / scale))
 
+    private fun currentPoints(scale: Float) =
+        FigureCreator.colorDxf(5 , FigurePoints(pointList.toList(), magnetDistance/scale ))
+
     suspend fun onMove(
         point: Vec2,
         button: Int,
+
         scale: Float,
         selectedItem: MutableStateFlow<List<FigureInfo>>
     ) {
         //   println("onMove -> $point $button")
         if (button == Instruments.POINTER_LEFT) {
-            endPoint = findPoint(point, scale)
+            endPoint = findPoint(point,createBinding(button), scale)
             recalcFigure()
         } else {
-            val fp = findPoint(point, scale)
+            val fp = findPoint(point,createBinding(button), scale)
             when (_instrument.value) {
                 Instruments.INSTRUMENT_POLYLINE,
                 Instruments.INSTRUMENT_BEZIER -> {
@@ -254,9 +338,12 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         selectedItem: MutableStateFlow<List<FigureInfo>>
     ) {
         //   println("onRelease -> $point $button")
-        when (button){
+        when (Instruments.button(button)){
             Instruments.POINTER_LEFT ->
                 when (_instrument.value) {
+                    Instruments.INSTRUMENT_BEZIER_TREE_POINT -> {
+                        appendPointOrFigure(2, scale)
+                    }
                     Instruments.INSTRUMENT_POLYLINE,
                     Instruments.INSTRUMENT_BEZIER ->
                         appendPoint()

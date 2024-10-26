@@ -1,6 +1,7 @@
 package com.kos.figure.composition
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 
 class FigureColor(val color: Int,
@@ -29,4 +30,17 @@ class FigureColor(val color: Int,
 
     override val hasTransform: Boolean
         get() = false
+
+    override fun removeInner(inner: IFigure): IFigure {
+        if (inner === figure)
+            return FigureEmpty
+        return FigureColor(color, dxfColor, figure.removeInner(inner))
+    }
+
+    override fun replaceInner(newCollection: List<IFigure>): IFigure {
+        return if (newCollection.isEmpty())
+            FigureEmpty
+        else
+            FigureColor(color, dxfColor, newCollection[0])
+    }
 }

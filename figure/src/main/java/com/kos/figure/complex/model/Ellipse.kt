@@ -161,6 +161,12 @@ interface Ellipse : PathElement {
         return PointWithNormal(pr, normal)
     }
 
+    override fun pointAt(t: Double): Vec2 {
+        val rot = (startAngle + t * sweepAngle)
+        val pos = center + Vec2(radiusX*cos(rot), radiusY*sin(rot)).rotate(rotation)
+        return pos
+    }
+
     override fun take(startMM: Double, endMM: Double): Figure {
         val st = startMM / length
         val end = endMM / length

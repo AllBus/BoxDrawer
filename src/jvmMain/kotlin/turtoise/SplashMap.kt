@@ -37,8 +37,11 @@ import com.kos.boxdrawer.detal.splash.SplashToothReverse
 import com.kos.boxdrawer.detal.splash.ai.SplashAxis
 import com.kos.boxdrawer.detal.splash.ai.SplashChamomile
 import com.kos.boxdrawer.detal.splash.SplashCube
+import com.kos.boxdrawer.detal.splash.SplashGear
 import com.kos.boxdrawer.detal.splash.SplashGrid
 import com.kos.boxdrawer.detal.splash.SplashImage
+import com.kos.boxdrawer.detal.splash.SplashStar
+import com.kos.boxdrawer.detal.splash.SplashWave
 
 object SplashMap {
 
@@ -84,6 +87,9 @@ object SplashMap {
         SplashSimple(),
         SplashImage(),
         SplashGrid(),
+        SplashStar(),
+        SplashWave(),
+        SplashGear(),
     )
     val splashes: Map<String, ISplashDetail> = splashList.flatMap { s -> s.names.map { it to s } }.toMap()
 }

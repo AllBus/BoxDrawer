@@ -215,4 +215,57 @@ object InstrumentIcon {
             }.build()
         }
     }
+
+    @Composable
+    fun rememberPointerArrow(): ImageVector {
+        return remember {
+            ImageVector.Builder(
+                name = "pointer",
+                defaultWidth = 24.dp,
+                defaultHeight = 24.dp,
+                viewportWidth = 24.0f,
+                viewportHeight = 24.0f
+            ).apply {
+                materialPath {
+                    this.moveTo(
+                        4f, 4f
+                    )
+                    this.lineToRelative(2f, 10f)
+                    lineToRelative(3f, -3f)
+                    lineToRelative(10f, 10f)
+                    lineToRelative(2f, -2f)
+                    lineToRelative(-10f, -10f)
+                    lineToRelative(5f, -2f)
+                    this.lineToRelative(-11f, -6f)
+                    this.close()
+                }
+            }.build()
+        }
+    }
+
+    @Composable
+    fun rememberCurve(): ImageVector {
+        return remember {
+            ImageVector.Builder(
+                name = "curve",
+                defaultWidth = 24.dp,
+                defaultHeight = 24.dp,
+                viewportWidth = 24.0f,
+                viewportHeight = 24.0f
+            ).apply {
+                materialPath {
+                    this.moveTo(
+                        4f, 11f
+                    )
+                    this.curveToRelative(1f, -5f, 9f, 5f, 16f, 0f)
+                    lineToRelative(0f, 2f)
+                    this.curveToRelative(-1f, -5f, -9f, 5f, -16f, 0f)
+                    lineToRelative(0f, -2f)
+                    close()
+                }
+            }.build()
+        }
+
+
+    }
 }

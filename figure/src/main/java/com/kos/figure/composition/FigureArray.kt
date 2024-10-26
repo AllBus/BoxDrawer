@@ -3,6 +3,7 @@ package com.kos.figure.composition
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.CropSide
 import com.kos.figure.Figure
+import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
 import vectors.Matrix
@@ -97,4 +98,29 @@ class FigureArray(
 
     override val hasTransform: Boolean
         get() = false
+
+    override fun removeInner(inner: IFigure): IFigure {
+        if (inner === figure)
+            return FigureEmpty
+        //Todo: Нужно ли уметь удалять внутренние фигурумассива
+        return this
+    }
+
+    override fun replaceInner(newCollection: List<IFigure>): IFigure {
+        if (newCollection.isEmpty())
+            return FigureEmpty
+
+        return FigureArray(
+            figure = newCollection[0],
+            startPoint = startPoint,
+            distance = distance,
+            columns = columns,
+            rows = rows,
+            angle = angle,
+            scaleX = scaleX,
+            scaleY = scaleY,
+            figureStart = newCollection[1],
+            figureEnd = newCollection[2]
+        )
+    }
 }

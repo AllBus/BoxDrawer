@@ -64,4 +64,14 @@ open class FigureUnion(
 
     override val hasTransform: Boolean
         get() = false
+
+    override fun removeInner(inner: IFigure): IFigure {
+        // Внутренние фигуры объединения нельзя удалить
+        return this
+    }
+
+    override fun replaceInner(newCollection: List<IFigure>): IFigure {
+        // Нельзя заменить внутрение фигуры
+        return this
+    }
 }

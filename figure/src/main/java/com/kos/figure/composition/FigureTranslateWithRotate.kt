@@ -2,6 +2,7 @@ package com.kos.figure.composition
 
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.Approximation
+import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import vectors.Matrix
 import vectors.Vec2
@@ -54,5 +55,18 @@ class FigureTranslateWithRotate(
 
     override val hasTransform: Boolean
         get() = true
+
+    override fun removeInner(inner: IFigure): IFigure {
+        if (inner === figure)
+            return FigureEmpty
+        return FigureTranslateWithRotate(figure.removeInner(inner), offset, angleInDegrees)
+    }
+
+    override fun replaceInner(newCollection: List<IFigure>): IFigure {
+        return if (newCollection.isEmpty())
+            FigureEmpty
+        else
+            FigureTranslateWithRotate(newCollection[0], offset, angleInDegrees)
+    }
 }
 
