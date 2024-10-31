@@ -45,7 +45,8 @@ class GridData(override val tools: ITools) : SaveFigure {
     }
 
     val gridEdges = gridPlanes.map { planes ->
-        planes.map { (kubik, g) ->
+
+        planes.map { (kubik, inner, g) ->
             val t = g.mapValues { (k, s) -> GridLoops.findPolygons(s) }
                 .flatMap { (k, s) -> s }
             PolygonGroup(kubik, t)

@@ -1,9 +1,31 @@
 package com.kos.boxdrawer.detal.grid
 
+import com.kos.figure.complex.model.CubikDirection
 import vectors.BoundingRectangle
 import vectors.Vec2
 
 object GridLoops {
+
+    /** проверить что по часовой стрелке */
+    fun isClockwiseKubik(vertices: List<CubikDirection>): Boolean {
+        // Calculate the signed area of the polygon
+        var area = 0.0
+        var currentx = 0
+        var currenty = 0
+
+        for (i in vertices.indices) {
+            val current = vertices[i]
+            val nextx = currentx+current.xSize
+            val nexty = currenty+current.ySize
+
+            area += (nextx - currentx) * (nexty + currenty)
+
+            currentx = nextx
+            currenty = nexty
+        }
+
+        return area > 0
+    }
 
     /** только для плоскости XY */
     fun isClockwise(vertices: List<Coordinates>): Boolean {
@@ -18,14 +40,26 @@ object GridLoops {
         return area > 0
     }
 
+
+
     /** перевернуть если не по часовой стрелке */
     fun ensureClockwise(vertices: List<Coordinates>): List<Coordinates> {
-        if (isClockwise(vertices)) {
-            return vertices.reversed()  // Already clockwise
+        return if (isClockwise(vertices)) {
+            vertices.reversed()  // Already clockwise
         } else {
-            return vertices// Reverse vertices
+            vertices// Reverse vertices
         }
     }
+
+    /** перевернуть если не по часовой стрелке */
+    fun ensureClockwiseKubik(vertices: List<CubikDirection>): List<CubikDirection> {
+        return if (isClockwiseKubik(vertices)) {
+            vertices.reversed().map{it.reverse()} // Already clockwise
+        } else {
+            vertices // Reverse vertices
+        }
+    }
+
 
 
     fun arrangePolygons(polygons: List<PolyInfo>): PolyLayer {
@@ -37,7 +71,7 @@ object GridLoops {
     }
 
     fun groupPolygons(polygons: List<PolyInfo>): Map<Pair<Int, Plane>, List<PolyInfo>> {
-        println("group ${polygons.size}")
+      //  println("group ${polygons.size}")
         val grouped = mutableMapOf<Pair<Int, Plane>, MutableList<PolyInfo>>()
         for (polygon in polygons) {
             val key = Pair(polygon.plane, polygon.orientation)

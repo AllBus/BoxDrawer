@@ -415,8 +415,10 @@ data class KubikGroup(val kubik: Kubik, val group: Set<Coordinates>) {
         return externalEdges
     }
 
-    fun getExternalEdges(): Set<KubikEdge> {
+    /** Поиск внешних ребер */
+    fun getExternalEdges(): KubikEdgeSet {
         val externalEdges = mutableSetOf<KubikEdge>()
+        val innerEdges  = mutableSetOf<KubikEdge>()
 
         for (coords in group) {
             val (x, y, z) = coords
@@ -439,6 +441,7 @@ data class KubikGroup(val kubik: Kubik, val group: Set<Coordinates>) {
 
             for (edge in edges) {
                 if (edge in externalEdges){
+                    innerEdges.add(edge)
                     externalEdges.remove(edge)
                 }else {
                     externalEdges.add(edge)
@@ -446,7 +449,33 @@ data class KubikGroup(val kubik: Kubik, val group: Set<Coordinates>) {
             }
         }
 
-        return externalEdges
+        val enter = innerEdges.intersect( externalEdges)
+        return KubikEdgeSet(externalEdges, enter)
+    }
+
+    fun getCoordinates(kubikEdge: KubikEdge):List<Coordinates>{
+        val d = kubikEdge.end - kubikEdge.start
+        return when {
+            d.y == 0 && d.z == 0 -> (kubikEdge.start.x until kubikEdge.end.x).flatMap{ x -> listOf(
+                Coordinates(x, kubikEdge.start.y-1, kubikEdge.start.z-1),
+                Coordinates(x, kubikEdge.start.y-1, kubikEdge.end.z),
+                Coordinates(x, kubikEdge.end.y, kubikEdge.start.z-1),
+                Coordinates(x, kubikEdge.end.y, kubikEdge.end.z)
+            )}
+            d.x == 0 && d.z == 0 -> (kubikEdge.start.y until  kubikEdge.end.y).flatMap{ y -> listOf(
+                Coordinates(kubikEdge.start.x-1, y, kubikEdge.start.z-1),
+                Coordinates(kubikEdge.start.x-1, y, kubikEdge.end.z),
+                Coordinates(kubikEdge.end.x, y, kubikEdge.start.z-1),
+                Coordinates(kubikEdge.end.x, y, kubikEdge.end.z)
+            )}
+            d.x == 0 && d.y == 0 -> (kubikEdge.start.z until  kubikEdge.end.z).flatMap { z -> listOf(
+                Coordinates(kubikEdge.start.x-1, kubikEdge.start.y-1, z),
+                Coordinates(kubikEdge.start.x-1, kubikEdge.end.y, z),
+                Coordinates(kubikEdge.end.x, kubikEdge.start.y-1, z),
+                Coordinates(kubikEdge.end.x, kubikEdge.end.y, z)
+            ) }
+            else -> emptyList()
+        }
     }
 }
 
@@ -457,6 +486,17 @@ enum class Plane { XY, XZ, YZ }
 data class Polygon(val vertices: List<Coordinates>){
 
 }
+
+/**
+ * @param edges все рёбра
+ * @param inner рёбра представляющие внутренние углы
+ */
+data class KubikEdgeSet(
+    val edges: Set<KubikEdge>,
+    val inner: Set<KubikEdge>
+)
+
+data class KubikPlanes(val kubik: Kubik, val innerEdges: Set<KubikEdge>, val planes: Map<Plane, Set<KubikEdge>>)
 
 data class PolygonGroup(val kubik:Kubik, val polygons: List<Polygon>)
 

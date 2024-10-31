@@ -11,6 +11,17 @@ import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.abs
 
+/**
+ *  @param size размер стороны
+ *  @param sides список сторон
+ *  @param zigInfo информация о зигзаге
+ *  @param cornerRadius радиус закругления углов
+ *  @param enableDrop включить отступ для зигзага чтобы он не пересекал сторону
+ *  @param reverseX зигзаги по x должны быть внутренними
+ *  @param reverseY  зигзаги по y должны быть внутренними
+ *  @param zigFirstIndex индекс первого зигзага
+ *  @param zigDistance расстояние между зигзагами
+ */
 class FigureCubik(
     val size: Double,
     sides: List<Int>,
@@ -271,10 +282,12 @@ class FigureCubik(
                 size
             }
 
+            val se = size- s2
+
             if (isLine(x, count)) {
                 g.drawLine(Vec2(st, 0.0), Vec2(en, 0.0))
             } else {
-                drawZig(g, st, s2, en, zig)
+                drawZig(g, st, s2, se, en, zig)
             }
             g.translate(size, 0.0)
         }
@@ -309,12 +322,13 @@ class FigureCubik(
         g: IFigureGraphics,
         st: Double,
         s2: Double,
+        se:Double,
         en: Double,
         zig:IFigure
     ) {
         g.drawLine(Vec2(st, 0.0), Vec2(s2, 0.0))
         zig.draw(g)
-        g.drawLine(Vec2(size - s2, 0.0), Vec2(en, 0.0))
+        g.drawLine(Vec2(se, 0.0), Vec2(en, 0.0))
     }
 
     override fun print(): String {

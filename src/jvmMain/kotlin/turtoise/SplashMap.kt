@@ -37,6 +37,7 @@ import com.kos.boxdrawer.detal.splash.SplashToothReverse
 import com.kos.boxdrawer.detal.splash.ai.SplashAxis
 import com.kos.boxdrawer.detal.splash.ai.SplashChamomile
 import com.kos.boxdrawer.detal.splash.SplashCube
+import com.kos.boxdrawer.detal.splash.SplashCube2
 import com.kos.boxdrawer.detal.splash.SplashGear
 import com.kos.boxdrawer.detal.splash.SplashGrid
 import com.kos.boxdrawer.detal.splash.SplashImage
@@ -84,6 +85,7 @@ object SplashMap {
         SplashDirigible(),
         SplashAxis(),
         SplashCube(),
+        SplashCube2(),
         SplashSimple(),
         SplashImage(),
         SplashGrid(),
