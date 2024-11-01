@@ -160,7 +160,7 @@ class GridData(override val tools: ITools) : SaveFigure {
                 drop = ds.holeDrop
             )
         )
-        return GridAlgorithm.create3dFigure(planes, gp)
+        return GridAlgorithm.create3dFigure(planes, gp, false)
     }
 
     fun createFigureOff(): IFigure {

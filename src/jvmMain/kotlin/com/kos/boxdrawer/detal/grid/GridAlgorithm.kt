@@ -1,11 +1,13 @@
 package com.kos.boxdrawer.detal.grid
 
+import androidx.compose.ui.graphics.Matrix
 import com.kos.boxdrawer.detal.grid.GridLoops.ensureClockwise
 import com.kos.boxdrawer.detal.grid.GridLoops.ensureClockwiseKubik
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
 import com.kos.figure.complex.FigureDirCubik
 import com.kos.figure.complex.model.CubikDirection
+import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.composition.FigureTranslate
 import com.kos.tortoise.ZigzagInfo
 import turtoise.DrawerSettings
@@ -67,7 +69,7 @@ class GridAlgorithm(
                 drop = figureExtractor.valueAt(params, 5, figureExtractor.ds.holeDrop)
             )
         )
-        return create3dFigure(planes, gp)
+        return create3dFigure(planes, gp, isVolume)
     }
 
     companion object {
@@ -81,7 +83,7 @@ class GridAlgorithm(
         }
 
         fun create3dFigure(grid: Grid3D, params: GridParams): FigureList {
-            return create3dFigure(createPlanes(grid), params)
+            return create3dFigure(createPlanes(grid), params, false)
         }
 
         private fun checkInnerEdge(
@@ -93,18 +95,14 @@ class GridAlgorithm(
                     inner.contains(KubikEdge(start = tek, end = pred))
         }
 
-        fun create3dFigure(planes: List<KubikPlanes>, params: GridParams): FigureList {
-            val xDistance = 3.0
-            val yDistance = 3.0
-            val kubikDistance = 5.0
-
+        fun create3dFigure(planes: List<KubikPlanes>, params: GridParams, isVolume: Boolean): FigureList {
             val cornerRadius = params.cornerRadius
             val zigInfo = params.zigInfo
 
 
             val kubiks = planes.map { (kubik, inner, g): KubikPlanes ->
                 val t = g.mapValues { (k, s) ->
-                    GridLoops.findPolygons(s).flatMap { p -> Grid3dUtils.findIntersection(p) }
+                    GridLoops.findPolygons(s).flatMap { p -> Grid3dUtils.findIntersection(p) }.filter { p -> p.vertices.size > 3 }
                 }.mapValues { (k, s) ->
                     when (k) {
                         Plane.XY ->
@@ -133,16 +131,7 @@ class GridAlgorithm(
                                         )
                                     )
                                 }
-
-
-
-                                FigureDirCubik(
-                                    size = params.cellWidth,
-                                    sides = unionSides(sides.toList()),
-                                    zigInfo = zigInfo,
-                                    cornerRadius = cornerRadius,
-                                    enableDrop = true,
-                                )
+                                p to unionSides(sides)
                             }
 
                         Plane.XZ -> s.map { p ->
@@ -169,20 +158,13 @@ class GridAlgorithm(
                                         direction = direction
                                     )
                                 )
-                            }
 
-                            FigureDirCubik(
-                                size = params.cellWidth,
-                                sides = unionSides(sides.toList()),
-                                zigInfo = zigInfo,
-                                cornerRadius = cornerRadius,
-                                enableDrop = true,
-                            )
+                            }
+                            p to unionSides(sides)
                         }
 
                         Plane.YZ ->
                             s.map { p ->
-
                                 val sides = mutableListOf<CubikDirection>()
                                 for (i in 1 until p.vertices.size) {
                                     val pred = p.vertices[i - 1]
@@ -207,45 +189,143 @@ class GridAlgorithm(
                                         )
                                     )
                                 }
-
-                                FigureDirCubik(
-                                    size = params.cellWidth,
-                                    sides = unionSides(sides.toList()),
-                                    zigInfo = zigInfo,
-                                    cornerRadius = cornerRadius,
-                                    enableDrop = true,
-                                )
+                                p to unionSides(sides)
                             }
-
+                    }
+                }.mapValues { (k,s) ->
+                    s.map { (p,sides) ->
+                        p to FigureDirCubik(
+                            size = params.cellWidth,
+                            sides = unionSides(sides.toList()),
+                            zigInfo = zigInfo,
+                            cornerRadius = cornerRadius,
+                            enableDrop = true,
+                        )
                     }
                 }
                 t
             }
+
+
 
             //   val v = arrangePolygons(edges)
 
 
             // return Fi edges.map {  p -> createPolygon(p, ds, widthCell.decimal) }
 
-            var cur = Vec2.Zero
             val res = mutableListOf<IFigure>()
-            for (k in kubiks) {
-                for (edges in k.values) {
-                    var maxHe = 0.0
-                    for (edge in edges) {
-                        val w = edge.rect().width
-                        maxHe = max(maxHe, edge.rect().height)
+            if (isVolume){
+                drawVolume(kubiks, res,  params.cellWidth,  params.ds.boardWeight)
+            }else {
+                val xDistance = 3.0
+                val yDistance = 3.0
+                val kubikDistance = 5.0
+                drawPlane(kubiks, res, xDistance, yDistance, kubikDistance)
 
-                    //    println("rect ${edge.rect()} ${cur}  >> ${edge.sides}")
-                        res += FigureTranslate(edge, cur - edge.rect().min)
-                        cur += Vec2(w + xDistance, 0.0)
+            }
+            return FigureList(res.toList())
+        }
+
+        private fun drawVolume(
+            kubiks: List<Map<Plane, List<Pair<Polygon, FigureDirCubik>>>>,
+            res: MutableList<IFigure>,
+            size: Double,
+            boardWeight: Double,
+        ) {
+            var cur = Vec2.Zero
+
+            for (k in kubiks) {
+                for (plane in k.keys) {
+                    val rotateX = when (plane) {
+                        Plane.XY -> 0f
+                        Plane.XZ -> 90f
+                        Plane.YZ -> 0f
                     }
-                    cur = Vec2(0.0, cur.y + maxHe + yDistance)
+                    val rotateY = when (plane) {
+                        Plane.XY -> 0f
+                        Plane.XZ -> 00f
+                        Plane.YZ -> -90f
+                    }
+                    val rotateZ = when (plane) {
+                        Plane.XY -> 0f
+                        Plane.XZ -> 0f
+                        Plane.YZ -> 0f
+                    }
+                    val mr = Matrix()
+                    mr.rotateX(rotateX)
+                    mr.rotateY(rotateY)
+                    mr.rotateZ(rotateZ)
+                    //mr.scale(-1.0f, 1f, 1f)
+
+                    k[plane]?.let { edges ->
+
+                        var maxHe = 0.0
+                        for (edge in edges) {
+                            val p = edge.first
+                            val pf = p.vertices.first()
+                            val f = edge.second
+                            val w = f.rect().width
+                            maxHe = max(maxHe, f.rect().height)
+
+                            val mf = Matrix()
+
+                            /* for plane XY
+                            mf.translate(
+                                x = -pf.x*size.toFloat(),
+                                y = -pf.y*size.toFloat(),
+                                z = -pf.z*size.toFloat()
+                            )*/
+                            mf.translate(
+                                x = -pf.x*size.toFloat(),
+                                y = -pf.y*size.toFloat(),
+                                z = -pf.z*size.toFloat()
+                            )
+
+                           // mf*=mr
+
+                            //    println("rect ${edge.rect()} ${cur}  >> ${edge.sides}")
+                            res += Figure3dTransform(vectors.Matrix(mf.values),
+                                Figure3dTransform(vectors.Matrix(mr.values),
+                                    f
+                                )
+                            )
+
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+        private fun drawPlane(
+            kubiks: List<Map<Plane, List<Pair<Polygon, FigureDirCubik>>>>,
+            res: MutableList<IFigure>,
+            xDistance: Double,
+            yDistance: Double,
+            kubikDistance: Double
+        ) {
+            var cur = Vec2.Zero
+
+            for (k in kubiks) {
+                for (plane in k.keys) {
+                    k[plane]?.let { edges ->
+
+                        var maxHe = 0.0
+                        for (edge in edges) {
+                            val f = edge.second
+                            val w = f.rect().width
+                            maxHe = max(maxHe, f.rect().height)
+
+                            //    println("rect ${edge.rect()} ${cur}  >> ${edge.sides}")
+                            res += FigureTranslate(f, cur - f.rect().min)
+                            cur += Vec2(w + xDistance, 0.0)
+                        }
+                        cur = Vec2(0.0, cur.y + maxHe + yDistance)
+                    }
                 }
                 cur = Vec2(0.0, cur.y + kubikDistance)
             }
-
-            return FigureList(res.toList())
         }
 
         private fun unionSides(list: List<CubikDirection>): List<CubikDirection> {
@@ -266,12 +346,17 @@ class GridAlgorithm(
                 }
             }
 
+            /*
             if (res.size > 1 && list.first() == current) {
                 res[0] = (current.copy(count = count  * current.count+ res[0].count))
             } else {
                 res.add(current.copy(count = count * current.count))
             }
             return ensureClockwiseKubik(res)
+
+             */
+            res.add(current.copy(count = count * current.count))
+            return res.toList()
         }
 
         fun polygonToSideLengths(coordinates: List<Coordinates>): List<Int> {
