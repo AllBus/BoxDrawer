@@ -52,8 +52,8 @@ object GridLoops {
     }
 
     /** перевернуть если не по часовой стрелке */
-    fun ensureClockwiseKubik(vertices: List<CubikDirection>): List<CubikDirection> {
-        return if (isClockwiseKubik(vertices)) {
+    fun ensureClockwiseKubik(vertices: List<CubikDirection>, isHole: Boolean): List<CubikDirection> {
+        return if (isClockwiseKubik(vertices) != isHole) {
             vertices.reversed().map{it.reverse()} // Already clockwise
         } else {
             vertices // Reverse vertices

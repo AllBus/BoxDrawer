@@ -118,15 +118,18 @@ class FigureDirCubik(
 
             val pt = tek.direction - pred.direction
 
+            val predVirez = (pt == 0 && tek.isInnerCorner && !pred.isInnerCorner)
+            val nextVirez = (nt == 0 && tek.isInnerCorner && !next.isInnerCorner)
+
             // enm
-            val enm = calculateOffsetEnd(next,hee, nt)
+            val enm = calculateOffsetEnd(next,hee, nt, nextVirez)
 
             val tp = if (enableDrop && !tek.isFlat && !tek.isReverse){
                 hee
             } else 0.0
 
             // stn
-            val stn = calculateOffsetStart(pred,  hee, pt)
+            val stn = calculateOffsetStart(pred,  hee, pt, predVirez)
 
             // eline
 
@@ -141,8 +144,16 @@ class FigureDirCubik(
                 if (enableDrop && !next.isFlat && !next.isReverse){
                     eline+=hee
                 }
+                if (nextVirez)
+                    eline-=hee
+                if (!tek.isInnerCorner && next.isInnerCorner)
+                    eline+=hee
+
                 eline
             } else 0.0
+
+
+
 
 
             // -----------------
@@ -168,9 +179,16 @@ class FigureDirCubik(
                 g.translate(0.0, -hee)
             }
 
+            if (predVirez){
+                g.drawLine(Vec2( hee, 0.0), Vec2(hee, hee))
+                g.drawLine(Vec2( hee, hee), Vec2(0.0, hee))
+            }
+
             if (tek.isFlat){
                 val st = stn
                 val en = (count-1)*size + enm
+
+
                 g.drawLine(Vec2(st, 0.0), Vec2(en, 0.0))
                 g.translate(size*count, 0.0)
             } else {
@@ -190,6 +208,17 @@ class FigureDirCubik(
                 }
             }
 
+            if (nextVirez){
+                g.drawLine(Vec2( -hee, 0.0), Vec2(-hee, hee))
+                g.drawLine(Vec2( -hee, hee), Vec2(0.0, hee))
+                if (line!=0.0){
+                    g.drawLine(Vec2(0.0, hee), Vec2(0.0, hee+line))
+                }
+            } else{
+                if (line!=0.0){
+                    g.drawLine(Vec2(0.0, 0.0), Vec2(0.0, line))
+                }
+            }
 
             if (nextArc){
                 val p = enm-size
@@ -202,9 +231,7 @@ class FigureDirCubik(
                 )
             }
 
-            if (line!=0.0){
-                g.drawLine(Vec2(0.0, 0.0), Vec2(0.0, line))
-            }
+
             if (tek.isInnerCorner) {
 
                 g.translate(0.0, hee)
@@ -225,7 +252,8 @@ class FigureDirCubik(
     private fun calculateOffsetStart(
         pred: CubikDirection,
         hee: Double,
-        pt: Int
+        pt: Int,
+        isVirez: Boolean,
     ): Double {
         val predOut = (pt == 1 || pt == -3)
         val predIn = (pt == -1 || pt == 3)
@@ -250,13 +278,17 @@ class FigureDirCubik(
             if (predIn)
                 stn -= hee
         }
+
+        if (isVirez)
+            stn+=hee
         return stn
     }
 
     private fun calculateOffsetEnd(
         next: CubikDirection,
         hee: Double,
-        nt: Int
+        nt: Int,
+        isVirez: Boolean,
     ): Double {
         val nextOut = (nt == 1 || nt == -3)
         val nextIn = (nt == -1 || nt == 3)
@@ -279,6 +311,9 @@ class FigureDirCubik(
             if (nextIn)
                 enm += hee
         }
+
+        if (isVirez)
+            enm-=hee
         return enm
     }
 

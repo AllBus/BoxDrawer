@@ -14,30 +14,6 @@ data class Kubik(val color: Int)
 data class Parallelepiped(val minX: Int, val minY: Int, val minZ: Int, val maxX: Int, val maxY: Int, val maxZ: Int, val color: Int)
 
 
-@Serializable
-data class Coordinates(val x: Int, val y: Int, val z: Int){
-    operator fun minus (other : Coordinates):Coordinates{
-        return Coordinates(x-other.x, y-other.y, z-other.z)
-    }
-
-    fun dotProduct(other: Coordinates): Int {
-        return x * other.x + y * other.y + z * other.z
-    }
-
-    fun crossProduct(other: Coordinates): Coordinates {
-        return Coordinates(
-            y * other.z - z * other.y,
-            z * other.x - x * other.z,
-            x * other.y - y * other.x
-        )
-    }
-
-    override fun toString(): String {
-        return "($x, $y, $z)"
-    }
-}
-
-
 class ResultInt(val value:Int, val move:Int)
 
 @Serializable
@@ -88,6 +64,7 @@ class Grid3D() {
         var i = 0
         var color = 1
         var current= Coordinates(0,0,0)
+        var currentStart= Coordinates(0,0,0)
         val text = lines +" "
         while (i < text.length) {
             val c= text[i]
@@ -109,6 +86,23 @@ class Grid3D() {
                             'X' -> current = current.copy(x = resX.value)
                             'Y' -> current = current.copy(y = resX.value)
                             'Z' -> current = current.copy(z = resX.value)
+                        }
+                        n = text[i]
+                    }
+                }
+                'S' -> {
+                    i++
+                    var n = text[i]
+
+                    while (n in "XYZ") {
+                        i++
+                        val resX = readInt(text, i)
+                        i = resX.move
+
+                        when (n) {
+                            'X' -> currentStart = currentStart.copy(x = resX.value)
+                            'Y' -> currentStart = currentStart.copy(y = resX.value)
+                            'Z' -> currentStart = currentStart.copy(z = resX.value)
                         }
                         n = text[i]
                     }
@@ -136,7 +130,7 @@ class Grid3D() {
                         min(prev.x, current.x),
                         min(prev.y, current.y),
                         min(prev.z, current.z)
-                    )
+                    )+currentStart
                     val cx = max(abs(current.x - pp.x),1)
                     val cy = max(abs(current.y - pp.y),1)
                     val cz = max(abs(current.z - pp.z),1)
@@ -483,7 +477,7 @@ enum class Direction { X, Y, Z }
 
 enum class Plane { XY, XZ, YZ }
 
-data class Polygon(val vertices: List<Coordinates>){
+class Polygon(val vertices: List<Coordinates>){
 
 }
 

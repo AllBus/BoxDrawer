@@ -80,12 +80,15 @@ class SplashCube2 : ISplashDetail {
         val cornerRadius = abs(com[4, 0.0, memory])
         val properties = com.takeBlock(5)
         val hasDrop = figureExtractor.valueAt(properties, 0, 1.0) > 0
+        val reverse = figureExtractor.valueAt(properties, 1, 1.0) < 0
+
+        val sides = if (reverse) count.reversed().map { it.reverse() } else count
 
 
         builder.addProduct(
             FigureDirCubik(
                 size = size,
-                sides = count,
+                sides = sides,
                 zigInfo = zigInfo,
                 cornerRadius = cornerRadius,
                 enableDrop = hasDrop,

@@ -12,14 +12,18 @@ class VolumePosition(
     val rotateY: Float,
     val rotateZ: Float,
 ) {
+    val transform: Matrix
 
-    val transform: Matrix get() {
+    init {
         val mr = Matrix()
-        mr.translate(x.toFloat(), y.toFloat(), z.toFloat())
+        val mt = Matrix()
+        mt.translate(x.toFloat(), y.toFloat(), z.toFloat())
         mr.rotateX(rotateX)
         mr.rotateY(rotateY)
         mr.rotateZ(rotateZ)
-        return mr
+
+        mr*=(mt)
+        transform = mr
     }
 
     fun toRotateMatrix(): Matrix {
