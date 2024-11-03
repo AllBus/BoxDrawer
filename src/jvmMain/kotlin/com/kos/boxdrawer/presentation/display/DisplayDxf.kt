@@ -94,6 +94,22 @@ fun DisplayDxf(
             val sp = coordAtPointer(pos.value, scale, posi)
             val pt = pointerButtonToId(event)
             onRelease(sp,pt, scale)
+
+          //  if (instrument.value.selectedInstrument == Instruments.INSTRUMENT_MULTI) {
+                if (event.button == PointerButton.Back) {
+                    pos.value -= Offset(
+                        displaySize.value.width.toFloat() / displayScale.value * 0.95f,
+                        0f
+                    )
+                } else
+                if (event.button == PointerButton.Forward){
+                    pos.value += Offset(
+                        displaySize.value.width.toFloat() / displayScale.value * 0.95f,
+                        0f
+                    )
+                }
+
+           // }
         }
         .onPointerEvent(PointerEventType.Scroll) {
             val change = it.changes.first()

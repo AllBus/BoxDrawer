@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.presentation.model.BindingType
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.figure.FigureExtractor
@@ -43,6 +44,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
 
     private val _instrument = MutableStateFlow(Instruments.INSTRUMENT_NONE)
     val instrument :StateFlow<Int> = _instrument
+    val privjazka = mutableStateOf(false)
 
     fun changeInstrument(value:Int){
         appendFigure(1f)
@@ -102,6 +104,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
             }
 
             Instruments.INSTRUMENT_POLYGON -> FigureCreator.regularPolygon(startPoint,6, delta.angle, delta.magnitude )
+            Instruments.INSTRUMENT_MULTI ,
             Instruments.INSTRUMENT_POLYLINE -> FigurePolyline(pointList+endPoint, false)
             Instruments.INSTRUMENT_BEZIER -> {
                 val pp = pointList.toList()
@@ -182,6 +185,11 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
 
     fun loadDxf(fileName: String) {
         try {
+            editFigure.value = FigureEmpty
+            vspomogatelnieFigure.value = FigureEmpty
+            intersectPoint = emptyList()
+            currentPointInfo = null
+
             val f = File(fileName)
             val parser = ParserBuilder.createDefaultParser()
 
@@ -257,6 +265,9 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
     val magnetDistance = 10.0
 
     private fun findPoint(point: Vec2, binding: BindingType, scale: Float): Vec2 {
+        if (!privjazka.value){
+            return point
+        }
         val figure = currentFigure.value
 
         if (binding.intersection) {
@@ -316,6 +327,9 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
     ) {
         //   println("onMove -> $point $button")
         if (button == Instruments.POINTER_LEFT) {
+            if (_instrument.value == Instruments.INSTRUMENT_MULTI) {
+                appendPoint()
+            }
             endPoint = findPoint(point,createBinding(button), scale)
             recalcFigure()
         } else {
@@ -351,6 +365,9 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                         appendFigure(scale)
                 }
             Instruments.POINTER_RIGHT -> {
+                if (_instrument.value == Instruments.INSTRUMENT_MULTI){
+                    moveAllToLeft()
+                }
                 if (pointList.isNotEmpty()) {
                     pointList.removeLast()
                     recalcFigure()
@@ -386,6 +403,10 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         }
     }
 
+    fun moveAllToLeft(){
+
+    }
+
     private fun scaleForColor(rgbColor: Int, figure: IFigure, scale: Double): IFigure {
         return when (figure) {
             is FigureList -> FigureList(
@@ -417,6 +438,15 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
 
             else -> figure
         }
+    }
+
+    fun clear() {
+        editFigure.value = FigureEmpty
+        vspomogatelnieFigure.value = FigureEmpty
+        intersectPoint = emptyList()
+        currentPointInfo = null
+        loadedFigure.value = FigureEmpty
+        currentFigure.value = FigureEmpty
     }
 
 

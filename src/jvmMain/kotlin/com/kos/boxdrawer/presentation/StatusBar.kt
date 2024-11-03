@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.presentation
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -69,11 +70,12 @@ fun StatusBar(
         ) {
             Text(
                 "%.3f".format(displayScale.value),
+                modifier = Modifier.defaultMinSize(minWidth = 60.dp).clickable {
+                    displayScale.value = 2.0f
+                },
                 textAlign = TextAlign.End,
                 fontSize = 12.sp,
-                modifier = Modifier.defaultMinSize(120.dp),
                 color = ThemeColors.displayLabelColor
-
             )
 
             Slider(

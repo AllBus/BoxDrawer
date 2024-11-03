@@ -4,8 +4,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -17,6 +23,7 @@ import com.kos.boxdrawe.presentation.Instruments
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawe.widget.RunButton
+import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.dxfScaleColor
@@ -56,6 +63,9 @@ fun ToolbarForDxf(vm: DxfToolsData) {
                 Instruments.INSTRUMENT_BEZIER,
                 Instruments.INSTRUMENT_BEZIER_TREE_POINT
             ),
+            listOf(
+                Instruments.INSTRUMENT_MULTI
+            )
         )
     }
 
@@ -105,6 +115,25 @@ fun ToolbarForDxf(vm: DxfToolsData) {
                     modifier = Modifier.weight(3f)
                 )
             }
+
+            Row{
+                val privjazkaChecked = remember { vm.privjazka }
+                RunCheckBox(privjazkaChecked.value, "Привязка"){ v ->
+                    privjazkaChecked.value = v
+
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Row {
+                    val showAlert = remember { mutableStateOf(false) }
+                    RunButton("Очистить"){
+                        showAlert.value = true
+                    }
+                    clearDxfAlert(showAlert){ vm.clear()
+                        showAlert.value = false
+                    }
+                }
+            }
+
         }
         Column(modifier = Modifier.weight(1f)) {
             instrumentList.forEach { i ->
@@ -121,6 +150,45 @@ fun ToolbarForDxf(vm: DxfToolsData) {
                     }
                 }
             }
+
+        }
+    }
+}
+
+@Composable
+private fun clearDxfAlert(
+    showAlert: MutableState<Boolean>,
+    onConfirm: () -> Unit
+) {
+    when {
+        showAlert.value -> {
+
+            AlertDialog(
+                onDismissRequest = {
+                    showAlert.value = false
+                },
+                title = { Text("Очистить") },
+                text = {
+                    Text("Очистить от всех фигур?")
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = onConfirm
+                    ) {
+                        Text("Очистить")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            showAlert.value = false
+                        }
+                    ) {
+                        Text("Отмена")
+                    }
+                }
+
+            )
         }
     }
 }

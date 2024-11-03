@@ -12,6 +12,13 @@ import com.kos.boxdrawe.presentation.Instruments
 fun DrawInstrumentIcon(instrument:Int){
     when (instrument){
         Instruments.INSTRUMENT_NONE -> {}
+        Instruments.INSTRUMENT_MULTI -> {
+            Icon(
+                imageVector = InstrumentIcon.rememberLine(),
+                contentDescription = "Multi"
+            )
+        }
+
         Instruments.INSTRUMENT_LINE -> {
             Icon(
                 imageVector = InstrumentIcon.rememberLine(),
