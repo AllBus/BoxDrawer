@@ -1,6 +1,7 @@
 package com.kos.figure.complex
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.BaseFigure
 import com.kos.figure.Figure
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigureLine
@@ -22,7 +23,7 @@ class FigureZigZag(
     val zigFigure:IFigure,
     val reverse: Boolean = false,
     val back: Boolean = false,
-    ): IFigure {
+    ): BaseFigure() {
 
     private val isLine:Boolean
     private val end: Vec2
@@ -83,9 +84,6 @@ class FigureZigZag(
         zigHeight = if (reverse) -zv else zv
     }
 
-    override val count: Int
-        get() = 1
-
     override fun rect(): BoundingRectangle {
         return BoundingRectangle.apply(listOf(origin, origin+Vec2(width,0.0).rotate(angle)))
     }
@@ -122,21 +120,7 @@ class FigureZigZag(
         return "Z $width ${zig.commandLine()}"
     }
 
-    override fun collection(): List<IFigure> {
-        return emptyList()
-    }
-
     override fun name(): String {
         return "Зигзаг"
     }
-
-    override val transform: Matrix
-        get() = Matrix.identity
-    override val hasTransform: Boolean
-        get() = false
-
-    override fun removeInner(inner: IFigure): IFigure  = this
-
-    override fun replaceInner(newCollection: List<IFigure>): IFigure = this
-
 }

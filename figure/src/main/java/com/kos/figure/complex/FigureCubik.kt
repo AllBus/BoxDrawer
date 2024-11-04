@@ -1,6 +1,7 @@
 package com.kos.figure.complex
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.BaseFigure
 import com.kos.figure.Figure
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
@@ -32,7 +33,7 @@ class FigureCubik(
     val reverseY: Boolean,
     val zigFirstIndex: Int,
     val zigDistance: Int,
-) : IFigure {
+) : BaseFigure() {
 
     private val bound : BoundingRectangle
     private val sideCounter : List<Int>
@@ -86,8 +87,7 @@ class FigureCubik(
         }
     }
 
-    override val count: Int
-        get() = 1
+
 
     override fun rect(): BoundingRectangle {
         return bound
@@ -335,20 +335,8 @@ class FigureCubik(
         return "/cube $size (${sideCounter.joinToString(" ")}) (${zigInfo.commandLine()})"
     }
 
-    override fun collection(): List<IFigure> {
-        return emptyList()
-    }
-
     override fun name(): String {
         return "кубик $size ${sideCounter.size}"
     }
 
-    override val transform: Matrix
-        get() = Matrix.identity
-    override val hasTransform: Boolean
-        get() = false
-
-    override fun removeInner(inner: IFigure): IFigure  = this
-
-    override fun replaceInner(newCollection: List<IFigure>): IFigure = this
 }

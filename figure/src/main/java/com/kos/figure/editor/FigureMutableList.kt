@@ -1,0 +1,78 @@
+package com.kos.figure.editor
+
+import com.kos.drawer.IFigureGraphics
+import com.kos.figure.CropSide
+import com.kos.figure.ICropable
+import com.kos.figure.IFigure
+import com.kos.figure.collections.FigureList
+import vectors.BoundingRectangle
+import vectors.Matrix
+
+class FigureMutableList(val figures: MutableList<IFigure>
+) : IFigure, ICropable {
+
+    override val count: Int
+    get() = figures.size
+
+    operator fun plus(figure: IFigure): FigureList {
+        return FigureList(this.figures + figure)
+    }
+
+    operator fun plus(list: List<IFigure>): FigureList {
+        return FigureList(this.figures + list)
+    }
+
+    operator fun plus(list: FigureList): FigureList {
+        return FigureList(this.figures + list)
+    }
+
+    override fun rect(): BoundingRectangle {
+        val l = figures.map { it.rect() }
+
+        if (l.isEmpty()) {
+            return BoundingRectangle.Empty
+        }
+
+        return l.fold(l.first()) { a, b -> a.union(b) }
+    }
+
+    override fun draw(g: IFigureGraphics) {
+        figures.forEach { it.draw(g) }
+    }
+
+    override fun print(): String {
+        return figures.joinToString(" ") { it.print() }
+    }
+
+    override fun collection(): List<IFigure> {
+        return figures
+    }
+
+    override fun name(): String {
+        return "Список"
+    }
+
+    override val transform: Matrix
+    get() = Matrix.identity
+
+
+    override val hasTransform: Boolean
+    get() = false
+
+    override fun crop(k: Double, cropSide: CropSide): FigureList {
+        return FigureList(figures.filterIsInstance<ICropable>().map { it.crop(k, cropSide) })
+    }
+
+    override fun removeInner(inner: IFigure): IFigure {
+        val fm = figures.filter { it !== inner }
+        return if (fm.size != figures.size)
+            replaceInner(fm)
+        else
+            replaceInner(figures.map { it.removeInner(inner) })
+
+    }
+
+    override fun replaceInner(newCollection: List<IFigure>): IFigure {
+        return FigureList(newCollection)
+    }
+}

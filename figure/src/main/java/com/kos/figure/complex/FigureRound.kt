@@ -143,16 +143,9 @@ open class FigureRound(
         }}"
     }
 
-    override fun collection(): List<IFigure> = emptyList()
-
     override fun name(): String {
         return "Round"
     }
-
-    override val transform: Matrix
-        get() = Matrix.identity
-    override val hasTransform: Boolean
-        get() = false
 
     override fun translate(translateX: Double, translateY: Double): Figure {
         return FigureRound(

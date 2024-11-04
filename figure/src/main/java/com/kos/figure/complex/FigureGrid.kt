@@ -1,6 +1,7 @@
 package com.kos.figure.complex
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.BaseFigure
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
@@ -12,9 +13,7 @@ class FigureGrid(
     val rowCount: Int,
     val cellWidth: Double,
     val cellHeight: Double,
-) : IFigure {
-    override val count: Int
-        get() = 1
+) : BaseFigure() {
 
     override fun rect(): BoundingRectangle {
         return BoundingRectangle(Vec2.Zero, Vec2(cellWidth * columnCount, cellHeight * rowCount))
@@ -35,20 +34,8 @@ class FigureGrid(
         return "/grid $columnCount $rowCount $cellWidth $cellHeight"
     }
 
-    override fun collection(): List<IFigure> {
-        return emptyList()
-    }
-
     override fun name(): String {
         return "сетка ${columnCount}x$rowCount}"
     }
 
-    override val transform: Matrix
-        get() = Matrix.identity
-    override val hasTransform: Boolean
-        get() = false
-
-    override fun removeInner(inner: IFigure): IFigure  = this
-
-    override fun replaceInner(newCollection: List<IFigure>): IFigure = this
 }

@@ -1,6 +1,7 @@
 package com.kos.figure.composition
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.BaseFigure
 import com.kos.figure.CropSide
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
@@ -9,6 +10,9 @@ import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
 
+/**
+ * Размещение фигур вдоль пути
+ */
 class FigureOnPath(
     val figure: IFigure,
     val path: IFigurePath,
@@ -19,7 +23,7 @@ class FigureOnPath(
     val useNormal: Boolean,
     val angle: Double,
     var pivot: Vec2,
-) : IFigure {
+) : BaseFigure() {
 
     override fun rect(): BoundingRectangle {
         val fr = figure.rect()
@@ -62,13 +66,4 @@ class FigureOnPath(
 
     override fun name(): String = "OnPath"
 
-    override val transform: Matrix
-        get() = Matrix.identity
-
-    override val hasTransform: Boolean
-        get() = false
-
-    override fun removeInner(inner: IFigure): IFigure  = this
-
-    override fun replaceInner(newCollection: List<IFigure>): IFigure = this
 }

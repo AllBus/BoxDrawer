@@ -1,6 +1,7 @@
 package com.kos.figure.complex
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.BaseFigure
 import com.kos.figure.Figure
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
@@ -18,7 +19,7 @@ class FigureDirCubik(
     val zigInfo: ZigzagInfo,
     val cornerRadius:Double,
     val enableDrop: Boolean,
-) : IFigure {
+) : BaseFigure() {
 
     private val bound : BoundingRectangle
     private var minX = 0
@@ -57,9 +58,6 @@ class FigureDirCubik(
         this.minY = minY
        // println("> $minX $minY $maxX $maxY $sides")
     }
-
-    override val count: Int
-        get() = 1
 
     override fun rect(): BoundingRectangle {
         return bound
@@ -339,22 +337,9 @@ class FigureDirCubik(
         return "/cube2 $size (${sides.joinToString(" ")}) (${zigInfo.commandLine()})"
     }
 
-    override fun collection(): List<IFigure> {
-        return emptyList()
-    }
-
     override fun name(): String {
         return "кубик2 $size ${sides.size}"
     }
-
-    override val transform: Matrix
-        get() = Matrix.identity
-    override val hasTransform: Boolean
-        get() = false
-
-    override fun removeInner(inner: IFigure): IFigure  = this
-
-    override fun replaceInner(newCollection: List<IFigure>): IFigure = this
 
     private fun drawZig(
         g: IFigureGraphics,

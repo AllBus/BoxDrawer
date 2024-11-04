@@ -1,6 +1,7 @@
 package com.kos.figure.composition
 
 import com.kos.drawer.IFigureGraphics
+import com.kos.figure.BaseFigure
 import com.kos.figure.CropSide
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
@@ -8,6 +9,10 @@ import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
 
+
+/**
+ * Фигура мягкий рез
+ */
 class FigureRez(
     val startPoint: Vec2,
     val countx: Int,
@@ -16,10 +21,7 @@ class FigureRez(
     val dlina: Double,
     val soedinenie: Double,
     val firstSmall: Boolean,
-) :
-    IFigure {
-    override val count: Int
-        get() = 1
+) : BaseFigure(){
 
     override fun rect(): BoundingRectangle {
         return BoundingRectangle(
@@ -85,21 +87,7 @@ class FigureRez(
         return "/rez ${countx * delta} ${county * (dlina + soedinenie) + soedinenie} ${delta} ${dlina} ${soedinenie}"
     }
 
-    override fun collection(): List<IFigure> {
-        return emptyList()
-    }
-
     override fun name(): String {
         return "Мягкий рез"
     }
-
-    override val transform: Matrix
-        get() = Matrix.identity
-
-    override val hasTransform: Boolean
-        get() = false
-
-    override fun removeInner(inner: IFigure): IFigure  = this
-
-    override fun replaceInner(newCollection: List<IFigure>): IFigure = this
 }
