@@ -16,6 +16,8 @@ import com.kos.figure.collections.FigureList
 import com.kos.figure.collections.FigurePoints
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureComposition
+import com.kos.figure.composition.FigureTranslate
+import com.kos.figure.editor.FigureMutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,16 +40,14 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
 
     private val loadedFigure = MutableStateFlow<IFigure>(FigureEmpty)
 
-
     private val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
-    val dxfPreview = MutableStateFlow(false)
 
     private val _instrument = MutableStateFlow(Instruments.INSTRUMENT_NONE)
-    val instrument :StateFlow<Int> = _instrument
+    val instrument: StateFlow<Int> = _instrument
     val privjazka = mutableStateOf(false)
 
-    fun changeInstrument(value:Int){
-        appendFigure(1f)
+    fun changeInstrument(value: Int) {
+        appendFigure()
         _instrument.value = value
     }
 
@@ -57,28 +57,50 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
     }
 
     private var startPoint: Vec2 = Vec2.Zero
-    private var pointList = mutableListOf<Vec2>()
     private var endPoint: Vec2 = Vec2.Zero
 
-    private var intersectPoint :List<Vec2> = emptyList()
+    private var intersectPoint: MutableStateFlow<List<Vec2>> = MutableStateFlow(emptyList())
+    private var magnetPoint: MutableStateFlow<Vec2?> = MutableStateFlow(null)
+    private var currentPoint: MutableStateFlow<List<Vec2>> = MutableStateFlow(emptyList())
+    private var currentScale: MutableStateFlow<Float> = MutableStateFlow(1.0f)
 
     private val editFigure: MutableStateFlow<IFigure> = MutableStateFlow(FigureEmpty)
-    private val vspomogatelnieFigure: MutableStateFlow<IFigure> = MutableStateFlow(FigureEmpty)
+
     private var currentPointInfo: PointInfo? = null
 
-    val figures = combine(currentFigure, editFigure, vspomogatelnieFigure) { figure, editFigure, pomo ->
-        FigureList(
-            listOf(
-                figure,
-                pomo,
-                editFigure,
+    private val vspomogatelnieFigure =
+        combine(intersectPoint, magnetPoint, currentPoint, currentScale) { i, m, c, scale ->
+            FigureList(
+                listOfNotNull(
+                    m?.let { magentPoint(it, scale) },
+                    currentPoints(c, scale),
+                    intersectFigures(i, scale)
+                )
             )
-        )
-    }
+        }
+
+    val figures =
+        combine(currentFigure, editFigure, vspomogatelnieFigure) { figure, editFigure, pomo ->
+            FigureList(
+                listOf(
+                    figure,
+                    pomo,
+                    editFigure,
+                )
+            )
+        }
 
     fun recalcFigure() {
+        val pointList = currentPoint.value
         val delta = (endPoint - startPoint)
         val r = when (_instrument.value) {
+            Instruments.INSTRUMENT_POINTER -> selectedFigure.getOrNull(0)?.figure?.let { f ->
+                FigureTranslate(
+                    delta,
+                    f
+                )
+            } ?: FigureEmpty
+
             Instruments.INSTRUMENT_LINE -> FigureLine(startPoint, endPoint)
             Instruments.INSTRUMENT_RECTANGLE -> FigurePolyline(
                 listOf(
@@ -88,24 +110,33 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                     Vec2(startPoint.x, endPoint.y)
                 ), true
             )
+
             Instruments.INSTRUMENT_CIRCLE -> FigureCircle(
                 center = startPoint,
                 radius = delta.magnitude,
                 outSide = true
             )
+
             Instruments.INSTRUMENT_ELLIPSE -> {
                 FigureEllipse(
                     center = (endPoint + startPoint) / 2.0,
-                    radius = abs(delta.x)/2.0,
-                    radiusMinor = abs(delta.y)/2.0,
+                    radius = abs(delta.x) / 2.0,
+                    radiusMinor = abs(delta.y) / 2.0,
                     rotation = 0.0,
                     outSide = true
                 )
             }
 
-            Instruments.INSTRUMENT_POLYGON -> FigureCreator.regularPolygon(startPoint,6, delta.angle, delta.magnitude )
-            Instruments.INSTRUMENT_MULTI ,
-            Instruments.INSTRUMENT_POLYLINE -> FigurePolyline(pointList+endPoint, false)
+            Instruments.INSTRUMENT_POLYGON -> FigureCreator.regularPolygon(
+                startPoint,
+                6,
+                delta.angle,
+                delta.magnitude
+            )
+
+            Instruments.INSTRUMENT_MULTI,
+            Instruments.INSTRUMENT_POLYLINE ->  FigurePolyline(pointList + endPoint, false)
+
             Instruments.INSTRUMENT_BEZIER -> {
                 val pp = pointList.toList()
                 if (pp.isEmpty())
@@ -114,21 +145,23 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                     val pr = if (pp.last() != endPoint) {
                         pp + endPoint
                     } else pp
-                    val cou = (pr.size-1) % 3
+                    val cou = (pr.size - 1) % 3
 
 
                     FigureBezier(pr.dropLast(cou))
                 }
             }
+
             Instruments.INSTRUMENT_BEZIER_TREE_POINT -> {
                 val st = pointList.getOrNull(0)
                 val pp = pointList.getOrNull(1)
-                if (pp == null || st == null){
+                if (pp == null || st == null) {
                     FigureLine(startPoint, endPoint)
-                } else{
+                } else {
                     FigureCreator.cubicBezierForThreePoints(st, endPoint, pp)
                 }
             }
+
             Instruments.INSTRUMENT_NONE -> FigureEmpty
             else -> FigureEmpty
 
@@ -137,57 +170,58 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         editFigure.value = r
     }
 
-    fun appendPointOrFigure(count:Int, scale:Float){
-        if (pointList.size>= count){
-            appendFigure(scale)
+    fun appendPointOrFigure(count: Int) {
+        val pointList = currentPoint.value
+        if (pointList.size >= count) {
+            appendFigure()
         } else {
             appendPoint()
         }
     }
 
-    fun appendPoint(){
-        if (pointList.isEmpty() || pointList.last() != endPoint){
-            pointList.add(endPoint)
+    fun appendPoint() {
+        val pointList = currentPoint.value
+        if (pointList.isEmpty() || pointList.last() != endPoint) {
+            currentPoint.value = pointList + endPoint
         }
     }
 
 
-
-    fun appendFigure(scale:Float) {
+    fun appendFigure() {
         val ev = editFigure.value
         val v = currentFigure.value
         if (ev == FigureEmpty)
             return
 
-        currentFigure.value = if (v is FigureList) {
-            FigureList(v.collection() + ev)
-        } else {
-            FigureList(listOf(v, ev))
-        }
-        editFigure.value = FigureEmpty
-        pointList.clear()
+        recalcIntersectPoints(intersectPoint.value, v, ev)
 
-        recalcIntersectPoints(intersectPoint, v, ev)
-        vspomogatelnieFigure.value = intersectFigures(scale)
+        currentFigure.value = when (v) {
+            is FigureMutableList -> v.add(ev)
+            is FigureList -> FigureMutableList(mutableListOf<IFigure>(ev).apply { this.addAll(v.collection()) })
+            else -> FigureMutableList(mutableListOf(ev, v))
+        }
+
+        editFigure.value = FigureEmpty
+        currentPoint.value = emptyList()
     }
 
     private fun recalcIntersectPoints(oldPoint: List<Vec2>, v: IFigure, ev: IFigure) {
         if (ev == FigureEmpty || v == FigureEmpty)
             return
 
-        intersectPoint = oldPoint + PaintUtils.findAllIntersects(listOf(v),listOf(ev))
+        intersectPoint.value = oldPoint + PaintUtils.findAllIntersects(listOf(v), listOf(ev))
     }
 
-    fun recalcIntersectPoints(){
-        intersectPoint = PaintUtils.findAllIntersects(listOf(currentFigure.value))
+    fun recalcIntersectPoints() {
+        intersectPoint.value = PaintUtils.findAllIntersects(listOf(currentFigure.value))
 
     }
 
     fun loadDxf(fileName: String) {
+        clear()
+
         try {
             editFigure.value = FigureEmpty
-            vspomogatelnieFigure.value = FigureEmpty
-            intersectPoint = emptyList()
             currentPointInfo = null
 
             val f = File(fileName)
@@ -203,7 +237,6 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
             redrawBox()
 
 
-            dxfPreview.value = true
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -214,38 +247,45 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         return "f (" + figures.print() + ")"
     }
 
+    private var selectedFigure: List<FigureInfo> = emptyList()
+
     suspend fun onPress(
         point: Vec2,
         button: Int,
         scale: Float,
         selectedItem: MutableStateFlow<List<FigureInfo>>
     ) {
-        when (_instrument.value){
+        selectedFigure = selectedItem.value
+        when (_instrument.value) {
             Instruments.INSTRUMENT_NONE -> {
                 val figure = currentFigure.value
-                val result = PaintUtils.findFiguresAtCursor(Matrix.identity, point, 1.0, listOf(figure))
+                val result =
+                    PaintUtils.findFiguresAtCursor(Matrix.identity, point, 1.0, listOf(figure))
 
                 selectedItem.value = result
             }
+
             Instruments.INSTRUMENT_POINTER -> {
                 val info: PointInfo? = PaintUtils.takePoint(selectedItem.value, point, 1.0)
                 currentPointInfo = info
-                if (info!= null){
+                if (info != null) {
                     removeFigure(info.figure)
                 }
             }
+
             else -> {
 
-            //   println("point -> $point $button")
-            if (Instruments.button(button) == Instruments.POINTER_LEFT) {
-                startPoint = findPoint(point,createBinding(button), scale)
-                endPoint = startPoint
-                if (pointList.isEmpty()){
-                    pointList.add(startPoint)
+                //   println("point -> $point $button")
+                if (Instruments.button(button) == Instruments.POINTER_LEFT) {
+                    startPoint = findPoint(point, createBinding(button), scale)
+                    endPoint = startPoint
+                    val pointList = currentPoint.value
+                    if (pointList.isEmpty()) {
+                        currentPoint.value = listOf(startPoint)
+                    }
+                    recalcFigure()
                 }
-                recalcFigure()
             }
-        }
         }
     }
 
@@ -254,24 +294,24 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
             intersection = (button and Instruments.MODIFIER_CTRL) == 0,
             nearest = (button and Instruments.MODIFIER_SHIFT) == 0,
             grid = false,
-            points =  (button and Instruments.MODIFIER_SHIFT) == 0,
+            points = (button and Instruments.MODIFIER_SHIFT) == 0,
         )
     }
 
     private fun removeFigure(figure: IFigure) {
-        currentFigure.value = PaintUtils.removeFigure( currentFigure.value,figure)
+        currentFigure.value = PaintUtils.removeFigure(currentFigure.value, figure)
     }
 
     val magnetDistance = 10.0
 
     private fun findPoint(point: Vec2, binding: BindingType, scale: Float): Vec2 {
-        if (!privjazka.value){
+        if (!privjazka.value) {
             return point
         }
         val figure = currentFigure.value
 
         if (binding.intersection) {
-            val ip = intersectPoint
+            val ip = intersectPoint.value
 
             val minip = if (ip.isEmpty())
                 null
@@ -280,7 +320,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                     .takeIf { Vec2.distance(point, it) < magnetDistance / scale }
 
             if (minip != null) {
-                updateVspomogatelnie(minip, scale)
+                magnetPoint.value = minip
                 return minip
             }
         }
@@ -293,18 +333,13 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                 listOf(figure)
             )
             if (newPoint != null) {
-                updateVspomogatelnie(newPoint, scale)
+                magnetPoint.value = newPoint
                 return newPoint
             }
         }
 
-        vspomogatelnieFigure.value = FigureList(listOf(intersectFigures(scale), currentPoints(scale)))
+        magnetPoint.value = null
         return point
-    }
-
-    private fun updateVspomogatelnie(minip: Vec2, scale: Float) {
-        vspomogatelnieFigure.value =
-            FigureList(listOf(magentPoint(minip, scale), currentPoints(scale)))
     }
 
     private fun magentPoint(
@@ -312,11 +347,11 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         scale: Float
     ) = FigureCreator.colorDxf(2, FigureCircle(newPoint, magnetDistance / scale, true))
 
-    private fun intersectFigures(scale: Float) =
+    private fun intersectFigures(intersectPoint: List<Vec2>, scale: Float) =
         FigureCreator.colorDxf(3, FigurePoints(intersectPoint, magnetDistance / scale))
 
-    private fun currentPoints(scale: Float) =
-        FigureCreator.colorDxf(5 , FigurePoints(pointList.toList(), magnetDistance/scale ))
+    private fun currentPoints(pointList: List<Vec2>, scale: Float) =
+        FigureCreator.colorDxf(5, FigurePoints(pointList.toList(), magnetDistance / scale))
 
     suspend fun onMove(
         point: Vec2,
@@ -325,21 +360,31 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         scale: Float,
         selectedItem: MutableStateFlow<List<FigureInfo>>
     ) {
+        if (currentScale.value != scale) {
+            currentScale.value = scale
+        }
         //   println("onMove -> $point $button")
         if (button == Instruments.POINTER_LEFT) {
-            if (_instrument.value == Instruments.INSTRUMENT_MULTI) {
-                appendPoint()
+            when (_instrument.value) {
+                Instruments.INSTRUMENT_MULTI -> {
+                    appendPoint()
+                }
+
+                Instruments.INSTRUMENT_POINTER -> {
+
+                }
             }
-            endPoint = findPoint(point,createBinding(button), scale)
+            endPoint = findPoint(point, createBinding(button), scale)
             recalcFigure()
         } else {
-            val fp = findPoint(point,createBinding(button), scale)
+            val fp = findPoint(point, createBinding(button), scale)
             when (_instrument.value) {
                 Instruments.INSTRUMENT_POLYLINE,
                 Instruments.INSTRUMENT_BEZIER -> {
                     endPoint = fp
                     recalcFigure()
                 }
+
                 else -> {}
             }
         }
@@ -352,29 +397,34 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         selectedItem: MutableStateFlow<List<FigureInfo>>
     ) {
         //   println("onRelease -> $point $button")
-        when (Instruments.button(button)){
+        when (Instruments.button(button)) {
             Instruments.POINTER_LEFT ->
                 when (_instrument.value) {
                     Instruments.INSTRUMENT_BEZIER_TREE_POINT -> {
-                        appendPointOrFigure(2, scale)
+                        appendPointOrFigure(2)
                     }
+
                     Instruments.INSTRUMENT_POLYLINE,
                     Instruments.INSTRUMENT_BEZIER ->
                         appendPoint()
+
                     else ->
-                        appendFigure(scale)
+                        appendFigure()
                 }
+
             Instruments.POINTER_RIGHT -> {
-                if (_instrument.value == Instruments.INSTRUMENT_MULTI){
+                if (_instrument.value == Instruments.INSTRUMENT_MULTI) {
                     moveAllToLeft()
                 }
+                val pointList = currentPoint.value
                 if (pointList.isNotEmpty()) {
-                    pointList.removeLast()
+                    currentPoint.value = pointList.dropLast(1)
                     recalcFigure()
                 }
             }
+
             Instruments.POINTER_MIDDLE -> {
-                appendFigure(scale)
+                appendFigure()
 
             }
         }
@@ -403,7 +453,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         }
     }
 
-    fun moveAllToLeft(){
+    fun moveAllToLeft() {
 
     }
 
@@ -442,8 +492,8 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
 
     fun clear() {
         editFigure.value = FigureEmpty
-        vspomogatelnieFigure.value = FigureEmpty
-        intersectPoint = emptyList()
+        intersectPoint.value = emptyList()
+        currentPoint.value = emptyList()
         currentPointInfo = null
         loadedFigure.value = FigureEmpty
         currentFigure.value = FigureEmpty

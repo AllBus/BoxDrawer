@@ -11,6 +11,11 @@ import vectors.Matrix
 class FigureMutableList(val figures: MutableList<IFigure>
 ) : IFigure, ICropable {
 
+    fun add(figure:IFigure): IFigure{
+        figures+=figure
+        return this
+    }
+
     override val count: Int
     get() = figures.size
 
