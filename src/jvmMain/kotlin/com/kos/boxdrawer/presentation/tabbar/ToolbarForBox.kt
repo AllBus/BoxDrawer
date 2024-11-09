@@ -1,8 +1,10 @@
 package com.kos.boxdrawer.presentation.tabbar
 
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -15,6 +17,8 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.BoxData
+import com.kos.boxdrawe.presentation.Tools
+import com.kos.boxdrawe.presentation.ToolsData
 import com.kos.boxdrawe.widget.*
 import com.kos.boxdrawe.widget.model.ButtonData
 import com.kos.boxdrawer.detal.box.PazExt
@@ -510,4 +514,10 @@ fun ToolbarActionForBox(vm: BoxData) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun ToolbarForBoxPreview() = MaterialTheme{
+    ToolbarForBox(BoxData(Tools()))
 }

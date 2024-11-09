@@ -3,6 +3,7 @@ package com.kos.boxdrawer.presentation.tabbar
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -16,10 +17,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -72,6 +75,13 @@ val TabContentModifier =
 fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
     val tabIndex = vm.value.tabIndex.collectAsState()
     val expandTools = remember { mutableStateOf(true) }
+    val pagerState = rememberPagerState(pageCount = {
+        BoxDrawerToolBar.tabs.size
+    })
+
+    LaunchedEffect(tabIndex.value){
+        pagerState.animateScrollToPage( tabIndex.value, animationSpec = tween(500))
+    }
 
     Column(
         Modifier.fillMaxWidth().background(ThemeColors.tabBackground)
@@ -101,6 +111,7 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                 onTabSelected = { id ->
                     if (id >=0 && id < tabs.size) {
                         vm.value.tabIndex.value = id
+
                         expandTools.value = true
                     }
                 }
@@ -123,9 +134,9 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
                 Modifier.fillMaxWidth().height(220.dp)
             ) {
                 ToolbarContainer(
-                    tabIndex = tabIndex,
-                    content = {
-                        when (tabIndex.value) {
+                    pagerState = pagerState,
+                    content = { index ->
+                        when (index) {
                             TAB_BOX -> ToolbarForBox(vm.value.box)
                             TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
                             TAB_GRID -> ToolbarForGrid(vm.value.grid)

@@ -139,7 +139,7 @@ compose.desktop {
 
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "boxdrawer"
-            packageVersion = "2.6.0"
+            packageVersion = "2.6.1"
             windows{
                 iconFile.set(project.file("robot.ico"))
                 includeAllModules = true
