@@ -1,20 +1,43 @@
 package com.kos.boxdrawer.detal.box
 
-import turtoise.Orientation
 import com.kos.tortoise.ZigzagInfo
+import turtoise.Orientation
 import kotlin.math.max
 import kotlin.math.min
 
+class PolkaGrid(
+    val xCount: Int,
+    val yCount: Int,
+)
+
 class Polka(
     val orientation: Orientation = Orientation.Horizontal,
-    val width: Double = 0.0,
+    private val width: Double = 0.0,
+    val widthInPercentage: Boolean = false,
     val height: DoubleArray = DoubleArray(0),
     val order: Int = 0,
     val startCell: Int = 0,
     val cellCount: Int = 0,
     val visible: Boolean = true,
-    val programs : List<PolkaProgram>? = null
+    val programs: List<PolkaProgram>? = null
 ) {
+
+    fun polkaDistance(cellWidth: Double):Double {
+        return if (widthInPercentage) {
+            width * cellWidth/ 100.0
+        } else
+            width
+    }
+
+    fun polkaDistance(cellWidth: Double, cellHeight: Double):Double {
+        return if (widthInPercentage) {
+            if (orientation == Orientation.Vertical)
+                width * cellWidth/ 100.0
+            else
+                width * cellHeight/ 100.0
+        } else
+            width
+    }
 
     var calc = PolkaInfo(0.0, 0.0, 0.0, 0.0, 0, 0)
 
@@ -71,17 +94,17 @@ class Polka(
         return max(a, c) <= min(b, d)
     }
 
-    fun commandLine(): String{
-        val r = "(${width} ${if (orientation == Orientation.Horizontal) "h" else "v"}"+
-                " ${orderToText(order)} ${if (!visible) "n" else ""}"+
+    fun commandLine(): String {
+        val r = "(${width} ${if (orientation == Orientation.Horizontal) "h" else "v"}" +
+                " ${orderToText(order)} ${if (!visible) "n" else ""}" +
                 " ${startCell} ${cellCount} ${height.joinToString(" ", "( ", " )")}" +
-                (programs?.joinToString(" ", "(", ")") { it.commandLine() } ?: "")+")"
+                (programs?.joinToString(" ", "(", ")") { it.commandLine() } ?: "") + ")"
 
         return r
     }
 
-    fun orderToText(order:Int):String{
-        return when (order){
+    fun orderToText(order: Int): String {
+        return when (order) {
             1 -> ""
             2 -> "c"
             -1 -> "e"
@@ -115,13 +138,15 @@ class PolkaProgram(
     /** Номер левой полки рисования*/
     val startCell: Int,
     /** Номер строны 0 - текущая полка */
-    val sideIndex:List<Int>,
-){
-    fun commandLine(): String{
-        return "s${sideIndex.firstOrNull()?:0} $startCell ${sideIndex.drop(2).joinToString(" "){ "s$it" }} ($algorithm)"
+    val sideIndex: List<Int>,
+) {
+    fun commandLine(): String {
+        return "s${sideIndex.firstOrNull() ?: 0} $startCell ${
+            sideIndex.drop(2).joinToString(" ") { "s$it" }
+        } ($algorithm)"
     }
 
-    companion object{
+    companion object {
         const val SIDE_BOTTOM = -1
         const val SIDE_TOP = -2
         const val SIDE_NONE = -3
@@ -179,7 +204,8 @@ class PolkaSort {
     }
 
     fun intersectList(p: Polka): List<Polka> {
-        val or = if (p.orientation == Orientation.Vertical) Orientation.Horizontal else Orientation.Vertical
+        val or =
+            if (p.orientation == Orientation.Vertical) Orientation.Horizontal else Orientation.Vertical
 
         val l = calcList.filter { c ->
             c.orientation == or
@@ -188,7 +214,9 @@ class PolkaSort {
         }.filter { c ->
             c.startCell != p.calc.index && c.endCell != p.calc.index
         }.sortedWith { a, b ->
-            if (or == Orientation.Vertical) a.calc.sX.compareTo(b.calc.sX) else a.calc.sY.compareTo(b.calc.sY)
+            if (or == Orientation.Vertical) a.calc.sX.compareTo(b.calc.sX) else a.calc.sY.compareTo(
+                b.calc.sY
+            )
         }
 
         val start = findStart(p);

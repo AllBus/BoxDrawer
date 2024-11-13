@@ -71,7 +71,7 @@ class BoxData(override val tools: ITools): SaveFigure {
                 zigH = heightZigState.zigInfo,
                 zigWe = weightZigState.zigInfo,
                 zigPolka = polkaZigState.zigInfo,
-                zigPolkaPol = polkaPolZigState.zigInfo
+                zigPolkaPol = polkaPolXZigState.zigInfo
             ),
             wald = wald,
             polki = polki,
@@ -81,15 +81,15 @@ class BoxData(override val tools: ITools): SaveFigure {
     }
 
     fun createBox(line: String) {
-        val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.VOLUME)
+        val alg = boxFigures(line, if (view3d.value) BoxCad.EOutVariant.VOLUME else BoxCad.EOutVariant.ALTERNATIVE)
         val ds = tools.ds()
         val fig = boxFigures(alg, ds)
-        figures.value =fig
+        figures.value = fig
     }
 
     override suspend fun createFigure(): IFigure {
         val line = text.value.text
-        val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.COLUMN)
+        val alg = boxFigures(line, BoxCad.EOutVariant.ALTERNATIVE)
         val ds = tools.ds()
         return FigureColor(
             Color.DarkGray.toArgb(),
@@ -100,7 +100,7 @@ class BoxData(override val tools: ITools): SaveFigure {
 
     suspend fun print():String{
         val line = text.value.text
-        val alg = boxFigures(line, if (alternative.value) BoxCad.EOutVariant.ALTERNATIVE else BoxCad.EOutVariant.COLUMN)
+        val alg = boxFigures(line, BoxCad.EOutVariant.ALTERNATIVE)
 
         return alg.commandLine()
     }
@@ -119,7 +119,7 @@ class BoxData(override val tools: ITools): SaveFigure {
     val edgeHoleOffset = NumericTextFieldState(2.0) { redrawBox() }
     var insideChecked = mutableStateOf(false)
     var polkiInChecked = mutableStateOf(false)
-    var alternative = mutableStateOf(true)
+    var view3d = mutableStateOf(true)
     val text = mutableStateOf(TextFieldValue(""))
 
     val edgeFL = NumericTextFieldState(0.0) { redrawBox() }
@@ -135,10 +135,13 @@ class BoxData(override val tools: ITools): SaveFigure {
     val heightZigState = ZigZagState({redrawBox()})
     val weightZigState = ZigZagState({redrawBox()})
     val polkaZigState = ZigZagState({redrawBox()})
-    val polkaPolZigState = ZigZagState({redrawBox()})
+    val polkaPolXZigState = ZigZagState({redrawBox()})
+    val polkaPolYZigState = ZigZagState({redrawBox()})
 
 
     val boxListener = object: BoxSimpleListener {
+        var predX = 1
+        var predY = 1
         override fun clearSelect() {
             text.value = text.value.copy(selection = TextRange(text.value.text.length))
         }
@@ -159,7 +162,22 @@ class BoxData(override val tools: ITools): SaveFigure {
             redrawBox()
         }
 
+        override fun updateGrid(x: Int, y: Int) {
+            if (x != 0)
+                predX = x
+
+            if (y!= 0)
+                predY = y
+
+            val tv =  text.value
+            text.value = tv.copy( "$predX x $predY",
+                selection = TextRange(0, tv.text.length)
+            )
+            redrawBox()
+        }
     }
+
+
 
     companion object {
         fun boxFigures(alg: BoxAlgorithm, ds: DrawerSettings): IFigure {
@@ -208,4 +226,5 @@ class ZigZagState(val redrawBox: () -> Unit){
 interface BoxSimpleListener {
     fun clearSelect()
     fun updateLine(decimal: Double, H: Boolean, C: Boolean, E: Boolean)
+    fun updateGrid(x: Int, y:Int)
 }

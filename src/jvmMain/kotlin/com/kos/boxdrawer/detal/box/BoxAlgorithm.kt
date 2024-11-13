@@ -78,7 +78,7 @@ class BoxAlgorithm(
             val waldBlock = other2.find { it.name.name.startsWith("w") }
 
             val polkiList = polki.flatMap {
-                it.blocks.map { line -> CalculatePolka.polka(line) }
+                it.blocks.flatMap { line -> CalculatePolka.polka(line) }
             }
 
             val zigs = ZigInfoList(

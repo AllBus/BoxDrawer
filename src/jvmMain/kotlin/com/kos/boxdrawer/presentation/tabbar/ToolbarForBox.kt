@@ -18,7 +18,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.BoxData
 import com.kos.boxdrawe.presentation.Tools
-import com.kos.boxdrawe.presentation.ToolsData
 import com.kos.boxdrawe.widget.*
 import com.kos.boxdrawe.widget.model.ButtonData
 import com.kos.boxdrawer.detal.box.PazExt
@@ -105,7 +104,7 @@ private fun ToolbarBoxRowThree(
 ) {
     var insideChecked by remember { vm.insideChecked }
     var polkiInChecked by remember { vm.polkiInChecked }
-    var alternative by remember { vm.alternative }
+    var alternative by remember { vm.view3d }
 
     Column(
         modifier = modifier
@@ -232,7 +231,7 @@ private fun ZigZagTable(
                 NumericUpDown("", "", WwidthInput)
             }
             cell {
-                val WwidthInput = remember { vm.polkaPolZigState.width }
+                val WwidthInput = remember { vm.polkaPolXZigState.width }
                 NumericUpDown("", "", WwidthInput)
             }
         }
@@ -256,7 +255,7 @@ private fun ZigZagTable(
                 NumericUpDown("", "", WwidthInput)
             }
             cell {
-                val WwidthInput = remember { vm.polkaPolZigState.delta }
+                val WwidthInput = remember { vm.polkaPolXZigState.delta }
                 NumericUpDown("", "", WwidthInput)
             }
         }
@@ -280,7 +279,7 @@ private fun ZigZagTable(
                 NumericUpDown("", "", WwidthInput)
             }
             cell {
-                val WwidthInput = remember { vm.polkaPolZigState.height }
+                val WwidthInput = remember { vm.polkaPolXZigState.height }
                 NumericUpDown("", "", WwidthInput)
             }
         }
@@ -298,29 +297,34 @@ private fun ZigZagTable(
                 val checked = remember { vm.weightZigState.enable }
                 RunCheckBox(checked.value, "") { c ->
                     checked.value = c
-                    vm.widthZigState.redrawBox()
+                    vm.weightZigState.redrawBox()
                 }
             }
             cell {
                 val checked = remember { vm.heightZigState.enable }
                 RunCheckBox(checked.value, "") { c ->
                     checked.value = c
-                    vm.widthZigState.redrawBox()
+                    vm.heightZigState.redrawBox()
                 }
             }
             cell {
                 val checked = remember { vm.polkaZigState.enable }
                 RunCheckBox(checked.value, "") { c ->
                     checked.value = c
-                    vm.widthZigState.redrawBox()
+                    vm.polkaZigState.redrawBox()
                 }
             }
             cell {
-                val checked = remember { vm.polkaPolZigState.enable }
-                RunCheckBox(checked.value, "") { c ->
-                    checked.value = c
-                    vm.widthZigState.redrawBox()
+                val checkedX = remember { vm.polkaPolXZigState.enable }
+                val checkedY = remember { vm.polkaPolYZigState.enable }
+                RunCheckBox(checkedX.value, "") { c ->
+                    checkedX.value = c
+                    vm.polkaPolXZigState.redrawBox()
                 }
+//                RunCheckBox(checkedY.value, "") { c ->
+//                    checkedY.value = c
+//                    vm.polkaPolYZigState.redrawBox()
+//                }
             }
         }
     }
@@ -361,7 +365,7 @@ private fun ZigZagBox(vm: BoxData) {
             modifier = Modifier.weight(weight = 1f, fill = true),
             title = stringResource(Res.string.boxPazInBottomPolka),
             drawNames = false,
-            zigState = vm.polkaPolZigState
+            zigState = vm.polkaPolXZigState
         )
     }
 }

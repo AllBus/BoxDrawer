@@ -12,6 +12,7 @@ import com.kos.figure.FigureLine
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
+import com.kos.figure.complex.FigureZigZag
 import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureRotate

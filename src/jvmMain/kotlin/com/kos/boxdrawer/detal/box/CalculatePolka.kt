@@ -11,6 +11,8 @@ object CalculatePolka {
     private val endNames: Array<String> = arrayOf("e", "end", "finish", "f")
     private val centerNames: Array<String> = arrayOf("c", "cen", "center")
     private val noDraw: Array<String> = arrayOf("n", "no")
+    private val gridNames: Array<String> = arrayOf("x", ":")
+    private val percentNames: Array<String> = arrayOf("%")
 
 
     fun createPolki(line: String): List<Polka> {
@@ -20,7 +22,7 @@ object CalculatePolka {
             .filter { it.isNotEmpty() }
             .map {
                 TortoiseParser.parseSkobki(it)
-            }.map {
+            }.flatMap {
                 polka(it)
             }
     }
@@ -45,7 +47,7 @@ object CalculatePolka {
 
         /** Вычислить координаты полок если они по всей ширине коробки */
         for (p in polki) {
-            val pup = p.width + polkaWeight;
+            val pup = p.polkaDistance(boxWidth, boxWeight) + polkaWeight;
             if (p.orientation == Orientation.Vertical) {
                 val ya = 0.0;
                 val yb = bwe;
@@ -180,14 +182,16 @@ object CalculatePolka {
         }
     }
 
-    fun polka(item: TortoiseParserStackItem): Polka {
-
+    fun polka(item: TortoiseParserStackItem): List<Polka> {
         var cs = 0;
         var ce = 0;
+        var cye = 0;
+        var cys = 0;
         var hasE = false;
         var hasC = false;
         var visible = true;
         var orientation = Orientation.Vertical;
+        var inPercent = false
 
         val args =  item.arguments()
 
@@ -195,14 +199,19 @@ object CalculatePolka {
 
         var i = 1
         var index = 0;
+        var sizeIndex = -1
+        var sy = 0
         while (i < args.size) {
             val c = args[i].name
             i++
             when {
                 isInt(c) -> {
                     when (index) {
+                        sizeIndex -> sy = c.toIntOrNull() ?: 1
                         0 -> cs = c.toIntOrNull() ?: 0
                         1 -> ce = c.toIntOrNull() ?: 0
+                        2 -> cys = c.toIntOrNull() ?: 0
+                        3 -> cye = c.toIntOrNull() ?: 0
                     }
                     index++
                 }
@@ -215,6 +224,8 @@ object CalculatePolka {
                 horizontNames.contains(c) -> orientation = Orientation.Horizontal
                 verticalNames.contains(c) -> orientation = Orientation.Vertical
                 noDraw.contains(c) -> visible = false
+                gridNames.contains(c) -> sizeIndex = index
+                percentNames.contains(c) -> inPercent = true
             }
         }
 
@@ -230,87 +241,55 @@ object CalculatePolka {
             )
         }
 
-        return Polka(
+        if (sy >= 1){
+            val sx = w.toInt()
+            val res = mutableListOf<Polka>()
+            if (sx > 1){
+                for (j in 1 until sx){
+                    val px = 100.0/sx
+                    res+=Polka(
+                        orientation = Orientation.Vertical,
+                        width = px,
+                        widthInPercentage = true,
+                        height = heights,
+                        order = 1,
+                        startCell = cs,
+                        cellCount = ce,
+                        visible = visible,
+                        programs = programs,
+                    )
+                }
+            }
+            if (sy>1){
+                for (j in 1 until sy){
+                    val px = 100.0/sy
+                    res+=Polka(
+                        orientation = Orientation.Horizontal,
+                        width = px,
+                        widthInPercentage = true,
+                        height = heights,
+                        order = 1,
+                        startCell = cys,
+                        cellCount = cye,
+                        visible = visible,
+                        programs = programs,
+                    )
+                }
+            }
+            return res
+        }
+
+        return listOf(Polka(
             orientation = orientation,
             width = w,
+            widthInPercentage = inPercent,
             height = heights,
             order = (if (hasE) -1 else 1) * (if (hasC) 2 else 1),
             startCell = cs,
             cellCount = ce,
             visible = visible,
             programs = programs,
-        )
-    }
-
-    fun polka(a: List<String>): Polka {
-        var cs = 0;
-        var ce = 0;
-        var hasE = false;
-        var hasC = false;
-        var visible = true;
-        var orientation = Orientation.Vertical;
-        var heights = doubleArrayOf();
-
-        var index = 0;
-
-        var i = 1
-
-        val w = a.firstOrNull()?.toDoubleOrNull() ?: 0.0
-
-        fun readHeights(start: Int): Int {
-            val h = mutableListOf<Double>();
-            var j = start
-            while (j < a.size) {
-                val c = a[j]
-                val d = c.toDoubleOrNull()
-                if (d != null) {
-                    h += d
-                } else {
-                    heights = h.toDoubleArray()
-                    return j
-                }
-                j++
-            }
-            return a.size
-        }
-
-        while (i < a.size) {
-            val c = a[i]
-            i++
-            when {
-                isInt(c) -> {
-                    when (index) {
-                        0 -> cs = c.toIntOrNull() ?: 0
-                        1 -> ce = c.toIntOrNull() ?: 0
-                    }
-                    index++
-                }
-
-                c == "(" -> {
-                    i = readHeights(i)
-                }
-
-                endNames.contains(c) -> {
-                    hasE = true
-                }
-
-                centerNames.contains(c) -> hasC = true
-                horizontNames.contains(c) -> orientation = Orientation.Horizontal
-                verticalNames.contains(c) -> orientation = Orientation.Vertical
-                noDraw.contains(c) -> visible = false
-            }
-        }
-
-
-        return Polka(
-            orientation = orientation,
-            width = w,
-            height = heights,
-            order = (if (hasE) -1 else 1) * (if (hasC) 2 else 1),
-            startCell = cs,
-            cellCount = ce,
-            visible = visible,
-        )
+        ))
     }
 
     fun isInt(text: String): Boolean {

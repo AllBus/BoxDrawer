@@ -52,7 +52,7 @@ fun Editor(
     helpText:  State<AnnotatedString>,
     menu: State<TemplateInfo>,
     vm: State<DrawerViewModel>,
-    alternative: MutableState<Boolean>,
+    view3d: MutableState<Boolean>,
     dropValueX: MutableState<Float>,
     dropValueY: MutableState<Float>,
     dropValueZ: MutableState<Float>,
@@ -141,7 +141,7 @@ fun Editor(
             else -> {}
         }
 
-        if ((tabIndex.value == BoxDrawerToolBar.TAB_BOX && !alternative.value) || tabIndex.value == BoxDrawerToolBar.TAB_TORTOISE) {
+        if ((tabIndex.value == BoxDrawerToolBar.TAB_BOX && view3d.value) || tabIndex.value == BoxDrawerToolBar.TAB_TORTOISE) {
             val modifier = Modifier.align(Alignment.TopEnd).width(180.dp)
             Rotate3dController(modifier, dropValueX, dropValueY, dropValueZ, onRotateDisplay)
         } else {

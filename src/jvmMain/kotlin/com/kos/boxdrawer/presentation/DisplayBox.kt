@@ -30,7 +30,7 @@ fun DisplayBox(
     figures: State<IFigure>,
     images: State<ImageMap>,
     stateText: MutableState<String>,
-    alternative: MutableState<Boolean>,
+    view3d: MutableState<Boolean>,
     vm: State<DrawerViewModel>,
     selectedItem: State<List<FigureInfo>>,
 ) {
@@ -66,7 +66,7 @@ fun DisplayBox(
                 displayScale = displayScale,
                 pos = pos,
                 matrix = matrix,
-                enableMatrix = !alternative.value,
+                enableMatrix = view3d.value,
                 figures = figures.value,
                 images = images.value,
                 selectedItem = selectedItem,

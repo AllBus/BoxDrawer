@@ -20,7 +20,7 @@
     <string name="boxPolki">Полки</string>
     <string name="boxSizeInside">Размеры по внутреннему объёму</string>
     <string name="boxSizeWithBoard">Учитывать толщину полки</string>
-    <string name="boxPreviewStyle">Альтернативное расположение</string>
+    <string name="boxPreviewStyle">3D Вид</string>
     <string name="metricMM">мм</string>
     <string name="metricCount">шт</string>
     <string name="metricPercent">%</string>

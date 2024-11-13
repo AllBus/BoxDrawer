@@ -54,7 +54,7 @@ fun App(vm: State<DrawerViewModel>) {
     val tabIndex = vm.value.tabIndex.collectAsState()
     val helpText = remember {vm.value.tortoise.helpText }
     val matrix = remember { vm.value.tortoise.matrix }
-    val alternative = remember { vm.value.box.alternative }
+    val view3d = remember { vm.value.box.view3d }
     val stateText = remember { mutableStateOf("") }
     val menu = vm.value.template.menu.collectAsState(TemplateInfo.EMPTY)
     val figureList = remember(figures) {
@@ -90,7 +90,7 @@ fun App(vm: State<DrawerViewModel>) {
                     figures = figures,
                     images = images,
                     stateText = stateText,
-                    alternative = alternative,
+                    view3d = view3d,
                     vm = vm,
                     selectedItem = selectedItem,
                 )
@@ -109,7 +109,7 @@ fun App(vm: State<DrawerViewModel>) {
                             helpText = helpText,
                             menu = menu,
                             vm = vm,
-                            alternative = alternative,
+                            view3d = view3d,
                             dropValueX = rotateValueX,
                             dropValueY = rotateValueY,
                             dropValueZ = rotateValueZ,
