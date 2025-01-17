@@ -1,11 +1,11 @@
 package turtoise.paint
 
+import com.kos.compose.FigureInfo
 import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureInfo
 import com.kos.figure.FigureLine
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure

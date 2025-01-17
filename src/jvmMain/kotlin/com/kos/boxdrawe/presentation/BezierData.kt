@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +20,8 @@ import turtoise.parser.TortoiseParser
 import vectors.Vec2
 import kotlin.math.atan2
 
-class BezierData(override val tools: Tools) : SaveFigure {
+@Stable
+class BezierData(override val tools: Tools) : SaveFigure, PrintCode {
 
     private val cList = MutableStateFlow(
         listOf(
@@ -101,7 +103,7 @@ class BezierData(override val tools: Tools) : SaveFigure {
 
     override suspend fun createFigure(): IFigure = figure.value
 
-    fun print(): String {
+    override fun print(): String {
         var st = c1.value.first()
         return "b ${
             c1.value.drop(1).flatMapIndexed { i, v ->

@@ -59,6 +59,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApprox
     override fun draw(g: IFigureGraphics) {
         if (points.size >= 4) {
             g.drawBezier(points)
+          //  g.drawPolyline(points)
         }
     }
 

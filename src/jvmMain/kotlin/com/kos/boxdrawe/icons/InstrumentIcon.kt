@@ -4,8 +4,14 @@ import androidx.compose.material.icons.materialPath
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Fill
 
 object InstrumentIcon {
 
@@ -31,7 +37,122 @@ object InstrumentIcon {
         }
     }
 
+
+
+    private val CUT_SIZE = 36.dp
+    private val CORNER_RADIUS = 24.dp
+    private val ZERO_COORDINATE = 0f
+
     @Composable
+    fun Modifier.simBackground(
+        backgroundColor: Color
+    ): Modifier {
+        return this then Modifier.drawWithCache {
+            // Размеры компонента
+            val width = size.width
+            val height = size.height
+            // Размеры среза. Должны быть захардкожены
+            val cutSize = CUT_SIZE.toPx()
+            val cutWidthPoint = width - cutSize
+            val cornerRadius = CORNER_RADIUS.toPx()
+            val cornerDiameter = cornerRadius*2
+            val centerCorrect = cornerRadius*(Math.sqrt(2.0)-1).toFloat()
+
+            val path = Path().apply {
+                arcTo(Rect(ZERO_COORDINATE, ZERO_COORDINATE, cornerDiameter, cornerDiameter), 180f, 90f, true)
+                arcTo(Rect(cutWidthPoint-cornerRadius-centerCorrect, ZERO_COORDINATE, cutWidthPoint+cornerRadius-centerCorrect, cornerDiameter), -90f, 45f, false)
+                arcTo(Rect(width-cornerDiameter, cutSize-cornerRadius+centerCorrect, width, cutSize+cornerRadius+centerCorrect), -45f, 45f, false)
+                arcTo(Rect(width-cornerDiameter, height-cornerDiameter, width, height), 0f, 90f, false)
+                arcTo(Rect(ZERO_COORDINATE, height-cornerDiameter, cornerDiameter, height), 90f, 90f, false)
+                close()
+            }
+            onDrawWithContent {
+                drawPath(
+                    path = path,
+                    color = Color(0xA0FF0000),
+                    style = Fill,
+                )
+                drawContent()
+            }
+        }
+    }
+//
+//    @Composable
+//    fun Modifier.simBackgroundA(
+//        backgroundColor: Color
+//    ): Modifier {
+//        return this then Modifier.drawWithCache {
+//            onDrawWithContent {
+//
+//                // Размеры компонента
+//                val width = size.width
+//                val height = size.height
+//                // Размеры среза. Должны быть захардкожены
+//                val cutWidth = CUT_WIDTH.toPx()
+//                val cutHeight = CUT_HEIGHT.toPx()
+//                val cutWidthPoint = width - cutWidth
+//                val cutRadius = CUT_RADIUS.toPx()
+//                val cornerRadius = CORNER_RADIUS.toPx()
+//
+//                val path = Path().apply {
+//                    moveTo(
+//                        ZERO_COORDINATE,
+//                        cornerRadius
+//                    ) // Начало с верхнего левого закругленного угла
+//                    quadraticBezierTo(
+//                        ZERO_COORDINATE,
+//                        ZERO_COORDINATE,
+//                        cornerRadius,
+//                        ZERO_COORDINATE
+//                    )
+//                    lineTo(cutWidthPoint - cutRadius, ZERO_COORDINATE) // Верхняя линия
+//
+//                    cubicTo(
+//                        x1 = cutWidthPoint - cutRadius,
+//                        y1 = ZERO_COORDINATE,
+//                        x2 = cutWidthPoint,
+//                        y2 = ZERO_COORDINATE,
+//                        x3 = cutWidthPoint + cutRadius,
+//                        y3 = ZERO_COORDINATE + cutRadius,
+//                    )
+//                    lineTo(x = width - cutRadius, y = cutHeight - cutRadius)
+//                    cubicTo(
+//                        x1 = width - cutRadius,
+//                        y1 = cutHeight - cutRadius,
+//                        x2 = width,
+//                        y2 = cutHeight,
+//                        x3 = width,
+//                        y3 = cutHeight + cutRadius,
+//                    )
+//
+//                    lineTo(width, height - cornerRadius)
+//                    quadraticBezierTo(
+//                        width, height,
+//                        width - cornerRadius, height
+//                    )
+//                    lineTo(cornerRadius, height)
+//                    quadraticBezierTo(
+//                        ZERO_COORDINATE,
+//                        height,
+//                        ZERO_COORDINATE,
+//                        height - cornerRadius
+//                    )
+//                    close()
+//                }
+//
+//                drawPath(
+//                    path = path,
+//                    color = Color(0xA0FF0000),
+//                    style = Fill,
+//                )
+//
+//                drawRoundRect(Color(0x4000FFFF),cornerRadius = CornerRadius(cornerRadius,cornerRadius))
+//                drawContent()
+//            }
+//        }
+//    }
+
+                    @Composable
     fun rememberLine(): ImageVector {
         return remember {
             ImageVector.Builder(
@@ -42,6 +163,7 @@ object InstrumentIcon {
                 viewportHeight = 24.0f
             ).apply {
                 materialPath{
+
                     this.moveTo(3f, 8f)
                     this.lineTo(21f, 16f)
                     this.lineTo(23f, 18f)

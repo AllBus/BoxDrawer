@@ -27,18 +27,12 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntSize
 import com.kos.boxdrawe.drawer.drawFigures
-import com.kos.boxdrawe.presentation.ImageUtils.bufferedImageToImageBitmap
-import com.kos.boxdrawe.presentation.ImageUtils.collectImages
-import com.kos.boxdrawe.presentation.ImageUtils.formatOfData
-import com.kos.boxdrawe.presentation.ImageUtils.loadImageFromFile
-import com.kos.boxdrawe.presentation.ImageUtils.supportedFormats
-import com.kos.boxdrawe.presentation.InstrumentState
-import com.kos.boxdrawe.presentation.Instruments
 import com.kos.boxdrawe.widget.toOffset
 import com.kos.boxdrawe.widget.toVec2
 import com.kos.boxdrawer.presentation.ZoomUtils
 import com.kos.boxdrawer.presentation.model.ImageMap
-import com.kos.figure.FigureInfo
+import com.kos.compose.FigureInfo
+import com.kos.compose.ImmutableList
 import com.kos.figure.IFigure
 import vectors.Vec2
 import kotlin.math.exp
@@ -53,7 +47,7 @@ fun DisplayTortoise(
     enableMatrix: Boolean,
     figures: IFigure,
     images: ImageMap,
-    selectedItem: State<List<FigureInfo>>,
+    selectedItem: State<ImmutableList<FigureInfo>>,
     onStateChange: (String) -> Unit,
     onPress: (Vec2, Int, Float) -> Unit,
 ) {

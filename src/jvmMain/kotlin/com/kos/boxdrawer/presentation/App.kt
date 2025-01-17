@@ -26,54 +26,51 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.getSelectedText
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.DrawerViewModel
+import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar
 import com.kos.boxdrawer.presentation.tabbar.TabBar
-import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.boxdrawer.presentation.theme.BoxTypography
 import com.kos.boxdrawer.template.TemplateInfo
+import com.kos.compose.FigureInfo
+import com.kos.compose.ImmutableList
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureInfo
-import com.kos.figure.IFigure
 
-
-
-
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 @Preview
 fun App(vm: State<DrawerViewModel>) {
-    val figures = vm.value.figures.collectAsState(FigureEmpty)
+    val vmv = vm.value
+    val figures = vmv.figures.collectAsState(FigureEmpty)
 
     val displayScale = remember { mutableFloatStateOf(2.0f) }
     val pos = rememberSaveable("DisplayTortoiseOffset") { mutableStateOf(Offset.Zero) }
 
-    val rotateValueX = remember { mutableStateOf(0f) }
-    val rotateValueY = remember { mutableStateOf(0f) }
-    val rotateValueZ = remember { mutableStateOf(0f) }
+    val rotateValueX = remember { mutableFloatStateOf(0f) }
+    val rotateValueY = remember { mutableFloatStateOf(0f) }
+    val rotateValueZ = remember { mutableFloatStateOf(0f) }
 
-    val tabIndex = vm.value.tabIndex.collectAsState()
-    val helpText = remember {vm.value.tortoise.helpText }
-    val matrix = remember { vm.value.tortoise.matrix }
-    val view3d = remember { vm.value.box.view3d }
+    val tabIndex = vmv.tabIndex.collectAsState()
+    val helpText = remember { vmv.tortoise.helpText }
+    val matrix = remember { vmv.tortoise.matrix }
+    val view3d = remember { vmv.box.view3d }
     val stateText = remember { mutableStateOf("") }
-    val menu = vm.value.template.menu.collectAsState(TemplateInfo.EMPTY)
+    val menu = vmv.template.menu.collectAsState(TemplateInfo.EMPTY)
     val figureList = remember(figures) {
-        derivedStateOf { IFigure.tree(figures.value) }
+        derivedStateOf { ImmutableList(FigureInfo.tree(figures.value)) }
     }
-    val images = vm.value.images.collectAsState(ImageMap.EMPTY)
+    val images = vmv.images.collectAsState(ImageMap.EMPTY)
 
-    val commands = vm.value.helpInfoList.collectAsState(emptyList())
+    val commands = vmv.helpInfoList.collectAsState(ImmutableList(emptyList()))
 
-    val selectedItem: State<List<FigureInfo>> =
-        vm.value.selectedItem.collectAsState(emptyList<FigureInfo>())
-    val checkboxEditor = vm.value.template.checkboxEditor.collectAsState()
+    val selectedItem: State<ImmutableList<FigureInfo>> =
+        vmv.selectedItem.collectAsState(ImmutableList(emptyList<FigureInfo>()))
+    val checkboxEditor = vmv.template.checkboxEditor.collectAsState()
 
     LaunchedEffect(tabIndex.value) {
-        vm.value.setSelected(emptyList())
+        vm.value.setSelected(ImmutableList(emptyList()))
     }
 
-    val tortoiseListener = remember(vm.value) { mutableStateOf(vm.value.tortoise.editorListener) }
-    val tortoiseMoveListener = remember(vm.value) { mutableStateOf(vm.value.tortoise.moveListener)}
+    val tortoiseListener = remember(vmv) { mutableStateOf(vmv.tortoise.editorListener) }
+    val tortoiseMoveListener = remember(vmv) { mutableStateOf(vmv.tortoise.moveListener) }
 
     MaterialTheme(
         typography = BoxTypography.typography
@@ -105,7 +102,7 @@ fun App(vm: State<DrawerViewModel>) {
                             tabIndex = tabIndex,
                             moveListener = tortoiseMoveListener,
                             editorListener = tortoiseListener,
-                            boxListener = vm.value.box.boxListener,
+                            boxListener = vmv.box.boxListener,
                             helpText = helpText,
                             menu = menu,
                             vm = vm,
@@ -117,42 +114,52 @@ fun App(vm: State<DrawerViewModel>) {
                             figureList = figureList,
                             selectedItem = selectedItem,
                             commands = commands,
-                            onRotateDisplay = {
-                                vm.value.tortoise.rotate(
-                                    rotateValueX.value,
-                                    rotateValueY.value,
-                                    rotateValueZ.value
-                                )
+                            onRotateDisplay = remember(vmv) {
+                                {
+                                    vmv.tortoise.rotate(
+                                        rotateValueX.value,
+                                        rotateValueY.value,
+                                        rotateValueZ.value
+                                    )
+                                }
                             },
-                            onPickSelected = {
-                                vm.value.tortoise.text.value.getSelectedText().toString()
+                            onPickSelected = remember(vmv) {
+                                {
+                                    vmv.tortoise.text.value.getSelectedText().toString()
+                                }
                             }
                         )
                     }
                     AnimatedVisibility(calculatorVisible.value && tabIndex.value != BoxDrawerToolBar.TAB_GRID) {
                         Box {
-                            CalculatorBox(modifier = Modifier.align(Alignment.BottomStart).padding(start = 8.dp), vm.value.calculatorData)
+                            CalculatorBox(
+                                modifier = Modifier.align(Alignment.BottomStart)
+                                    .padding(start = 8.dp), vmv.calculatorData
+                            )
                         }
                     }
 
                     AnimatedVisibility(tabIndex.value != BoxDrawerToolBar.TAB_GRID) {
-                        StatusBar(displayScale, stateText, onHomeClick = {
-                            rotateValueX.value = 0f
-                            rotateValueY.value = 0f
-                            rotateValueZ.value = 0f
-                            pos.value = Offset.Zero
-                            vm.value.tortoise.rotate(
-                                rotateValueX.value,
-                                rotateValueY.value,
-                                rotateValueZ.value
-                            )
-                        },
+                        StatusBar(
+                            displayScale, stateText, onHomeClick =
+                                remember(vmv) {
+                                    {
+                                        rotateValueX.value = 0f
+                                        rotateValueY.value = 0f
+                                        rotateValueZ.value = 0f
+                                        pos.value = Offset.Zero
+                                        vmv.tortoise.rotate(
+                                            rotateValueX.value,
+                                            rotateValueY.value,
+                                            rotateValueZ.value
+                                        )
+                                    }
+                                },
                             onCalculatorClick = {
                                 calculatorVisible.value = !calculatorVisible.value
                             }
                         )
                     }
-
                 }
             }
         }

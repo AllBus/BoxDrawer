@@ -43,8 +43,11 @@ import com.kos.boxdrawe.widget.CharButton
 import com.kos.boxdrawe.widget.CircleBox
 import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.Label
+import com.kos.boxdrawe.widget.PrintCodeButton
+import com.kos.boxdrawe.widget.PrintCodeIconButton
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SaveToFileButton
+import com.kos.boxdrawe.widget.SaveToFileIconButton
 import com.kos.boxdrawe.widget.SimpleEditText
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.rekaAlertClearCancel
@@ -306,17 +309,19 @@ fun ToolbarForReka(vm: RekaToolsData) {
 
 @Composable
 fun ToolbarActionForReka(vm: RekaToolsData) {
-    val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
     Column(
     ) {
         SaveToFileButton(vm)
-
         Spacer(Modifier.height(4.dp))
-        RunButton(stringResource(Res.string.toolsButtonCopyCode)) {
-            coroutineScope.launch {
-                clipboardManager.setText(AnnotatedString(vm.print()))
-            }
-        }
+        PrintCodeButton(vm)
+    }
+}
+
+@Composable
+fun ToolbarActionIconForReka(vm: RekaToolsData) {
+    Row(
+    ) {
+        SaveToFileIconButton(vm)
+        PrintCodeIconButton(vm)
     }
 }

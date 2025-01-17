@@ -13,5 +13,6 @@ sourceSets {
     dependencies {
         implementation(project(":figure"))
         implementation(files("libs/miethxml-ui.jar"))
+        implementation("org.openpnp:opencv:4.9.0-0")
     }
 }

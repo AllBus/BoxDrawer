@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.grid.CadGrid
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
+@Stable
 class GridData(override val tools: ITools) : SaveFigure {
 
     var roundChecked = mutableStateOf(false)

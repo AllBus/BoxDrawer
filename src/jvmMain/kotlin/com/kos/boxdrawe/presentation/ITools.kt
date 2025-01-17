@@ -1,10 +1,12 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.res.useResource
 import com.jsevy.jdxf.DXFDocument
 import com.kos.boxdrawer.template.TemplateCreator
+import com.kos.compose.ImmutableList
 import com.kos.drawer.DxfFigureDrawer
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,6 +28,7 @@ import java.awt.Color
 import java.io.File
 import java.io.FileWriter
 
+@Stable
 interface ITools {
     fun ds(): DrawerSettings
 
@@ -40,6 +43,7 @@ interface ITools {
     fun updateChooserDir(fileName: String)
 }
 
+@Stable
 class Tools() : ITools, SavableData {
 
     private val drawingSettings = mutableStateOf(DrawerSettings())
@@ -151,27 +155,30 @@ class Tools() : ITools, SavableData {
 
     private val templater = TemplateCreator
     val helpInfoList = figureList.map {  a ->
-        val com = a.map { aa ->
-            val (n, f) = aa
-            if (f is TemplateAlgorithm) {
-                HelpData("@$n", "", emptyList(),
-                    creator = TPArg.createWithoutName(
-                        TPArg.block(
-                            TPArg.text("@$n"),
-                            templater.parse(f.template)
+            val com = a.map { aa ->
+                val (n, f) = aa
+                if (f is TemplateAlgorithm) {
+                    HelpData("@$n", "", emptyList(),
+                        creator = TPArg.createWithoutName(
+                            TPArg.block(
+                                TPArg.text("@$n"),
+                                templater.parse(f.template)
+                            )
                         )
                     )
-                )
-            } else{
-                HelpData("@$n", "", emptyList(),
-                    creator = TPArg.createWithoutName(TPArg.block(TPArg.text("@$n")) ))
+                } else{
+                    HelpData("@$n", "", emptyList(),
+                        creator = TPArg.createWithoutName(TPArg.block(TPArg.text("@$n")) ))
+                }
             }
+            ImmutableList(
+                listOf(HelpInfoCommand("f",
+                        com,
+                    "Созданные ранее фигуры"
+                )
+                )+ TortoiseHelpInfo().commandList
+            )
         }
-        listOf(HelpInfoCommand("f",
-                com,
-            "Созданные ранее фигуры"
-        )
-        )+ TortoiseHelpInfo().commandList
-    }
+
 
 }

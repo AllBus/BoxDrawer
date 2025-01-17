@@ -63,6 +63,7 @@ import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.boxdrawer.template.TemplateItemAngle
 import com.kos.boxdrawer.template.TemplateItemSize
+import com.kos.compose.ImmutableList
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import turtoise.help.HelpData
@@ -75,7 +76,7 @@ import turtoise.parser.TortoiseParserStackBlock
 @Composable
 fun EditPosition(
     expanded: MutableState<Boolean>,
-    commands: State<List<HelpInfoCommand>>,
+    commands: State<ImmutableList<HelpInfoCommand>>,
     moveListener: State<TemplateGeneratorSimpleListener>,
     editorListener: State<TemplateFigureBuilderListener>,
     onPickSelected: () -> String
@@ -234,13 +235,13 @@ fun CommandModel(
 @Composable
 private fun CommandMenu(
     expandedMenuState: DropdownMenuState,
-    commands: List<HelpInfoCommand>,
+    commands: ImmutableList<HelpInfoCommand>,
     onSelect: (HelpInfoCommand) -> Unit
 ) {
     DropdownMenu(
         state = expandedMenuState,
     ) {
-        commands.forEach { com ->
+        commands.list.forEach { com ->
             DropdownMenuItem(onClick = {
                 expandedMenuState.status = DropdownMenuState.Status.Closed
                 onSelect(com)

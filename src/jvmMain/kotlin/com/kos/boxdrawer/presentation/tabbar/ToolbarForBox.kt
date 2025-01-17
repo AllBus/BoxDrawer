@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.icons.Icons
 import com.kos.boxdrawe.presentation.BoxData
 import com.kos.boxdrawe.presentation.Tools
 import com.kos.boxdrawe.widget.*
@@ -112,28 +113,34 @@ private fun ToolbarBoxRowThree(
         RunCheckBox(
             checked = insideChecked,
             title = stringResource(Res.string.boxSizeInside),
-            onCheckedChange = { c ->
+            onCheckedChange = remember(vm) {{ c ->
                 insideChecked = c
                 vm.redrawBox()
-            },
+            }},
         )
         RunCheckBox(
             checked = polkiInChecked,
             title = stringResource(Res.string.boxSizeWithBoard),
-            onCheckedChange = { c ->
+            onCheckedChange = remember(vm) {{ c ->
                 polkiInChecked = c
                 vm.redrawBox()
-            },
+            }},
         )
         RunCheckBox(
             checked = alternative,
             title = stringResource(Res.string.boxPreviewStyle),
-            onCheckedChange = { c ->
+            onCheckedChange = remember(vm) {{ c ->
                 alternative = c
                 vm.redrawBox()
-            },
+            }},
         )
-        EditTextField(title = stringResource(Res.string.boxPolki), value = text, enabled = true, { vm.createBox(it.text) }, {})
+        EditTextField(
+            title = stringResource(Res.string.boxPolki),
+            value = text,
+            enabled = true,
+            onChange = remember(vm) {{ vm.createBox(it.text) }},
+            onMove = {}
+        )
     }
 }
 
@@ -505,18 +512,20 @@ private fun ColumnScope.BoxAdvancedProperties(
 
 @Composable
 fun ToolbarActionForBox(vm: BoxData) {
-    val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
     Column(
     ) {
         SaveToFileButton(vm)
-
         Spacer(Modifier.height(4.dp))
-        RunButton(stringResource(Res.string.toolsButtonCopyCode)) {
-            coroutineScope.launch {
-                clipboardManager.setText(AnnotatedString(vm.print()))
-            }
-        }
+        PrintCodeButton(vm)
+    }
+}
+
+@Composable
+fun ToolbarActionIconForBox(vm: BoxData) {
+    Row(
+    ) {
+        SaveToFileIconButton(vm)
+        PrintCodeIconButton(vm)
     }
 }
 

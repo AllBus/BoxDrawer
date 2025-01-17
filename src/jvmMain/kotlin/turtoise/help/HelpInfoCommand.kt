@@ -9,6 +9,7 @@ import turtoise.parser.TortoiseParser
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
 
+@Immutable
 class HelpInfoCommand(
     val name: String,
     val data: List<HelpData>,

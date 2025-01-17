@@ -15,20 +15,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.icons.Icons
 import com.kos.boxdrawe.presentation.DxfToolsData
 import com.kos.boxdrawe.presentation.Instruments
+import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.NumericUpDownLine
+import com.kos.boxdrawe.widget.PrintCodeButton
+import com.kos.boxdrawe.widget.PrintCodeIconButton
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
+import com.kos.boxdrawe.widget.SaveToFileIconButton
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.dxfScaleColor
 import com.kos.boxdrawer.generated.resources.dxfScaleValue
-import com.kos.boxdrawer.generated.resources.toolsButtonCopyCode
 import com.kos.boxdrawer.generated.resources.toolsButtonOpenFile
 import com.kos.boxdrawer.presentation.display.DrawInstrumentIcon
 import kotlinx.coroutines.launch
@@ -116,21 +118,24 @@ fun ToolbarForDxf(vm: DxfToolsData) {
                 )
             }
 
-            Row{
+            Row {
                 val privjazkaChecked = remember { vm.privjazka }
-                RunCheckBox(privjazkaChecked.value, "Привязка"){ v ->
+                RunCheckBox(privjazkaChecked.value, "Привязка") { v ->
                     privjazkaChecked.value = v
 
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Row {
                     val showAlert = remember { mutableStateOf(false) }
-                    RunButton("Очистить"){
+                    RunButton("Очистить") {
                         showAlert.value = true
                     }
-                    clearDxfAlert(showAlert){ vm.clear()
-                        showAlert.value = false
-                    }
+                    clearDxfAlert(showAlert, remember(vm) {
+                        {
+                            vm.clear()
+                            showAlert.value = false
+                        }
+                    })
                 }
             }
 
@@ -139,11 +144,13 @@ fun ToolbarForDxf(vm: DxfToolsData) {
             instrumentList.forEach { i ->
                 Row {
                     i.forEach { instr ->
-                        Button(onClick = {
-                            if (instrument.value != instr)
-                                vm.changeInstrument(instr)
-                            else
-                                vm.changeInstrument(Instruments.INSTRUMENT_NONE)
+                        Button(onClick = remember(vm) {
+                            {
+                                if (instrument.value != instr)
+                                    vm.changeInstrument(instr)
+                                else
+                                    vm.changeInstrument(Instruments.INSTRUMENT_NONE)
+                            }
                         }) {
                             DrawInstrumentIcon(instr)
                         }
@@ -196,22 +203,43 @@ private fun clearDxfAlert(
 @Composable
 fun ToolbarActionForDxf(vm: DxfToolsData) {
     val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
     Column(
     ) {
         SaveToFileButton(vm)
 
         Spacer(Modifier.height(4.dp))
-        RunButton(stringResource(Res.string.toolsButtonCopyCode)) {
-            coroutineScope.launch {
-                clipboardManager.setText(AnnotatedString(vm.print()))
-            }
-        }
+        PrintCodeButton(vm)
         Spacer(Modifier.height(4.dp))
         RunButton(stringResource(Res.string.toolsButtonOpenFile)) {
             coroutineScope.launch {
                 showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.loadDxf(f) }
             }
         }
+    }
+}
+
+@Composable
+fun ToolbarActionIconForDxf(vm: DxfToolsData) {
+    val coroutineScope = rememberCoroutineScope()
+    Row(
+    ) {
+        val showAlert = remember { mutableStateOf(false) }
+        clearDxfAlert(showAlert, remember(vm) {
+            {
+                vm.clear()
+                showAlert.value = false
+            }
+        })
+        ImageButton(Icons.Clear_all) {
+            showAlert.value = true
+        }
+        ImageButton(Icons.File_open) {
+            coroutineScope.launch {
+                showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.loadDxf(f) }
+            }
+        }
+        SaveToFileIconButton(vm)
+        PrintCodeIconButton(vm)
+
     }
 }

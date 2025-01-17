@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.detal.soft.SoftRez
@@ -11,7 +12,8 @@ import com.kos.figure.composition.FigureTranslateWithRotate
 import kotlinx.coroutines.flow.MutableStateFlow
 import vectors.Vec2
 
-class SoftRezData(override val tools: ITools, val tortoise: TortoiseData) : SaveFigure {
+@Stable
+class SoftRezData(override val tools: ITools, val tortoise: TortoiseData) : SaveFigure, PrintCode {
     val sr = SoftRez()
 
     var baseFigure: IFigure = FigureEmpty
@@ -70,7 +72,7 @@ class SoftRezData(override val tools: ITools, val tortoise: TortoiseData) : Save
         drawRez(tortoise.figures.value)
     }
 
-    fun print(): String{
+    override fun print(): String{
         return figures.value.print()
     }
 

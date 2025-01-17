@@ -1,11 +1,13 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Stable
 import com.kos.ariphmetica.Calculator
 import com.kos.ariphmetica.math.algorithms.OutExpression
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 
+@Stable
 class CalculatorData {
     init {
         Calculator.init()

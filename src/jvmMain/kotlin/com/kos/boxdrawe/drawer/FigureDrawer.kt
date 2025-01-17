@@ -10,14 +10,15 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.rememberTextMeasurer
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawer.presentation.model.ImageMap
-import com.kos.figure.FigureInfo
+import com.kos.compose.FigureInfo
+import com.kos.compose.ImmutableList
 import com.kos.figure.IFigure
 import vectors.Vec2
 
 
 fun DrawScope.drawFigures(
     figureLine: IFigure,
-    selectedItem: List<FigureInfo>,
+    selectedItem: ImmutableList<FigureInfo>,
     measurer: TextMeasurer,
     images: ImageMap
 ) {

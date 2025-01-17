@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawer.template.TemplateCreator
 import com.kos.boxdrawer.template.TemplateForm
@@ -8,8 +9,9 @@ import com.kos.boxdrawer.template.TemplateInfo
 import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.boxdrawer.template.TemplateMemoryItem
 import com.kos.boxdrawer.template.editor.TemplateEditorForm
+import com.kos.compose.FigureInfo
+import com.kos.compose.ImmutableList
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureInfo
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -27,9 +29,10 @@ import turtoise.parser.TortoiseParserStackBlock
 import vectors.Matrix
 import vectors.Vec2
 
+@Stable
 class TemplateData(
     override val tools: ITools,
-    val selectedItem: MutableStateFlow<List<FigureInfo>>
+    val selectedItem: MutableStateFlow<ImmutableList<FigureInfo>>
 ) : SaveFigure {
     private val templater = TemplateCreator
     private val emptyAlgorithm = TemplateAlgorithm(
@@ -75,7 +78,7 @@ class TemplateData(
 
         val m = TwoBlockTortoiseMemory(top, algorithm.value.default)
 
-        selectedItem.value = emptyList()
+        selectedItem.value = ImmutableList(emptyList())
         //  dxfPreview.value = false
         currentFigure.value =
             algorithm.value.draw(
@@ -204,7 +207,7 @@ class TemplateData(
     suspend fun onPress(point: Vec2, button: Int, scale: Float) {
         val figure = currentFigure.value
         val result = PaintUtils.findFiguresAtCursor(Matrix(), point, 1.0, listOf(figure))
-        selectedItem.value = result
+        selectedItem.value = ImmutableList(result)
     }
 
     // val selectedItem = MutableStateFlow<List<IFigure>>(emptyList())

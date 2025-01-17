@@ -26,6 +26,7 @@ import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.RunComboBox
 import com.kos.boxdrawe.widget.SaveToFileButton
+import com.kos.boxdrawe.widget.SaveToFileIconButton
 import com.kos.boxdrawe.widget.model.ComboBoxItem
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.formulaCustom
@@ -98,15 +99,16 @@ fun ToolbarForFormula(data: FormulaData) {
             Row {
                 InputText(
                     value = xFormula.value,
-                    onValueChange = {
-                        xFormula.value = it
-                        data.recalculate(
-                            xFormula.value.text,
-                            yFormula.value.text,
-                            zFormula.value.text,
-                            variables.value.text
-                        )
-                    },
+                    onValueChange = remember(data) {
+                        {
+                            xFormula.value = it
+                            data.recalculate(
+                                xFormula.value.text,
+                                yFormula.value.text,
+                                zFormula.value.text,
+                                variables.value.text
+                            )
+                        }},
                     label = "x = ",
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
@@ -224,14 +226,19 @@ fun ToolbarForFormula(data: FormulaData) {
 
 }
 
-
-
-
 @Composable
 fun ToolbarActionForFormula(data: FormulaData){
     Column(
     ) {
         SaveToFileButton(data)
+    }
+}
+
+@Composable
+fun ToolbarActionIconForFormula(data: FormulaData){
+    Row(
+    ) {
+        SaveToFileIconButton(data)
     }
 }
 

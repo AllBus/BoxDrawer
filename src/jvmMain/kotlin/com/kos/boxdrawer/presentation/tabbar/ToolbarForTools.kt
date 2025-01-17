@@ -26,9 +26,12 @@ import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.ToolsData
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericUpDown
+import com.kos.boxdrawe.widget.PrintCodeButton
+import com.kos.boxdrawe.widget.PrintCodeIconButton
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
+import com.kos.boxdrawe.widget.SaveToFileIconButton
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.metricMM
 import com.kos.boxdrawer.generated.resources.toolsButtonCopyCode
@@ -69,9 +72,15 @@ fun ToolbarForTools(vm: ToolsData) {
         ) {
             Row {
                 Label(stringResource(Res.string.toolsFiguresList))
-                RunCheckBox(checkboxEditor.value, stringResource(Res.string.toolsCheckBoxTemplateEditor)) { checked ->
-                    vm.templateData.checkboxEditor.value = checked
-                }
+                RunCheckBox(
+                    checkboxEditor.value,
+                    stringResource(Res.string.toolsCheckBoxTemplateEditor),
+                    remember(vm) {
+                        { checked ->
+                            vm.templateData.checkboxEditor.value = checked
+                        }
+                    }
+                )
             }
             LazyColumn(
                // verticalArrangement = Arrangement.spacedBy(2.dp)
@@ -184,23 +193,20 @@ fun ComboBox(
 
 @Composable
 fun ToolbarActionForTools(vm: ToolsData) {
-    val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
     Column(
     ) {
         SaveToFileButton(vm.templateData)
 
         Spacer(Modifier.height(4.dp))
-        RunButton(stringResource(Res.string.toolsButtonCopyCode)) {
-            coroutineScope.launch {
-                clipboardManager.setText(AnnotatedString(vm.templateData.print()))
-            }
-        }
-//        Spacer(Modifier.height(4.dp))
-//        RunButton("Открыть файл") {
-//            coroutineScope.launch {
-//                showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.templateData.loadDxf(f) }
-//            }
-//        }
+        PrintCodeButton(vm)
+    }
+}
+
+@Composable
+fun ToolbarActionIconForTools(vm: ToolsData) {
+    Row(
+    ) {
+        SaveToFileIconButton(vm.templateData)
+        PrintCodeIconButton(vm)
     }
 }

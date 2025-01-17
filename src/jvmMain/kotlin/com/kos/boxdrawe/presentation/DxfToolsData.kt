@@ -1,14 +1,16 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.kos.boxdrawe.presentation.model.BindingType
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawer.figure.FigureExtractor
+import com.kos.compose.FigureInfo
+import com.kos.compose.ImmutableList
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureInfo
 import com.kos.figure.FigureLine
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
@@ -36,7 +38,8 @@ import java.io.File
 import java.io.FileInputStream
 import kotlin.math.abs
 
-class DxfToolsData(override val tools: ITools) : SaveFigure {
+@Stable
+class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
 
     private val loadedFigure = MutableStateFlow<IFigure>(FigureEmpty)
 
@@ -94,7 +97,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         val pointList = currentPoint.value
         val delta = (endPoint - startPoint)
         val r = when (_instrument.value) {
-            Instruments.INSTRUMENT_POINTER -> selectedFigure.getOrNull(0)?.figure?.let { f ->
+            Instruments.INSTRUMENT_POINTER -> selectedFigure.list.getOrNull(0)?.figure?.let { f ->
                 FigureTranslate(
                     delta,
                     f
@@ -242,18 +245,18 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         }
     }
 
-    suspend fun print(): String {
+    override fun print(): String {
         val figures = currentFigure.value
         return "f (" + figures.print() + ")"
     }
 
-    private var selectedFigure: List<FigureInfo> = emptyList()
+    private var selectedFigure: ImmutableList<FigureInfo> = ImmutableList(emptyList())
 
     suspend fun onPress(
         point: Vec2,
         button: Int,
         scale: Float,
-        selectedItem: MutableStateFlow<List<FigureInfo>>
+        selectedItem: MutableStateFlow<ImmutableList<FigureInfo>>
     ) {
         selectedFigure = selectedItem.value
         when (_instrument.value) {
@@ -262,11 +265,11 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
                 val result =
                     PaintUtils.findFiguresAtCursor(Matrix.identity, point, 1.0, listOf(figure))
 
-                selectedItem.value = result
+                selectedItem.value = ImmutableList(result)
             }
 
             Instruments.INSTRUMENT_POINTER -> {
-                val info: PointInfo? = PaintUtils.takePoint(selectedItem.value, point, 1.0)
+                val info: PointInfo? = PaintUtils.takePoint(selectedItem.value.list, point, 1.0)
                 currentPointInfo = info
                 if (info != null) {
                     removeFigure(info.figure)
@@ -358,7 +361,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         button: Int,
 
         scale: Float,
-        selectedItem: MutableStateFlow<List<FigureInfo>>
+        selectedItem: MutableStateFlow<ImmutableList<FigureInfo>>
     ) {
         if (currentScale.value != scale) {
             currentScale.value = scale
@@ -394,7 +397,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure {
         point: Vec2,
         button: Int,
         scale: Float,
-        selectedItem: MutableStateFlow<List<FigureInfo>>
+        selectedItem: MutableStateFlow<ImmutableList<FigureInfo>>
     ) {
         //   println("onRelease -> $point $button")
         when (Instruments.button(button)) {

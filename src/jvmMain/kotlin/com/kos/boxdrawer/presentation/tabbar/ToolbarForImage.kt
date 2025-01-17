@@ -1,5 +1,6 @@
 package com.kos.boxdrawer.presentation.tabbar
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.ImageToolsData
 import com.kos.boxdrawe.widget.CheckboxK
+import com.kos.boxdrawe.widget.EditText
 import com.kos.boxdrawe.widget.FileDialog
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericUpDownLine
@@ -39,27 +41,34 @@ fun ToolbarForImage(data: ImageToolsData){
             NumericUpDownLine("Поворот", "", data.rotateState)
             NumericUpDownLine("Размытие", "", data.gaussianState)
             Row {
+
+                NumericUpDownLine("Отверстия", "", data.holeState, modifier = Modifier.weight(1f))
+                RunButton("Скопировать", onClick = { data.copyPointsAsFigure()})
+            }
+
+            Row {
                 Label("Чёрнобелый")
-                CheckboxK(grayScale.value, onCheckedChange =  { c->
+                CheckboxK(grayScale.value, onCheckedChange = remember(data) { { c->
                     grayScale.value = c
                     data.actionGrayScale(c)
-                })
+                }})
             }
             Row {
                 Label("Края")
-                CheckboxK(bounds.value, onCheckedChange =  { c->
+                CheckboxK(bounds.value, onCheckedChange = remember(data) { { c->
                     bounds.value = c
                     data.actionBounds(c)
-                })
+                }})
             }
         }
         Column(  modifier = Modifier.weight(weight = 1f, fill = true)) {
-            RunButton("Применить"){
+            RunButton("Применить", onClick = remember(data) {{
                 coroutineScope.launch {
                     data.applyChanges()
-                }
-            }
-
+                }}}
+                )
+            NumericUpDownLine("Масштаб", "", data.imageScale, modifier = Modifier)
+            EditText("Фигура", data.holeFigureText, modifier = Modifier.weight(1f)) {}
         }
     }
 }
@@ -67,10 +76,8 @@ fun ToolbarForImage(data: ImageToolsData){
 @Composable
 fun ToolbarActionForImage(data:ImageToolsData){
     val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
     Column(
     ) {
-
 
         val isDialogVisible = remember { mutableStateOf(false) }
         val isSaveDialogVisible = remember { mutableStateOf(false) }

@@ -79,6 +79,8 @@ kotlin {
 
         commonMain.dependencies {
             implementation(compose.components.resources)
+            implementation("org.openpnp:opencv:4.9.0-0")
+
         }
 
 //        figure.dependencies {
@@ -89,6 +91,8 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(compose.material3)
             implementation(compose.material3AdaptiveNavigationSuite)
+            implementation("org.openpnp:opencv:4.9.0-0")
+            implementation("org.opencv:opencv:4.9.0")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3")

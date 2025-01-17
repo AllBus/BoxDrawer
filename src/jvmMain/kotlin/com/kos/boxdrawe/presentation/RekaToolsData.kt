@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.kos.figure.FigureEmpty
 import com.kos.figure.collections.FigureList
@@ -34,7 +35,8 @@ import turtoise.rect.RekaStorona
 import vectors.Vec2
 import kotlin.math.PI
 
-class RekaToolsData(override val tools: ITools) : SaveFigure {
+@Stable
+class RekaToolsData(override val tools: ITools) : SaveFigure, PrintCode {
 
     private val memory = SimpleTortoiseMemory()
 
@@ -324,7 +326,7 @@ class RekaToolsData(override val tools: ITools) : SaveFigure {
         return FigurePolyline(result.points, close = true)
     }
 
-    suspend fun print(): String {
+    override fun print(): String {
         return "reka@ " + RekaCad.print(topReka.value).line
     }
 

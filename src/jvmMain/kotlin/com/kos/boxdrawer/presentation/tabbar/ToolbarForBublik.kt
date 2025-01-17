@@ -17,6 +17,7 @@ import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
+import com.kos.boxdrawe.widget.SaveToFileIconButton
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.metricMM
 import com.kos.boxdrawer.generated.resources.torPazLocation
@@ -67,18 +68,18 @@ fun ToolbarForBublik(vm: BublikData) {
                     RunCheckBox(
                         checked = pazPositionLeftTop,
                         title = "",
-                        onCheckedChange = { c ->
+                        onCheckedChange = remember(vm) {{ c ->
                             pazPositionLeftTop = c
                             vm.redrawBox()
-                        },
+                        }},
                     )
                     RunCheckBox(
                         checked = pazPositionLeftBottom,
                         title = "",
-                        onCheckedChange = { c ->
+                        onCheckedChange =remember(vm) { { c ->
                             pazPositionLeftBottom = c
                             vm.redrawBox()
-                        },
+                        }},
                     )
                 }
                 Column(
@@ -88,10 +89,10 @@ fun ToolbarForBublik(vm: BublikData) {
                     RunCheckBox(
                         checked = pazPositionCenter,
                         title = "",
-                        onCheckedChange = { c ->
+                        onCheckedChange = remember(vm) {{ c ->
                             pazPositionCenter = c
                             vm.redrawBox()
-                        },
+                        }},
                     )
                 }
                 Column(
@@ -101,18 +102,18 @@ fun ToolbarForBublik(vm: BublikData) {
                     RunCheckBox(
                         checked = pazPositionRightTop,
                         title = "",
-                        onCheckedChange = { c ->
+                        onCheckedChange = remember(vm) {{ c ->
                             pazPositionRightTop = c
                             vm.redrawBox()
-                        },
+                        }},
                     )
                     RunCheckBox(
                         checked = pazPositionRightBottom,
                         title = "",
-                        onCheckedChange = { c ->
+                        onCheckedChange = remember(vm) {{ c ->
                             pazPositionRightBottom = c
                             vm.redrawBox()
-                        },
+                        }},
                     )
                 }
             }
@@ -126,5 +127,13 @@ fun ToolbarActionForBublik(vm: BublikData) {
     Column(
     ) {
         SaveToFileButton(vm)
+    }
+}
+
+@Composable
+fun ToolbarActionIconForBublik(vm: BublikData) {
+    Row(
+    ) {
+        SaveToFileIconButton(vm)
     }
 }

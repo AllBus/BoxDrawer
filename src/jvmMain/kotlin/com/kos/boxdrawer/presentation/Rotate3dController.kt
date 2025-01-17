@@ -11,6 +11,8 @@ import androidx.compose.foundation.selection.triStateToggleable
 import androidx.compose.material.ripple
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.FloatState
+import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -42,9 +44,9 @@ import kotlin.math.min
 @Composable
 fun Rotate3dController(
     modifier: Modifier,
-    dropValueX: MutableState<Float>,
-    dropValueY: MutableState<Float>,
-    dropValueZ: MutableState<Float>,
+    dropValueX: MutableFloatState,
+    dropValueY: MutableFloatState,
+    dropValueZ: MutableFloatState,
     onRotateDisplay: () -> Unit,
 ) {
     Column(
@@ -65,12 +67,7 @@ fun Rotate3dController(
             ),
             enabled = true,
             role = Role.Button,
-            onClick = {
-//                dropValueX.value = 0f
-//                dropValueY.value = 0f
-//                dropValueZ.value = 0f
-//                onRotateDisplay()
-            },
+            onClick = { },
         ).onPointerEvent(PointerEventType.Press) {
             isMoved.value = false
             val sz = this.size
@@ -88,9 +85,9 @@ fun Rotate3dController(
 
             starPosition.value = posi
             //selectedType.value = pt
-            startX.value = dropValueX.value
-            startY.value = dropValueY.value
-            startZ.value = dropValueZ.value - Math.toDegrees(pos.angle).toFloat()
+            startX.value = dropValueX.floatValue
+            startY.value = dropValueY.floatValue
+            startZ.value = dropValueZ.floatValue - Math.toDegrees(pos.angle).toFloat()
         }.onPointerEvent(PointerEventType.Release) {
             selectedType.value = 0
             if (!isMoved.value){
@@ -128,14 +125,14 @@ fun Rotate3dController(
 
             withTransform({
                 val m = Matrix()
-                m.rotateX(dropValueX.value)
-                m.rotateY(dropValueY.value)
-                m.rotateZ(dropValueZ.value)
+                m.rotateX(dropValueX.floatValue)
+                m.rotateY(dropValueY.floatValue)
+                m.rotateZ(dropValueZ.floatValue)
                 translate(size.center.x, size.center.y)
                 transform(m)
             }) {
                 this.drawCircle(Color.Yellow, center = Offset.Zero, radius = r, style = stroke)
-                if (dropValueY.value == 0.0f && dropValueX.value == 0.0f) {
+                if (dropValueY.floatValue == 0.0f && dropValueX.floatValue == 0.0f) {
                     this.drawLine(
                         Color.Red,
                         start = Offset(-r, 0f),

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.material.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,6 +18,7 @@ import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
+import com.kos.boxdrawe.widget.SaveToFileIconButton
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.gridButtonCreateFromText
 import com.kos.boxdrawer.generated.resources.gridButtonTextFromGrid
@@ -120,13 +122,13 @@ fun ToolbarForGrid(vm: GridData) {
             RunCheckBox(
                 checked = figurePreview.value,
                 title = stringResource(Res.string.gridCheckPreview),
-                onCheckedChange = { c -> vm.figurePreview.value = c },
+                onCheckedChange =remember(vm) { { c -> vm.figurePreview.value = c }},
             )
 
             RunCheckBox(
                 checked = grid3d.value,
                 title = "3D",
-                onCheckedChange = { c -> vm.useGrid3d.value = c },
+                onCheckedChange = remember(vm) {{ c -> vm.useGrid3d.value = c }},
             )
         }
         Column(
@@ -154,5 +156,13 @@ fun ToolbarActionForGrid(vm: GridData) {
         RunButton(stringResource(Res.string.gridButtonTextFromGrid)) {
             vm.saveToText()
         }
+    }
+}
+
+@Composable
+fun ToolbarActionIconForGrid(vm: GridData) {
+    Row(
+    ) {
+        SaveToFileIconButton(vm)
     }
 }

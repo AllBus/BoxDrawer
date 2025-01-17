@@ -14,6 +14,7 @@ compose = "1.8.0-dev1905"
 compose-plugin = "1.7.0"
 junit = "4.13.2"
 kotlin = "2.1.0-RC"
+opencv = "4.9.0-0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -28,6 +29,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+opencv-library = {module = "org.openpnp:opencv", version.ref = "opencv" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

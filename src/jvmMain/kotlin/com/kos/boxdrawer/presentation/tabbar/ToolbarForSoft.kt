@@ -14,11 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.icons.Icons
 import com.kos.boxdrawe.presentation.SoftRezData
+import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.NumericUpDownLine
+import com.kos.boxdrawe.widget.PrintCodeButton
+import com.kos.boxdrawe.widget.PrintCodeIconButton
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
+import com.kos.boxdrawe.widget.SaveToFileIconButton
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.metricCount
 import com.kos.boxdrawer.generated.resources.metricMM
@@ -71,10 +76,10 @@ fun ToolbarForSoft(vm: SoftRezData) {
             RunCheckBox(
                 checked = isDrawBox,
                 title = stringResource(Res.string.rezCheckArea),
-                onCheckedChange = { c ->
+                onCheckedChange = remember(vm) {{ c ->
                     isDrawBox = c
                     vm.redraw()
-                },
+                }},
             )
         }
         Column(
@@ -83,20 +88,20 @@ fun ToolbarForSoft(vm: SoftRezData) {
             RunCheckBox(
                 checked = isInSize,
                 title = stringResource(Res.string.rezCheckStyle),
-                onCheckedChange = { c ->
+                onCheckedChange = remember(vm) {{ c ->
                     isInSize = c
                     vm.redraw()
-                },
+                }},
             )
             if (isInSize){
                 NumericUpDownLine(stringResource(Res.string.rezLength), stringResource(Res.string.metricMM), lineLength)
                 RunCheckBox(
                     checked = firstSmall,
                     title = stringResource(Res.string.rezCheckFirstKine),
-                    onCheckedChange = { c ->
+                    onCheckedChange = remember(vm) {{ c ->
                         firstSmall = c
                         vm.redraw()
-                    },
+                    }},
                 )
             }else {
                 Text(
@@ -109,10 +114,10 @@ fun ToolbarForSoft(vm: SoftRezData) {
                 RunCheckBox(
                     checked = innerChecked,
                     title = stringResource(Res.string.rezProprzija),
-                    onCheckedChange = { c ->
+                    onCheckedChange = remember(vm) {{ c ->
                         innerChecked = c
                         vm.redraw()
-                    },
+                    }},
                 )
             }
         }
@@ -133,16 +138,18 @@ fun ToolbarForSoft(vm: SoftRezData) {
 
 @Composable
 fun ToolbarActionForSoft(vm: SoftRezData){
-    val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
     Column(
     ) {
         SaveToFileButton(vm)
         Spacer(Modifier.height(4.dp))
-        RunButton(stringResource(Res.string.toolsButtonCopyCode)) {
-            coroutineScope.launch {
-                clipboardManager.setText(AnnotatedString(vm.print()))
-            }
-        }
+        PrintCodeButton(vm)
+    }
+}
+@Composable
+fun ToolbarActionIconForSoft(vm: SoftRezData){
+    Row(
+    ) {
+        SaveToFileIconButton(vm)
+        PrintCodeIconButton(vm)
     }
 }

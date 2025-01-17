@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -42,6 +43,7 @@ import com.kos.boxdrawer.detal.grid.Grid3DVisualizer
 import com.kos.boxdrawer.detal.grid.Kubik
 import com.kos.boxdrawer.presentation.Rotate3dController
 import com.kos.boxdrawer.presentation.model.ImageMap
+import com.kos.compose.ImmutableList
 import com.kos.figure.FigureEmpty
 import vectors.Vec2
 import kotlin.math.abs
@@ -79,9 +81,9 @@ fun DisplayGrid(gridData: GridData) {
     val widthCell = remember { gridData.widthCell }
     val figurePreview = remember { gridData.figurePreview }
 
-    val dropValueX = remember { mutableStateOf(0f) }
-    val dropValueY = remember { mutableStateOf(0f) }
-    val dropValueZ = remember { mutableStateOf(0f) }
+    val dropValueX = remember { mutableFloatStateOf(0f) }
+    val dropValueY = remember { mutableFloatStateOf(0f) }
+    val dropValueZ = remember { mutableFloatStateOf(0f) }
     val grid3d = gridData.useGrid3d.collectAsState(false)
 
     Box(
@@ -252,7 +254,7 @@ fun DisplayGrid(gridData: GridData) {
                                 sc,
                                 Offset(0.0f, 0.0f)
                             ) {
-                                drawFigures(figure.value, emptyList(), measurer, ImageMap.EMPTY)
+                                drawFigures(figure.value, ImmutableList( emptyList()), measurer, ImageMap.EMPTY)
                             }
 
                         }

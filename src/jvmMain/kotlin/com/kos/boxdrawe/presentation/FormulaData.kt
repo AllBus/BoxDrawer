@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import com.kos.ariphmetica.math.terms.MathTerm
 import com.kos.boxdrawe.widget.NumericTextFieldState
@@ -18,6 +19,7 @@ import vectors.Vec2
 import kotlin.math.cos
 import kotlin.math.sin
 
+@Stable
 class FormulaData(override val tools: Tools) : SaveFigure {
 
     val figures = MutableStateFlow<IFigure>(FigureEmpty)

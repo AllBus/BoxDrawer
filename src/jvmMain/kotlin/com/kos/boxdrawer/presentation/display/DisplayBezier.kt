@@ -33,6 +33,7 @@ import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.boxdrawe.widget.toOffset
 import com.kos.boxdrawe.widget.toVec2
 import com.kos.boxdrawer.presentation.model.ImageMap
+import com.kos.compose.ImmutableList
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.cos
@@ -246,7 +247,7 @@ fun DisplayBezier(
                 )
             }
 
-            this.drawFigures(figure.value, emptyList(), measurer, ImageMap.EMPTY)
+            this.drawFigures(figure.value, ImmutableList( emptyList()), measurer, ImageMap.EMPTY)
         }
     }
 }

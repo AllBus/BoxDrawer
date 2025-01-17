@@ -2,7 +2,6 @@ package com.kos.boxdrawer.presentation.tabbar
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -23,10 +22,12 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -60,6 +61,7 @@ import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_REKA
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_SOFT
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_TOOLS
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_TORTOISE
+import com.kos.compose.ImmutableList
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -72,15 +74,15 @@ val TabContentModifier =
     Modifier.fillMaxWidth().fillMaxHeight().padding(vertical = 4.dp, horizontal = 16.dp)
 
 @Composable
-fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
+fun TabBar(tabs: ImmutableList<TabInfo>, vm: State<DrawerViewModel>) {
     val tabIndex = vm.value.tabIndex.collectAsState()
     val expandTools = remember { mutableStateOf(true) }
     val pagerState = rememberPagerState(pageCount = {
-        BoxDrawerToolBar.tabs.size
+        BoxDrawerToolBar.tabs.list.size
     })
 
-    LaunchedEffect(tabIndex.value){
-        pagerState.animateScrollToPage( tabIndex.value, animationSpec = tween(500))
+    LaunchedEffect(tabIndex.value) {
+        pagerState.animateScrollToPage(tabIndex.value, animationSpec = tween(500))
     }
 
     Column(
@@ -107,85 +109,138 @@ fun TabBar(tabs: List<TabInfo>, vm: State<DrawerViewModel>) {
             }
             ScrollableTabRowWithHotkeys(
                 selectedTabIndex = tabIndex.value,
-                modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp),
-                onTabSelected = { id ->
-                    if (id >=0 && id < tabs.size) {
-                        vm.value.tabIndex.value = id
+                modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp).weight(1f),
+                onTabSelected = remember(vm.value) {
+                    { id ->
+                        if (id >= 0 && id < tabs.list.size) {
+                            vm.value.tabIndex.value = id
 
-                        expandTools.value = true
-                    }
-                }
-            ) {
-                tabs.forEach { info ->
-                    TopTab(
-                        selected = info.id == tabIndex.value,
-                        onClick = {
-                            vm.value.tabIndex.value = info.id
                             expandTools.value = true
-                        },
-                        modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp).wrapContentHeight(),
-                        text = stringResource(info.title), //{ Text(stringResource(info.title)) },
-                    )
-                }
-            }
-        }
-        AnimatedVisibility(expandTools.value) {
-            Box(
-                Modifier.fillMaxWidth().height(220.dp)
-            ) {
-                ToolbarContainer(
-                    pagerState = pagerState,
-                    content = { index ->
-                        when (index) {
-                            TAB_BOX -> ToolbarForBox(vm.value.box)
-                            TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
-                            TAB_GRID -> ToolbarForGrid(vm.value.grid)
-                            TAB_SOFT -> ToolbarForSoft(vm.value.softRez)
-                            TAB_BEZIER -> ToolbarForBezier(vm.value.bezier)
-                            TAB_BUBLIK -> ToolbarForBublik(vm.value.bublik)
-                            TAB_REKA -> ToolbarForReka(vm.value.rectData)
-                            TAB_TOOLS -> ToolbarForTools(vm.value.options)
-                            TAB_DXF -> ToolbarForDxf(vm.value.dxfData)
-                            TAB_IMAGE -> ToolbarForImage(vm.value.imageData)
-                            TAB_FORMULA -> ToolbarForFormula(vm.value.formulaData)
-                        }
-                    },
-                    actionsBlock = {
-                        Column {
-                            AnimatedContent(
-                                modifier = Modifier.weight(1f),
-                                targetState = tabIndex.value,
-                                transitionSpec = {
-                                    fadeIn() togetherWith fadeOut()
-                                }) { targetIndex ->
-                                when (targetIndex) {
-                                    TAB_BOX -> ToolbarActionForBox(vm.value.box)
-                                    TAB_TORTOISE -> ToolbarActionForTortoise(vm.value.tortoise)
-                                    TAB_GRID -> ToolbarActionForGrid(vm.value.grid)
-                                    TAB_SOFT -> ToolbarActionForSoft(vm.value.softRez)
-
-                                    TAB_BEZIER -> ToolbarActionForBezier(vm.value.bezier)
-                                    TAB_BUBLIK -> ToolbarActionForBublik(vm.value.bublik)
-                                    TAB_REKA -> ToolbarActionForReka(vm.value.rectData)
-                                    TAB_TOOLS -> ToolbarActionForTools(vm.value.options)
-                                    TAB_DXF -> ToolbarActionForDxf(vm.value.dxfData)
-                                    TAB_IMAGE -> ToolbarActionForImage(vm.value.imageData)
-                                    TAB_FORMULA -> ToolbarActionForFormula(vm.value.formulaData)
-                                }
-                            }
-                            BoardInfoBlock(
-                                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-                                tools = vm.value.tools,
-                                onClick = {
-                                    vm.value.tabIndex.value = TAB_TOOLS
-                                })
                         }
                     }
+                }
+            ) {
+                ToolbarTabs(tabs, tabIndex, vm, expandTools)
+            }
+            AnimatedVisibility(true) {
+                TabBarActions(
+                    modifier = Modifier.background(TabRowDefaults.primaryContainerColor).height(32.dp),
+                    tabIndex = tabIndex,
+                    vm= vm,
                 )
             }
         }
+        AnimatedVisibility(expandTools.value) {
+            ToolbarContent(tabIndex, vm)
+        }
         Box(
             Modifier.fillMaxWidth().height(1.dp).background(Color.DarkGray)
+        )
+    }
+}
+
+@Composable
+fun TabBarActions(modifier: Modifier, tabIndex: State<Int>, vm: State<DrawerViewModel>) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        when (tabIndex.value) {
+            TAB_BOX -> ToolbarActionIconForBox(vm.value.box)
+            TAB_TORTOISE -> ToolbarActionIconForTortoise(vm.value.tortoise)
+            TAB_GRID -> ToolbarActionIconForGrid(vm.value.grid)
+            TAB_SOFT -> ToolbarActionIconForSoft(vm.value.softRez)
+            TAB_BEZIER -> ToolbarActionIconForBezier(vm.value.bezier)
+            TAB_BUBLIK -> ToolbarActionIconForBublik(vm.value.bublik)
+            TAB_REKA -> ToolbarActionIconForReka(vm.value.rectData)
+            TAB_TOOLS -> ToolbarActionIconForTools(vm.value.options)
+            TAB_DXF -> ToolbarActionIconForDxf(vm.value.dxfData)
+            TAB_IMAGE -> {}
+            TAB_FORMULA -> ToolbarActionIconForFormula(vm.value.formulaData)
+        }
+    }
+}
+
+@Composable
+private fun ToolbarTabs(
+    tabs: ImmutableList<TabInfo>,
+    tabIndex: State<Int>,
+    vm: State<DrawerViewModel>,
+    expandTools: MutableState<Boolean>
+) {
+    tabs.forEach { info ->
+        TopTab(
+            selected = info.id == tabIndex.value,
+            onClick = {
+                vm.value.tabIndex.value = info.id
+                expandTools.value = true
+            },
+            modifier = Modifier.padding(vertical = 0.dp, horizontal = 0.dp)
+                .wrapContentHeight(),
+            text = stringResource(info.title), //{ Text(stringResource(info.title)) },
+        )
+    }
+}
+
+@Composable
+private fun ToolbarContent(
+    tabIndex: State<Int>,
+    vm: State<DrawerViewModel>
+) {
+    Box(
+        Modifier.fillMaxWidth().height(220.dp)
+    ) {
+        ToolbarContainer(
+            pagerState = tabIndex,
+            content = { index ->
+                when (index) {
+                    TAB_BOX -> ToolbarForBox(vm.value.box)
+                    TAB_TORTOISE -> ToolbarForTortoise(vm.value.tortoise)
+                    TAB_GRID -> ToolbarForGrid(vm.value.grid)
+                    TAB_SOFT -> ToolbarForSoft(vm.value.softRez)
+                    TAB_BEZIER -> ToolbarForBezier(vm.value.bezier)
+                    TAB_BUBLIK -> ToolbarForBublik(vm.value.bublik)
+                    TAB_REKA -> ToolbarForReka(vm.value.rectData)
+                    TAB_TOOLS -> ToolbarForTools(vm.value.options)
+                    TAB_DXF -> ToolbarForDxf(vm.value.dxfData)
+                    TAB_IMAGE -> ToolbarForImage(vm.value.imageData)
+                    TAB_FORMULA -> ToolbarForFormula(vm.value.formulaData)
+                }
+            },
+            actionsBlock = {
+                Column {
+                    AnimatedContent(
+                        modifier = Modifier.weight(1f),
+                        targetState = tabIndex.value,
+                        transitionSpec = {
+                            fadeIn() togetherWith fadeOut()
+                        }) { targetIndex ->
+                        when (targetIndex) {
+                            TAB_BOX -> ToolbarActionForBox(vm.value.box)
+                            TAB_TORTOISE -> ToolbarActionForTortoise(vm.value.tortoise)
+                            TAB_GRID -> ToolbarActionForGrid(vm.value.grid)
+                            TAB_SOFT -> ToolbarActionForSoft(vm.value.softRez)
+
+                            TAB_BEZIER -> ToolbarActionForBezier(vm.value.bezier)
+                            TAB_BUBLIK -> ToolbarActionForBublik(vm.value.bublik)
+                            TAB_REKA -> ToolbarActionForReka(vm.value.rectData)
+                            TAB_TOOLS -> ToolbarActionForTools(vm.value.options)
+                            TAB_DXF -> ToolbarActionForDxf(vm.value.dxfData)
+                            TAB_IMAGE -> ToolbarActionForImage(vm.value.imageData)
+                            TAB_FORMULA -> ToolbarActionForFormula(vm.value.formulaData)
+                        }
+                    }
+                    BoardInfoBlock(
+                        modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+                        tools = vm.value.tools,
+                        onClick = remember(vm.value) {
+                            {
+                                vm.value.tabIndex.value = TAB_TOOLS
+                            }
+                        }
+                    )
+                }
+            }
         )
     }
 }
@@ -282,6 +337,7 @@ fun TabBarPreview() {
     }
 }
 
+@Immutable
 class TabInfo(
     val id: Int,
     val title: StringResource,
@@ -301,17 +357,19 @@ object BoxDrawerToolBar {
     const val TAB_IMAGE = 9
     const val TAB_FORMULA = 10
 
-    val tabs = listOf(
-        TabInfo(TAB_BOX, Res.string.tabBox),
-        TabInfo(TAB_TORTOISE, Res.string.tabTortoise),
-        TabInfo(TAB_GRID, Res.string.tabGrid),
-        TabInfo(TAB_SOFT, Res.string.tabSoft),
-        TabInfo(TAB_BEZIER, Res.string.tabBezier),
-        TabInfo(TAB_BUBLIK, Res.string.tabTor),
-        TabInfo(TAB_REKA, Res.string.tabReka),
-        TabInfo(TAB_DXF, Res.string.tabDxf),
-        TabInfo(TAB_TOOLS, Res.string.tabSettings),
-        TabInfo(TAB_IMAGE, Res.string.tabImage),
-        TabInfo(TAB_FORMULA, Res.string.tabFormula),
+    val tabs = ImmutableList(
+        listOf(
+            TabInfo(TAB_BOX, Res.string.tabBox),
+            TabInfo(TAB_TORTOISE, Res.string.tabTortoise),
+            TabInfo(TAB_GRID, Res.string.tabGrid),
+            TabInfo(TAB_SOFT, Res.string.tabSoft),
+            TabInfo(TAB_BEZIER, Res.string.tabBezier),
+            TabInfo(TAB_BUBLIK, Res.string.tabTor),
+            TabInfo(TAB_REKA, Res.string.tabReka),
+            TabInfo(TAB_DXF, Res.string.tabDxf),
+            TabInfo(TAB_TOOLS, Res.string.tabSettings),
+            TabInfo(TAB_IMAGE, Res.string.tabImage),
+            TabInfo(TAB_FORMULA, Res.string.tabFormula),
+        )
     )
 }

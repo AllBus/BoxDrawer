@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import com.kos.boxdrawe.icons.IconCopy
 import com.kos.boxdrawe.presentation.ImageToolsData
+import com.kos.boxdrawer.presentation.ai.FireworkAnimation
 
 fun parseCoordinates(coordsString: String): List<Offset> {
     return coordsString.split(", ")
@@ -112,6 +113,7 @@ fun DisplayImageProcessing(imageData: ImageToolsData) {
             .fillMaxSize()
             .clipToBounds()
     ) {
+     //   FireworkAnimation(modifier = Modifier.fillMaxSize())
         ImageItem(bitmap = src.value,
             coords= srcCoords,
             modifier = Modifier.weight(1f),

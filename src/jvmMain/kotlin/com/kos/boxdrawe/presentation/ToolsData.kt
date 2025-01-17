@@ -1,11 +1,14 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Stable
 import com.kos.boxdrawe.widget.NumericTextFieldState
+import kotlinx.coroutines.runBlocking
 import turtoise.DrawerSettings
 import turtoise.TemplateAlgorithm
 import turtoise.TortoiseAlgorithm
 
-class ToolsData(val tools: Tools, val templateData: TemplateData) {
+@Stable
+class ToolsData(val tools: Tools, val templateData: TemplateData) : PrintCode {
     val boardWeight =
         NumericTextFieldState(4.0) { tools.selectSettings(tools.settings.value.copy(boardWeight = it)) }
     val holeWeight =
@@ -38,6 +41,12 @@ class ToolsData(val tools: Tools, val templateData: TemplateData) {
             else -> {
                 templateData.clearTemplate()
             }
+        }
+    }
+
+    override fun print(): String {
+        return runBlocking {
+            templateData.print()
         }
     }
 }

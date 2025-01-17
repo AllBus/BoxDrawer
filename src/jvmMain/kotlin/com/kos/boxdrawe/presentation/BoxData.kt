@@ -1,5 +1,7 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -20,7 +22,8 @@ import turtoise.DrawerSettings
 import com.kos.tortoise.ZigzagInfo
 import vectors.Vec2
 
-class BoxData(override val tools: ITools): SaveFigure {
+@Stable
+class BoxData(override val tools: ITools): SaveFigure, PrintCode {
 
     val figures = MutableStateFlow<IFigure>(FigureEmpty)
 
@@ -98,7 +101,7 @@ class BoxData(override val tools: ITools): SaveFigure {
         )
     }
 
-    suspend fun print():String{
+    override fun print():String{
         val line = text.value.text
         val alg = boxFigures(line, BoxCad.EOutVariant.ALTERNATIVE)
 
@@ -223,6 +226,7 @@ class ZigZagState(val redrawBox: () -> Unit){
     }
 }
 
+@Immutable
 interface BoxSimpleListener {
     fun clearSelect()
     fun updateLine(decimal: Double, H: Boolean, C: Boolean, E: Boolean)

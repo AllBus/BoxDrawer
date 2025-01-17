@@ -1,17 +1,33 @@
 package com.kos.boxdrawe.presentation
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.loadImageBitmap
+import com.kos.boxdrawe.FigureTransferable
 import com.kos.boxdrawe.corutine.DispatcherList
+import com.kos.boxdrawe.imgprocessing.CounterFinder
 import com.kos.boxdrawe.presentation.ImageUtils.bufferedImageToImageBitmap
 import com.kos.boxdrawe.presentation.ImageUtils.convertToBmp
 import com.kos.boxdrawe.presentation.ImageUtils.formatOfData
 import com.kos.boxdrawe.presentation.ImageUtils.loadImageFromFile
 import com.kos.boxdrawe.widget.NumericTextFieldState
+import com.kos.figure.FigureCircle
+import com.kos.figure.IFigure
+import com.kos.figure.collections.FigurePoints
+import com.kos.figure.collections.FigurePointsOfFigure
+import com.kos.figure.collections.toFigure
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
+import turtoise.TortoiseProgram
+import turtoise.TortoiseRunner
+import turtoise.TortoiseState
+import turtoise.parser.TortoiseParser
+import vectors.Vec2
 import java.awt.Color
+import java.awt.Toolkit
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -25,15 +41,18 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
+@Immutable
 interface ImageAction{
     class ActionRotate(val degrees:Double): ImageAction
     class ActionGrayScale(): ImageAction
     class ActionBounds(): ImageAction
     class ActionContrast(val contrastFactor:Double): ImageAction
     class ActionGaussian(val sigma:Double): ImageAction
+    class ActionPoints(val maxRadius:Double): ImageAction
     class ActionNone():ImageAction
 }
 
+@Stable
 class ImageToolsData(val tools: ITools) {
 
     private val currentAction = MutableStateFlow<ImageAction>(ImageAction.ActionNone())
@@ -52,6 +71,22 @@ class ImageToolsData(val tools: ITools) {
         currentAction.value = ImageAction.ActionGaussian(v*0.1)
     }
 
+    val holeState = NumericTextFieldState(
+        1.0,
+        maxValue = 300.0
+    ){ v ->
+        currentAction.value = ImageAction.ActionPoints(v)
+    }
+
+    val imageScale = NumericTextFieldState(
+        0.084687,
+        minValue = -1000.0,
+        maxValue = 1000.0,
+        digits = 6,
+    ){ v ->
+
+    }
+
     val rotateState = NumericTextFieldState(
         0.0,
         minValue = -360.0,
@@ -59,6 +94,8 @@ class ImageToolsData(val tools: ITools) {
     ){ v ->
         currentAction.value = ImageAction.ActionRotate(v)
     }
+
+    val holeFigureText = mutableStateOf("c 0.5")
 
     fun actionGrayScale(enable:Boolean){
         currentAction.value = if (enable)
@@ -92,6 +129,7 @@ class ImageToolsData(val tools: ITools) {
                         is ImageAction.ActionGrayScale -> convertToBlackAndWhite(mi)
                         is ImageAction.ActionGaussian -> gaussianBlur(mi, 5, act.sigma)
                         is ImageAction.ActionBounds -> grad(mi)
+                        is ImageAction.ActionPoints -> points(mi, act.maxRadius, act.maxRadius*3.0)
                         else -> mi
                     }
                 } catch (e: Exception) {
@@ -117,6 +155,56 @@ class ImageToolsData(val tools: ITools) {
         modifierImage?.let {
             ImageIO.write(it, formatOfData(file, it), File(file))
         }
+    }
+
+    fun copyPointsAsFigure(){
+        modifierImage?.let { mi ->
+            val action = currentAction.value
+            if (action is ImageAction.ActionPoints) {
+                val points = CounterFinder.finPoints(mi ,
+                    action.maxRadius.toInt(),
+                    (action.maxRadius*3).toInt()
+                )
+                val scale = imageScale.decimal
+
+
+                val result = mutableListOf<IFigure>()
+
+                points.forEachIndexed{ i, pa ->
+                    val line = holeFigureText.value.lines().getOrNull(i).orEmpty()
+                    if (line.isEmpty()) return@forEachIndexed
+                    val program = tortoiseProgram(line)
+                    val t = TortoiseRunner(program)
+                    val state = TortoiseState()
+                    val figure = t.draw(state, tools.ds())
+
+                    result+= FigurePointsOfFigure(
+                        pa.map { p -> Vec2(x = p.x.toDouble()*scale, y = p.y.toDouble()*scale) },
+                        figure
+                    )
+                }
+
+
+
+                val tmp = File.createTempFile("boxDrawerImage",".dxf")
+                tools.saveFigures(tmp, result.toFigure())
+                val dxf = FigureTransferable(tmp)
+                Toolkit.getDefaultToolkit().systemClipboard.setContents(dxf, null)
+            }
+        }
+    }
+
+    private fun tortoiseProgram(lines: String): TortoiseProgram {
+        val f = lines.split("\n").map { line ->
+            TortoiseParser.extractTortoiseCommands(line)
+        }
+
+        val (c, a) = f.partition { it.first == "" }
+        val k = tools.algorithms()
+        return TortoiseProgram(
+            commands = c.map { it.second },
+            algorithms = (k + a).toMap()
+        )
     }
 
     fun rotateBitmap(bitmap: BufferedImage, degrees: Double): BufferedImage {
@@ -216,6 +304,32 @@ class ImageToolsData(val tools: ITools) {
 
         return blurredImage
     }
+
+    private fun points(mi: BufferedImage, maxRadius: Double, minRadius2: Double): BufferedImage {
+        val points = CounterFinder.finPoints(mi, maxRadius.toInt(), minRadius2.toInt())
+        val finalImage = BufferedImage(mi.width, mi.height, BufferedImage.TYPE_BYTE_GRAY)
+
+//        for (x in 0 until mi.width) {
+//            for (y in 0 until mi.height) {
+//                val value = mi.getRGB(x, y)
+//                finalImage.setRGB(x, y, value)
+//            }
+//        }
+
+        points.forEach { pa ->
+            pa.forEach { p ->
+                for (jj in -p.size / 2..p.size / 2) {
+                    for (ii in -p.size / 2..p.size / 2) {
+                        finalImage.setRGB(p.x + ii, p.y + jj, Color.RED.rgb)
+                    }
+                }
+            }
+        }
+
+        return finalImage
+
+    }
+
 
     fun calculateGaussianKernelWeights(kernelSize: Int, sigma: Double): Array<DoubleArray> {
         val kernel = Array(kernelSize) { DoubleArray(kernelSize) }

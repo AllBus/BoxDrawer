@@ -1,5 +1,6 @@
 package com.kos.boxdrawe.presentation
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.text.AnnotatedString
@@ -22,6 +23,7 @@ import java.awt.geom.Path2D
 import java.io.File
 import kotlin.math.min
 
+@Stable
 class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
     val figures = MutableStateFlow<IFigure>(FigureEmpty)
     val fig = mutableStateOf<IFigure>(FigureEmpty)

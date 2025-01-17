@@ -17,7 +17,8 @@ import com.kos.boxdrawer.presentation.display.DisplayDxf
 import com.kos.boxdrawer.presentation.display.DisplayGrid
 import com.kos.boxdrawer.presentation.display.DisplayTortoise
 import com.kos.boxdrawer.presentation.model.ImageMap
-import com.kos.figure.FigureInfo
+import com.kos.compose.FigureInfo
+import com.kos.compose.ImmutableList
 import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
 
@@ -32,7 +33,7 @@ fun DisplayBox(
     stateText: MutableState<String>,
     view3d: MutableState<Boolean>,
     vm: State<DrawerViewModel>,
-    selectedItem: State<List<FigureInfo>>,
+    selectedItem: State<ImmutableList<FigureInfo>>,
 ) {
     val coroutineScope = rememberCoroutineScope()
 

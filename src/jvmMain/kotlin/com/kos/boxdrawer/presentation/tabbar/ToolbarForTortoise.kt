@@ -7,16 +7,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.icons.Icons
 import com.kos.boxdrawe.presentation.TortoiseData
 import com.kos.boxdrawe.widget.EditTextField
+import com.kos.boxdrawe.widget.ImageButton
 import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.SaveToFileButton
+import com.kos.boxdrawe.widget.SaveToFileIconButton
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.toolsButtonCopyProgram
 import com.kos.boxdrawer.generated.resources.tortoiseFigureField
@@ -36,10 +40,14 @@ fun ToolbarForTortoise(vm: TortoiseData) {
             modifier = Modifier.weight(weight = 2f, fill = true).padding(end = 8.dp)
         ) {
             EditTextField(stringResource(Res.string.tortoiseFigureField), text, true,
-                onMove = { tv ->
-                    vm.findHelp(vm.text.value.text, vm.text.value.selection)
-                }, onChange = {
-                    vm.createTortoise()
+                onMove = remember(vm) {
+                    { tv ->
+                        vm.findHelp(vm.text.value.text, vm.text.value.selection)
+                    }
+                }, onChange = remember(vm) {
+                    {
+                        vm.createTortoise()
+                    }
             })
 //            EditTextField2(stringResource(Res.string.tortoiseFigureField), text2, true,
 //                onChange = {
@@ -59,6 +67,23 @@ fun ToolbarActionForTortoise(vm: TortoiseData) {
         SaveToFileButton(vm)
         Spacer(Modifier.height(4.dp))
         RunButton(stringResource(Res.string.toolsButtonCopyProgram)) {
+            coroutineScope.launch {
+                clipboardManager.setText(AnnotatedString(vm.printCommand()))
+            }
+        }
+    }
+}
+
+
+@Composable
+fun ToolbarActionIconForTortoise(vm: TortoiseData) {
+    val coroutineScope = rememberCoroutineScope()
+    val clipboardManager = LocalClipboardManager.current
+
+    Row(
+    ) {
+        SaveToFileIconButton(vm)
+        ImageButton(Icons.Code_blocks) {
             coroutineScope.launch {
                 clipboardManager.setText(AnnotatedString(vm.printCommand()))
             }

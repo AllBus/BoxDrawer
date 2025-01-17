@@ -5,14 +5,6 @@ import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
 
-class FigureInfo(
-    val figure: IFigure,
-    val parent: FigureInfo?,
-    val transform: Matrix,
-) {
-    fun rect() = figure.rect().transform(transform)
-}
-
 enum class CropSide {
     LEFT,
     TOP,

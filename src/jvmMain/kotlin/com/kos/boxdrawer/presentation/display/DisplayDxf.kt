@@ -44,7 +44,8 @@ import com.kos.boxdrawe.widget.toOffset
 import com.kos.boxdrawe.widget.toVec2
 import com.kos.boxdrawer.presentation.ZoomUtils
 import com.kos.boxdrawer.presentation.model.ImageMap
-import com.kos.figure.FigureInfo
+import com.kos.compose.FigureInfo
+import com.kos.compose.ImmutableList
 import com.kos.figure.IFigure
 import vectors.Vec2
 import kotlin.math.sign
@@ -58,7 +59,7 @@ fun DisplayDxf(
     enableMatrix: Boolean,
     figures: IFigure,
     images: ImageMap,
-    selectedItem: State<List<FigureInfo>>,
+    selectedItem: State<ImmutableList<FigureInfo>>,
     onStateChange: (String) -> Unit,
     onPress: (Vec2, Int, Float) -> Unit,
     onMove: (Vec2, Int, Float) -> Unit,

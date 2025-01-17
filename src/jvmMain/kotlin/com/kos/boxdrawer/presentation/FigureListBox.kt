@@ -34,14 +34,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kos.boxdrawe.themes.ThemeColors
-import com.kos.figure.FigureInfo
+import com.kos.compose.FigureInfo
+import com.kos.compose.ImmutableList
 import com.kos.figure.IFigure
 import kotlinx.coroutines.launch
 
 @Composable
 fun FigureListBox(
-    figure: List<FigureInfo>,
-    selectedItem: State<List<FigureInfo>>,
+    figure: ImmutableList<FigureInfo>,
+    selectedItem: State<ImmutableList<FigureInfo>>,
     onClick: (FigureInfo) -> Unit
 ) {
     val scrollState = rememberLazyListState()
@@ -72,15 +73,13 @@ fun FigureListBox(
 
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.FigureItems(
-    figures: List<FigureInfo>,
-    selectedItem: State<List<FigureInfo>>,
+    figures: ImmutableList<FigureInfo>,
+    selectedItem: State<ImmutableList<FigureInfo>>,
     onClick: (FigureInfo) -> Unit
 ) {
-    items(figures) { figure ->
+    items(figures.list) { figure ->
         Column(
-            modifier = Modifier
-
-                .background(
+            modifier = Modifier.background(
                     if (figure.figure in selectedItem.value.map { it.figure })
                         MaterialTheme.colors.primary else
                         ThemeColors.figureListBackground, ThemeColors.figureListItemShape
