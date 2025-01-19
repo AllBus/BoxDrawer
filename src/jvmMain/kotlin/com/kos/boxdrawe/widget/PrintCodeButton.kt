@@ -30,7 +30,10 @@ fun PrintCodeIconButton(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val clipboardManager = LocalClipboardManager.current
-    ImageButton(Icons.Code_blocks) {
+    ImageButton(
+        Icons.Code_blocks,
+        tooltip = stringResource(Res.string.toolsButtonCopyCode)
+    ) {
         coroutineScope.launch {
             clipboardManager.setText(AnnotatedString(vm.print()))
         }

@@ -77,17 +77,9 @@ fun ToolbarActionForTortoise(vm: TortoiseData) {
 
 @Composable
 fun ToolbarActionIconForTortoise(vm: TortoiseData) {
-    val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
-
     Row(
     ) {
         SaveToFileIconButton(vm)
-        ImageButton(Icons.Code_blocks) {
-            coroutineScope.launch {
-                clipboardManager.setText(AnnotatedString(vm.printCommand()))
-            }
-        }
     }
 }
 

@@ -53,6 +53,28 @@ fun ImageButton(
 }
 
 @Composable
+fun ImageButton(
+    icon: ImageVector,
+    tooltip: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    onClick: () -> Unit,
+) {
+    PlainTooltip(
+        tooltip = tooltip
+    ){
+        ImageButton(
+            icon = icon,
+            modifier = modifier,
+            enabled = enabled,
+            interactionSource = interactionSource,
+            onClick = onClick,
+        )
+    }
+}
+
+@Composable
 fun CharButton(
     text: String,
     modifier: Modifier = Modifier,

@@ -114,4 +114,10 @@
     <string name="torSegmentsCount">Число сегментов</string>
     <string name="torSidesCount">Число сторон</string>
     <string name="torPazLocation">Положение пазов</string>
+    <string name="dxfClearButton">Очистить</string>
+    <string name="dxfClearAlertTitle">Очистить</string>
+    <string name="dxfClearAlertDescription">Очистить от всех фигур?</string>
+    <string name="dxfClearAlertPositive">Очистить</string>
+    <string name="dxfClearAlertNegative">Отмена</string>
+    <string name="dxfToolsMagnet">Привязка</string>
 </resources>

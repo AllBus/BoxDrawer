@@ -46,7 +46,8 @@ fun SaveToFileButton(vm: SaveFigure) {
 @Composable
 fun SaveToFileIconButton(vm: SaveFigure) {
     val coroutineScope = rememberCoroutineScope()
-    ImageButton(Icons.File_save) {
+    ImageButton(Icons.File_save,
+        tooltip = stringResource(Res.string.createFileButton)) {
         coroutineScope.launch {
             showFileChooser(vm.tools.chooserDir()) { f ->
                 coroutineScope.launch {
@@ -56,7 +57,8 @@ fun SaveToFileIconButton(vm: SaveFigure) {
         }
     }
 
-    ImageButton(Icons.File_copy) {
+    ImageButton(Icons.File_copy,
+        tooltip = stringResource(Res.string.copyFileButton)) {
         coroutineScope.launch {
             val dxf = vm.copy()
             Toolkit.getDefaultToolkit().systemClipboard.setContents(dxf, null)

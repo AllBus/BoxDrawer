@@ -41,8 +41,10 @@ import com.kos.boxdrawer.detal.splash.SplashCube2
 import com.kos.boxdrawer.detal.splash.SplashGear
 import com.kos.boxdrawer.detal.splash.SplashGrid
 import com.kos.boxdrawer.detal.splash.SplashImage
+import com.kos.boxdrawer.detal.splash.SplashLines
 import com.kos.boxdrawer.detal.splash.SplashRul
 import com.kos.boxdrawer.detal.splash.SplashStar
+import com.kos.boxdrawer.detal.splash.SplashTrapecija
 import com.kos.boxdrawer.detal.splash.SplashWave
 
 object SplashMap {
@@ -60,6 +62,7 @@ object SplashMap {
         SplashEdit(),
         SplashIntersectLine(),
         SplashLine(),
+        SplashLines(),
         SplashNormal(),
         SplashObruch(),
         SplashParallelogram(),
@@ -94,6 +97,7 @@ object SplashMap {
         SplashWave(),
         SplashGear(),
         SplashRul(),
+        SplashTrapecija(),
     )
     val splashes: Map<String, ISplashDetail> = splashList.flatMap { s -> s.names.map { it to s } }.toMap()
 }

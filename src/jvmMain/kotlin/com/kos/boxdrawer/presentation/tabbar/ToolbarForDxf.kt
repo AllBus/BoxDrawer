@@ -29,8 +29,14 @@ import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.SaveToFileIconButton
 import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.dxfClearAlertDescription
+import com.kos.boxdrawer.generated.resources.dxfClearAlertNegative
+import com.kos.boxdrawer.generated.resources.dxfClearAlertPositive
+import com.kos.boxdrawer.generated.resources.dxfClearAlertTitle
+import com.kos.boxdrawer.generated.resources.dxfClearButton
 import com.kos.boxdrawer.generated.resources.dxfScaleColor
 import com.kos.boxdrawer.generated.resources.dxfScaleValue
+import com.kos.boxdrawer.generated.resources.dxfToolsMagnet
 import com.kos.boxdrawer.generated.resources.toolsButtonOpenFile
 import com.kos.boxdrawer.presentation.display.DrawInstrumentIcon
 import kotlinx.coroutines.launch
@@ -120,14 +126,14 @@ fun ToolbarForDxf(vm: DxfToolsData) {
 
             Row {
                 val privjazkaChecked = remember { vm.privjazka }
-                RunCheckBox(privjazkaChecked.value, "Привязка") { v ->
+                RunCheckBox(privjazkaChecked.value, stringResource(Res.string.dxfToolsMagnet)) { v ->
                     privjazkaChecked.value = v
 
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Row {
                     val showAlert = remember { mutableStateOf(false) }
-                    RunButton("Очистить") {
+                    RunButton(stringResource(Res.string.dxfClearButton)) {
                         showAlert.value = true
                     }
                     clearDxfAlert(showAlert, remember(vm) {
@@ -169,35 +175,42 @@ private fun clearDxfAlert(
 ) {
     when {
         showAlert.value -> {
-
-            AlertDialog(
-                onDismissRequest = {
-                    showAlert.value = false
-                },
-                title = { Text("Очистить") },
-                text = {
-                    Text("Очистить от всех фигур?")
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = onConfirm
-                    ) {
-                        Text("Очистить")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            showAlert.value = false
-                        }
-                    ) {
-                        Text("Отмена")
-                    }
-                }
-
-            )
+            ClearDxfAlertDialog(showAlert,onConfirm)
         }
     }
+}
+
+@Composable
+private fun ClearDxfAlertDialog(
+    showAlert: MutableState<Boolean>,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = {
+            showAlert.value = false
+        },
+        title = { Text(stringResource(Res.string.dxfClearAlertTitle)) },
+        text = {
+            Text(stringResource(Res.string.dxfClearAlertDescription))
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm
+            ) {
+                Text(stringResource(Res.string.dxfClearAlertPositive))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    showAlert.value = false
+                }
+            ) {
+                Text(stringResource(Res.string.dxfClearAlertNegative))
+            }
+        }
+
+    )
 }
 
 @Composable
@@ -230,7 +243,8 @@ fun ToolbarActionIconForDxf(vm: DxfToolsData) {
                 showAlert.value = false
             }
         })
-        ImageButton(Icons.Clear_all) {
+        ImageButton(Icons.Clear_all,
+        tooltip = stringResource(Res.string.dxfClearButton)) {
             showAlert.value = true
         }
         ImageButton(Icons.File_open) {
