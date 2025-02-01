@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -57,34 +58,45 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ToolbarForBox(vm: BoxData) {
 
     val text = rememberSaveable(key = "ToolbarForBox.Text") { vm.text }
 
+    val modifier = TabContentModifier
+    ToolbarForBoxOrientation(modifier, vm, text)
 
-    val rowArrange = remember { mutableStateOf(0) }
-    val density = LocalDensity.current
+}
 
-    Row(
-        modifier = TabContentModifier.onSizeChanged {
-            rowArrange.value = if (it.width < 600*density.density) 2 else 1
-        }
-        ,
-        horizontalArrangement = Arrangement.spacedBy(2.dp)
+@Composable
+private fun ToolbarForBoxOrientation(
+    modifier: Modifier,
+    vm: BoxData,
+    text: MutableState<TextFieldValue>,
+) {
+    BoxWithConstraints(
+        modifier = modifier
     ) {
-        if (rowArrange.value == 1 ) {
-            ToolbarBoxRowOne(
-                vm = vm,
-                modifier = Modifier.weight(weight = 0.8f, fill = true)
-            )
-            ToolbarBoxRowTwo(vm, Modifier.weight(weight = 1.2f, fill = true))
-            ToolbarBoxRowThree(vm, text, Modifier.weight(weight = 0.8f, fill = true))
-        } else{
+        val scope = this
+        val rowArrange = if (scope.maxWidth < 600.dp) 2 else 1
+
+        if (rowArrange == 1) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                ToolbarBoxRowOne(
+                    vm = vm,
+                    modifier = Modifier.weight(weight = 0.8f, fill = true)
+                )
+                ToolbarBoxRowTwo(vm, Modifier.weight(weight = 1.2f, fill = true))
+                ToolbarBoxRowThree(vm, text, Modifier.weight(weight = 0.8f, fill = true))
+            }
+        } else {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
-            ){
+            ) {
                 ToolbarBoxRowOne(
                     vm = vm,
                     modifier = Modifier //.weight(weight = 1f, fill = true)
@@ -113,32 +125,38 @@ private fun ToolbarBoxRowThree(
         RunCheckBox(
             checked = insideChecked,
             title = stringResource(Res.string.boxSizeInside),
-            onCheckedChange = remember(vm) {{ c ->
-                insideChecked = c
-                vm.redrawBox()
-            }},
+            onCheckedChange = remember(vm) {
+                { c ->
+                    insideChecked = c
+                    vm.redrawBox()
+                }
+            },
         )
         RunCheckBox(
             checked = polkiInChecked,
             title = stringResource(Res.string.boxSizeWithBoard),
-            onCheckedChange = remember(vm) {{ c ->
-                polkiInChecked = c
-                vm.redrawBox()
-            }},
+            onCheckedChange = remember(vm) {
+                { c ->
+                    polkiInChecked = c
+                    vm.redrawBox()
+                }
+            },
         )
         RunCheckBox(
             checked = alternative,
             title = stringResource(Res.string.boxPreviewStyle),
-            onCheckedChange = remember(vm) {{ c ->
-                alternative = c
-                vm.redrawBox()
-            }},
+            onCheckedChange = remember(vm) {
+                { c ->
+                    alternative = c
+                    vm.redrawBox()
+                }
+            },
         )
         EditTextField(
             title = stringResource(Res.string.boxPolki),
             value = text,
             enabled = true,
-            onChange = remember(vm) {{ vm.createBox(it.text) }},
+            onChange = remember(vm) { { vm.createBox(it.text) } },
             onMove = {}
         )
     }
@@ -159,7 +177,7 @@ private fun ToolbarBoxRowOne(
 
     Column(
         modifier = modifier.padding(end = 2.dp)
-            //.verticalScroll(rememberScrollState())
+        //.verticalScroll(rememberScrollState())
     ) {
         Row(
         ) {
@@ -168,9 +186,21 @@ private fun ToolbarBoxRowOne(
                     .weight(weight = 1f, fill = true)
 
             ) {
-                NumericUpDownLine(stringResource(Res.string.boxWidth), stringResource(Res.string.metricMM), width)
-                NumericUpDownLine(stringResource(Res.string.boxWeight), stringResource(Res.string.metricMM), weight)
-                NumericUpDownLine(stringResource(Res.string.boxHeight), stringResource(Res.string.metricMM), height)
+                NumericUpDownLine(
+                    stringResource(Res.string.boxWidth),
+                    stringResource(Res.string.metricMM),
+                    width
+                )
+                NumericUpDownLine(
+                    stringResource(Res.string.boxWeight),
+                    stringResource(Res.string.metricMM),
+                    weight
+                )
+                NumericUpDownLine(
+                    stringResource(Res.string.boxHeight),
+                    stringResource(Res.string.metricMM),
+                    height
+                )
 
                 Label(
                     stringResource(Res.string.boxEdges),
@@ -183,7 +213,12 @@ private fun ToolbarBoxRowOne(
                     NumericUpDown("", "", edgeFL, modifier = Modifier.width(50.dp))
                     NumericUpDown("", "", edgeBL, modifier = Modifier.width(50.dp))
                     NumericUpDown("", "", edgeBR, modifier = Modifier.width(50.dp))
-                    NumericUpDown("", stringResource(Res.string.metricMM), edgeFR, modifier = Modifier.width(80.dp))
+                    NumericUpDown(
+                        "",
+                        stringResource(Res.string.metricMM),
+                        edgeFR,
+                        modifier = Modifier.width(80.dp)
+                    )
                 }
             }
 
@@ -454,7 +489,7 @@ private fun ColumnScope.BoxAdvancedProperties(
     )
     {
         Column() {
-         //   Label("Форма дна", Modifier.Companion.align(Alignment.CenterHorizontally))
+            //   Label("Форма дна", Modifier.Companion.align(Alignment.CenterHorizontally))
             Row() {
                 Label(stringResource(Res.string.boxBottom), Modifier.width(60.dp))
                 NumericUpDown(
@@ -531,6 +566,6 @@ fun ToolbarActionIconForBox(vm: BoxData) {
 
 @Preview
 @Composable
-fun ToolbarForBoxPreview() = MaterialTheme{
+fun ToolbarForBoxPreview() = MaterialTheme {
     ToolbarForBox(BoxData(Tools()))
 }
