@@ -3,6 +3,7 @@ package turtoise
 import com.kos.figure.FigureEmpty
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
+import com.kos.figure.complex.FigureBone
 import com.kos.figure.composition.FigureTranslateWithRotate
 import vectors.Vec2
 
@@ -11,6 +12,7 @@ class TortoiseBuilder(
 ) {
     private val res = mutableListOf<IFigure>()
     var result = mutableListOf<Vec2>()
+    var bones = mutableMapOf<String, FigureBone>()
 
     val xy get() = state.xy
 
@@ -67,5 +69,13 @@ class TortoiseBuilder(
         val xy = xy
         val angle = angle
         add(FigurePolyline(points.map{ xy+it.rotate(angle)}, true))
+    }
+    fun addBone(bone : FigureBone){
+        bones[bone.boneName]= bone
+//        println(bones.keys)
+    }
+
+    fun boneAt(name:String): FigureBone?{
+        return bones[name]
     }
 }

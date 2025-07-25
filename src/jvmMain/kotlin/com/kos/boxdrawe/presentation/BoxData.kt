@@ -20,9 +20,8 @@ import com.kos.figure.composition.FigureColor
 import kotlinx.coroutines.flow.MutableStateFlow
 import turtoise.DrawerSettings
 import com.kos.tortoise.ZigzagInfo
-import kotlinx.coroutines.flow.map
 import vectors.Vec2
-class Update()
+
 @Stable
 class BoxData(override val tools: ITools): SaveFigure, PrintCode {
 
@@ -83,7 +82,6 @@ class BoxData(override val tools: ITools): SaveFigure, PrintCode {
     }
 
     fun createBox(line: String) {
-        changeFlow.value = Update()
         val alg = boxFigures(line, if (view3d.value) BoxCad.EOutVariant.VOLUME else BoxCad.EOutVariant.ALTERNATIVE)
         val ds = tools.ds()
         val fig = boxFigures(alg, ds)

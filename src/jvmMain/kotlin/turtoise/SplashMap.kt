@@ -5,6 +5,7 @@ import com.kos.boxdrawer.detal.splash.SplashApproximation
 import com.kos.boxdrawer.detal.splash.SplashApproximationPolar
 import com.kos.boxdrawer.detal.splash.SplashApproximationUser
 import com.kos.boxdrawer.detal.splash.SplashArc
+import com.kos.boxdrawer.detal.splash.SplashBone
 import com.kos.boxdrawer.detal.splash.SplashCircle
 import com.kos.boxdrawer.detal.splash.SplashCrop
 import com.kos.boxdrawer.detal.splash.SplashDiamond
@@ -42,6 +43,7 @@ import com.kos.boxdrawer.detal.splash.SplashGear
 import com.kos.boxdrawer.detal.splash.SplashGrid
 import com.kos.boxdrawer.detal.splash.SplashImage
 import com.kos.boxdrawer.detal.splash.SplashLines
+import com.kos.boxdrawer.detal.splash.SplashMesh
 import com.kos.boxdrawer.detal.splash.SplashRul
 import com.kos.boxdrawer.detal.splash.SplashStar
 import com.kos.boxdrawer.detal.splash.SplashTrapecija
@@ -98,6 +100,8 @@ object SplashMap {
         SplashGear(),
         SplashRul(),
         SplashTrapecija(),
+        SplashBone(),
+        SplashMesh(),
     )
     val splashes: Map<String, ISplashDetail> = splashList.flatMap { s -> s.names.map { it to s } }.toMap()
 }

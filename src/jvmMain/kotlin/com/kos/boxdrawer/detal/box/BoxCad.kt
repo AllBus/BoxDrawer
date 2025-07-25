@@ -623,7 +623,8 @@ object BoxCad {
         drawerSettings: DrawerSettings,
         waldParams: WaldParam,
         polki: PolkaSort,
-        outVariant: EOutVariant
+        outVariant: EOutVariant,
+        waldCounter : WaldList = WaldList(emptyMap())
     ): IFigure {
 
         // две толщины доски
@@ -664,6 +665,11 @@ object BoxCad {
         )
 
         val resultMap = mutableMapOf<Int, MutableList<IFigure>>()
+
+        val leftWalds = waldCounter.get(F_LEFT)
+        val rightWalds = waldCounter.get(F_RIGHT)
+        val faceWalds = waldCounter.get(F_FACE)
+        val backWalds = waldCounter.get(F_BACK)
 
         //  val list = mutableListOf<IFigure>()
 
