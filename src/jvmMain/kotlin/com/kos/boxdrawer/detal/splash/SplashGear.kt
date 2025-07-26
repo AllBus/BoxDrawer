@@ -71,39 +71,45 @@ class SplashGear : ISplashDetail{
     }
 
     fun drawGear(
-                 center: Vec2,
-                 outerRadius: Double,
-                 innerRadius: Double,
-                 numTeeth: Int,
-                 toothHeight: Double,
-                 pressureAngle: Double = 20.0 * PI / 180.0 // Угол давления в радианах (по умолчанию 20 градусов)
+        center: Vec2,
+        outerRadius: Double,
+        innerRadius: Double,
+        numTeeth: Int,
+        toothHeight: Double,
+        pressureAngle: Double = 20.0 * PI / 180.0 // Угол давления в радианах (по умолчанию 20 градусов)
     ) :IFigure {
         val result = mutableListOf<IFigure>()
         // Нарисовать внешний круг
-        result+=FigureCreator.figureCircle(center, outerRadius)
-
+        result += FigureCreator.figureCircle(center, outerRadius)
         // Нарисовать внутренний круг
-        result+=FigureCreator.figureCircle(center, innerRadius)
+        result += FigureCreator.figureCircle(center, innerRadius)
 
         // Нарисовать зубья
+        val baseRadius = outerRadius - toothHeight
         val angleStep = 2 * PI / numTeeth
+
+        val points = mutableListOf<Vec2>()
         for (i in 0 until numTeeth) {
             val angle = i * angleStep
+            val nextAngle = (i + 1) * angleStep
 
-            // Координаты внешней точки зуба
-            val outerPoint = center + Vec2(outerRadius * cos(angle), outerRadius * sin(angle))
+            // Точки основания зуба на базовой окружности
+            val p1 = center + Vec2(baseRadius * cos(angle), baseRadius * sin(angle))
+            val p2 = center + Vec2(baseRadius * cos(nextAngle), baseRadius * sin(nextAngle))
+            // Точки вершины зуба на внешней окружности
+            val p3 = center + Vec2(outerRadius * cos(nextAngle - angleStep / 2), outerRadius * sin(nextAngle - angleStep / 2))
+            val p4 = center + Vec2(outerRadius * cos(angle + angleStep / 2), outerRadius * sin(angle + angleStep / 2))
 
-            //Координаты точек основания зуба с учетом скоса
-            val bevel = toothHeight * tan(pressureAngle)
-            val baseAngle1 = angle - angleStep / 4
-            val baseAngle2 = angle + angleStep / 4
-            val basePoint1 = center + Vec2((outerRadius - toothHeight) * cos(baseAngle1) - bevel * sin(baseAngle1), (outerRadius - toothHeight) * sin(baseAngle1) + bevel * cos(baseAngle1))
-            val basePoint2 = center + Vec2((outerRadius - toothHeight) * cos(baseAngle2) + bevel * sin(baseAngle2), (outerRadius - toothHeight) * sin(baseAngle2) - bevel * cos(baseAngle2))
-
-            result.add(FigureLine(outerPoint, basePoint1))
-            result.add(FigureLine(basePoint1, basePoint2))
-            result.add(FigureLine(basePoint2, outerPoint))
+            points.addAll(
+                listOf(p1, p3, p4, p2)
+            )
         }
+
+        result += FigurePolyline(
+            points = points.toList()
+        )
+
         return result.toFigure()
     }
+
 }
