@@ -411,4 +411,87 @@ object TortoiseParser {
         )
     }
 
+    fun AnnotatedString.Builder.append(key: MemoryKey){
+        this.append(key.name)
+    }
+    /**
+     * Корректная подсветка синтаксиса без изменения длины текста
+     */
+    fun syntaxHighlight(line: String): AnnotatedString {
+        val builder = AnnotatedString.Builder()
+        var i = 0
+        val bracketColors = listOf(
+            Color(0xFF4A148C), // уровень 0 — тёмно-фиолетовый
+            Color(0xFF00695C), // уровень 1 — тёмно-бирюзовый
+            Color(0xFF990087), // уровень 2 — тёмно-красный
+            Color(0xFF1A237E), // уровень 3 — тёмно-синий
+            Color(0xFF33691E), // уровень 4 — тёмно-зелёный
+            Color(0xFF3E2723)  // уровень 5+ — тёмно-коричневый
+        )
+        val stack = mutableListOf<Char>()
+        val splashKeys = turtoise.SplashMap.splashes.keys
+        while (i < line.length) {
+            val c = line[i]
+            when {
+                c == '/' -> {
+                    builder.append("/")
+                    i++
+                    val start = i
+                    while (i < line.length && (line[i].isLetterOrDigit() || line[i] == '_')) i++
+                    val word = line.substring(start, i)
+                    if (word.isNotEmpty()) {
+                        val color = if (splashKeys.contains(word)) Color(0xFF0D47A1) else Color(0xFFB71C1C)
+                        builder.pushStyle(SpanStyle(color = color, fontWeight = FontWeight.Bold))
+                        builder.append(word)
+                        builder.pop()
+                    }
+                }
+                c == '@' -> {
+                    val start = i
+                    i++
+                    while (i < line.length && (line[i].isLetterOrDigit() || line[i] == '_')) i++
+                    builder.pushStyle(SpanStyle(color = Color(0xFFB26A00)))
+                    builder.append(line.substring(start, i))
+                    builder.pop()
+                }
+                c.isDigit() || (c == '-' && i + 1 < line.length && line[i + 1].isDigit()) -> {
+                    val start = i
+                    if (c == '-') i++
+                    while (i < line.length && (line[i].isDigit() || line[i] == '.')) i++
+                    builder.pushStyle(SpanStyle(color = Color(0xFF388E3C)))
+                    builder.append(line.substring(start, i))
+                    builder.pop()
+                }
+                c.isLetter() -> {
+                    val start = i
+                    while (i < line.length && line[i].isLetter()) i++
+                    builder.pushStyle(SpanStyle(color = Color(0xFF0D47A1), fontWeight = FontWeight.Bold))
+                    builder.append(line.substring(start, i))
+                    builder.pop()
+                }
+                c == '(' || c == '[' || c == '{' -> {
+                    val level = stack.size.coerceAtMost(bracketColors.lastIndex)
+                    builder.pushStyle(SpanStyle(color = bracketColors[level]))
+                    builder.append(c.toString())
+                    builder.pop()
+                    stack.add(c)
+                    i++
+                }
+                c == ')' || c == ']' || c == '}' -> {
+                    val level = (stack.size - 1).coerceAtLeast(0).coerceAtMost(bracketColors.lastIndex)
+                    builder.pushStyle(SpanStyle(color = bracketColors[level]))
+                    builder.append(c.toString())
+                    builder.pop()
+                    if (stack.isNotEmpty()) stack.removeAt(stack.lastIndex)
+                    i++
+                }
+                else -> {
+                    builder.append(c.toString())
+                    i++
+                }
+            }
+        }
+        return builder.toAnnotatedString()
+    }
+
 }

@@ -41,9 +41,16 @@ import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.themes.ThemeColors
+import turtoise.parser.TortoiseParser
 
 @Composable
 fun EditText(
@@ -105,6 +112,36 @@ fun Modifier.verticalScrollbar(
     }
 }
 
+private val tortoiseKeywords = listOf("polka", "robot", "box", "dxf", "svg")
+
+fun tortoiseSyntaxHighlight(text: String): AnnotatedString {
+    return buildAnnotatedString {
+        var lastIndex = 0
+        val regex = Regex(tortoiseKeywords.joinToString("|", "\\b(", ")\\b"))
+        for (match in regex.findAll(text)) {
+            val start = match.range.first
+            val end = match.range.last + 1
+            append(text.substring(lastIndex, start))
+            pushStyle(SpanStyle(color = Color(0xFF1976D2))) // синий цвет для ключевых слов
+            append(text.substring(start, end))
+            pop()
+            lastIndex = end
+        }
+        if (lastIndex < text.length) {
+            append(text.substring(lastIndex))
+        }
+    }
+}
+
+object TortoiseVisualTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        return TransformedText(
+            text = TortoiseParser.syntaxHighlight(text.text),
+            offsetMapping = OffsetMapping.Identity
+        )
+    }
+}
+
 @Composable
 fun EditTextField(
     title: String,
@@ -121,7 +158,7 @@ fun EditTextField(
             value = value.value,
             onValueChange = {
 
-          //      lastFocusValue.value = it.selection
+                //      lastFocusValue.value = it.selection
                 val change = (value.value.text != it.text)
                 value.value = it
                 onMove(it)
@@ -134,6 +171,7 @@ fun EditTextField(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             modifier = Modifier.fillMaxSize(),
             enabled = enabled,
-            )
+            visualTransformation = TortoiseVisualTransformation
+        )
     }
 }
