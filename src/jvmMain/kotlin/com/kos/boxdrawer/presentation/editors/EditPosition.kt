@@ -36,6 +36,8 @@ import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kos.boxdrawe.icons.Expand
@@ -100,18 +102,18 @@ fun EditPosition(
         AnimatedVisibility(expanded.value) {
             Column(modifier = Modifier) {
                 TemplateSizeBox(
-                    TemplateItemSize("x y", "xy"),
+                    remember{TemplateItemSize("x y", "xy")},
                     null, "xy",
                     moveListener.value,
                 )
                 TemplateAngleBox(
-                    TemplateItemAngle("a", "a"),
+                    remember{TemplateItemAngle("a", "a")},
                     null, "a",
                     moveListener.value,
                 )
 
                 val inputPos =
-                    remember("pos") {
+                    remember("pos", moveListener.value) {
                         NumericTextFieldState(
                             value = 0.0,
                             minValue = -1000000.0,
@@ -148,15 +150,16 @@ fun EditPosition(
                 }
                 val selectedCommandData = remember { mutableStateOf(HelpData("", "")) }
                 Text(
-                    AnnotatedString(
-                        selectedFigure.value.name
-                    ) + AnnotatedString(" ") +
-                            AnnotatedString(
-                                selectedCommandData.value.argument,
-                                SpanStyle(
-                                    color = Color(0xFF26A530),
-                                )
-                            ),
+                    buildAnnotatedString{
+                        append(selectedFigure.value.name)
+                        append(" ")
+                        withStyle(style = SpanStyle(
+                            color = Color(0xFF26A530),
+                        )
+                        ){
+                            append(selectedCommandData.value.argument)
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth().clickable {
                         expandedMenuState.status = DropdownMenuState.Status.Open(Offset.Zero)
                     }.padding(4.dp)
@@ -202,10 +205,16 @@ fun EditPosition(
                         }
                     )
                 }
-                Text(editorListener.value.currentText.value)
+
+                CurrentText(editorListener)
             }
         }
     }
+}
+
+@Composable
+private fun CurrentText(editorListener: State<TemplateFigureBuilderListener>) {
+    Text(editorListener.value.currentText.value)
 }
 
 @Composable
