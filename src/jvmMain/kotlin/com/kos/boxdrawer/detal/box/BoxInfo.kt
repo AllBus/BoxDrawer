@@ -4,7 +4,7 @@ data class BoxInfo(
     val width : Double,
     val height: Double ,
     val weight: Double ,
-    val heights: List<Double> = emptyList()
+    val heights: List<Double> = emptyList(),
 ) {
 
     fun commandLine():String{

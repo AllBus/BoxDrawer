@@ -1,17 +1,13 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.ExperimentalComposeLibrary
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 plugins {
-    // kotlin("multiplatform")
-    //  id("org.jetbrains.compose")
-    kotlin("plugin.serialization") version "1.9.21"
-
     //  alias(libs.plugins.androidApplication) apply false
     //  alias(libs.plugins.androidLibrary) apply false
     alias(libs.plugins.jetbrainsCompose) // apply false
     alias(libs.plugins.compose.compiler) //apply false
     alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.org.jetbrains.kotlin.jvm) apply false
 }
 
@@ -89,19 +85,22 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
+            implementation(compose.material)
+            implementation(compose.materialIconsExtended)
             implementation(compose.material3)
             implementation(compose.material3AdaptiveNavigationSuite)
-            implementation("org.openpnp:opencv:4.9.0-0")
-            implementation("org.opencv:opencv:4.9.0")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.10.1")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.1")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
+            implementation(compose.preview)
+            implementation(libs.kotlin.coroutines.jdk8)
+            implementation(libs.kotlin.coroutines.core)
+            implementation(libs.kotlin.coroutines.corejvm)
+            implementation(libs.kotlin.serialization.json)
+         //   implementation(libs.opencv.library)
+            implementation(libs.openpnp.library)
+
             implementation("com.google.code.gson:gson:2.9.1")
             implementation("com.squareup.retrofit2:retrofit:2.9.0")
             implementation("com.squareup.retrofit2:converter-gson:2.9.0")
             implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
             implementation("io.github.pdvrieze.xmlutil:core:0.86.3")
             implementation("io.github.pdvrieze.xmlutil:serialization:0.86.3")
             implementation("androidx.collection:collection:1.4.4")
@@ -119,13 +118,14 @@ kotlin {
             implementation(project(":figure"))
             implementation(project(":dxfprinter"))
             implementation(project(":commonMain"))
-            implementation( "com.google.android.material:material:1.12.0")
             // implementation("com.groupdocs:groupdocs-comparison:22.3")
         }
 
         jvmTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotlin.coroutines.test)
             implementation("org.junit.jupiter:junit-jupiter:5.10.2")
+         //   implementation("org.opencv:opencv:4.9.0")
         //    implementation(project(":src:jvmMain"))
         }
 

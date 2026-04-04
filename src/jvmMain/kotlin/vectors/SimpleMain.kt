@@ -1,13 +1,12 @@
 package vectors
 
+import java.util.PriorityQueue
+import java.util.Random
 import kotlin.math.pow
-import java.util.*
 
 class SimpleMain{
 
 }
-
-
 
 data class Neighbor(val node: Node, val weight: Int)
 data class Node(val id: Int, val neighbors: MutableList<Neighbor> = mutableListOf()){

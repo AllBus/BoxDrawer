@@ -31,6 +31,7 @@ import com.kos.boxdrawer.generated.resources.act_paz
 import com.kos.boxdrawer.generated.resources.boxBottom
 import com.kos.boxdrawer.generated.resources.boxEdges
 import com.kos.boxdrawer.generated.resources.boxHeight
+import com.kos.boxdrawer.generated.resources.boxKrishka
 import com.kos.boxdrawer.generated.resources.boxPazDelta
 import com.kos.boxdrawer.generated.resources.boxPazInBottomPolka
 import com.kos.boxdrawer.generated.resources.boxPazInHeight
@@ -62,7 +63,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ToolbarForBox(vm: BoxData) {
 
-    val text = rememberSaveable(key = "ToolbarForBox.Text") { vm.text }
+    val text = rememberSaveable() { vm.text }
 
     val modifier = TabContentModifier
     ToolbarForBoxOrientation(modifier, vm, text)
@@ -148,6 +149,18 @@ private fun ToolbarBoxRowThree(
             onCheckedChange = remember(vm) {
                 { c ->
                     alternative = c
+                    vm.redrawBox()
+                }
+            },
+        )
+
+        var krishka by remember { vm.krishka }
+        RunCheckBox(
+            checked = krishka,
+            title = stringResource(Res.string.boxKrishka),
+            onCheckedChange = remember(vm) {
+                { c ->
+                    krishka = c
                     vm.redrawBox()
                 }
             },

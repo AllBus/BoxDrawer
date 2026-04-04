@@ -24,6 +24,7 @@ data class WaldParam(
     val edgeTopRoundRadius: Double,
     val zigFigure: TortoiseAlgorithm?,
     val zagFigure: TortoiseAlgorithm?,
+    val krishka: Boolean = false
 ) {
     val verticalOffset: Double get() = topOffset + bottomOffset
 

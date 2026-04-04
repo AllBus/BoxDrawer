@@ -12,7 +12,6 @@ import com.kos.figure.FigureLine
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
-import com.kos.figure.complex.FigureZigZag
 import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureRotate
@@ -43,7 +42,7 @@ object BoxCad {
     private const val F_TOP = -2
     private const val F_LEFT = -3
     private const val F_RIGHT = -4
-    private const val F_FACE = -5
+    private const val F_FRONT = -5
     private const val F_BACK = -6
 
     fun faceWald(
@@ -668,7 +667,7 @@ object BoxCad {
 
         val leftWalds = waldCounter.get(F_LEFT)
         val rightWalds = waldCounter.get(F_RIGHT)
-        val faceWalds = waldCounter.get(F_FACE)
+        val faceWalds = waldCounter.get(F_FRONT)
         val backWalds = waldCounter.get(F_BACK)
 
         //  val list = mutableListOf<IFigure>()
@@ -705,7 +704,7 @@ object BoxCad {
 
         val verticalWaldParam = horizontalWaldParam.copy(reverse = false)
 
-        resultMap.getOrPut(F_FACE) { mutableListOf() }.addAll(
+        resultMap.getOrPut(F_FRONT) { mutableListOf() }.addAll(
             faceWald(
                 origin = Vec2(-holeH.height, 0.0),
                 width = weight,
@@ -814,7 +813,7 @@ object BoxCad {
                 }
 
                 val startId = start?.calc?.id
-                    ?: if (po.orientation === Orientation.Vertical) F_LEFT else F_FACE
+                    ?: if (po.orientation === Orientation.Vertical) F_LEFT else F_FRONT
                 val endId = end?.calc?.id
                     ?: if (po.orientation === Orientation.Vertical) F_RIGHT else F_BACK
                 val polId = F_BOTTOM
@@ -826,6 +825,23 @@ object BoxCad {
                 appendProgram(po, drawerSettings, inter, resultMap)
             }
 
+        }
+
+        if (waldParams.krishka){
+            val krishkaHole = mutableListOf<IFigure>()
+            var topOffset = height - drawerSettings.boardWeight
+            if (wald.topForm != PazForm.None) {
+                topOffset -= wald.holeTopOffset
+            }
+            krishkaHole.add(FigureCreator.rectangle(
+                left = 0.0,
+                top = topOffset,
+                right = weight-2*drawerSettings.boardWeight,
+                bottom = topOffset - (drawerSettings.holeWeight+1),
+                enableSmooth = false,
+                smoothSize = 0.0
+            ))
+            resultMap.getOrPut(F_FRONT) { mutableListOf() }.addAll(krishkaHole)
         }
 
         val rm = resultMap.mapValues { (index, value) ->
@@ -920,7 +936,7 @@ object BoxCad {
             SIDE_NONE -> 0
             SIDE_LEFT -> F_LEFT
             SIDE_RIGHT -> F_RIGHT
-            SIDE_FACE -> F_FACE
+            SIDE_FACE -> F_FRONT
             SIDE_BACK -> F_BACK
             0 -> polkaId
             else ->
@@ -941,7 +957,7 @@ object BoxCad {
             val r = f.rect()
             val mf = Matrix()
             when (index) {
-                F_FACE -> {
+                F_FRONT -> {
                     mf.translate(y = 0f, z = -boardWeight.toFloat())
                     mf.rotateY(90f)
                     mf.rotateZ(90f)
@@ -1066,7 +1082,7 @@ object BoxCad {
         }
         rm.forEach { (index, f) ->
             when (index) {
-                F_FACE, F_BACK -> {
+                F_FRONT, F_BACK -> {
                     val r = f.rect()
 
                     outList += FigureTranslate(

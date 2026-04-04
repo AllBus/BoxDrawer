@@ -51,6 +51,7 @@ class BoxData(override val tools: ITools): SaveFigure, PrintCode {
             edgeTopRoundRadius = edgeRadius.decimal,
             zigFigure = null,
             zagFigure = null,
+            krishka = krishka.value,
         )
 
         val boxInfo = BoxInfo(
@@ -122,6 +123,8 @@ class BoxData(override val tools: ITools): SaveFigure, PrintCode {
     var polkiInChecked = mutableStateOf(false)
     var view3d = mutableStateOf(true)
     val text = mutableStateOf(TextFieldValue(""))
+
+    var krishka = mutableStateOf(false)
 
     val edgeFL = NumericTextFieldState(0.0) { redrawBox() }
     val edgeBL = NumericTextFieldState(0.0) { redrawBox() }
