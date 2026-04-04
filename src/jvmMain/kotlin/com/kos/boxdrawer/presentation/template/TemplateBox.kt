@@ -14,6 +14,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -48,13 +51,14 @@ fun TemplateBox(
     menu: State<TemplateInfo>,
     templateGenerator: TemplateGeneratorListener,
 ) {
-
+//    val form by remember { derivedStateOf { menu.value.form } }
+//    val block by remember { derivedStateOf { menu.value.values } }
     val form = menu.value.form
     val block = menu.value.values
-    if (form.argumentName.isNotEmpty()) {
-        menu.value.values.getInnerAtName(form.argumentName)
-    } else
-        menu.value.values
+//    if (form.argumentName.isNotEmpty()) {
+//        menu.value.values.getInnerAtName(form.argumentName)
+//    } else
+//        menu.value.values
 
     Column(modifier = modifier) {
         if (!form.isEmpty()) {
@@ -199,8 +203,9 @@ fun TemplateItemBox(
     templateGenerator: TemplateGeneratorListener,
     isEdit: Boolean,
 ) {
-    val newPrefix = prefix + "." + item.argumentName
-    val inner = block?.getInnerAtName(item.argumentName)
+    val newPrefix = remember(prefix, item.argumentName) { prefix + "." + item.argumentName }
+    val inner = remember(block, item.argumentName) { block?.getInnerAtName(item.argumentName) }
+
     Row {
         Box(Modifier.weight(1f)) {
             when (item) {

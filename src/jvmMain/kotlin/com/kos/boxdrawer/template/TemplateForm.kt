@@ -1,6 +1,7 @@
 package com.kos.boxdrawer.template
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_3
@@ -17,6 +18,7 @@ import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
 
 @Immutable
+@Stable
 interface TemplateItem {
     fun print(): TortoiseParserStackItem
 
