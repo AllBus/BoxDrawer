@@ -29,6 +29,7 @@ import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.SaveToFileIconButton
 import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.createFileButton
 import com.kos.boxdrawer.generated.resources.dxfClearAlertDescription
 import com.kos.boxdrawer.generated.resources.dxfClearAlertNegative
 import com.kos.boxdrawer.generated.resources.dxfClearAlertPositive
@@ -247,7 +248,9 @@ fun ToolbarActionIconForDxf(vm: DxfToolsData) {
         tooltip = stringResource(Res.string.dxfClearButton)) {
             showAlert.value = true
         }
-        ImageButton(Icons.File_open) {
+        ImageButton(Icons.File_open,
+            tooltip = stringResource(Res.string.toolsButtonOpenFile)
+        ) {
             coroutineScope.launch {
                 showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.loadDxf(f) }
             }

@@ -1,12 +1,12 @@
 package com.kos.boxdrawe.widget
 
 import androidx.compose.runtime.*
-import androidx.compose.ui.window.AwtWindow
 import androidx.compose.ui.window.FrameWindowScope
 import java.awt.FileDialog
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.awt.AwtWindow
 import androidx.compose.ui.window.rememberDialogState
 import java.awt.Frame
 import java.io.File
