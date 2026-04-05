@@ -1,6 +1,10 @@
 package com.kos.boxdrawe.presentation
 
+import com.jsevy.jdxf.DXFColor
+import com.kos.boxdrawe.presentation.model.BlockModifier
+import com.kos.boxdrawe.presentation.model.ColorBlockModifier
 import com.kos.boxdrawe.presentation.model.SegmentBlock
+import com.kos.boxdrawe.presentation.model.SegmentBlock.Companion.invoke
 import com.kos.boxdrawe.presentation.model.SegmentBlockGroup
 import com.kos.boxdrawe.presentation.segments.SegmentUtils
 import com.kos.boxdrawe.presentation.segments.SegmentUtils.getBlockCenter
@@ -16,6 +20,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import vectors.Matrix
 import vectors.Vec2
@@ -30,6 +35,12 @@ class SegmentsToolsData(val tools: ITools) {
     private val previewElement = MutableStateFlow<List<PathElement>?>(null)
     private val hoveredBlock = MutableStateFlow<SegmentBlock?>(null)
     private val selectedBlocks = MutableStateFlow<List<SegmentBlock>>(emptyList())
+
+    val currentColor = MutableStateFlow<Int>(0)
+    val rgbCurrentColor = currentColor.map { DXFColor.getRgbColor(it)}
+    fun changeCurrentColor(color :Int){
+        currentColor.value = color
+    }
 
 
     private val points = mutableListOf<Vec2>()
@@ -118,6 +129,15 @@ class SegmentsToolsData(val tools: ITools) {
     }
 
     fun onPress(point: Vec2, button: Int, scale: Float) {
+        if (Instruments.button(button) == Instruments.POINTER_RIGHT && (button and Instruments.MODIFIER_CTRL) != 0) {
+            val hovered = hoveredBlock.value
+            if (hovered != null) {
+                updateBlocks(toggleBlockColor(hovered, currentColor.value))
+                hoveredBlock.value = null
+            }
+            return
+        }
+
         if (Instruments.button(button) != Instruments.POINTER_LEFT) return
 
         val hovered = hoveredBlock.value
@@ -179,10 +199,23 @@ class SegmentsToolsData(val tools: ITools) {
         if (points.size >= requiredPoints && requiredPoints > 0) {
             val element = createPathElement(points, null)
             if (element != null && element.isNotEmpty()) {
-                blocks.value = SegmentBlockGroup(blocks.value.blocks + SegmentBlock(element))
+                blocks.value = SegmentBlockGroup(blocks.value.blocks +
+                        SegmentBlock(
+                            elements = element,
+                            modifiers = listOf( ColorBlockModifier(currentColor.value))
+                        )
+                )
             }
             resetDrawing()
         }
+    }
+
+    private fun updateBlocks(changeBlock:SegmentBlock) {
+        blocks.value = SegmentBlockGroup(blocks.value.blocks.map { block ->
+            if (block.isSame(changeBlock)) {
+                changeBlock
+            } else block
+        })
     }
 
     fun onMove(point: Vec2, button: Int, scale: Float) {
@@ -205,16 +238,9 @@ class SegmentsToolsData(val tools: ITools) {
                 else -> originalMatrix
             }
 
-            var updatedMovingBlock: SegmentBlock? = null
-            val newBlocks = blocks.value.blocks.map { block ->
-                if (block.isSame(moving)) {
-                    val updated = block.copy(matrix = newMatrix)
-                    updatedMovingBlock = updated
-                    updated
-                } else block
-            }
 
-            blocks.value = SegmentBlockGroup(newBlocks)
+            val updatedMovingBlock: SegmentBlock = moving.copy(matrix = newMatrix)
+            updateBlocks(updatedMovingBlock)
             movingBlock = updatedMovingBlock
             return
         }
@@ -243,6 +269,11 @@ class SegmentsToolsData(val tools: ITools) {
             }
         }
         hoveredBlock.value = nearest
+    }
+
+    private fun toggleBlockColor(block: SegmentBlock, nextColor:Int):SegmentBlock {
+        val newModifier = ColorBlockModifier(dxfColor = nextColor)
+        return block.copy(modifiers = block.modifiers.filter { it !is ColorBlockModifier } + newModifier)
     }
 
     private fun moveElement(delta: Vec2): Matrix =

@@ -1,9 +1,12 @@
 package com.kos.boxdrawer.presentation.tabbar
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -11,10 +14,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.icons.Icons
 import com.kos.boxdrawe.presentation.DxfToolsData
@@ -41,6 +46,7 @@ import com.kos.boxdrawer.generated.resources.dxfScaleValue
 import com.kos.boxdrawer.generated.resources.dxfToolsMagnet
 import com.kos.boxdrawer.generated.resources.toolsButtonOpenFile
 import com.kos.boxdrawer.presentation.display.DrawInstrumentIcon
+import com.kos.boxdrawer.presentation.template.ColorBox
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 
@@ -99,6 +105,23 @@ fun ToolbarForSegments(vm: SegmentsToolsData) {
                 }
             }
 
+        }
+        Column{
+            val clr =  vm.rgbCurrentColor.collectAsState(0)
+            Box(modifier = Modifier.size(32.dp).background(
+               Color( clr.value)
+            ))
+
+            ColorBox(
+                modifier = Modifier.width(180.dp),
+                onClick = remember(vm) {
+                    { color ->
+                        vm.changeCurrentColor(color)
+                    }
+                },
+                onHover = {},
+                onExit = {}
+            )
         }
     }
 }

@@ -1,11 +1,14 @@
 package com.kos.boxdrawe.presentation.segments
 
+import com.jsevy.jdxf.DXFColor
+import com.kos.boxdrawe.presentation.model.ColorBlockModifier
 import com.kos.boxdrawe.presentation.model.SegmentBlock
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
 import com.kos.figure.complex.transform.toFigure
 import com.kos.figure.composition.Figure3dTransform
+import com.kos.figure.composition.FigureColor
 import com.kos.figure.segments.model.Arc
 import com.kos.figure.segments.model.Curve
 import com.kos.figure.segments.model.Ellipse
@@ -167,11 +170,33 @@ object SegmentUtils {
             toFigure(block.element)
         }
 
+        val coloredFigure = makeModifiers(block, baseFigure)
+
         return if (block.matrix.isIdentity()) {
-            baseFigure
+            coloredFigure
         } else {
-            Figure3dTransform(block.matrix, baseFigure)
+            Figure3dTransform(block.matrix, coloredFigure)
         }
+    }
+
+    private fun makeModifiers(
+        block: SegmentBlock,
+        baseFigure: IFigure
+    ): IFigure {
+        val coloredFigure = block.modifiers.fold(baseFigure){ f,  mod ->
+            when (mod) {
+                is ColorBlockModifier -> {
+                    FigureColor(
+                        DXFColor.getRgbColor(mod.dxfColor),
+                        mod.dxfColor,
+                        f
+                    )
+                }
+                else ->
+                    f
+            }
+        }
+        return coloredFigure
     }
 
     fun getBlockCenter(block: SegmentBlock): Vec2 {

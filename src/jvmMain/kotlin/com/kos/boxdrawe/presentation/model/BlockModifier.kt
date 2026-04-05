@@ -1,7 +1,9 @@
 package com.kos.boxdrawe.presentation.model
 
-data class BlockModifier(
+interface BlockModifier
+
+data class ColorBlockModifier(
     val dxfColor:Int,
-) {
+) :  BlockModifier{
 
 }
