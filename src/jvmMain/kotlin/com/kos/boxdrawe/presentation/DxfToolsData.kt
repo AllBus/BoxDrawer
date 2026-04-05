@@ -19,6 +19,7 @@ import com.kos.figure.collections.FigurePoints
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureComposition
 import com.kos.figure.composition.FigureTranslate
+import com.kos.figure.composition.FigureVolume
 import com.kos.figure.editor.FigureMutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +38,7 @@ import vectors.Vec2
 import java.io.File
 import java.io.FileInputStream
 import kotlin.math.abs
+import turtoise.dxf.FigureBlock
 
 @Stable
 class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
@@ -67,7 +69,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
     private var currentPoint: MutableStateFlow<List<Vec2>> = MutableStateFlow(emptyList())
     private var currentScale: MutableStateFlow<Float> = MutableStateFlow(1.0f)
 
-    private val editFigure: MutableStateFlow<IFigure> = MutableStateFlow(FigureEmpty)
+    private val editFigure: MutableStateFlow<FigureBlock> = MutableStateFlow(FigureBlock.Empty)
 
     private var currentPointInfo: PointInfo? = null
 
@@ -96,7 +98,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
     fun recalcFigure() {
         val pointList = currentPoint.value
         val delta = (endPoint - startPoint)
-        val r = when (_instrument.value) {
+        val rawFigure = when (_instrument.value) {
             Instruments.INSTRUMENT_POINTER -> selectedFigure.list.getOrNull(0)?.figure?.let { f ->
                 FigureTranslate(
                     delta,
@@ -170,7 +172,14 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
 
         }
 
-        editFigure.value = r
+        // Вместо прямой фигуры создаем Block
+        editFigure.value = if (rawFigure != FigureEmpty) {
+            FigureBlock(
+                figure = rawFigure,
+                matrix = Matrix.identity, // Можно добавить текущую трансформацию если нужно
+                modifiers = emptyList()
+            )
+        } else FigureBlock.Empty
     }
 
     fun appendPointOrFigure(count: Int) {
@@ -204,7 +213,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
             else -> FigureMutableList(mutableListOf(ev, v))
         }
 
-        editFigure.value = FigureEmpty
+        editFigure.value = FigureBlock.Empty
         currentPoint.value = emptyList()
     }
 
@@ -224,7 +233,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
         clear()
 
         try {
-            editFigure.value = FigureEmpty
+            editFigure.value = FigureBlock.Empty
             currentPointInfo = null
 
             val f = File(fileName)
@@ -494,7 +503,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
     }
 
     fun clear() {
-        editFigure.value = FigureEmpty
+        editFigure.value = FigureBlock.Empty
         intersectPoint.value = emptyList()
         currentPoint.value = emptyList()
         currentPointInfo = null
