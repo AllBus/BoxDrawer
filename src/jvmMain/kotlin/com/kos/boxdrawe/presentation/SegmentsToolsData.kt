@@ -28,7 +28,7 @@ class SegmentsToolsData(val tools: ITools) {
     val instrument: StateFlow<Int> = _instrument
 
     val blocks = MutableStateFlow<SegmentBlockGroup>(SegmentBlockGroup(emptyList()))
-    private val previewElement = MutableStateFlow<PathElement?>(null)
+    private val previewElement = MutableStateFlow<List<PathElement>?>(null)
     private val hoveredBlock = MutableStateFlow<SegmentBlock?>(null)
     private val selectedBlocks = MutableStateFlow<List<SegmentBlock>>(emptyList())
 
@@ -50,7 +50,7 @@ class SegmentsToolsData(val tools: ITools) {
                 FigureColor(0xFF0000FF.toInt(), 1, f)
             } else f
         }
-        val previewFigure = preview?.let { SegmentUtils.toFigure(it) }
+        val previewFigure = FigureList( preview?.map { SegmentUtils.toFigure(it) }.orEmpty())
 
         // Подсвечиваем фигуру под курсором красным
         val highlightFigure = hovered?.let {
@@ -133,12 +133,13 @@ class SegmentsToolsData(val tools: ITools) {
             Instruments.INSTRUMENT_CIRCLE -> 2
             Instruments.INSTRUMENT_ELLIPSE -> 3
             Instruments.INSTRUMENT_BEZIER -> 4
+            Instruments.INSTRUMENT_RECTANGLE ->3
             else -> 0
         }
 
         if (points.size >= requiredPoints && requiredPoints > 0) {
             val element = createPathElement(points, null)
-            if (element != null) {
+            if (element != null && element.isNotEmpty()) {
                 blocks.value = SegmentBlockGroup(blocks.value.blocks + SegmentBlock(element))
             }
             resetDrawing()
@@ -231,21 +232,24 @@ class SegmentsToolsData(val tools: ITools) {
         return originalMatrix.copyWithTransform(m)
     }
 
-    private fun createPathElement(pts: List<Vec2>, current: Vec2?): PathElement? {
+    private fun createPathElement(pts: List<Vec2>, current: Vec2?): List<PathElement>? {
         val allPoints = if (current != null) pts + current else pts
 
         return when (_instrument.value) {
             Instruments.INSTRUMENT_LINE -> {
-                SegmentUtils.createPathLine(allPoints)
+                listOfNotNull(SegmentUtils.createPathLine(allPoints))
             }
             Instruments.INSTRUMENT_CIRCLE -> {
-                SegmentUtils.createPathCircle(allPoints)
+                listOfNotNull(SegmentUtils.createPathCircle(allPoints))
             }
             Instruments.INSTRUMENT_ELLIPSE -> {
-                SegmentUtils.createPathEllipse(allPoints)
+                listOfNotNull(SegmentUtils.createPathEllipse(allPoints))
             }
             Instruments.INSTRUMENT_BEZIER -> {
-                SegmentUtils.createPathBezier(allPoints)
+                listOfNotNull(SegmentUtils.createPathBezier(allPoints))
+            }
+            Instruments.INSTRUMENT_RECTANGLE -> {
+                SegmentUtils.createPathRectangle(allPoints)
             }
             else -> null
         }

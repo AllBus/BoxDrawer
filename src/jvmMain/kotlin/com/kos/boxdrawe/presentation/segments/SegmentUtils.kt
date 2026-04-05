@@ -7,16 +7,12 @@ import com.kos.figure.collections.FigureList
 import com.kos.figure.complex.transform.toFigure
 import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.segments.model.Arc
-import com.kos.figure.segments.model.Arc.Companion.invoke
 import com.kos.figure.segments.model.Curve
-import com.kos.figure.segments.model.Curve.Companion.invoke
 import com.kos.figure.segments.model.Ellipse
-import com.kos.figure.segments.model.Ellipse.Companion.invoke
+import com.kos.figure.segments.model.EmptyPath
 import com.kos.figure.segments.model.PathElement
 import com.kos.figure.segments.model.Segment
-import com.kos.figure.segments.model.Segment.Companion.invoke
 import vectors.Vec2
-import kotlin.invoke
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -85,6 +81,41 @@ object SegmentUtils {
         } else null
     } else null
 
+    fun createPathRectangle(allPoints: List<Vec2>): List<PathElement>? {
+        if (allPoints.size < 2) return null
+
+        val p1 = allPoints[0]
+        val p2 = allPoints[1]
+        val diff = p2 - p1
+        val width = diff.magnitude
+        val angle = diff.angle
+
+        val height = if (allPoints.size >= 3) {
+            val p3 = allPoints[2]
+            val p3Local = (p3 - p1).rotate(-angle)
+            p3Local.y
+        } else {
+            width * 0.5
+        }
+
+        val vWidth = Vec2(width, 0.0).rotate(angle)
+        val vHeight = Vec2(0.0, height).rotate(angle)
+
+        val pt1 = p1
+        val pt2 = p1 + vWidth
+        val pt3 = p1 + vWidth + vHeight
+        val pt4 = p1 + vHeight
+
+        val segments = listOf(
+            Segment(pt1, pt2),
+            Segment(pt2, pt3),
+            Segment(pt3, pt4),
+            Segment(pt4, pt1)
+        )
+
+        return segments
+    }
+
 
     fun toFigure(segment: PathElement): IFigure {
         return when (segment) {
@@ -117,6 +148,7 @@ object SegmentUtils {
 
                 if (it.matrix.isIdentity()) c else it.matrix.map(c)
             }
+            if (childCenters.isEmpty()) return Vec2.Zero
             Vec2(childCenters.map { it.x }.average(), childCenters.map { it.y }.average())
         } else {
             block.element.center

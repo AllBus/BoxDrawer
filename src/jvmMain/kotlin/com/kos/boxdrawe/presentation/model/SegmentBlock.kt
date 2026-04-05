@@ -22,6 +22,19 @@ data class SegmentBlock(
         private val idGenerator = AtomicLong(0)
         private fun nextId() = idGenerator.incrementAndGet()
 
-        val EMPTY = SegmentBlock(EmptyPath, Matrix.identity, emptyList(), id = -1)
+        operator fun invoke(elements: List<PathElement>):SegmentBlock{
+            return SegmentBlock(
+                element = EmptyPath,
+                matrix = Matrix.identity,
+                modifiers = emptyList(),
+                children = elements.map { SegmentBlock(it) })
+        }
+
+        val EMPTY = SegmentBlock(
+            element = EmptyPath,
+            matrix = Matrix.identity,
+            modifiers = emptyList(),
+            id = -1
+        )
     }
 }
