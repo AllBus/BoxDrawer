@@ -103,5 +103,11 @@ fun DrawInstrumentIcon(instrument:Int){
                 contentDescription = "Group"
             )
         }
+        Instruments.INSTRUMENT_UNGROUP -> {
+            Icon(
+                imageVector = InstrumentIcon.rememberPointerUngroup(),
+                contentDescription = "Ungroup"
+            )
+        }
     }
 }

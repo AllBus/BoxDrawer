@@ -561,4 +561,38 @@ object InstrumentIcon {
             }.build()
         }
     }
+
+    @Composable
+    fun rememberPointerUngroup(): ImageVector {
+        return remember {
+            ImageVector.Builder(
+                name = "ungroup",
+                defaultWidth = 24.dp,
+                defaultHeight = 24.dp,
+                viewportWidth = 24.0f,
+                viewportHeight = 24.0f
+            ).apply {
+                materialPath {
+                    // Уголки "группирующей" рамки
+                    // Верхний левый
+                    moveTo(4f, 4f)
+                    horizontalLineToRelative(6f)
+                    verticalLineToRelative(2f)
+                    horizontalLineToRelative(-4f)
+                    verticalLineToRelative(4f)
+                    horizontalLineTo(4f)
+                    close()
+
+                    // Нижний правый
+                    moveTo(20f, 20f)
+                    horizontalLineToRelative(-6f)
+                    verticalLineToRelative(-2f)
+                    horizontalLineToRelative(4f)
+                    verticalLineToRelative(-4f)
+                    horizontalLineToRelative(2f)
+                    close()
+                }
+            }.build()
+        }
+    }
 }

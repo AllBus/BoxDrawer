@@ -94,6 +94,13 @@ class SegmentsToolsData(val tools: ITools) {
 
         val hovered = hoveredBlock.value
 
+
+        if (_instrument.value == Instruments.INSTRUMENT_UNGROUP) {
+            if (hovered != null) {
+                ungroup(hovered)
+            }
+        }
+
         if (_instrument.value == Instruments.INSTRUMENT_GROUP) {
             if (hovered != null) {
                 if (hovered in selectedBlocks.value) {
@@ -263,6 +270,18 @@ class SegmentsToolsData(val tools: ITools) {
 
     fun onRelease(point: Vec2, button: Int, scale: Float) {
         movingBlock = null
+    }
+
+    fun ungroup(block: SegmentBlock){
+        if (block.isGroup){
+            val children = block.children
+            val nw = children.map { child ->
+                child.copy(matrix = child.matrix.copyWithTransform(block.matrix))
+            }
+            blocks.value = SegmentBlockGroup(
+                blocks = blocks.value.blocks.filter { !it.isSame(block) }+nw
+            )
+        }
     }
 
     fun groupSelected(selected: List<SegmentBlock>) {
