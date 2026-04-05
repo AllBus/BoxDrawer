@@ -85,5 +85,17 @@ fun DrawInstrumentIcon(instrument:Int){
                 contentDescription = "Move"
             )
         }
+        Instruments.INSTRUMENT_ROTATE -> {
+            Icon(
+                imageVector = InstrumentIcon.rememberPointerRotate(),
+                contentDescription = "Rotate"
+            )
+        }
+        Instruments.INSTRUMENT_SCALE -> {
+            Icon(
+                imageVector = InstrumentIcon.rememberPointerScale(),
+                contentDescription = "Scale"
+            )
+        }
     }
 }

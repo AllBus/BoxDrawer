@@ -45,6 +45,7 @@ class SegmentsToolsData(val tools: ITools) {
     private var movingBlock: SegmentBlock? = null
     private var dragStartPoint: Vec2 = Vec2.Zero
     private var originalMatrix: Matrix = Matrix.identity
+    private var pivotPoint: Vec2 = Vec2.Zero
 
     val figures = combine(blocks, previewElement, hoveredBlock) { group, preview, hovered ->
         val blockFigures = group.blocks.map { b -> mapBlock(b) }
@@ -107,13 +108,19 @@ class SegmentsToolsData(val tools: ITools) {
         if (Instruments.button(button) != Instruments.POINTER_LEFT) return
 
         val hovered = hoveredBlock.value
-        if (_instrument.value == Instruments.INSTRUMENT_MOVE) {
+
+        if (_instrument.value == Instruments.INSTRUMENT_MOVE ||
+                    _instrument.value == Instruments.INSTRUMENT_ROTATE ||
+                    _instrument.value == Instruments.INSTRUMENT_SCALE ) {
+
+            movingBlock = hovered
             dragStartPoint = point
             if (hovered != null) {
-                movingBlock = hovered
                 originalMatrix = hovered.matrix
-            } else {
-                movingBlock = null
+                // Центр фигуры для вращения/масштабирования
+                pivotPoint = hovered.element.pointAt(0.5).let {
+                    if (hovered.matrix.isIdentity()) it else hovered.matrix.map(it)
+                }
             }
             return
         }
@@ -142,7 +149,36 @@ class SegmentsToolsData(val tools: ITools) {
         val moving = movingBlock
         if (moving != null) {
             val delta = point - dragStartPoint
-            val newMatrix = originalMatrix.copyWithTransform(Matrix.translate(delta.x, delta.y))
+            val newMatrix = when (_instrument.value) {
+                Instruments.INSTRUMENT_MOVE -> {
+                    originalMatrix.copyWithTransform(Matrix.translate(delta.x, delta.y))
+                }
+                Instruments.INSTRUMENT_ROTATE -> {
+                    val angleStart = (dragStartPoint - pivotPoint).angle
+                    val angleCurrent = (point - pivotPoint).angle
+                    val diffAngle = angleCurrent - angleStart
+
+                    // Вращение вокруг pivotPoint
+                    val m = Matrix.translate(pivotPoint.x, pivotPoint.y)
+                    m.rotateZ((diffAngle * 180 / PI).toFloat())
+                    m.translate(-pivotPoint.x.toFloat(), -pivotPoint.y.toFloat())
+
+                    originalMatrix.copyWithTransform(m)
+                }
+                Instruments.INSTRUMENT_SCALE -> {
+                    val distStart = Vec2.distance(dragStartPoint, pivotPoint)
+                    val distCurrent = Vec2.distance(point, pivotPoint)
+                    val s = if (distStart > 0) distCurrent / distStart else 1.0
+
+                    // Масштабирование относительно pivotPoint
+                    val m = Matrix.translate(pivotPoint.x, pivotPoint.y)
+                    m.scale(s.toFloat(), s.toFloat())
+                    m.translate(-pivotPoint.x.toFloat(), -pivotPoint.y.toFloat())
+
+                    originalMatrix.copyWithTransform(m)
+                }
+                else -> originalMatrix
+            }
 
             blocks.value = SegmentBlockGroup(blocks.value.blocks.map {
                 if (it.element === moving.element) it.copy(matrix = newMatrix) else it

@@ -455,7 +455,63 @@ object InstrumentIcon {
                 }
             }.build()
         }
-
-
     }
+
+    @Composable
+    fun rememberPointerRotate(): ImageVector {
+        return remember {
+            ImageVector.Builder(
+                name = "rotate",
+                defaultWidth = 24.dp,
+                defaultHeight = 24.dp,
+                viewportWidth = 24.0f,
+                viewportHeight = 24.0f
+            ).apply {
+                materialPath {
+                    moveTo(12f, 5f)
+                    verticalLineTo(1f)
+                    lineTo(7f, 6f)
+                    lineToRelative(5f, 5f)
+                    verticalLineTo(7f)
+                    curveToRelative(3.31f, 0f, 6f, 2.69f, 6f, 6f)
+                    curveToRelative(0f, 3.31f, -2.69f, 6f, -6f, 6f)
+                    curveToRelative(-3.31f, 0f, -6f, -2.69f, -6f, -6f)
+                    horizontalLineTo(4f)
+                    curveToRelative(0f, 4.42f, 3.58f, 8f, 8f, 8f)
+                    curveToRelative(4.42f, 0f, 8f, -3.58f, 8f, -8f)
+                    curveToRelative(0f, -4.42f, -3.58f, -8f, -8f, -8f)
+                    close()
+                }
+            }.build()
+        }
+    }
+
+    @Composable
+    fun rememberPointerScale(): ImageVector {
+        return remember {
+            ImageVector.Builder(
+                name = "scale",
+                defaultWidth = 24.dp,
+                defaultHeight = 24.dp,
+                viewportWidth = 24.0f,
+                viewportHeight = 24.0f
+            ).apply {
+                materialPath {
+                    moveTo(21f, 3f)
+                    horizontalLineToRelative(-8f)
+                    lineToRelative(3.29f, 3.29f)
+                    lineToRelative(-10f, 10f)
+                    lineTo(3f, 13f)
+                    verticalLineToRelative(8f)
+                    horizontalLineToRelative(8f)
+                    lineToRelative(-3.29f, -3.29f)
+                    lineToRelative(10f, -10f)
+                    lineTo(21f, 11f)
+                    verticalLineTo(3f)
+                    close()
+                }
+            }.build()
+        }
+    }
+
 }

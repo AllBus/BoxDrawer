@@ -54,7 +54,9 @@ fun ToolbarForSegments(vm: SegmentsToolsData) {
         listOf(
             listOf(
                 Instruments.INSTRUMENT_POINTER,
-                Instruments.INSTRUMENT_MOVE
+                Instruments.INSTRUMENT_MOVE,
+                Instruments.INSTRUMENT_ROTATE,
+                Instruments.INSTRUMENT_SCALE,
             ),
             listOf(
                 Instruments.INSTRUMENT_CIRCLE,
