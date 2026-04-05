@@ -28,12 +28,26 @@ interface Segment : PathElement {
         g.drawLine(start, end)
     }
 
+    override fun distance(point: Vec2): Double {
+        val l2 = Vec2.distance(start, end).let { it * it }
+        if (l2 == 0.0) return Vec2.distance(point, start)
+
+        // Проекция точки на прямую, содержащую отрезок
+        var t = ((point.x - start.x) * (end.x - start.x) + (point.y - start.y) * (end.y - start.y)) / l2
+        t = t.coerceIn(0.0, 1.0)
+
+        val projection = Vec2(
+            start.x + t * (end.x - start.x),
+            start.y + t * (end.y - start.y)
+        )
+        return Vec2.distance(point, projection)
+    }
+
     companion object {
         operator fun invoke(start: Vec2, end: Vec2): Segment {
             return SegmentImpl(start, end)
         }
     }
-
 }
 
 data class SegmentImpl(

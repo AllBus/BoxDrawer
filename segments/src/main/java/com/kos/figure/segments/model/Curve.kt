@@ -6,6 +6,7 @@ import org.apache.commons.math3.linear.ArrayRealVector
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression
 import vectors.PointWithNormal
 import vectors.Vec2
+import kotlin.math.sqrt
 
 private const val DEFAULT_STEP_SIZE = 1000
 
@@ -154,6 +155,41 @@ interface Curve : PathElement {
         return (p1 - p0) * (3 * oneMinusT * oneMinusT) +
                 (p2 - p1) * (6 * oneMinusT * t) +
                 (p3 - p2) * (3 * t * t)
+    }
+
+    override fun distance(point: Vec2): Double {
+        var minSqDist = Double.MAX_VALUE
+        val numSamples = 32 // Достаточно для плавного выбора в UI
+        var prevPoint = p0
+
+        for (i in 1..numSamples) {
+            val t = i.toDouble() / numSamples
+            val currPoint = pointAt(t)
+
+            // Вычисляем расстояние до сегмента (prevPoint, currPoint)
+            val dx = currPoint.x - prevPoint.x
+            val dy = currPoint.y - prevPoint.y
+            val l2 = dx * dx + dy * dy
+
+            val dSq = if (l2 == 0.0) {
+                val d = Vec2.distance(point, prevPoint)
+                d * d
+            } else {
+                var segmentT = ((point.x - prevPoint.x) * dx + (point.y - prevPoint.y) * dy) / l2
+                segmentT = segmentT.coerceIn(0.0, 1.0)
+                val projX = prevPoint.x + segmentT * dx
+                val projY = prevPoint.y + segmentT * dy
+                val dpx = point.x - projX
+                val dpy = point.y - projY
+                dpx * dpx + dpy * dpy
+            }
+
+            if (dSq < minSqDist) {
+                minSqDist = dSq
+            }
+            prevPoint = currPoint
+        }
+        return sqrt(minSqDist)
     }
 
     companion object {

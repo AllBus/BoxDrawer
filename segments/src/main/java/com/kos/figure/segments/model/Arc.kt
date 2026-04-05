@@ -78,6 +78,17 @@ interface Arc: PathElement {
     override val end: Vec2
         get() = center + Vec2(radius, 0.0).rotate(startAngle+sweepAngle)
 
+    override fun distance(point: Vec2): Double {
+        val distToCenter = Vec2.distance(point, center)
+        val angle = (point - center).angle
+
+        return if (containsAngle(angle)) {
+            abs(distToCenter - radius)
+        } else {
+            minOf(Vec2.distance(point, start), Vec2.distance(point, end))
+        }
+    }
+
     companion object {
         operator fun invoke(
             center: Vec2,

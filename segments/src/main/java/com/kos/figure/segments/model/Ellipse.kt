@@ -174,6 +174,64 @@ interface Ellipse : PathElement {
     override val end: Vec2
         get() = center + Vec2(radiusX * cos(endAngle), radiusY * sin(endAngle)).rotate(rotation)
 
+    override fun distance(point: Vec2): Double {
+        if (abs(radiusX - radiusY) < 0.0001) {
+            val distToCenter = Vec2.distance(point, center)
+            val angle = (point - center).angle
+            return if (containsAngle(angle)) {
+                abs(distToCenter - radiusX)
+            } else {
+                minOf(Vec2.distance(point, start), Vec2.distance(point, end))
+            }
+        }
+        // 1. Перевод точки в локальные координаты эллипса
+        val relativePoint = (point - center).rotate(-rotation)
+        val px = abs(relativePoint.x)
+        val py = abs(relativePoint.y)
+
+        // 2. Поиск ближайшей точки на полном эллипсе (алгоритм приближения)
+        var tx = 0.707
+        var ty = 0.707
+
+        val a = radiusX
+        val b = radiusY
+
+        for (i in 0..3) {
+            val x = a * tx
+            val y = b * ty
+            val ex = (a * a - b * b) * tx * tx * tx / a
+            val ey = (b * b - a * a) * ty * ty * ty / b
+            val rx = x - ex
+            val ry = y - ey
+            val qx = px - ex
+            val qy = py - ey
+            val r = sqrt(rx * rx + ry * ry)
+            val q = sqrt(qx * qx + qy * qy)
+            tx = (qx * r / q + ex) / a
+            ty = (qy * r / q + ey) / b
+            val t = sqrt(tx * tx + ty * ty)
+            tx /= t
+            ty /= t
+        }
+
+        val nearestLocal = Vec2(
+            if (relativePoint.x < 0) -a * tx else a * tx,
+            if (relativePoint.y < 0) -b * ty else b * ty
+        )
+
+        // 3. Проверка диапазона углов для дуги
+        if (isFill()) {
+            return Vec2.distance(relativePoint, nearestLocal)
+        } else {
+            val angle = nearestLocal.angle
+            return if (containsAngle(angle)) {
+                Vec2.distance(relativePoint, nearestLocal)
+            } else {
+                minOf(Vec2.distance(point, start), Vec2.distance(point, end))
+            }
+        }
+    }
+
     companion object {
         operator fun invoke(
             center: Vec2,

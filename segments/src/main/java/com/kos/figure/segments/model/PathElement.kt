@@ -16,6 +16,11 @@ interface PathElement {
     fun draw(g: IFigureGraphics)
 
     /**
+     * Расстояние от точки до ближайшей точки кривой
+     */
+    fun distance(point: Vec2): Double
+
+    /**
      * Calculates the point on the path at the given parameter t (0.0 to 1.0).
      * @param t The parameter value (0.0 to 1.0). Н
      * @return точка на пути. Расстояние для сложных путей может изменяться не равномерно
