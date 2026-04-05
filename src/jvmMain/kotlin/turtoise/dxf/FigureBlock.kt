@@ -11,11 +11,11 @@ import com.kos.figure.IFigure
  */
 data class FigureBlock(
     val figure: IFigure,
-    val matrix: vectors.Matrix = vectors.Matrix.identity,
+    val matrix: Matrix = Matrix.identity,
     val modifiers: List<IFigure> = emptyList() // Здесь могут быть специфичные модификаторы
 ) : IFigure by figure {
 
-    override val transform: vectors.Matrix
+    override val transform: Matrix
         get() = matrix
 
     override val hasTransform: Boolean

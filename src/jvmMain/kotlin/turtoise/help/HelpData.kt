@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.kos.boxdrawer.template.TemplateForm
 import com.kos.boxdrawer.template.editor.TemplateField
 
+@Immutable
 data class HelpData(
     val argument: String,
     val description: String,
@@ -11,6 +12,7 @@ data class HelpData(
     val creator : TemplateForm? = null,
 )
 
+@Immutable
 data class HelpDataParam(
     val name: String,
     val description: String,

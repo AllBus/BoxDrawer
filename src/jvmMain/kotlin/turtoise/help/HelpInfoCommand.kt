@@ -1,10 +1,12 @@
 package turtoise.help
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.text.AnnotatedString
 import turtoise.parser.TortoiseParser
 
 @Immutable
+@Stable
 class HelpInfoCommand(
     val name: String,
     val data: List<HelpData>,
