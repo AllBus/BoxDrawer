@@ -42,6 +42,10 @@ class SegmentsToolsData(val tools: ITools) {
     private val points = mutableListOf<Vec2>()
     private var isDrawing = false
 
+    private var movingBlock: SegmentBlock? = null
+    private var dragStartPoint: Vec2 = Vec2.Zero
+    private var originalMatrix: Matrix = Matrix.identity
+
     val figures = combine(blocks, previewElement, hoveredBlock) { group, preview, hovered ->
         val blockFigures = group.blocks.map { b -> mapBlock(b) }
         val previewFigure = preview?.let { toFigure(it) }
@@ -102,6 +106,18 @@ class SegmentsToolsData(val tools: ITools) {
     fun onPress(point: Vec2, button: Int, scale: Float) {
         if (Instruments.button(button) != Instruments.POINTER_LEFT) return
 
+        val hovered = hoveredBlock.value
+        if (_instrument.value == Instruments.INSTRUMENT_MOVE) {
+            dragStartPoint = point
+            if (hovered != null) {
+                movingBlock = hovered
+                originalMatrix = hovered.matrix
+            } else {
+                movingBlock = null
+            }
+            return
+        }
+
         points.add(point)
         isDrawing = true
 
@@ -123,6 +139,17 @@ class SegmentsToolsData(val tools: ITools) {
     }
 
     fun onMove(point: Vec2, button: Int, scale: Float) {
+        val moving = movingBlock
+        if (moving != null) {
+            val delta = point - dragStartPoint
+            val newMatrix = originalMatrix.copyWithTransform(Matrix.translate(delta.x, delta.y))
+
+            blocks.value = SegmentBlockGroup(blocks.value.blocks.map {
+                if (it.element === moving.element) it.copy(matrix = newMatrix) else it
+            })
+            return
+        }
+
         if (isDrawing && points.isNotEmpty()) {
             previewElement.value = createPathElement(points, point)
             hoveredBlock.value = null
@@ -210,5 +237,6 @@ class SegmentsToolsData(val tools: ITools) {
     }
 
     fun onRelease(point: Vec2, button: Int, scale: Float) {
+        movingBlock = null
     }
 }
