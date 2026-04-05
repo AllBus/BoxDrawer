@@ -37,15 +37,21 @@ class SegmentsToolsData(val tools: ITools) {
 
     val blocks = MutableStateFlow<SegmentBlockGroup>(SegmentBlockGroup(emptyList()))
     private val previewElement = MutableStateFlow<PathElement?>(null)
+    private val hoveredBlock = MutableStateFlow<SegmentBlock?>(null)
 
     private val points = mutableListOf<Vec2>()
     private var isDrawing = false
 
-    val figures = combine(blocks, previewElement) { group, preview ->
+    val figures = combine(blocks, previewElement, hoveredBlock) { group, preview, hovered ->
         val blockFigures = group.blocks.map { b -> mapBlock(b) }
         val previewFigure = preview?.let { toFigure(it) }
 
-        val list = FigureList(blockFigures + listOfNotNull(previewFigure))
+        // Подсвечиваем ближайшую фигуру, если она найдена
+        val highlightFigure = hovered?.let {
+            com.kos.figure.composition.FigureColor(0xFFFF0000.toInt(), 1, mapBlock(it))
+        }
+
+        val list = FigureList(blockFigures + listOfNotNull(previewFigure, highlightFigure))
         if (group.matrix.isIdentity()) {
             list
         } else {
@@ -119,6 +125,24 @@ class SegmentsToolsData(val tools: ITools) {
     fun onMove(point: Vec2, button: Int, scale: Float) {
         if (isDrawing && points.isNotEmpty()) {
             previewElement.value = createPathElement(points, point)
+            hoveredBlock.value = null
+        } else {
+            previewElement.value = null
+
+            // Поиск ближайшей фигуры
+            val threshold = 5.0 / scale
+            var minDistance = Double.MAX_VALUE
+            var nearest: SegmentBlock? = null
+
+            blocks.value.blocks.forEach { block ->
+                val localPoint = if (block.matrix.isIdentity()) point else block.matrix.getInvert().map(point)
+                val dist = block.element.distance(localPoint)
+                if (dist < minDistance && dist < threshold) {
+                    minDistance = dist
+                    nearest = block
+                }
+            }
+            hoveredBlock.value = nearest
         }
     }
 
