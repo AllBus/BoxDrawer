@@ -40,6 +40,7 @@ class DrawerViewModel {
     val bublik = BublikData(tools)
     val rectData = RekaToolsData(tools)
     val dxfData = DxfToolsData(tools)
+    val segmentData = SegmentsToolsData(tools)
     val imageData =  ImageToolsData(tools)
     val formulaData =  FormulaData(tools)
     val tabIndex = MutableStateFlow(BoxDrawerToolBar.TAB_TORTOISE)
@@ -53,6 +54,7 @@ class DrawerViewModel {
             BoxDrawerToolBar.TAB_BUBLIK -> bublik.figures
             BoxDrawerToolBar.TAB_REKA -> rectData.figures
             BoxDrawerToolBar.TAB_TOOLS -> template.currentFigure
+            BoxDrawerToolBar.TAB_SEGMENT -> segmentData.figures
             BoxDrawerToolBar.TAB_DXF -> dxfData.figures
             BoxDrawerToolBar.TAB_FORMULA -> formulaData.figures
             else -> noneFigure
@@ -171,23 +173,26 @@ class DrawerViewModel {
         tools.saveState()
     }
 
-    suspend fun onPress(point: vectors.Vec2, button: Int, scale: Float) {
+    suspend fun onPress(point: Vec2, button: Int, scale: Float) {
         when (tabIndex.value) {
             BoxDrawerToolBar.TAB_REKA -> rectData.onPress(point, button, scale)
             BoxDrawerToolBar.TAB_TOOLS -> template.onPress(point, button, scale)
             BoxDrawerToolBar.TAB_DXF -> dxfData.onPress(point, button, scale, _selectedItem)
+            BoxDrawerToolBar.TAB_SEGMENT -> segmentData.onPress(point, button, scale)
         }
     }
 
-    suspend fun onMove(point: vectors.Vec2, button: Int, scale: Float) {
+    suspend fun onMove(point: Vec2, button: Int, scale: Float) {
         when (tabIndex.value) {
             BoxDrawerToolBar.TAB_DXF -> dxfData.onMove(point, button, scale, _selectedItem)
+            BoxDrawerToolBar.TAB_SEGMENT -> segmentData.onMove(point, button, scale)
         }
     }
 
-    suspend fun onRelease(point: vectors.Vec2, button: Int, scale: Float) {
+    suspend fun onRelease(point: Vec2, button: Int, scale: Float) {
         when (tabIndex.value) {
             BoxDrawerToolBar.TAB_DXF -> dxfData.onRelease(point, button, scale, _selectedItem)
+            BoxDrawerToolBar.TAB_SEGMENT -> segmentData.onRelease(point, button, scale)
         }
     }
 

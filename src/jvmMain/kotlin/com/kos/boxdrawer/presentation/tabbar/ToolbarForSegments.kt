@@ -1,0 +1,192 @@
+package com.kos.boxdrawer.presentation.tabbar
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.kos.boxdrawe.icons.Icons
+import com.kos.boxdrawe.presentation.DxfToolsData
+import com.kos.boxdrawe.presentation.Instruments
+import com.kos.boxdrawe.presentation.SegmentsToolsData
+import com.kos.boxdrawe.widget.ImageButton
+import com.kos.boxdrawe.widget.NumericUpDown
+import com.kos.boxdrawe.widget.NumericUpDownLine
+import com.kos.boxdrawe.widget.PrintCodeButton
+import com.kos.boxdrawe.widget.PrintCodeIconButton
+import com.kos.boxdrawe.widget.RunButton
+import com.kos.boxdrawe.widget.RunCheckBox
+import com.kos.boxdrawe.widget.SaveToFileButton
+import com.kos.boxdrawe.widget.SaveToFileIconButton
+import com.kos.boxdrawer.generated.resources.Res
+import com.kos.boxdrawer.generated.resources.createFileButton
+import com.kos.boxdrawer.generated.resources.dxfClearAlertDescription
+import com.kos.boxdrawer.generated.resources.dxfClearAlertNegative
+import com.kos.boxdrawer.generated.resources.dxfClearAlertPositive
+import com.kos.boxdrawer.generated.resources.dxfClearAlertTitle
+import com.kos.boxdrawer.generated.resources.dxfClearButton
+import com.kos.boxdrawer.generated.resources.dxfScaleColor
+import com.kos.boxdrawer.generated.resources.dxfScaleValue
+import com.kos.boxdrawer.generated.resources.dxfToolsMagnet
+import com.kos.boxdrawer.generated.resources.toolsButtonOpenFile
+import com.kos.boxdrawer.presentation.display.DrawInstrumentIcon
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+fun ToolbarForSegments(vm: SegmentsToolsData) {
+
+
+    val instrument = remember { vm.instrument }
+
+    val instrumentList = remember {
+        listOf(
+            listOf(
+                Instruments.INSTRUMENT_POINTER,
+                Instruments.INSTRUMENT_MOVE
+            ),
+            listOf(
+                Instruments.INSTRUMENT_CIRCLE,
+                Instruments.INSTRUMENT_ELLIPSE,
+                Instruments.INSTRUMENT_RECTANGLE,
+                Instruments.INSTRUMENT_POLYGON,
+            ),
+            listOf(
+                Instruments.INSTRUMENT_LINE,
+                Instruments.INSTRUMENT_POLYLINE,
+                Instruments.INSTRUMENT_BEZIER,
+                Instruments.INSTRUMENT_BEZIER_TREE_POINT
+            ),
+            listOf(
+                Instruments.INSTRUMENT_MULTI
+            )
+        )
+    }
+
+    Row(
+        modifier = TabContentModifier
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            instrumentList.forEach { i ->
+                Row {
+                    i.forEach { instr ->
+                        Button(onClick = remember(vm) {
+                            {
+                                if (instrument.value != instr)
+                                    vm.changeInstrument(instr)
+                                else
+                                    vm.changeInstrument(Instruments.INSTRUMENT_NONE)
+                            }
+                        }) {
+                            DrawInstrumentIcon(instr)
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+}
+
+@Composable
+private fun clearDxfAlert(
+    showAlert: MutableState<Boolean>,
+    onConfirm: () -> Unit
+) {
+    when {
+        showAlert.value -> {
+            ClearDxfAlertDialog(showAlert,onConfirm)
+        }
+    }
+}
+
+@Composable
+private fun ClearDxfAlertDialog(
+    showAlert: MutableState<Boolean>,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = {
+            showAlert.value = false
+        },
+        title = { Text(stringResource(Res.string.dxfClearAlertTitle)) },
+        text = {
+            Text(stringResource(Res.string.dxfClearAlertDescription))
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm
+            ) {
+                Text(stringResource(Res.string.dxfClearAlertPositive))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    showAlert.value = false
+                }
+            ) {
+                Text(stringResource(Res.string.dxfClearAlertNegative))
+            }
+        }
+
+    )
+}
+
+@Composable
+fun ToolbarActionForSegment(vm: SegmentsToolsData) {
+    val coroutineScope = rememberCoroutineScope()
+    Column(
+    ) {
+//        SaveToFileButton(vm)
+//
+//        Spacer(Modifier.height(4.dp))
+//        PrintCodeButton(vm)
+//        Spacer(Modifier.height(4.dp))
+//        RunButton(stringResource(Res.string.toolsButtonOpenFile)) {
+//            coroutineScope.launch {
+//                showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.loadDxf(f) }
+//            }
+//        }
+    }
+}
+
+@Composable
+fun ToolbarActionIconForSegment(vm: SegmentsToolsData) {
+    val coroutineScope = rememberCoroutineScope()
+    Row(
+    ) {
+        val showAlert = remember { mutableStateOf(false) }
+        clearDxfAlert(showAlert, remember(vm) {
+            {
+                vm.clear()
+                showAlert.value = false
+            }
+        })
+        ImageButton(Icons.Clear_all,
+        tooltip = stringResource(Res.string.dxfClearButton)) {
+            showAlert.value = true
+        }
+//        ImageButton(Icons.File_open,
+//            tooltip = stringResource(Res.string.toolsButtonOpenFile)
+//        ) {
+//            coroutineScope.launch {
+//                showLoadFileChooser(vm.tools.chooserDir()) { f -> vm.loadDxf(f) }
+//            }
+//        }
+        //SaveToFileIconButton(vm)
+        //PrintCodeIconButton(vm)
+
+    }
+}

@@ -46,6 +46,7 @@ import com.kos.boxdrawer.generated.resources.tabFormula
 import com.kos.boxdrawer.generated.resources.tabGrid
 import com.kos.boxdrawer.generated.resources.tabImage
 import com.kos.boxdrawer.generated.resources.tabReka
+import com.kos.boxdrawer.generated.resources.tabSegment
 import com.kos.boxdrawer.generated.resources.tabSettings
 import com.kos.boxdrawer.generated.resources.tabSoft
 import com.kos.boxdrawer.generated.resources.tabTor
@@ -58,6 +59,7 @@ import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_FORMULA
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_GRID
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_IMAGE
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_REKA
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_SEGMENT
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_SOFT
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_TOOLS
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar.TAB_TORTOISE
@@ -203,6 +205,7 @@ private fun ToolbarContent(
                     TAB_REKA -> ToolbarForReka(vm.value.rectData)
                     TAB_TOOLS -> ToolbarForTools(vm.value.options)
                     TAB_DXF -> ToolbarForDxf(vm.value.dxfData)
+                    TAB_SEGMENT -> ToolbarForSegments(vm.value.segmentData)
                     TAB_IMAGE -> ToolbarForImage(vm.value.imageData)
                     TAB_FORMULA -> ToolbarForFormula(vm.value.formulaData)
                 }
@@ -226,6 +229,7 @@ private fun ToolbarContent(
                             TAB_REKA -> ToolbarActionForReka(vm.value.rectData)
                             TAB_TOOLS -> ToolbarActionForTools(vm.value.options)
                             TAB_DXF -> ToolbarActionForDxf(vm.value.dxfData)
+                            TAB_SEGMENT -> ToolbarActionForSegment(vm.value.segmentData)
                             TAB_IMAGE -> ToolbarActionForImage(vm.value.imageData)
                             TAB_FORMULA -> ToolbarActionForFormula(vm.value.formulaData)
                         }
@@ -353,9 +357,10 @@ object BoxDrawerToolBar {
     const val TAB_BUBLIK = 5
     const val TAB_REKA = 6
     const val TAB_DXF = 7
-    const val TAB_TOOLS = 8
-    const val TAB_IMAGE = 9
-    const val TAB_FORMULA = 10
+    const val TAB_SEGMENT = 8
+    const val TAB_TOOLS = 9
+    const val TAB_IMAGE = 10
+    const val TAB_FORMULA = 11
 
     val tabs = ImmutableList(
         listOf(
@@ -367,6 +372,7 @@ object BoxDrawerToolBar {
             TabInfo(TAB_BUBLIK, Res.string.tabTor),
             TabInfo(TAB_REKA, Res.string.tabReka),
             TabInfo(TAB_DXF, Res.string.tabDxf),
+            TabInfo(TAB_SEGMENT, Res.string.tabSegment),
             TabInfo(TAB_TOOLS, Res.string.tabSettings),
             TabInfo(TAB_IMAGE, Res.string.tabImage),
             TabInfo(TAB_FORMULA, Res.string.tabFormula),

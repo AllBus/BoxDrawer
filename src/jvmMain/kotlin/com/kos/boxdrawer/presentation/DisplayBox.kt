@@ -123,6 +123,7 @@ fun DisplayBox(
             //MazeSolver()
             DisplayImageProcessing(vm.value.imageData)
         }
+        BoxDrawerToolBar.TAB_SEGMENT,
         BoxDrawerToolBar.TAB_DXF ->
             DisplayDxf(
                 displayScale = displayScale,
