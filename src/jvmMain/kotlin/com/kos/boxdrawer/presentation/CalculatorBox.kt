@@ -17,7 +17,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
@@ -31,11 +34,13 @@ import com.kos.boxdrawe.widget.InputText
 import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.LabelLight
 import kotlinx.coroutines.launch
+import java.awt.datatransfer.StringSelection
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CalculatorBox(modifier: Modifier, line: CalculatorData) {
     val coroutineScope = rememberCoroutineScope()
-    val clipboardManager = LocalClipboardManager.current
+    val clipboardManager = LocalClipboard.current
     Column(
         modifier
     ) {
@@ -73,7 +78,9 @@ fun CalculatorBox(modifier: Modifier, line: CalculatorData) {
                     icon = IconCopy.rememberContentCopy(),
                     onClick = {
                         coroutineScope.launch {
-                            clipboardManager.setText(AnnotatedString(calculator.value))
+                            clipboardManager.setClipEntry(
+                                ClipEntry(StringSelection( calculator.value))
+                            )
                         }
                     }
                 )
