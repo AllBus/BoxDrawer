@@ -5,13 +5,8 @@ import com.kos.boxdrawe.presentation.model.SegmentBlockGroup
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
-import com.kos.figure.complex.transform.toFigure
 import com.kos.figure.composition.Figure3dTransform
-import com.kos.figure.segments.model.Arc
-import com.kos.figure.segments.model.Curve
-import com.kos.figure.segments.model.Ellipse
 import com.kos.figure.segments.model.PathElement
-import com.kos.figure.segments.model.Segment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,8 +15,6 @@ import kotlinx.coroutines.flow.mapLatest
 import vectors.Matrix
 import vectors.Vec2
 import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.atan2
 import com.kos.boxdrawe.presentation.segments.SegmentUtils
 import com.kos.boxdrawe.presentation.segments.SegmentUtils.getBlockCenter
 import com.kos.boxdrawe.presentation.segments.SegmentUtils.getBlockDistance
@@ -169,9 +162,17 @@ class SegmentsToolsData(val tools: ITools) {
                 else -> originalMatrix
             }
 
-            blocks.value = SegmentBlockGroup(blocks.value.blocks.map {
-                if (it.element === moving.element) it.copy(matrix = newMatrix) else it
-            })
+            var updatedMovingBlock: SegmentBlock? = null
+            val newBlocks = blocks.value.blocks.map { block ->
+                if (block.isSame(moving)) {
+                    val updated = block.copy(matrix = newMatrix)
+                    updatedMovingBlock = updated
+                    updated
+                } else block
+            }
+
+            blocks.value = SegmentBlockGroup(newBlocks)
+            movingBlock = updatedMovingBlock
             return
         }
 
