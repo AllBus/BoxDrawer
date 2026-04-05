@@ -5,8 +5,8 @@ import com.kos.boxdrawe.presentation.ImageUtils.bufferedImageToImageBitmap
 import com.kos.boxdrawe.presentation.ImageUtils.collectImages
 import com.kos.boxdrawe.presentation.ImageUtils.formatOfData
 import com.kos.boxdrawe.presentation.ImageUtils.loadImageFromFile
-import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar
 import com.kos.boxdrawer.presentation.model.ImageMap
+import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar
 import com.kos.compose.FigureInfo
 import com.kos.compose.ImmutableList
 import com.kos.figure.FigureEmpty
@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import vectors.Vec2
@@ -42,8 +43,8 @@ class DrawerViewModel {
     val rectData = RekaToolsData(tools)
     val dxfData = DxfToolsData(tools)
     val segmentData = SegmentsToolsData(tools)
-    val imageData =  ImageToolsData(tools)
-    val formulaData =  FormulaData(tools)
+    val imageData = ImageToolsData(tools)
+    val formulaData = FormulaData(tools)
     val tabIndex = MutableStateFlow(BoxDrawerToolBar.TAB_TORTOISE)
     val calculatorData = CalculatorData()
 
@@ -71,16 +72,16 @@ class DrawerViewModel {
     }
 
     @OptIn(FlowPreview::class)
-    val imagesList = figures.debounce(100L).mapLatest{ f ->
+    val imagesList = figures.debounce(500L).flowOn(DispatcherList.Default).mapLatest { f ->
         collectImages(f).toList()
     }.distinctUntilChanged()
 
-    private var previousImages : ImageMap = ImageMap.EMPTY
+    private var previousImages: ImageMap = ImageMap.EMPTY
     val images = imagesList.mapLatest { imageFigures ->
         withContext(DispatcherList.IO) {
             var changeImgList: Boolean = false
             val r = imageFigures.mapNotNull { f ->
-            //    println(f.uri)
+                //    println(f.uri)
                 val pv = previousImages[f.uri]
                 if (pv != null) {
                     f.uri to pv
@@ -175,9 +176,9 @@ class DrawerViewModel {
         tools.loadState()
         options.selectSettings(tools.ds())
         tortoise.loadState()
-     }
+    }
 
-    fun saveState(){
+    fun saveState() {
         tortoise.saveState()
         tools.saveState()
     }
