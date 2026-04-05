@@ -26,7 +26,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import vectors.Matrix
 import vectors.Vec2
+import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.math.atan2
 
 class SegmentsToolsData(val tools: ITools) {
 
@@ -36,13 +38,13 @@ class SegmentsToolsData(val tools: ITools) {
     val blocks = MutableStateFlow<SegmentBlockGroup>(SegmentBlockGroup(emptyList()))
     private val previewElement = MutableStateFlow<PathElement?>(null)
 
-    private var startPoint: Vec2? = null
+    private val points = mutableListOf<Vec2>()
     private var isDrawing = false
 
     val figures = combine(blocks, previewElement) { group, preview ->
         val blockFigures = group.blocks.map { b -> mapBlock(b) }
         val previewFigure = preview?.let { toFigure(it) }
-        
+
         val list = FigureList(blockFigures + listOfNotNull(previewFigure))
         if (group.matrix.isIdentity()) {
             list
@@ -76,7 +78,7 @@ class SegmentsToolsData(val tools: ITools) {
     }
 
     private fun resetDrawing() {
-        startPoint = null
+        points.clear()
         isDrawing = false
         previewElement.value = null
     }
@@ -94,12 +96,19 @@ class SegmentsToolsData(val tools: ITools) {
     fun onPress(point: Vec2, button: Int, scale: Float) {
         if (Instruments.button(button) != Instruments.POINTER_LEFT) return
 
-        val start = startPoint
-        if (start == null) {
-            startPoint = point
-            isDrawing = true
-        } else {
-            val element = createPathElement(start, point)
+        points.add(point)
+        isDrawing = true
+
+        val requiredPoints = when (_instrument.value) {
+            Instruments.INSTRUMENT_LINE -> 2
+            Instruments.INSTRUMENT_CIRCLE -> 2
+            Instruments.INSTRUMENT_ELLIPSE -> 3
+            Instruments.INSTRUMENT_BEZIER -> 4
+            else -> 0
+        }
+
+        if (points.size >= requiredPoints && requiredPoints > 0) {
+            val element = createPathElement(points, null)
             if (element != null) {
                 blocks.value = SegmentBlockGroup(blocks.value.blocks + SegmentBlock(element))
             }
@@ -108,31 +117,74 @@ class SegmentsToolsData(val tools: ITools) {
     }
 
     fun onMove(point: Vec2, button: Int, scale: Float) {
-        val start = startPoint
-        if (isDrawing && start != null) {
-            previewElement.value = createPathElement(start, point)
+        if (isDrawing && points.isNotEmpty()) {
+            previewElement.value = createPathElement(points, point)
         }
     }
 
-    private fun createPathElement(start: Vec2, end: Vec2): PathElement? {
+    private fun createPathElement(pts: List<Vec2>, current: Vec2?): PathElement? {
+        val allPoints = if (current != null) pts + current else pts
+
         return when (_instrument.value) {
-            Instruments.INSTRUMENT_LINE -> Segment(start, end)
+            Instruments.INSTRUMENT_LINE -> {
+                if (allPoints.size >= 2) Segment(allPoints[0], allPoints[1]) else null
+            }
             Instruments.INSTRUMENT_CIRCLE -> {
-                val radius = Vec2.distance(start, end)
-                if (radius > 0) {
-                    Arc(center = start, radius = radius, outSide = true, startAngle = 0.0, sweepAngle = Math.PI * 2)
+                if (allPoints.size >= 2) {
+                    val radius = Vec2.distance(allPoints[0], allPoints[1])
+                    if (radius > 0) {
+                        Arc(
+                            center = allPoints[0],
+                            radius = radius,
+                            outSide = true,
+                            startAngle = 0.0,
+                            sweepAngle = PI * 2
+                        )
+                    } else null
                 } else null
             }
-            Instruments.INSTRUMENT_RECTANGLE -> {
-                // Прямоугольник как набор сегментов или специфичный PathElement
-                // Для упрощения пока только линия или окружность
-                null
+            Instruments.INSTRUMENT_ELLIPSE -> {
+                if (allPoints.size >= 2) {
+                    val center = allPoints[0]
+                    val p1 = allPoints[1]
+                    val diff = p1 - center
+                    val radiusX = diff.magnitude
+                    val rotation = atan2(diff.y, diff.x)
+
+                    val radiusY = if (allPoints.size >= 3) {
+                        val p2 = allPoints[2]
+                        // Проекция p2 на перпендикулярную ось
+                        val p2Local = (p2 - center).rotate(-rotation)
+                        abs(p2Local.y)
+                    } else {
+                        radiusX * 0.5 // Превью второго радиуса
+                    }
+
+                    if (radiusX > 0 && radiusY > 0) {
+                        Ellipse(
+                            center = center,
+                            radiusX = radiusX,
+                            radiusY = radiusY,
+                            rotation = rotation,
+                            startAngle = 0.0,
+                            endAngle = PI * 2,
+                            outSide = true
+                        )
+                    } else null
+                } else null
+            }
+            Instruments.INSTRUMENT_BEZIER -> {
+                when (allPoints.size) {
+                    2 -> Segment(allPoints[0], allPoints[1])
+                    3 -> Curve(allPoints[0], allPoints[1], allPoints[2], allPoints[2])
+                    4 -> Curve(allPoints[0], allPoints[1], allPoints[2], allPoints[3])
+                    else -> null
+                }
             }
             else -> null
         }
     }
 
     fun onRelease(point: Vec2, button: Int, scale: Float) {
-        // Логика завершения может быть в onPress для двухэтапного рисования
     }
 }
