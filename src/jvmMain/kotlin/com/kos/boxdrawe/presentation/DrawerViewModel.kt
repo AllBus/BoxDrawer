@@ -27,6 +27,7 @@ import java.awt.datatransfer.Transferable
 class DrawerViewModel {
 
     private val noneFigure = MutableStateFlow(FigureEmpty).asStateFlow()
+    private val noneInstrument = MutableStateFlow(Instruments.NONE).asStateFlow()
     private val _selectedItem = MutableStateFlow(ImmutableList<FigureInfo>(emptyList()))
 
     val tools = Tools()
@@ -58,6 +59,14 @@ class DrawerViewModel {
             BoxDrawerToolBar.TAB_DXF -> dxfData.figures
             BoxDrawerToolBar.TAB_FORMULA -> formulaData.figures
             else -> noneFigure
+        }
+    }
+
+    val instrumentState = tabIndex.flatMapLatest { tab ->
+        when (tab) {
+            BoxDrawerToolBar.TAB_DXF -> dxfData.instrumentState
+            BoxDrawerToolBar.TAB_SEGMENT -> segmentData.instrumentState
+            else -> noneInstrument
         }
     }
 

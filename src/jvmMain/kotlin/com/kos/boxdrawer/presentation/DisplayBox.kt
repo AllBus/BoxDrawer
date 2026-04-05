@@ -151,7 +151,7 @@ fun DisplayBox(
                         vm.value.onRelease(point, button, scale)
                     }
                 },
-                instrument = vm.value.dxfData.instrumentState.collectAsState(Instruments.NONE)
+                instrument = vm.value.instrumentState.collectAsState(Instruments.NONE)
             )
         else -> {
 
