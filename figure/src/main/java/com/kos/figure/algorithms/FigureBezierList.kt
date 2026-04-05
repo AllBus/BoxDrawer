@@ -5,12 +5,11 @@ import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureEmpty
 import com.kos.figure.collections.FigurePath
-import vectors.Vec2
 
-class FigureBezierList(val points: List<List<Vec2>>) {
+class FigureBezierList(val points: List<List<vectors.Vec2>>) {
 
     constructor(
-        a: Vec2, b: Vec2, c: Vec2, d: Vec2
+        a: vectors.Vec2, b: vectors.Vec2, c: vectors.Vec2, d: vectors.Vec2
     ) : this(listOf(listOf(a, b, c, d)))
 
     fun draw(g: IFigureGraphics) {
@@ -37,9 +36,9 @@ class FigureBezierList(val points: List<List<Vec2>>) {
     companion object {
         fun simple(beziers: List<FigureBezierList>): FigureBezierList {
             val b = beziers.flatMap { it.points }.filter { it.isNotEmpty() }
-            val list = ArrayList<List<Vec2>>()
+            val list = ArrayList<List<vectors.Vec2>>()
 
-            var current: List<Vec2>? = null
+            var current: List<vectors.Vec2>? = null
 
             for (a in b) {
                 if (current != null) {
@@ -66,6 +65,6 @@ class FigureBezierList(val points: List<List<Vec2>>) {
         if (points.size == 1)
             return FigureBezier(points[0])
         else
-            return FigurePath(points.filter { it.size>=4 }.map { p -> FigureBezier(p) })
+            return FigurePath(points.filter { it.size >= 4 }.map { p -> FigureBezier(p) })
     }
 }

@@ -1,6 +1,5 @@
 package com.kos.boxdrawer.detal.splash
 
-import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_3
 import com.kos.figure.FigurePolyline
@@ -48,7 +47,7 @@ class SplashRul: ISplashDetail  {
         com: TortoiseCommand,
         figureExtractor: TortoiseFigureExtractor
     ) {
-        val memory = figureExtractor.memory
+        figureExtractor.memory
         val cs = com.size
         var offset = Vec2.Zero
 
@@ -59,7 +58,7 @@ class SplashRul: ISplashDetail  {
             val w = figureExtractor.valueAt(c , 0,0.0)
             val h = figureExtractor.valueAt(c , 1,0.0)
 
-            offset+=Vec2(w/2, 0.0)
+            offset+= Vec2(w / 2, 0.0)
 
             val rect = FigureCreator.rectangle(Vec2.Zero+offset, w, h)
             val tblock = c?.inner?.getOrNull(2)?.let { tb ->
@@ -68,7 +67,7 @@ class SplashRul: ISplashDetail  {
             val bblock = c?.inner?.getOrNull(3)?.let { tb ->
                 topBox(figureExtractor, tb, w, h, offset, -1.0)
             }
-            offset+=Vec2(w/2+10, 0.0)
+            offset+= Vec2(w / 2 + 10, 0.0)
 
             res+=rect
             tblock?.let {
@@ -107,14 +106,14 @@ class SplashRul: ISplashDetail  {
 
 
         return listOf(
-            FigureCreator.rectangle(Vec2(leftPos+tw/2, topLine - th / 2) + offset, tw, th),
+            FigureCreator.rectangle(Vec2(leftPos + tw / 2, topLine - th / 2) + offset, tw, th),
             FigurePolyline(listOfNotNull(
                 Vec2(-w / 2, topLine),
                 Vec2(leftPos + tsl, topLine),
                 Vec2(leftPos, topLine - th),
                 Vec2(leftPos + tw, topLine - th),
                 Vec2(leftPos + tw - tsr, topLine),
-                Vec2(w / 2 - tzd, topLine - tzh*multi).takeIf { tzh != 0.0 },
+                Vec2(w / 2 - tzd, topLine - tzh * multi).takeIf { tzh != 0.0 },
                 Vec2(w / 2, topLine),
             ).map { it + offset })
         ).toFigure()

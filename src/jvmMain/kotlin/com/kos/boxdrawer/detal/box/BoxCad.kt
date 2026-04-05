@@ -72,7 +72,7 @@ object BoxCad {
         //Левая сторона
         points.add(origin)
         points.add(origin + Vec2(0.0, wald.bottomOffset))
-        FigureCreator.zigzag(
+        zigzag(
             points,
             points.last(),
             height - wald.verticalOffset,
@@ -89,7 +89,7 @@ object BoxCad {
                 back = false,
             )
 
-            val sp = points.last() + Vec2((width - zigzagLength) / 2.0, 0.0);
+            val sp = points.last() + Vec2((width - zigzagLength) / 2.0, 0.0)
 
             waldZigzag(
                 points = points,
@@ -115,7 +115,7 @@ object BoxCad {
 
         // Правая сторона
         points.add(origin + Vec2(width, heightEnd - wald.topOffset))
-        FigureCreator.zigzag(
+        zigzag(
             points,
             points.last(),
             heightEnd - wald.verticalOffset,
@@ -132,7 +132,7 @@ object BoxCad {
                 back = true,
             )
 
-            val sp = points.last() - Vec2((width - zigzagLength) / 2.0, 0.0);
+            val sp = points.last() - Vec2((width - zigzagLength) / 2.0, 0.0)
 
             waldZigzag(
                 points = points,
@@ -175,7 +175,8 @@ object BoxCad {
                     angle = 0.0,
                     param = ph,
                     boardWeight = boardWeight
-                );
+                )
+
             PazForm.Hole ->
                 result.addAll(
                     holes(
@@ -197,7 +198,8 @@ object BoxCad {
                     angle = 0.0,
                     param = ph.copy(reverse = !ph.reverse),
                     boardWeight = boardWeight
-                );
+                )
+
             else -> {}
         }
     }
@@ -224,7 +226,7 @@ object BoxCad {
                 back = false,
             ),
             boardWeight
-        );
+        )
         zigzag(
             points,
             points.last(),
@@ -248,7 +250,7 @@ object BoxCad {
                 back = true,
             ),
             boardWeight
-        );
+        )
         zigzag(
             points,
             points.last(),
@@ -260,7 +262,7 @@ object BoxCad {
                 back = true,
             ),
             boardWeight
-        );
+        )
 
         return FigurePolyline(points)
     }
@@ -319,7 +321,7 @@ object BoxCad {
                 back = true,
             ),
             wald.holeWeight
-        );
+        )
         points += holes(
             origin + Vec2(width, 0.0),
             width,
@@ -330,7 +332,7 @@ object BoxCad {
                 back = true,
             ),
             wald.holeWeight
-        );
+        )
 
         return FigureList(points)
     }
@@ -368,8 +370,14 @@ object BoxCad {
         val endBottomOffset = if (endPolka == null) waldBottomOffset else 0.0
         val startBottomOffset = if (startPolka == null) waldBottomOffset else 0.0
         val startCXY =
-            if (startPolka == null) Vec2.Zero else Vec2(startPolka.calc.sX, startPolka.calc.sY)
-        val endCXY = if (endPolka == null) Vec2.Zero else Vec2(endPolka.calc.sX, endPolka.calc.sY)
+            if (startPolka == null) Vec2.Zero else Vec2(
+                startPolka.calc.sX,
+                startPolka.calc.sY
+            )
+        val endCXY = if (endPolka == null) Vec2.Zero else Vec2(
+            endPolka.calc.sX,
+            endPolka.calc.sY
+        )
 
         if (or == Orientation.Horizontal) {
             originForPol += Vec2(polka.calc.sX, polka.calc.sY + dwe2)
@@ -391,21 +399,21 @@ object BoxCad {
         var ssx = 0.0
 
         if (startPolka != null) {
-            he0 = startPolka.heightForLine(polka.calc.index - startPolka.startCell, height);
+            he0 = startPolka.heightForLine(polka.calc.index - startPolka.startCell, height)
             ssx += drawerSettings.boardWeight / 2
         } else {
-            ssx = 0.0;//= drawerSettings.boardWeight;
+            ssx = 0.0//= drawerSettings.boardWeight;
         }
-        he0 = min(heStart, he0);
+        he0 = min(heStart, he0)
 
         if (or == Orientation.Horizontal) {
-            csx = polka.calc.sX;
+            csx = polka.calc.sX
         } else {
-            csx = polka.calc.sY;
+            csx = polka.calc.sY
         }
 
         //Левый край
-        points.add(origin + Vec2(ssx, 0.0));
+        points.add(origin + Vec2(ssx, 0.0))
 
         zigzag(
             points, points.last(), he0, zigzag, angle90, DrawingParam(
@@ -413,7 +421,7 @@ object BoxCad {
                 back = false
             ),
             boardWeight
-        );
+        )
         result.startHole.addAll(
             holes(
                 startOrigin, he0, zigzag, angle90,
@@ -423,7 +431,7 @@ object BoxCad {
                 ),
                 wald.holeWeight
             )
-        );
+        )
 
 
         val endheE = polka.heightForLine(intersectPolki.size + 1, height)
@@ -441,10 +449,10 @@ object BoxCad {
                 ),
                 wald.holeWeight
             )
-        );
+        )
 
         //Левый верхний угол
-        points.add(origin + Vec2(ssx, 0.0) + Vec2(0.0, heStart));
+        points.add(origin + Vec2(ssx, 0.0) + Vec2(0.0, heStart))
 
         // Верхний край
         var cx: Double
@@ -492,7 +500,7 @@ object BoxCad {
         points.add(origin + Vec2(cx, endhe))
 
         // Правый край
-        points.add(origin + Vec2(cx, he0));
+        points.add(origin + Vec2(cx, he0))
 
         //  currentPoint = Vec2(0.0, points.last().y - origin.y) + endOrigin
         zigzag(
@@ -502,7 +510,7 @@ object BoxCad {
                 back = true,
             ),
             boardWeight,
-        );
+        )
 
         //Правый нижний угол
         points.add(origin + Vec2(cx, 0.0))
@@ -517,40 +525,40 @@ object BoxCad {
             var df = he / 2
 
             if (or == Orientation.Horizontal) {
-                cx = c.calc.sX - csx;
+                cx = c.calc.sX - csx
                 if (c.visible) {
                     if (che > he) {
-                        needZig = false;
+                        needZig = false
                     } else {
-                        needZig = true;
+                        needZig = true
                         if (che < he) {
-                            df = che;
+                            df = che
                         } else
-                            df = he / 2;
+                            df = he / 2
                     }
                 }
             } else {
                 if (c.visible) {
                     if (!eps(che, he)) {
                         if (che < he) {
-                            needZig = true;
-                            df = che;
+                            needZig = true
+                            df = che
                         }
                     }
                 }
 
-                cx = c.calc.sY - csx;
+                cx = c.calc.sY - csx
             }
             if (needZig) {
                 if (hasPolPaz) {
-                    val d = pred - (cx + dwe2);
-                    val currentPoint = getCoord(polka, points.last() - origin) + originForPol;
+                    val d = pred - (cx + dwe2)
+                    val currentPoint = getCoord(polka, points.last() - origin) + originForPol
                     zigzag(
                         points, points.last(), d, zigzagPol, 0.0, DrawingParam(
                             reverse = true,
                             back = true
                         ), boardWeight
-                    );
+                    )
                     result.polHole.addAll(
                         holes(
                             currentPoint,
@@ -563,27 +571,27 @@ object BoxCad {
                             ),
                             wald.holeWeight
                         )
-                    );
+                    )
                 }
 
-                points.add(origin + Vec2(cx + dwe2, 0.0));
-                points.add(origin + Vec2(cx + dwe2, df));
-                points.add(origin + Vec2(cx - dwe2, df));
-                points.add(origin + Vec2(cx - dwe2, 0.0));
-                pred = cx - dwe2;
+                points.add(origin + Vec2(cx + dwe2, 0.0))
+                points.add(origin + Vec2(cx + dwe2, df))
+                points.add(origin + Vec2(cx - dwe2, df))
+                points.add(origin + Vec2(cx - dwe2, 0.0))
+                pred = cx - dwe2
             }
         } // for
 
         if (hasPolPaz) {
-            val d = pred - ssx;
-            val currentPoint = getCoord(polka, points.last() - origin) + originForPol;
+            val d = pred - ssx
+            val currentPoint = getCoord(polka, points.last() - origin) + originForPol
             zigzag(
                 points, points.last(), d, zigzagPol, 0.0, DrawingParam(
                     reverse = true,
                     back = true
                 ),
                 boardWeight
-            );
+            )
             result.polHole.addAll(
                 holes(
                     currentPoint,
@@ -596,14 +604,17 @@ object BoxCad {
                     ),
                     wald.holeWeight
                 )
-            );
+            )
         }
         result.polka = FigurePolyline(points, true)
         return result
     }
 
     private fun getCoord(polka: Polka, point: Vec2): Vec2 {
-        return if (polka.orientation == Orientation.Horizontal) Vec2(point.x, 0.0) else Vec2(
+        return if (polka.orientation == Orientation.Horizontal) Vec2(
+            point.x,
+            0.0
+        ) else Vec2(
             0.0,
             point.x
         )
@@ -665,10 +676,10 @@ object BoxCad {
 
         val resultMap = mutableMapOf<Int, MutableList<IFigure>>()
 
-        val leftWalds = waldCounter.get(F_LEFT)
-        val rightWalds = waldCounter.get(F_RIGHT)
-        val faceWalds = waldCounter.get(F_FRONT)
-        val backWalds = waldCounter.get(F_BACK)
+        waldCounter.get(F_LEFT)
+        waldCounter.get(F_RIGHT)
+        waldCounter.get(F_FRONT)
+        waldCounter.get(F_BACK)
 
         //  val list = mutableListOf<IFigure>()
 
@@ -833,18 +844,20 @@ object BoxCad {
             if (wald.topForm != PazForm.None) {
                 topOffset -= wald.holeTopOffset
             }
-            krishkaHole.add(FigureCreator.rectangle(
-                left = 0.0,
-                top = topOffset,
-                right = weight-2*drawerSettings.boardWeight,
-                bottom = topOffset - (drawerSettings.holeWeight+1),
-                enableSmooth = false,
-                smoothSize = 0.0
-            ))
+            krishkaHole.add(
+                rectangle(
+                    left = 0.0,
+                    top = topOffset,
+                    right = weight-2*drawerSettings.boardWeight,
+                    bottom = topOffset - (drawerSettings.holeWeight+1),
+                    enableSmooth = false,
+                    smoothSize = 0.0
+                )
+            )
             resultMap.getOrPut(F_FRONT) { mutableListOf() }.addAll(krishkaHole)
         }
 
-        val rm = resultMap.mapValues { (index, value) ->
+        val rm = resultMap.mapValues { (_, value) ->
             FigureList(value)
         }
 
@@ -954,7 +967,7 @@ object BoxCad {
     ): Figure3dTransform {
         val sList = mutableListOf<IFigure>()
         rm.forEach { (index, f) ->
-            val r = f.rect()
+            f.rect()
             val mf = Matrix()
             when (index) {
                 F_FRONT -> {
@@ -1106,7 +1119,10 @@ object BoxCad {
                             val r = f.rect()
                             pRight += Vec2(r.height + bw, 0.0)
                             outList += FigureTranslate(
-                                FigureRotate(f, 90.0, Vec2.Zero), pRight + Vec2(0.0, po.calc.sY)
+                                FigureRotate(f, 90.0, Vec2.Zero), pRight + Vec2(
+                                    0.0,
+                                    po.calc.sY
+                                )
                             )
                         }
 
@@ -1136,19 +1152,19 @@ object BoxCad {
         height: Double,
         drawerSettings: DrawerSettings
     ): Vec2 {
-        var y = 0.0;
+        var y = 0.0
         for (po in polki.calcList) {
-            y += po.maxHeight(height) + drawerSettings.boardWeight + 1;
+            y += po.maxHeight(height) + drawerSettings.boardWeight + 1
             if (po == polka)
                 break
         }
 
-        return Vec2(origin.x, origin.y - y);
+        return Vec2(origin.x, origin.y - y)
     }
 
 
     private val sep = charArrayOf(' ', '\t', ';', '\n')
-    public fun readBox(
+    fun readBox(
         line: String,
         defaultWidth: Double,
         defaultHeight: Double,

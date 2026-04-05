@@ -1,8 +1,8 @@
 package com.kos.figure.algorithms
 
-import com.kos.figure.complex.model.Arc
-import com.kos.figure.complex.model.Ellipse
-import com.kos.figure.complex.model.Segment
+import com.kos.figure.segments.model.Arc
+import com.kos.figure.segments.model.Ellipse
+import com.kos.figure.segments.model.Segment
 import vectors.Vec2
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -161,7 +161,10 @@ fun findNearestPointOnEllipse(ellipse: Ellipse, point: Vec2): Vec2 {
     if (rotatedPoint == Vec2.Zero)
         return ellipse.center
     // 2. Apply Newton-Raphson
-    var t = atan2(rotatedPoint.y, rotatedPoint.x)/ 2*Math.PI+0.5  //   0.0 // Initial guess for the parameter t
+    var t = atan2(
+        rotatedPoint.y,
+        rotatedPoint.x
+    ) / 2 * Math.PI + 0.5  //   0.0 // Initial guess for the parameter t
     val tolerance = 1e-6
     var iterations = 0
     val maxIterations = 5
@@ -177,7 +180,7 @@ fun findNearestPointOnEllipse(ellipse: Ellipse, point: Vec2): Vec2 {
         val derivative = ellipseDerivativeAtParameter(ellipse, t)
 
         // Calculate the next value of t using the Newton-Raphson formula
-        val nextT = t - Vec2.dot(vector, derivative) / - Vec2.dot(derivative , derivative)
+        val nextT = t - Vec2.dot(vector, derivative) / -Vec2.dot(derivative, derivative)
 
         // Check for convergence
         if (abs(nextT - t) < tolerance) {
@@ -254,9 +257,8 @@ private fun findClosestPointOnEllipseLocal(ellipse: Ellipse, point: Vec2): Vec2 
         val vector = point - ellipsePoint
 
 
-
         // Calculate the derivative of the ellipse equation with respect to t
-        val derivative = Vec2(-ellipse.radiusX*sin(t), ellipse.radiusY*cos(t))
+        val derivative = Vec2(-ellipse.radiusX * sin(t), ellipse.radiusY * cos(t))
 
         // Calculate the next value of t using the Newton-Raphson formula
         val nextT = t - Vec2.dot(vector, derivative) / Vec2.dot(derivative, derivative)

@@ -1,6 +1,5 @@
 package com.kos.boxdrawer.detal.splash
 
-import androidx.compose.ui.graphics.PointMode
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.figure.FigurePolyline

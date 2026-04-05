@@ -1,18 +1,20 @@
 package com.kos.figure.algorithms
 
-import com.kos.figure.complex.model.Segment
-import vectors.Vec2
+import com.kos.figure.segments.model.Segment
 
 data class SegmentInfo(val polygonIndex: Int, val edgeIndex: Int)
 
 data class Vertex(
-    val point: Vec2,
-    val isIntersection:Boolean,
+    val point: vectors.Vec2,
+    val isIntersection: Boolean,
     val entering: Boolean,
     val segments: MutableList<SegmentInfo> = mutableListOf()
 )
 
-fun intersectArbitraryPolygons(polygon1: List<Vec2>, polygon2: List<Vec2>): List<List<Vec2>> {
+fun intersectArbitraryPolygons(
+    polygon1: List<vectors.Vec2>,
+    polygon2: List<vectors.Vec2>
+): List<List<vectors.Vec2>> {
     // 1. Find Intersections
     val intersections = findIntersections(polygon1, polygon2)
 
@@ -20,7 +22,7 @@ fun intersectArbitraryPolygons(polygon1: List<Vec2>, polygon2: List<Vec2>): List
     val graph = buildGraph(polygon1, polygon2, intersections)
 
     // 3. Traverse Graph
-    val intersectionPolygons = mutableListOf<List<Vec2>>()
+    val intersectionPolygons = mutableListOf<List<vectors.Vec2>>()
     for (intersection in intersections) {
         val polygon = traverseGraph(graph, intersection)
         if (polygon.isNotEmpty()) {
@@ -32,8 +34,11 @@ fun intersectArbitraryPolygons(polygon1: List<Vec2>, polygon2: List<Vec2>): List
     return intersectionPolygons
 }
 
-fun findIntersections(polygon1: List<Vec2>, polygon2: List<Vec2>): List<Vec2> {
-    val intersections = mutableListOf<Vec2>()
+fun findIntersections(
+    polygon1: List<vectors.Vec2>,
+    polygon2: List<vectors.Vec2>
+): List<vectors.Vec2> {
+    val intersections = mutableListOf<vectors.Vec2>()
 
     for (i in polygon1.indices) {
         val edge1Start = polygon1[i]
@@ -53,7 +58,12 @@ fun findIntersections(polygon1: List<Vec2>, polygon2: List<Vec2>): List<Vec2> {
     return intersections
 }
 
-fun findLineIntersection(p1: Vec2, p2: Vec2, p3: Vec2, p4: Vec2): Vec2? {
+fun findLineIntersection(
+    p1: vectors.Vec2,
+    p2: vectors.Vec2,
+    p3: vectors.Vec2,
+    p4: vectors.Vec2
+): vectors.Vec2? {
     val denominator = (p4.y - p3.y) * (p2.x - p1.x) - (p4.x - p3.x) * (p2.y - p1.y)
 
     // Check if lines are parallel
@@ -66,22 +76,28 @@ fun findLineIntersection(p1: Vec2, p2: Vec2, p3: Vec2, p4: Vec2): Vec2? {
     if (ua in 0.0..1.0 && ub in 0.0..1.0) {
         val x = p1.x + ua * (p2.x - p1.x)
         val y = p1.y + ua * (p2.y - p1.y)
-        return Vec2(x, y)
+        return vectors.Vec2(x, y)
     }
 
     return null // No intersection within line segments
 }
 
-fun buildGraph(polygon1: List<Vec2>, polygon2: List<Vec2>, intersections: List<Vec2>): Map<Vertex, List<Vertex>> {
+fun buildGraph(
+    polygon1: List<vectors.Vec2>,
+    polygon2: List<vectors.Vec2>,
+    intersections: List<vectors.Vec2>
+): Map<Vertex, List<Vertex>> {
     val graph = mutableMapOf<Vertex, MutableList<Vertex>>()
 
     // Add polygon vertices to the graph
-    fun addPolygonVertices(polygon: List<Vec2>, entering: Boolean) {for (i in polygon.indices) {
-        val currentPoint = polygon[i]
-        val nextPoint = polygon[(i + 1) % polygon.size]
-        val vertex = Vertex(currentPoint, isIntersection = false, entering = entering)
-        graph.getOrPut(vertex) { mutableListOf() }.add(Vertex(nextPoint, isIntersection = false, entering = entering))
-    }
+    fun addPolygonVertices(polygon: List<vectors.Vec2>, entering: Boolean) {
+        for (i in polygon.indices) {
+            val currentPoint = polygon[i]
+            val nextPoint = polygon[(i + 1) % polygon.size]
+            val vertex = Vertex(currentPoint, isIntersection = false, entering = entering)
+            graph.getOrPut(vertex) { mutableListOf() }
+                .add(Vertex(nextPoint, isIntersection = false, entering = entering))
+        }
     }
 
     addPolygonVertices(polygon1, entering = true)
@@ -89,7 +105,7 @@ fun buildGraph(polygon1: List<Vec2>, polygon2: List<Vec2>, intersections: List<V
 
     // Add intersection vertices and connectthem
     for (intersection in intersections) {
-        val intersectionVertex = Vertex(intersection, isIntersection = true, entering= true)
+        val intersectionVertex = Vertex(intersection, isIntersection = true, entering = true)
         graph.put(intersectionVertex, mutableListOf())
 
         // Find edges connected to the intersection
@@ -99,8 +115,15 @@ fun buildGraph(polygon1: List<Vec2>, polygon2: List<Vec2>, intersections: List<V
             if (isPointOnSegment(intersection, edgeStart, edgeEnd)) {
                 val segmentInfo = SegmentInfo(polygonIndex = 1, edgeIndex = i)
                 intersectionVertex.segments.add(segmentInfo)
-                graph.getOrPut(Vertex(edgeStart, isIntersection = false, entering = true)) { mutableListOf() }.add(intersectionVertex)
-                graph.getValue(intersectionVertex).add(Vertex(edgeEnd, isIntersection = false, entering = true))
+                graph.getOrPut(
+                    Vertex(
+                        edgeStart,
+                        isIntersection = false,
+                        entering = true
+                    )
+                ) { mutableListOf() }.add(intersectionVertex)
+                graph.getValue(intersectionVertex)
+                    .add(Vertex(edgeEnd, isIntersection = false, entering = true))
             }
         }
 
@@ -110,8 +133,15 @@ fun buildGraph(polygon1: List<Vec2>, polygon2: List<Vec2>, intersections: List<V
             if (isPointOnSegment(intersection, edgeStart, edgeEnd)) {
                 val segmentInfo = SegmentInfo(polygonIndex = 2, edgeIndex = i)
                 intersectionVertex.segments.add(segmentInfo)
-                graph.getOrPut(Vertex(edgeStart, isIntersection = false,entering = false)) { mutableListOf() }.add(intersectionVertex)
-                graph.getValue(intersectionVertex).add(Vertex(edgeEnd, isIntersection = false, entering = false))
+                graph.getOrPut(
+                    Vertex(
+                        edgeStart,
+                        isIntersection = false,
+                        entering = false
+                    )
+                ) { mutableListOf() }.add(intersectionVertex)
+                graph.getValue(intersectionVertex)
+                    .add(Vertex(edgeEnd, isIntersection = false, entering = false))
             }
         }
     }
@@ -120,20 +150,23 @@ fun buildGraph(polygon1: List<Vec2>, polygon2: List<Vec2>, intersections: List<V
 }
 
 // Helper function to check if a point lies on a line segment
-fun isPointOnSegment(point: Vec2, start: Vec2, end: Vec2): Boolean {
-    val crossProduct = (end.y - start.y) * (point.x - start.x) - (end.x - start.x) * (point.y - start.y)
+fun isPointOnSegment(point: vectors.Vec2, start: vectors.Vec2, end: vectors.Vec2): Boolean {
+    val crossProduct =
+        (end.y - start.y) * (point.x - start.x) - (end.x - start.x) * (point.y - start.y)
     if (Math.abs(crossProduct) > 1e-6) return false // Not collinear
 
-    val dotProduct = (point.x - start.x) * (end.x - start.x) + (point.y - start.y) * (end.y - start.y)
+    val dotProduct =
+        (point.x - start.x) * (end.x - start.x) + (point.y - start.y) * (end.y - start.y)
     if (dotProduct < 0) return false // Point is before start
     if (dotProduct > (end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y)) return false // Point is after end
 
     return true
 }
 
-fun traverseGraph(graph: Map<Vertex, List<Vertex>>, start:Vec2): List<Vec2> {
-    val result = mutableListOf<Vec2>()
-    var currentVertex = graph.keys.find { it.point == start && it.isIntersection } ?: return emptyList()
+fun traverseGraph(graph: Map<Vertex, List<Vertex>>, start: vectors.Vec2): List<vectors.Vec2> {
+    val result = mutableListOf<vectors.Vec2>()
+    var currentVertex =
+        graph.keys.find { it.point == start && it.isIntersection } ?: return emptyList()
 
     do {
         result.add(currentVertex.point)
@@ -150,9 +183,14 @@ fun traverseGraph(graph: Map<Vertex, List<Vertex>>, start:Vec2): List<Vec2> {
     return result
 }
 
-fun traverseGraphForUnion(graph: Map<Vertex, List<Vertex>>, start: Vec2, followEntering: Boolean = true): List<Vec2> {
-    val result = mutableListOf<Vec2>()
-    var currentVertex = graph.keys.find { it.point == start && it.isIntersection } ?: return emptyList()
+fun traverseGraphForUnion(
+    graph: Map<Vertex, List<Vertex>>,
+    start: vectors.Vec2,
+    followEntering: Boolean = true
+): List<vectors.Vec2> {
+    val result = mutableListOf<vectors.Vec2>()
+    var currentVertex =
+        graph.keys.find { it.point == start && it.isIntersection } ?: return emptyList()
 
     do {
         result.add(currentVertex.point)
@@ -169,40 +207,51 @@ fun traverseGraphForUnion(graph: Map<Vertex, List<Vertex>>, start: Vec2, followE
     return result
 }
 
-fun traverseGraphForSubtract(graph: Map<Vertex, List<Vertex>>, start: Vec2, subtractPolygonIndex: Int): List<Vec2> {
-    val result = mutableListOf<Vec2>()
-    var currentVertex = graph.keys.find { it.point == start && it.isIntersection } ?: return emptyList()
+fun traverseGraphForSubtract(
+    graph: Map<Vertex, List<Vertex>>,
+    start: vectors.Vec2,
+    subtractPolygonIndex: Int
+): List<vectors.Vec2> {
+    val result = mutableListOf<vectors.Vec2>()
+    var currentVertex =
+        graph.keys.find { it.point == start && it.isIntersection } ?: return emptyList()
 
     do {
         result.add(currentVertex.point)
         val nextVertices = graph.getValue(currentVertex)
 
         // Choose the next vertex based on subtraction logic
-        currentVertex = if (currentVertex.segments.any { it.polygonIndex == subtractPolygonIndex }){
-            // Intersection belongs to the polygon being subtracted
-            if (currentVertex.entering) {
-                nextVertices.find { it.entering } ?: break // Continue along entering edge (inside subtracted polygon)
+        currentVertex =
+            if (currentVertex.segments.any { it.polygonIndex == subtractPolygonIndex }) {
+                // Intersection belongs to the polygon being subtracted
+                if (currentVertex.entering) {
+                    nextVertices.find { it.entering }
+                        ?: break // Continue along entering edge (inside subtracted polygon)
+                } else {
+                    nextVertices.find { !it.entering }
+                        ?: break // Continue along leaving edge (outside subtracted polygon)
+                }
             } else {
-                nextVertices.find { !it.entering } ?: break // Continue along leaving edge (outside subtracted polygon)
+                // Intersection belongs to the main polygon
+                if (currentVertex.entering) {
+                    nextVertices.find { !it.entering }
+                        ?: break // Switch to leaving edge (outside subtracted polygon)
+                } else {
+                    nextVertices.find { it.entering }
+                        ?: break // Switch to entering edge (inside subtracted polygon)
+                }
             }
-        } else {
-            // Intersection belongs to the main polygon
-            if (currentVertex.entering) {
-                nextVertices.find { !it.entering } ?: break // Switch to leaving edge (outside subtracted polygon)
-            } else {
-                nextVertices.find { it.entering } ?: break // Switch to entering edge (inside subtracted polygon)
-            }
-        }
     } while (currentVertex.point != start) // Stop when we return to the starting point
 
     return result
 }
 
-fun findClosestPointOnSegment(segment: Segment, point: Vec2): Vec2 {
-    val segmentVector = Vec2(segment.end.x - segment.start.x, segment.end.y - segment.start.y)
-    val pointVector = Vec2(point.x - segment.start.x, point.y - segment.start.y)
+fun findClosestPointOnSegment(segment: Segment, point: vectors.Vec2): vectors.Vec2 {
+    val segmentVector =
+        vectors.Vec2(segment.end.x - segment.start.x, segment.end.y - segment.start.y)
+    val pointVector = vectors.Vec2(point.x - segment.start.x, point.y - segment.start.y)
 
-    val dotProduct = Vec2.dot(segmentVector, pointVector)
+    val dotProduct = vectors.Vec2.dot(segmentVector, pointVector)
     val segmentLengthSquared = segmentVector.x * segmentVector.x + segmentVector.y * segmentVector.y
 
     if (segmentLengthSquared == 0.0) {
@@ -211,14 +260,16 @@ fun findClosestPointOnSegment(segment: Segment, point: Vec2): Vec2 {
 
     val t = dotProduct / segmentLengthSquared
 
-    return if (t < 0){
+    return if (t < 0) {
         segment.start // Before the segment
     } else if (t > 1) {
         segment.end // After the segment
     } else {
-        Vec2(segment.start.x + t * segmentVector.x, segment.start.y + t * segmentVector.y) // On the segment
+        vectors.Vec2(
+            segment.start.x + t * segmentVector.x,
+            segment.start.y + t * segmentVector.y
+        ) // On the segment
     }
 }
 
-class PolygonManipulation {
-}
+class PolygonManipulation

@@ -5,7 +5,6 @@ import com.kos.ariphmetica.math.algorithms.CopositeFunction
 import com.kos.ariphmetica.math.algorithms.OutExpression
 import com.kos.ariphmetica.math.algorithms.Replacement
 import com.kos.ariphmetica.math.terms.MathTerm
-import com.kos.boxdrawer.template.TemplateMemory
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
@@ -119,8 +118,8 @@ open class SplashApproximation : ISplashDetail {
                         /* Если не вычислена какая то точка то ничего не нарисуем */
                         if (!x.isFinite() || !y.isFinite())
                             null else {
-                            Vec2(x, y) to
-                                    Vec2(dx, dy)
+                            vectors.Vec2(x, y) to
+                                    vectors.Vec2(dx, dy)
                         }
                     }
 
@@ -246,7 +245,7 @@ open class SplashApproximation : ISplashDetail {
     }
 
     fun buildLine(
-        points: List<Pair<Vec2, Vec2>>,
+        points: List<Pair<vectors.Vec2, vectors.Vec2>>,
         builder: TortoiseBuilder
     ) {
         if (points.size >= 2) {

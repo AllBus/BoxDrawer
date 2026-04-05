@@ -12,4 +12,6 @@ java {
 dependencies {
     implementation("org.locationtech.jts:jts-core:1.19.0")
     implementation("org.apache.commons:commons-math3:3.6.1")
+    implementation(project(":vectors"))
+    implementation(project(":segments"))
 }

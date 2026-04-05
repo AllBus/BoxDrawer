@@ -2,10 +2,9 @@ package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.algorithms.FigureBezierList
-import com.kos.figure.complex.model.CurveList
-import com.kos.figure.complex.model.PathIterator
-import com.kos.figure.complex.model.SegmentList
+import com.kos.figure.segments.model.CurveList
 import com.kos.figure.complex.model.SimpleElement
+import vectors.PointWithNormal
 import vectors.Vec2
 import vectors.Vec2.Companion.casteljauLine
 import vectors.Vec2.Companion.getCubicRoots
@@ -217,7 +216,7 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApprox
             val a = (startMM / pe).coerceIn(0.0, 1.0)
             val b = (endMM / pe).coerceIn(0.0, 1.0)
 
-            val sec = Vec2.casteljauLine(points.subList(0, 4), a, b)
+            val sec = casteljauLine(points.subList(0, 4), a, b)
             return FigureBezier(sec)
         }else {
             val e1 = edgeAtPosition(startMM)
@@ -228,12 +227,12 @@ class FigureBezier(points: List<Vec2>) : FigurePolygon(points), FigureWithApprox
 
             val a =if (e1>=0 && e1< edgeCount()){
                 val st = startMM-length[e1-1] /pathLength(e1)
-                 Vec2.casteljauLine(points.subList(3*(e1), 3*(e1)+4 ),st ).first
+                 casteljauLine(points.subList(3*(e1), 3*(e1)+4 ),st ).first
             } else emptyList()
 
             val b = if (e2>=0 && e2 < edgeCount()) {
                 val en = endMM - length[e2 - 1] / pathLength(e2)
-                Vec2.casteljauLine(points.subList(3 * (e2), 3 * (e2) + 4), en).second
+                casteljauLine(points.subList(3 * (e2), 3 * (e2) + 4), en).second
             } else emptyList()
 
             val l = listOf(

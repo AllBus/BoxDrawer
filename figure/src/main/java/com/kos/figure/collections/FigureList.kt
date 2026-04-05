@@ -6,7 +6,6 @@ import com.kos.figure.FigureEmpty
 import com.kos.figure.ICropable
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
-import vectors.Matrix
 
 class FigureList(
     private val figures: List<IFigure>
@@ -69,8 +68,8 @@ class FigureList(
         return "Список"
     }
 
-    override val transform: Matrix
-        get() = Matrix.identity
+    override val transform: vectors.Matrix
+        get() = vectors.Matrix.identity
 
 
     override val hasTransform: Boolean

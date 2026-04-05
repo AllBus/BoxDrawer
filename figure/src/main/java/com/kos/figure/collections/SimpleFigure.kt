@@ -4,11 +4,10 @@ import com.kos.drawer.IFigureGraphics
 import com.kos.figure.CropSide
 import com.kos.figure.Figure
 import com.kos.figure.IFigure
-import vectors.BoundingRectangle
 import vectors.Matrix
-import vectors.Vec2
+import vectors.BoundingRectangle
 
-class SimpleFigure(val figures:List<Figure>): Figure() {
+class SimpleFigure(val figures: List<Figure>) : Figure() {
     override fun translate(translateX: Double, translateY: Double): Figure {
         return SimpleFigure(figures.map { it.translate(translateX, translateY) })
     }

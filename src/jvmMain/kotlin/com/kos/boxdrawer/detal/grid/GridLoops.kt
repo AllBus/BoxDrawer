@@ -1,6 +1,6 @@
 package com.kos.boxdrawer.detal.grid
 
-import com.kos.figure.complex.model.CubikDirection
+import com.kos.figure.segments.model.CubikDirection
 import vectors.BoundingRectangle
 import vectors.Vec2
 
@@ -82,17 +82,17 @@ object GridLoops {
 
 
     fun stackGroups2(layers: List<PolyLayer>): PolyLayer {
-        var offset = Vec2.Zero
+        var offset = vectors.Vec2.Zero
 
-        val rest = mutableListOf<List<Vec2>>(emptyList())
+        val rest = mutableListOf<List<vectors.Vec2>>(emptyList())
         for (l in layers) {
             rest += l.polygons.map { p ->
                 p.map { v -> v + offset }
             }
 
-            offset += Vec2(0.0, l.bounds.height + 1.0)
+            offset += vectors.Vec2(0.0, l.bounds.height + 1.0)
         }
-        return PolyLayer(rest, BoundingRectangle.Empty)
+        return PolyLayer(rest, vectors.BoundingRectangle.Empty)
     }
 
     fun arrangeGroup2(polygons: List<PolyInfo>): PolyLayer {
@@ -106,7 +106,7 @@ object GridLoops {
         val vx = mps.minOf { t -> t.second.first }
         val vy = mps.minOf { t -> t.second.second }
 
-        val v2 = Vec2(vx, vy)
+        val v2 = vectors.Vec2(vx, vy)
 
         val pp = mps.map { t -> t.first.points.map { p -> p - v2 } }
 
@@ -205,11 +205,11 @@ object GridLoops {
     fun arrangePolygons(
         polygons: List<PolygonVec>,
         sideTouches: List<SideTouch>
-    ): List<List<Vec2>> {
+    ): List<List<vectors.Vec2>> {
         val graph = buildGraph(polygons.size, sideTouches)
         val cycles = findCycles(graph)
 
-        val pieces = mutableListOf<List<Vec2>>()
+        val pieces = mutableListOf<List<vectors.Vec2>>()
         for (cycle in cycles) {
             val piece = arrangeCycle(polygons, sideTouches, cycle)
             pieces.add(piece)
@@ -263,8 +263,8 @@ object GridLoops {
         polygons: List<PolygonVec>,
         sideTouches: List<SideTouch>,
         cycle: List<Int>
-    ): List<Vec2> {
-        val piece = mutableListOf<Vec2>()
+    ): List<vectors.Vec2> {
+        val piece = mutableListOf<vectors.Vec2>()
         var currentPolygon = polygons[cycle[0]]
         piece.addAll(currentPolygon.points) // Add first polygon
 
@@ -339,7 +339,7 @@ object GridLoops {
     }
 
     fun arrangeGroup(polygons: List<PolyInfo>): PolyLayer {
-        val placedPolygons = mutableListOf<Pair<PolyInfo, List<Vec2>>>()
+        val placedPolygons = mutableListOf<Pair<PolyInfo, List<vectors.Vec2>>>()
         var minX = Double.MAX_VALUE
         var minY = Double.MAX_VALUE
         var maxX = Double.MIN_VALUE
@@ -348,7 +348,7 @@ object GridLoops {
         val remainingPolygons = polygons.toMutableList()
 
         while (remainingPolygons.isNotEmpty()) {
-            var bestPlacement: Pair<PolyInfo, List<Vec2>>? = null
+            var bestPlacement: Pair<PolyInfo, List<vectors.Vec2>>? = null
             var bestArea = Double.MAX_VALUE
             var isNested = false
 
@@ -359,7 +359,7 @@ object GridLoops {
                     break
                 }
 
-                var currentPlacement: Pair<List<Vec2>, Vec2>? = null
+                var currentPlacement: Pair<List<vectors.Vec2>, vectors.Vec2>? = null
                 var currentArea = Double.MAX_VALUE
                 var currentIsNested = false
 
@@ -375,7 +375,7 @@ object GridLoops {
                         val translated = placedPolygon.second.map { it + offset }
                         placedPolygons.remove(placedPolygon)
                         placedPolygons.add(Pair(placedPolygon.first, translated))
-                        currentPlacement = Pair(polyVec2, Vec2(0.0, 0.0))
+                        currentPlacement = Pair(polyVec2, vectors.Vec2(0.0, 0.0))
                         currentIsNested = true
                         break
                     } else {
@@ -420,11 +420,11 @@ object GridLoops {
         }
 
         val points = placedPolygons.flatMap { it.second }
-        val bounds = BoundingRectangle(Vec2(minX, minY), Vec2(maxX, maxY))
+        val bounds = vectors.BoundingRectangle(vectors.Vec2(minX, minY), vectors.Vec2(maxX, maxY))
         return PolyLayer(listOf(points), bounds)
     }
 
-    fun polygonsOverlap(placedPolygons: List<List<Vec2>>, newPolygon: List<Vec2>): Boolean {
+    fun polygonsOverlap(placedPolygons: List<List<vectors.Vec2>>, newPolygon: List<vectors.Vec2>): Boolean {
         val (newMinX, newMinY, newMaxX, newMaxY) = getBoundingBox(newPolygon)
         for (placedPolygon in placedPolygons) {
             val (placedMinX, placedMinY, placedMaxX, placedMaxY) = getBoundingBox(placedPolygon)
@@ -437,14 +437,14 @@ object GridLoops {
     }
 
 
-    fun polygonsOverlap1(poly1: List<Vec2>, poly2: List<Vec2>): Boolean {
+    fun polygonsOverlap1(poly1: List<vectors.Vec2>, poly2: List<vectors.Vec2>): Boolean {
         val (minX1, minY1, maxX1, maxY1) = getBoundingBox(poly1)
         val (minX2, minY2, maxX2, maxY2) = getBoundingBox(poly2)
 
         return minX1 < maxX2 && maxX1 > minX2 && minY1 < maxY2 && maxY1 > minY2
     }
 
-    fun getBoundingBox(points: List<Vec2>): Quadruple<Double, Double, Double, Double> {
+    fun getBoundingBox(points: List<vectors.Vec2>): Quadruple<Double, Double, Double, Double> {
         var minX = Double.MAX_VALUE
         var minY = Double.MAX_VALUE
         var maxX = Double.MIN_VALUE
@@ -460,9 +460,9 @@ object GridLoops {
         return Quadruple(minX, minY, maxX, maxY)
     }
 
-    fun flattenBoundingBoxes(boxes: List<Quadruple<Double, Double, Double, Double>>): BoundingRectangle {
+    fun flattenBoundingBoxes(boxes: List<Quadruple<Double, Double, Double, Double>>): vectors.BoundingRectangle {
         if (boxes.isEmpty()) {
-            return BoundingRectangle.Empty
+            return vectors.BoundingRectangle.Empty
         }
 
         var minX = boxes[0].first
@@ -477,11 +477,11 @@ object GridLoops {
             maxY = maxOf(maxY, box.fourth)
         }
 
-        return BoundingRectangle(Vec2(minX, minY), Vec2(maxX, maxY))
+        return vectors.BoundingRectangle(vectors.Vec2(minX, minY), vectors.Vec2(maxX, maxY))
     }
 
     fun stackGroups(groups: List<PolyLayer>): PolyLayer {
-        val placedGroups = mutableListOf<Pair<PolyLayer, Vec2>>()
+        val placedGroups = mutableListOf<Pair<PolyLayer, vectors.Vec2>>()
         var minX = Double.MAX_VALUE
         var minY = Double.MAX_VALUE
         var maxX = Double.MIN_VALUE
@@ -490,12 +490,12 @@ object GridLoops {
         val remainingGroups = groups.toMutableList()
 
         while (remainingGroups.isNotEmpty()) {
-            var bestPlacement: Pair<PolyLayer, Vec2>? = null
+            var bestPlacement: Pair<PolyLayer, vectors.Vec2>? = null
             var bestArea = Double.MAX_VALUE
 
             for (group in remainingGroups) {
                 if (placedGroups.isEmpty()) {
-                    placedGroups.add(Pair(group, Vec2(0.0, 0.0)))
+                    placedGroups.add(Pair(group, vectors.Vec2(0.0, 0.0)))
                     minX = group.bounds.min.x
                     minY = group.bounds.min.y
                     maxX = group.bounds.max.x
@@ -503,7 +503,7 @@ object GridLoops {
                     break
                 }
 
-                var currentPlacement: Vec2? = null
+                var currentPlacement: vectors.Vec2? = null
                 var currentArea = Double.MAX_VALUE
 
                 for (placedGroup in placedGroups) {
@@ -511,7 +511,10 @@ object GridLoops {
 
                     // Try placing above
                     val translateUp =
-                        Vec2(0.0, placedGroupLayer.bounds.max.y - placedGroupLayer.bounds.min.y)
+                        vectors.Vec2(
+                            0.0,
+                            placedGroupLayer.bounds.max.y - placedGroupLayer.bounds.min.y
+                        )
                     val newOffsetUp = placedGroupOffset + translateUp
                     if (!groupsOverlap(placedGroups.map { it.first }, group, newOffsetUp)) {
                         val (newMinX, newMinY, newMaxX, newMaxY) = getBoundingBox(placedGroups.map { it.first } + group,
@@ -525,7 +528,10 @@ object GridLoops {
 
                     // Try placing to the right
                     val translateRight =
-                        Vec2(placedGroupLayer.bounds.max.x - placedGroupLayer.bounds.min.x, 0.0)
+                        vectors.Vec2(
+                            placedGroupLayer.bounds.max.x - placedGroupLayer.bounds.min.x,
+                            0.0
+                        )
                     val newOffsetRight = placedGroupOffset + translateRight
                     if (!groupsOverlap(placedGroups.map { it.first }, group, newOffsetRight)) {
                         val (newMinX, newMinY, newMaxX, newMaxY) = getBoundingBox(placedGroups.map { it.first } + group,
@@ -566,14 +572,14 @@ object GridLoops {
                 polygon.map { point -> point + offset }
             }
         }
-        val bounds = BoundingRectangle(Vec2(minX, minY), Vec2(maxX, maxY))
+        val bounds = vectors.BoundingRectangle(vectors.Vec2(minX, minY), vectors.Vec2(maxX, maxY))
         return PolyLayer(allPolygons, bounds)
     }
 
     fun groupsOverlap(
         placedGroups: List<PolyLayer>,
         newGroup: PolyLayer,
-        newOffset: Vec2
+        newOffset: vectors.Vec2
     ): Boolean {
         for (placedGroup in placedGroups) {
             val placedMinX = placedGroup.bounds.min.x
@@ -598,7 +604,7 @@ object GridLoops {
 
     fun getBoundingBox(
         groups: List<PolyLayer>,
-        offset: Vec2 = Vec2(0.0, 0.0)
+        offset: vectors.Vec2 = vectors.Vec2(0.0, 0.0)
     ): Quadruple<Double, Double, Double, Double> {
         var minX = Double.MAX_VALUE
         var minY = Double.MAX_VALUE
@@ -615,7 +621,7 @@ object GridLoops {
         return Quadruple(minX, minY, maxX, maxY)
     }
 
-    fun polygonInPolygon(inner: List<Vec2>, outer: List<Vec2>): Boolean {
+    fun polygonInPolygon(inner: List<vectors.Vec2>, outer: List<vectors.Vec2>): Boolean {
         if (inner.isEmpty() || outer.isEmpty()) {
             return false
         }
@@ -629,13 +635,13 @@ object GridLoops {
         return true
     }
 
-    fun pointInPolygon(point: Vec2, polygon: List<Vec2>): Boolean {
+    fun pointInPolygon(point: vectors.Vec2, polygon: List<vectors.Vec2>): Boolean {
         if (polygon.size < 3) {
             return false
         }
 
         var intersections = 0
-        val ray = Vec2(point.x, Double.MAX_VALUE) // Ray pointing upwards
+        val ray = vectors.Vec2(point.x, Double.MAX_VALUE) // Ray pointing upwards
 
         for (i in polygon.indices) {
             val p1 = polygon[i]
@@ -649,7 +655,7 @@ object GridLoops {
         return intersections % 2 != 0 // Odd number of intersections means point is inside
     }
 
-    fun rayIntersectsSegment(point: Vec2, ray: Vec2, p1: Vec2, p2: Vec2): Boolean {
+    fun rayIntersectsSegment(point: vectors.Vec2, ray: vectors.Vec2, p1: vectors.Vec2, p2: vectors.Vec2): Boolean {
         // Check if the ray and segment are collinear
         if ((p1.x - point.x) * (ray.y - point.y) == (ray.x - point.x) * (p1.y - point.y)) {
             return false
@@ -673,8 +679,8 @@ data class SideTouch(
     val side2Index: Int
 )
 
-data class PolygonVec(val points: List<Vec2>) {
-    val sides: List<Pair<Vec2, Vec2>>
+data class PolygonVec(val points: List<vectors.Vec2>) {
+    val sides: List<Pair<vectors.Vec2, vectors.Vec2>>
         get() = points.zipWithNext() + Pair(points.last(), points.first())
 }
 

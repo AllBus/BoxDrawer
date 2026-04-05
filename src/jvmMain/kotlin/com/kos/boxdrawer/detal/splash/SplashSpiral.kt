@@ -3,7 +3,6 @@ package com.kos.boxdrawer.detal.splash
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
 import com.kos.figure.FigureBezier
-import com.kos.figure.FigureEllipse
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
@@ -127,7 +126,8 @@ class SplashSpiral : ISplashDetail {
 
         var newSlope = (b * sin(newTheta) + newR * cos(newTheta)) / (b * cos(newTheta) - newR * sin(newTheta))
 
-        var newPoint = Vec2(center.x + newR * cos(newTheta), center.y + newR * sin(newTheta))
+        var newPoint =
+            Vec2(center.x + newR * cos(newTheta), center.y + newR * sin(newTheta))
 
         path.add(newPoint)
         //path.moveTo(newPoint.first, newPoint.second)
@@ -143,7 +143,8 @@ class SplashSpiral : ISplashDetail {
             // (b * sinΘ + (a + bΘ) * cosΘ) / (b * cosΘ - (a + bΘ) * sinΘ)
 
             val oldPoint = newPoint
-            newPoint = Vec2(center.x + newR * cos(newTheta), center.y + newR * sin(newTheta))
+            newPoint =
+                Vec2(center.x + newR * cos(newTheta), center.y + newR * sin(newTheta))
 
             val aPlusBTheta = a + b * (newTheta-downTheta)
             val oldSlope =  newSlope
@@ -169,7 +170,7 @@ class SplashSpiral : ISplashDetail {
 
      */
 
-    fun duga(a:Vec2, b:Vec2): List<Vec2>{
+    fun duga(a: Vec2, b: Vec2): List<Vec2>{
         val ax = a.x
         val ay = a.y
         val bx = b.x
@@ -178,10 +179,12 @@ class SplashSpiral : ISplashDetail {
         val q2 = q1 + ax * bx + ay * by
         val k2 = (4.0/3.0) * (sqrt(2.0 * q1 * q2) - q2) / (ax * by - ay * bx)
 
-        return listOf(Vec2(ax - k2 * ay,  ay + k2 * ax), Vec2(bx + k2 * by, by - k2 * bx), b )
+        return listOf(
+            Vec2(ax - k2 * ay, ay + k2 * ax),
+            Vec2(bx + k2 * by, by - k2 * bx), b )
     }
 
-    fun duga(a:Vec2, b:Vec2, c:Vec2): List<Vec2>{
+    fun duga(a: Vec2, b: Vec2, c: Vec2): List<Vec2>{
         val ax = a.x-c.x
         val ay = a.y-c.y
         val bx = b.x - c.x
@@ -190,6 +193,10 @@ class SplashSpiral : ISplashDetail {
         val q2 = q1 + ax * bx + ay * by
         val k2 = (4.0/3.0) * (sqrt(2.0 * q1 * q2) - q2) / (ax * by - ay * bx)
 
-        return listOf(Vec2(ax - k2 * ay,  ay + k2 * ax)+c, Vec2(bx + k2 * by, by - k2 * bx)+c, b )
+        return listOf(
+            Vec2(ax - k2 * ay, ay + k2 * ax) +c, Vec2(
+                bx + k2 * by,
+                by - k2 * bx
+            ) +c, b )
     }
 }

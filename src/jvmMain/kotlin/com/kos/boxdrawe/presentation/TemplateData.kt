@@ -22,7 +22,6 @@ import turtoise.TortoiseFigureExtractor
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
 import turtoise.TortoiseState
-import turtoise.help.TortoiseHelpInfo
 import turtoise.memory.TwoBlockTortoiseMemory
 import turtoise.paint.PaintUtils
 import turtoise.parser.TortoiseParserStackBlock

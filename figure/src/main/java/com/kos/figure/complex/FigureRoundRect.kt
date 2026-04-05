@@ -4,9 +4,9 @@ import com.kos.figure.Figure
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
-import com.kos.figure.complex.model.Arc
-import com.kos.figure.complex.model.PathElement
-import com.kos.figure.complex.model.Segment
+import com.kos.figure.segments.model.Arc
+import com.kos.figure.segments.model.PathElement
+import com.kos.figure.segments.model.Segment
 import vectors.BoundingRectangle
 import vectors.Vec2
 import kotlin.math.PI

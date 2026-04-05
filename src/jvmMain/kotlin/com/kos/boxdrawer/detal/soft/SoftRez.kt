@@ -126,8 +126,8 @@ class SoftRez {
         var y = -0.5 * sh
         while (y < h) {
             val fy = when {
-                y < sdy -> fa.crop(-y / scaleY, CropSide.BOTTOM);
-                y + sh > h -> fa.crop((h - y) / scaleY, CropSide.TOP);
+                y < sdy -> fa.crop(-y / scaleY, CropSide.BOTTOM)
+                y + sh > h -> fa.crop((h - y) / scaleY, CropSide.TOP)
                 else -> fa
             }
 

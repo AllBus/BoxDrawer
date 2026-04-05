@@ -9,14 +9,13 @@ import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
 import turtoise.parser.TPArg
 import vectors.Vec2
-import kotlin.math.PI
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 
-data class BezierCurve(val start: Vec2, val end: Vec2, val control1: Vec2, val control2: Vec2)
+data class BezierCurve(val start: vectors.Vec2, val end: vectors.Vec2, val control1: vectors.Vec2, val control2: vectors.Vec2)
 
-fun createBezierCurves(points: List<Vec2>, smoothnessFactor: Double = 0.25): List<BezierCurve> {
+fun createBezierCurves(points: List<vectors.Vec2>, smoothnessFactor: Double = 0.25): List<BezierCurve> {
     val curves = mutableListOf<BezierCurve>()
     for (i in points.indices step 3) {
         val p0 = points[i]
@@ -32,7 +31,7 @@ fun createBezierCurves(points: List<Vec2>, smoothnessFactor: Double = 0.25): Lis
     return curves
 }
 
-fun createBezierCurvesThroughPoints(points: List<Vec2>, smoothnessFactor: Double = 0.5): List<BezierCurve> {
+fun createBezierCurvesThroughPoints(points: List<vectors.Vec2>, smoothnessFactor: Double = 0.5): List<BezierCurve> {
     val curves = mutableListOf<BezierCurve>()
     if (points.size < 2) return curves // Need at least 2 points for a curve
 
@@ -86,27 +85,27 @@ class SplashPetal : ISplashDetail {
         figureExtractor: TortoiseFigureExtractor
     ) {
         val memory = figureExtractor.memory
-        val a = Vec2(
+        val a = vectors.Vec2(
             com[1, memory],
             com[2, memory],
         ).rotate(builder.angle) + builder.xy
-        val o = Vec2(
+        val o = vectors.Vec2(
             com[3, memory],
             com[4, memory],
         ).rotate(builder.angle) + builder.xy
-        val b = Vec2(
+        val b = vectors.Vec2(
             com[5, memory],
             com[6, memory],
         ).rotate(builder.angle) + builder.xy
         val r = com[7, memory]
 
         val points = listOf(
-            Vec2(0.0, 0.0),
-            Vec2(0.026139408, 0.024128735),
-            Vec2(0.21514745, 0.08646113),
-            Vec2(0.30160856, 0.106568396),
-            Vec2(0.3961126, 0.106568396),
-            Vec2(0.46045578, 0.05428958),
+            vectors.Vec2(0.0, 0.0),
+            vectors.Vec2(0.026139408, 0.024128735),
+            vectors.Vec2(0.21514745, 0.08646113),
+            vectors.Vec2(0.30160856, 0.106568396),
+            vectors.Vec2(0.3961126, 0.106568396),
+            vectors.Vec2(0.46045578, 0.05428958),
            // Vec2(0.43632707, 0.0),
            /// Vec2(0.43632707, 0.0)
         )

@@ -171,7 +171,7 @@ class DrawerViewModel {
         tools.saveState()
     }
 
-    suspend fun onPress(point: Vec2, button: Int, scale: Float) {
+    suspend fun onPress(point: vectors.Vec2, button: Int, scale: Float) {
         when (tabIndex.value) {
             BoxDrawerToolBar.TAB_REKA -> rectData.onPress(point, button, scale)
             BoxDrawerToolBar.TAB_TOOLS -> template.onPress(point, button, scale)
@@ -179,13 +179,13 @@ class DrawerViewModel {
         }
     }
 
-    suspend fun onMove(point: Vec2, button: Int, scale: Float) {
+    suspend fun onMove(point: vectors.Vec2, button: Int, scale: Float) {
         when (tabIndex.value) {
             BoxDrawerToolBar.TAB_DXF -> dxfData.onMove(point, button, scale, _selectedItem)
         }
     }
 
-    suspend fun onRelease(point: Vec2, button: Int, scale: Float) {
+    suspend fun onRelease(point: vectors.Vec2, button: Int, scale: Float) {
         when (tabIndex.value) {
             BoxDrawerToolBar.TAB_DXF -> dxfData.onRelease(point, button, scale, _selectedItem)
         }

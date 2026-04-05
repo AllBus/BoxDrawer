@@ -37,11 +37,11 @@ class SplashDirigible : ISplashDetail {
         com: TortoiseCommand, figureExtractor: TortoiseFigureExtractor
     ) {
         val memory = figureExtractor.memory
-        val a = Vec2(
+        val a = vectors.Vec2(
             com[1, memory],
             com[2, memory],
         ).rotate(builder.angle) + builder.xy
-        val b = Vec2(
+        val b = vectors.Vec2(
             com[3, memory],
             com[4, memory],
         ).rotate(builder.angle) + builder.xy

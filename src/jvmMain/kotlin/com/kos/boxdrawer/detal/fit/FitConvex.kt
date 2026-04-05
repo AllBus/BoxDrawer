@@ -1,7 +1,5 @@
 package com.kos.boxdrawer.detal.fit
 
-import vectors.Vec2
-
 object FitConvex {
 //    fun packConvexPolygons(polygons: List<ConvexPolygon>): Rectangle {
 //        val sortedPolygons = polygons.sortedByDescending { it.area } // Sort by area

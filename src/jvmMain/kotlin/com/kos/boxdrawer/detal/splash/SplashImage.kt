@@ -34,7 +34,7 @@ class SplashImage: ISplashDetail {
         val sy = com[3, 100.0, figureExtractor.memory]
 
         if (uri.isNotEmpty()){
-            builder.addProduct(FigureImage(Vec2.Zero, uri, Vec2(sx, sy)))
+            builder.addProduct(FigureImage(vectors.Vec2.Zero, uri, vectors.Vec2(sx, sy)))
         }
     }
 }

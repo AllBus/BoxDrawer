@@ -19,24 +19,18 @@ import androidx.compose.ui.text.input.TextFieldValue
 import com.kos.boxdrawe.presentation.FormulaData
 import com.kos.boxdrawe.widget.InputText
 import com.kos.boxdrawe.widget.Label
-import com.kos.boxdrawe.widget.LabelLight
-import com.kos.boxdrawe.widget.NumericTextFieldState
-import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.NumericUpDownLine
-import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.RunComboBox
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.SaveToFileIconButton
 import com.kos.boxdrawe.widget.model.ComboBoxItem
 import com.kos.boxdrawer.generated.resources.Res
-import com.kos.boxdrawer.generated.resources.formulaCustom
 import com.kos.boxdrawer.generated.resources.formulaCylinder
 import com.kos.boxdrawer.generated.resources.formulaEuclide
 import com.kos.boxdrawer.generated.resources.formulaSferic
 import com.kos.boxdrawer.generated.resources.formulaSystem
 import kotlinx.coroutines.flow.mapLatest
 import org.jetbrains.compose.resources.stringResource
-import vectors.Vec2
 
 @Composable
 fun ToolbarForFormula(data: FormulaData) {

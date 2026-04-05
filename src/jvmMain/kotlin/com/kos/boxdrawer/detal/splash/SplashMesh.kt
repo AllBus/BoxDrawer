@@ -2,7 +2,7 @@ package com.kos.boxdrawer.detal.splash
 
 import com.kos.figure.IFigure
 import com.kos.figure.collections.toFigure
-import com.kos.figure.complex.model.BoneAnchor
+import com.kos.figure.segments.model.BoneAnchor
 import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslate
 import turtoise.TortoiseBuilder

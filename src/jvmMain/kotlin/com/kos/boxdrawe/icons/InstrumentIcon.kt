@@ -3,15 +3,14 @@ package com.kos.boxdrawe.icons
 import androidx.compose.material.icons.materialPath
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 
 object InstrumentIcon {
 
@@ -25,7 +24,7 @@ object InstrumentIcon {
                 viewportWidth = 24.0f,
                 viewportHeight = 24.0f
             ).apply {
-                materialPath{
+                materialPath {
                     this.moveTo(3f, 8f)
                     this.lineTo(21f, 8f)
                     this.lineTo(21f, 16f)
@@ -36,7 +35,6 @@ object InstrumentIcon {
             }.build()
         }
     }
-
 
 
     private val CUT_SIZE = 36.dp
@@ -55,15 +53,44 @@ object InstrumentIcon {
             val cutSize = CUT_SIZE.toPx()
             val cutWidthPoint = width - cutSize
             val cornerRadius = CORNER_RADIUS.toPx()
-            val cornerDiameter = cornerRadius*2
-            val centerCorrect = cornerRadius*(Math.sqrt(2.0)-1).toFloat()
+            val cornerDiameter = cornerRadius * 2
+            val centerCorrect = cornerRadius * (Math.sqrt(2.0) - 1).toFloat()
 
             val path = Path().apply {
-                arcTo(Rect(ZERO_COORDINATE, ZERO_COORDINATE, cornerDiameter, cornerDiameter), 180f, 90f, true)
-                arcTo(Rect(cutWidthPoint-cornerRadius-centerCorrect, ZERO_COORDINATE, cutWidthPoint+cornerRadius-centerCorrect, cornerDiameter), -90f, 45f, false)
-                arcTo(Rect(width-cornerDiameter, cutSize-cornerRadius+centerCorrect, width, cutSize+cornerRadius+centerCorrect), -45f, 45f, false)
-                arcTo(Rect(width-cornerDiameter, height-cornerDiameter, width, height), 0f, 90f, false)
-                arcTo(Rect(ZERO_COORDINATE, height-cornerDiameter, cornerDiameter, height), 90f, 90f, false)
+                arcTo(
+                    Rect(ZERO_COORDINATE, ZERO_COORDINATE, cornerDiameter, cornerDiameter),
+                    180f,
+                    90f,
+                    true
+                )
+                arcTo(
+                    Rect(
+                        cutWidthPoint - cornerRadius - centerCorrect,
+                        ZERO_COORDINATE,
+                        cutWidthPoint + cornerRadius - centerCorrect,
+                        cornerDiameter
+                    ), -90f, 45f, false
+                )
+                arcTo(
+                    Rect(
+                        width - cornerDiameter,
+                        cutSize - cornerRadius + centerCorrect,
+                        width,
+                        cutSize + cornerRadius + centerCorrect
+                    ), -45f, 45f, false
+                )
+                arcTo(
+                    Rect(width - cornerDiameter, height - cornerDiameter, width, height),
+                    0f,
+                    90f,
+                    false
+                )
+                arcTo(
+                    Rect(ZERO_COORDINATE, height - cornerDiameter, cornerDiameter, height),
+                    90f,
+                    90f,
+                    false
+                )
                 close()
             }
             onDrawWithContent {
@@ -152,7 +179,7 @@ object InstrumentIcon {
 //        }
 //    }
 
-                    @Composable
+    @Composable
     fun rememberLine(): ImageVector {
         return remember {
             ImageVector.Builder(
@@ -162,7 +189,7 @@ object InstrumentIcon {
                 viewportWidth = 24.0f,
                 viewportHeight = 24.0f
             ).apply {
-                materialPath{
+                materialPath {
 
                     this.moveTo(3f, 8f)
                     this.lineTo(21f, 16f)
@@ -176,7 +203,7 @@ object InstrumentIcon {
     }
 
     @Composable
-    fun rememberCircle():ImageVector {
+    fun rememberCircle(): ImageVector {
         return remember {
             ImageVector.Builder(
                 name = "circle",
@@ -185,7 +212,7 @@ object InstrumentIcon {
                 viewportWidth = 24.0f,
                 viewportHeight = 24.0f
             ).apply {
-                materialPath{
+                materialPath {
                     this.moveTo(12f, 12f)
                     this.moveToRelative(-10f, 0f)
                     this.arcToRelative(10f, 10f, 0f, true, true, 20f, 0f)
@@ -197,7 +224,7 @@ object InstrumentIcon {
     }
 
     @Composable
-    fun rememberEllipse():ImageVector {
+    fun rememberEllipse(): ImageVector {
         return remember {
             ImageVector.Builder(
                 name = "ellipse",
@@ -219,7 +246,7 @@ object InstrumentIcon {
     }
 
     @Composable
-    fun rememberTriangle():ImageVector {
+    fun rememberTriangle(): ImageVector {
         return remember {
             ImageVector.Builder(
                 name = "triangle",
@@ -240,7 +267,7 @@ object InstrumentIcon {
     }
 
     @Composable
-    fun rememberStar():ImageVector {
+    fun rememberStar(): ImageVector {
         return remember {
             ImageVector.Builder(
                 name = "star",
@@ -262,7 +289,7 @@ object InstrumentIcon {
     }
 
     @Composable
-    fun rememberPolygon():ImageVector {
+    fun rememberPolygon(): ImageVector {
         return remember {
             ImageVector.Builder(
                 name = "polygon",
@@ -272,7 +299,7 @@ object InstrumentIcon {
                 viewportHeight = 24f,
             ).apply {
                 materialPath {
-                    this.moveTo( 4f, 12f)
+                    this.moveTo(4f, 12f)
                     this.lineTo(8f, 4f)
                     this.lineTo(16f, 4f)
                     this.lineTo(20f, 12f)
@@ -323,14 +350,14 @@ object InstrumentIcon {
                 materialPath {
                     moveTo(5f, 10f)
                     lineToRelative(5f, 12f)
-                    lineToRelative( 10f, 0f)
+                    lineToRelative(10f, 0f)
                     lineToRelative(5f, -12f)
-                    lineToRelative( 10f, 0f)
+                    lineToRelative(10f, 0f)
                     lineToRelative(0f, 2f)
                     lineToRelative(-5f, -12f)
-                    lineToRelative( -10f, 0f)
+                    lineToRelative(-10f, 0f)
                     lineToRelative(-5f, 12f)
-                    lineToRelative( -10f, 0f)
+                    lineToRelative(-10f, 0f)
                     lineToRelative(0f, -2f)
                     close()
                 }
@@ -359,6 +386,47 @@ object InstrumentIcon {
                     lineToRelative(-10f, -10f)
                     lineToRelative(5f, -2f)
                     this.lineToRelative(-11f, -6f)
+                    this.close()
+                }
+            }.build()
+        }
+    }
+
+    @Composable
+    fun rememberPointerMove(): ImageVector {
+        return remember {
+            ImageVector.Builder(
+                name = "move",
+                defaultWidth = 24.dp,
+                defaultHeight = 24.dp,
+                viewportWidth = 24.0f,
+                viewportHeight = 24.0f
+            ).apply {
+                materialPath {
+                    this.moveTo(12f, 2f)
+                    this.lineTo(8f, 6f)
+                    this.lineTo(11f, 6f)
+                    this.lineTo(11f, 11f)
+                    this.lineTo(6f, 11f)
+                    this.lineTo(6f, 8f)
+                    this.lineTo(2f, 12f)
+                    this.lineTo(6f, 16f)
+                    this.lineTo(6f, 13f)
+                    this.lineTo(11f, 13f)
+                    this.lineTo(11f, 18f)
+                    this.lineTo(8f, 18f)
+                    this.lineTo(12f, 22f)
+                    this.lineTo(16f, 18f)
+                    this.lineTo(13f, 18f)
+                    this.lineTo(13f, 13f)
+                    this.lineTo(18f, 13f)
+                    this.lineTo(18f, 16f)
+                    this.lineTo(22f, 12f)
+                    this.lineTo(18f, 8f)
+                    this.lineTo(18f, 11f)
+                    this.lineTo(13f, 11f)
+                    this.lineTo(13f, 6f)
+                    this.lineTo(16f, 6f)
                     this.close()
                 }
             }.build()

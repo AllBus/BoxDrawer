@@ -7,7 +7,6 @@ import com.kos.figure.FigureCircle
 import com.kos.figure.FigureLine
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
-import turtoise.FigureCreator
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
@@ -84,7 +83,7 @@ class SplashRoundLine: ISplashDetail {
         val (aap, angle) = if (r > 0) {
             val sigy = sign(ay)
             val preda = 0.0
-            val cc = Vec2( 0.0 , sigy * r).rotate(preda)
+            val cc = Vec2(0.0, sigy * r).rotate(preda)
 
             val al = (aa - cc).angle
             val hl = Vec2.distance(cc, aa)

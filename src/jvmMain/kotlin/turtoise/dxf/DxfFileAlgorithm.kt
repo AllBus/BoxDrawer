@@ -12,9 +12,7 @@ import turtoise.DrawerSettings
 import turtoise.TortoiseAlgorithm
 import turtoise.TortoiseBlock
 import turtoise.TortoiseFigureExtractor
-import turtoise.TortoiseRunner
 import turtoise.TortoiseState
-import turtoise.memory.TortoiseMemory
 import vectors.Vec2
 import java.io.File
 import java.io.FileInputStream
@@ -25,7 +23,7 @@ class DxfFileAlgorithm(
 
     private val figure: IFigure = try {
         val f = File(fileName)
-        if (f.isFile()) {
+        if (f.isFile) {
             val parser = ParserBuilder.createDefaultParser()
 
             parser.parse(FileInputStream(f), DXFParser.DEFAULT_ENCODING)

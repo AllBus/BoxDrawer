@@ -1,14 +1,8 @@
 package com.kos.figure.composition.booleans
 
-import com.kos.figure.FigureBezier
 import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureLine
 import com.kos.figure.IFigure
 import com.kos.figure.algorithms.UnionFigure
-import com.kos.figure.collections.FigureList
-import vectors.Vec2
-import java.awt.geom.AffineTransform
-import java.awt.geom.PathIterator
 
 
 class FigureIntersect(

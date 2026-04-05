@@ -195,7 +195,7 @@ class BoxData(override val tools: ITools): SaveFigure, PrintCode {
             calc.zigPolkaPol = alg.zigs.zigPolkaPol
 
             return BoxCad.box(
-                startPoint = Vec2.Zero,
+                startPoint = vectors.Vec2.Zero,
                 boxInfo = alg.boxInfo,
                 zigW = alg.zigs.zigW,
                 zigH = alg.zigs.zigH,

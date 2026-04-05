@@ -2,7 +2,6 @@ package com.kos.boxdrawer.detal.splash
 
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
-import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_ANGLE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
 import turtoise.FigureCreator
 import turtoise.TortoiseBuilder

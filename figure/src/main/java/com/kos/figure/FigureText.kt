@@ -1,8 +1,6 @@
 package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
-import com.kos.figure.composition.FigureRotate
-import com.kos.figure.composition.FigureTranslate
 import vectors.BoundingRectangle
 import vectors.Matrix
 import vectors.Vec2
@@ -20,7 +18,10 @@ class FigureText(val text:String, transform : Matrix = Matrix.identity): IFigure
 //    }
 //
     override fun rect(): BoundingRectangle {
-        return BoundingRectangle(transform.map(Vec2.Zero) , transform.map(Vec2.Zero) )
+        return BoundingRectangle(
+            transform.map(Vec2.Zero),
+            transform.map(Vec2.Zero)
+        )
     }
 //
 //    override fun translate(translateX: Double, translateY: Double): FigureText {

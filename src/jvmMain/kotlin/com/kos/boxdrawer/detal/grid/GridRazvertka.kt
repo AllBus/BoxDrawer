@@ -4,7 +4,7 @@ import vectors.Vec2
 
 object GridRazvertka {
 
-    fun findSharedEdge(loop: Loop, development: List<Vec2>): Pair<Vec2, Vec2>? {
+    fun findSharedEdge(loop: Loop, development: List<vectors.Vec2>): Pair<vectors.Vec2, vectors.Vec2>? {
         val loopVec2 = loop.toVec2List()
         for (i in loopVec2.indices) {
             val p1 = loopVec2[i]
@@ -17,8 +17,8 @@ object GridRazvertka {
     }
 
 
-    fun developLoops(loops: Set<Loop>): List<Vec2> {
-        val development = mutableListOf<Vec2>()
+    fun developLoops(loops: Set<Loop>): List<vectors.Vec2> {
+        val development = mutableListOf<vectors.Vec2>()
         val usedLoops = mutableSetOf<Loop>()
 
         fun addLoopToDevelopment(loop: Loop) {

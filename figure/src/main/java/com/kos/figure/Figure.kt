@@ -3,6 +3,7 @@ package com.kos.figure
 import com.kos.drawer.IFigureGraphics
 import vectors.BoundingRectangle
 import vectors.Matrix
+import vectors.PointWithNormal
 import vectors.Vec2
 
 enum class CropSide {

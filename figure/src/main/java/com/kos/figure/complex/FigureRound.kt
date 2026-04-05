@@ -6,19 +6,16 @@ import com.kos.figure.Figure
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
-import com.kos.figure.PointWithNormal
 import com.kos.figure.collections.FigurePath
-import com.kos.figure.complex.model.Arc
-import com.kos.figure.complex.model.Curve
-import com.kos.figure.complex.model.CustomPathIterator
-import com.kos.figure.complex.model.Ellipse
-import com.kos.figure.complex.model.PathElement
-import com.kos.figure.complex.model.PathIterator
-import com.kos.figure.complex.model.Segment
 import com.kos.figure.complex.model.SimpleElement
-import vectors.BoundingRectangle
-import vectors.Matrix
-import vectors.Vec2
+import com.kos.figure.segments.model.Arc
+import com.kos.figure.segments.model.Curve
+import com.kos.figure.segments.model.CustomPathIterator
+import com.kos.figure.segments.model.Ellipse
+import com.kos.figure.segments.model.PathElement
+import com.kos.figure.segments.model.PathIterator
+import com.kos.figure.segments.model.Segment
+import vectors.PointWithNormal
 import kotlin.math.max
 import kotlin.math.min
 
@@ -73,25 +70,56 @@ open class FigureRound(
         return segments.size
     }
 
+    private fun toPath(segment: PathElement): IFigurePath {
+        return when (segment){
+//            is Segment -> segment.toPath()
+//            is Arc -> segment.toPath()
+//            is Curve -> segment.toPath()
+           // is Ellipse -> segment.toPath()
+            else -> FigureEmpty
+        }
+    }
+
+    private fun take(segment: PathElement, start:Double, end: Double): Figure {
+        return when (segment){
+//            is Segment -> segment.take(start, end)
+//            is Arc -> segment.take(start, end)
+//            is Curve -> segment.take(start, end)
+//            is Ellipse -> segment.take(start, end)
+            else -> FigureEmpty
+        }
+    }
+
+    private fun toFigure(segment: PathElement): Figure {
+        return when (segment){
+//            is Segment -> segment.toFigure()
+//            is Arc -> segment.toFigure()
+//            is Curve -> segment.toFigure()
+//            is Ellipse -> segment.toFigure()
+            else -> FigureEmpty
+        }
+    }
+
+
     override fun path(edge: Int): IFigurePath {
         if (edge >= 0 && edge < segments.size) {
-            return segments[edge].toPath()
+            return toPath(segments[edge])
         }
         return FigureEmpty
     }
 
-    override fun startPoint(): Vec2 {
+    override fun startPoint(): vectors.Vec2 {
         return if (segments.isNotEmpty())
             segments[0].start
         else
-            Vec2.Zero
+            vectors.Vec2.Zero
     }
 
-    override fun endPoint(): Vec2 {
+    override fun endPoint(): vectors.Vec2 {
         return if (segments.isNotEmpty())
             segments.last().end
         else
-            Vec2.Zero
+            vectors.Vec2.Zero
     }
 
     override fun take(startMM: Double, endMM: Double): Figure {
@@ -110,15 +138,15 @@ open class FigureRound(
             if (q > 0) {
                 if (state) {
                     if (ostatok <= q) {
-                        result.add(s.take(ostatok, q))
+                        result.add(take(s, ostatok, q))
                         ostatok += end - st
                         state = false
                     }
                 } else {
                     if (ostatok >= q) {
-                        result.add(s.toFigure())
+                        result.add(toFigure(s))
                     } else {
-                        result.add(s.take(0.0, ostatok))
+                        result.add(take(s, 0.0, ostatok))
                         break
                     }
                 }
@@ -136,7 +164,7 @@ open class FigureRound(
                     is Segment -> "(${e.start} ${e.end})"
                     is Arc -> "(${e.center} ${e.radius} ${e.startAngle} ${e.endAngle} ${e.outSide})"
                     is Curve -> "(${e.p0} ${e.p1} ${e.p2} ${e.p3})"
-                    is Ellipse -> "(${e.center} ${Vec2(e.radiusX, e.radiusY)} ${e.startAngle} ${e.endAngle} ${e.outSide} ${e.rotation})"
+                    is Ellipse -> "(${e.center} ${vectors.Vec2(e.radiusX, e.radiusY)} ${e.startAngle} ${e.endAngle} ${e.outSide} ${e.rotation})"
                     else -> ""
                 }
             }
@@ -150,7 +178,7 @@ open class FigureRound(
     override fun translate(translateX: Double, translateY: Double): Figure {
         return FigureRound(
             segments = segments.map {
-                it.translate(Vec2(translateX, translateY))
+                it.translate(vectors.Vec2(translateX, translateY))
             }
         )
     }
@@ -159,14 +187,14 @@ open class FigureRound(
         return this
     }
 
-    override fun transform(matrix: Matrix): FigurePath {
+    override fun transform(matrix: vectors.Matrix): FigurePath {
         return FigurePath(
-            segments.map { it.toFigure() }.map { it.transform(matrix) }
+            segments.map { toFigure(it) }.map { it.transform(matrix) }
         )
     }
 
     override fun crop(k: Double, cropSide: CropSide): Figure {
-        return FigurePath(segments.map { it.toFigure() }.map { it.crop(k, cropSide) })
+        return FigurePath(segments.map { toFigure(it) }.map { it.crop(k, cropSide) })
     }
 
     override fun draw(g: IFigureGraphics) {
@@ -197,9 +225,9 @@ open class FigureRound(
         )
     }
 
-    private val bound: BoundingRectangle by lazy<BoundingRectangle> {
+    private val bound: vectors.BoundingRectangle by lazy<vectors.BoundingRectangle> {
         if (segments.isEmpty()) {
-            BoundingRectangle(Vec2(0.0, 0.0), Vec2(0.0, 0.0))
+            vectors.BoundingRectangle(vectors.Vec2(0.0, 0.0), vectors.Vec2(0.0, 0.0))
         } else {
             var l = segments[0].start.x
             var r = segments[0].start.x
@@ -214,11 +242,11 @@ open class FigureRound(
                 t = min(t, min(ss.y, se.y))
                 b = max(b, max(ss.y, se.y))
             }
-            BoundingRectangle(Vec2(l, t), Vec2(r, b))
+            vectors.BoundingRectangle(vectors.Vec2(l, t), vectors.Vec2(r, b))
         }
     }
 
-    override fun rect(): BoundingRectangle {
+    override fun rect(): vectors.BoundingRectangle {
         return bound
     }
 

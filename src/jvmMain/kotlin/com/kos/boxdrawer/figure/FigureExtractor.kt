@@ -129,7 +129,7 @@ class FigureExtractor {
                 FigureArray(
                     figure = f,
                     startPoint = entry.point.vec,
-                    distance = Vec2(entry.columnSpacing, entry.rowSpacing),
+                    distance = vectors.Vec2(entry.columnSpacing, entry.rowSpacing),
                     columns = entry.columns,
                     rows = entry.rows,
                     angle = entry.rotate * 180.0 / Math.PI,
@@ -147,6 +147,6 @@ class FigureExtractor {
         else -> FigureEmpty
     }
 
-    private val Point.vec get() = Vec2(this.x, -this.y)
-    private val DXFPoint.vec get() = Vec2(this.x, -this.y)
+    private val Point.vec get() = vectors.Vec2(this.x, -this.y)
+    private val DXFPoint.vec get() = vectors.Vec2(this.x, -this.y)
 }

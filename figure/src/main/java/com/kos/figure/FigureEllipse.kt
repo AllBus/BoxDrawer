@@ -3,13 +3,14 @@ package com.kos.figure
 //import org.apache.commons.math3.util.MathUtils.normalizeAngle
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.collections.FigurePath
-import com.kos.figure.complex.model.Ellipse
-import com.kos.figure.complex.model.OnePathIterator
+import com.kos.figure.segments.model.Ellipse
+import com.kos.figure.segments.model.OnePathIterator
 import com.kos.figure.complex.model.SimpleElement
 import com.kos.figure.utils.EllipseUtils.normalize
 import com.kos.figure.utils.EllipseUtils.normalizeAngle
 import vectors.BoundingRectangle
 import vectors.Matrix
+import vectors.PointWithNormal
 import vectors.Vec2
 import java.text.DecimalFormat
 import kotlin.math.PI
@@ -143,12 +144,12 @@ open class FigureEllipse(
         val b = matrix[0, 1].toDouble()
         val c = matrix[1, 0].toDouble()
         val d = matrix[1, 1].toDouble()
-        var delta = a * d - b * c;
+        a * d - b * c
         val newRot = if (a != 0.0 || b != 0.0) {
             val r = Math.sqrt(a * a + b * b)
             if (b > 0.0) Math.acos(a / r) else -Math.acos(a / r)
         } else if (c != 0.0 || d != 0.0) {
-            val s = Math.sqrt(c * c + d * d);
+            val s = Math.sqrt(c * c + d * d)
             Math.PI / 2.0 - (if (d > 0.0) Math.acos(-c / s) else -Math.acos(c / s))
         } else {
             0.0
@@ -282,7 +283,7 @@ open class FigureEllipse(
         if (isFill()) {
             return Math.PI * (3 * (radius + radiusMinor) - sqrt((3 * radius + radiusMinor) * (radius + 3 * radiusMinor)))
         } else {
-            val startAngle = segmentStartAngle;
+            val startAngle = segmentStartAngle
             val endAngle = endAngle()
             val dt = Math.PI * 0.001
             // считаем эксцентриситет
@@ -290,7 +291,7 @@ open class FigureEllipse(
             val b = radiusMinor
             val a2 = a * a
             val b2 = b * b
-            val ex = 1.0 - b * b / a * a
+            1.0 - b * b / a * a
 
             var result = 0.0
             var t = startAngle
@@ -379,7 +380,7 @@ open class FigureEllipse(
     val normalSign: Double get() = if (outSide) 1.0 else -1.0
 
     companion object {
-        val digitFormatter = DecimalFormat().apply { setMaximumFractionDigits(3) }
+        val digitFormatter = DecimalFormat().apply { maximumFractionDigits = 3 }
     }
 
     override fun name(): String {

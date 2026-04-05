@@ -10,10 +10,10 @@ import vectors.Vec2
 
 object NodeParser {
 
-    fun quadraticToCubicBezier(p0: Vec2,
-                               p1: Vec2,
-                               p2: Vec2
-    ): List<Vec2> {
+    fun quadraticToCubicBezier(p0: vectors.Vec2,
+                               p1: vectors.Vec2,
+                               p2: vectors.Vec2
+    ): List<vectors.Vec2> {
         // Calculate control points for the cubic Bézier curve
         val cp1X = p0.x + (2.0 / 3.0) * (p1.x - p0.x)
         val cp1Y = p0.y + (2.0 / 3.0) * (p1.y - p0.y)
@@ -21,10 +21,10 @@ object NodeParser {
         val cp2Y = p2.y + (2.0 / 3.0) * (p1.y - p2.y)
 
         // Return the control points for the cubic Bézier curve
-        return listOf(p0, Vec2(cp1X, cp1Y), Vec2(cp2X, cp2Y), p2)
+        return listOf(p0, vectors.Vec2(cp1X, cp1Y), vectors.Vec2(cp2X, cp2Y), p2)
     }
 
-    fun convertPathToFigure(nodes: List<PathNode>,currentPosition:Vec2): IFigure{
+    fun convertPathToFigure(nodes: List<PathNode>,currentPosition: vectors.Vec2): IFigure{
         var pos = currentPosition
         var start = currentPosition
         var pred : PathNode? = null
@@ -49,7 +49,7 @@ object NodeParser {
                     val darc = convertSvgArcToDxfArc(sarc)
 
                     result+=FigureEllipse(
-                        center = Vec2(darc.centerX, darc.centerY),
+                        center = vectors.Vec2(darc.centerX, darc.centerY),
                         radius = darc.radius,
                         radiusMinor = darc.minorRadius,
                         rotation = darc.rotation,
@@ -58,7 +58,7 @@ object NodeParser {
                         segmentSweepAngle = darc.endAngle
                     )
                     //Todo проверить правильность вычислений
-                    pos = Vec2(node.arcStartX.toDouble(), node.arcStartY.toDouble())
+                    pos = vectors.Vec2(node.arcStartX.toDouble(), node.arcStartY.toDouble())
                 }
                     PathNode.Close -> if (!isBegin){
                         result+=FigureLine(pos, start)
@@ -69,25 +69,25 @@ object NodeParser {
                     result+=FigureBezier(
                         listOf(
                             pos,
-                            Vec2(node.x1.toDouble(), node.y1.toDouble()),
-                            Vec2(node.x2.toDouble(), node.y2.toDouble()),
-                            Vec2(node.x3.toDouble(), node.y3.toDouble()),
+                            vectors.Vec2(node.x1.toDouble(), node.y1.toDouble()),
+                            vectors.Vec2(node.x2.toDouble(), node.y2.toDouble()),
+                            vectors.Vec2(node.x3.toDouble(), node.y3.toDouble()),
                         )
                     )
-                    pos = Vec2(node.x3.toDouble(), node.y3.toDouble())
+                    pos = vectors.Vec2(node.x3.toDouble(), node.y3.toDouble())
                 }
                 is PathNode.HorizontalTo -> {
                     isBegin = false
-                    result+=FigureLine(pos,Vec2(node.x.toDouble(),pos.y))
-                    pos = Vec2(node.x.toDouble(),pos.y)
+                    result+=FigureLine(pos, vectors.Vec2(node.x.toDouble(), pos.y))
+                    pos = vectors.Vec2(node.x.toDouble(), pos.y)
                 }
                 is PathNode.LineTo -> {
                     isBegin = false
-                    result+=FigureLine(pos,Vec2(node.x.toDouble(),node.y.toDouble()))
-                    pos = Vec2(node.x.toDouble(),node.y.toDouble())
+                    result+=FigureLine(pos, vectors.Vec2(node.x.toDouble(), node.y.toDouble()))
+                    pos = vectors.Vec2(node.x.toDouble(), node.y.toDouble())
                 }
                 is PathNode.MoveTo ->  {
-                    pos = Vec2(node.x.toDouble(),node.y.toDouble())
+                    pos = vectors.Vec2(node.x.toDouble(), node.y.toDouble())
                     if (isBegin){
                         start = pos
                     }
@@ -97,51 +97,72 @@ object NodeParser {
                     result+=FigureBezier(
                         quadraticToCubicBezier(
                             pos,
-                            Vec2(node.x1.toDouble(),node.y1.toDouble()),
-                            Vec2(node.x2.toDouble(),node.y2.toDouble())
+                            vectors.Vec2(node.x1.toDouble(), node.y1.toDouble()),
+                            vectors.Vec2(node.x2.toDouble(), node.y2.toDouble())
                         )
                     )
-                    pos = Vec2(node.x2.toDouble(),node.y2.toDouble())
+                    pos = vectors.Vec2(node.x2.toDouble(), node.y2.toDouble())
                 }
 
                 is PathNode.ReflectiveCurveTo -> {
                     isBegin = false
                     val b = when (pred){
-                        is PathNode.CurveTo -> Vec2(pred.x2.toDouble(), pred.y2.toDouble())-pos
-                        is PathNode.RelativeCurveTo -> -Vec2(pred.dx2.toDouble(), pred.dy2.toDouble())
-                        is PathNode.ReflectiveCurveTo -> Vec2(pred.x1.toDouble(), pred.y1.toDouble())-pos
-                        is PathNode.RelativeReflectiveCurveTo -> -Vec2(pred.dx1.toDouble(), pred.dy1.toDouble())
-                        else -> Vec2.Zero
+                        is PathNode.CurveTo -> vectors.Vec2(
+                            pred.x2.toDouble(),
+                            pred.y2.toDouble()
+                        ) -pos
+                        is PathNode.RelativeCurveTo -> -vectors.Vec2(
+                            pred.dx2.toDouble(),
+                            pred.dy2.toDouble()
+                        )
+                        is PathNode.ReflectiveCurveTo -> vectors.Vec2(
+                            pred.x1.toDouble(),
+                            pred.y1.toDouble()
+                        ) -pos
+                        is PathNode.RelativeReflectiveCurveTo -> -vectors.Vec2(
+                            pred.dx1.toDouble(),
+                            pred.dy1.toDouble()
+                        )
+                        else -> vectors.Vec2.Zero
                     }
 
                     result+=FigureBezier(
                         listOf(
                             pos,
                             pos+ b,
-                            Vec2(node.x1.toDouble(), node.y1.toDouble()),
-                            Vec2(node.x2.toDouble(), node.y2.toDouble()),
+                            vectors.Vec2(node.x1.toDouble(), node.y1.toDouble()),
+                            vectors.Vec2(node.x2.toDouble(), node.y2.toDouble()),
                         )
                     )
-                    pos = Vec2(node.x2.toDouble(), node.y2.toDouble())
+                    pos = vectors.Vec2(node.x2.toDouble(), node.y2.toDouble())
                 }
                 is PathNode.ReflectiveQuadTo -> {
                     isBegin = false
 
                     val b = when (pred){
-                        is PathNode.QuadTo -> Vec2(pred.x2.toDouble(), pred.y2.toDouble())-pos
-                        is PathNode.RelativeQuadTo -> -Vec2(pred.dx2.toDouble(), pred.dy2.toDouble())
-                        is PathNode.ReflectiveQuadTo -> Vec2(pred.x.toDouble(), pred.y.toDouble())-pos
-                        is PathNode.RelativeReflectiveQuadTo -> -Vec2(pred.dx.toDouble(), pred.dy.toDouble())
-                        else -> Vec2.Zero
+                        is PathNode.QuadTo -> vectors.Vec2(pred.x2.toDouble(), pred.y2.toDouble()) -pos
+                        is PathNode.RelativeQuadTo -> -vectors.Vec2(
+                            pred.dx2.toDouble(),
+                            pred.dy2.toDouble()
+                        )
+                        is PathNode.ReflectiveQuadTo -> vectors.Vec2(
+                            pred.x.toDouble(),
+                            pred.y.toDouble()
+                        ) -pos
+                        is PathNode.RelativeReflectiveQuadTo -> -vectors.Vec2(
+                            pred.dx.toDouble(),
+                            pred.dy.toDouble()
+                        )
+                        else -> vectors.Vec2.Zero
                     }
                     result+=FigureBezier(
                         quadraticToCubicBezier(
                             pos,
                             pos+b,
-                            Vec2(node.x.toDouble(), node.y.toDouble())
+                            vectors.Vec2(node.x.toDouble(), node.y.toDouble())
                         )
                     )
-                    pos = Vec2(node.x.toDouble(), node.y.toDouble())
+                    pos = vectors.Vec2(node.x.toDouble(), node.y.toDouble())
                 }
                 is PathNode.RelativeArcTo -> {
                     isBegin = false
@@ -160,7 +181,7 @@ object NodeParser {
                     val darc = convertSvgArcToDxfArc(sarc)
 
                     result+=FigureEllipse(
-                        center = Vec2(darc.centerX, darc.centerY),
+                        center = vectors.Vec2(darc.centerX, darc.centerY),
                         radius = darc.radius,
                         radiusMinor = darc.minorRadius,
                         rotation = darc.rotation,
@@ -168,32 +189,34 @@ object NodeParser {
                         segmentStartAngle = darc.startAngle,
                         segmentSweepAngle = darc.endAngle
                     )
-                    pos += Vec2(node.arcStartDx.toDouble(), node.arcStartDy.toDouble())
+                    pos += vectors.Vec2(node.arcStartDx.toDouble(), node.arcStartDy.toDouble())
                 }
                 is PathNode.RelativeCurveTo -> {
                     isBegin = false
                     result+=FigureBezier(
                         listOf(
                             pos,
-                            pos +Vec2(node.dx1.toDouble(), node.dy1.toDouble()),
-                            pos +Vec2(node.dx2.toDouble(), node.dy2.toDouble()),
-                            pos +Vec2(node.dx3.toDouble(), node.dy3.toDouble()),
+                            pos + vectors.Vec2(node.dx1.toDouble(), node.dy1.toDouble()),
+                            pos + vectors.Vec2(node.dx2.toDouble(), node.dy2.toDouble()),
+                            pos + vectors.Vec2(node.dx3.toDouble(), node.dy3.toDouble()),
                         )
                     )
-                    pos += Vec2(node.dx3.toDouble(), node.dy3.toDouble())
+                    pos += vectors.Vec2(node.dx3.toDouble(), node.dy3.toDouble())
                 }
                 is PathNode.RelativeHorizontalTo -> {
                     isBegin = false
-                    result+=FigureLine(pos,Vec2(pos.x+node.dx.toDouble(),pos.y))
-                    pos = Vec2(pos.x+node.dx.toDouble(),pos.y)
+                    result+=FigureLine(pos, vectors.Vec2(pos.x + node.dx.toDouble(), pos.y))
+                    pos = vectors.Vec2(pos.x + node.dx.toDouble(), pos.y)
                 }
                 is PathNode.RelativeLineTo -> {
                     isBegin = false
-                    result+=FigureLine(pos,Vec2(pos.x+node.dx.toDouble(),pos.y+node.dy.toDouble()))
-                    pos = Vec2(pos.x+node.dx.toDouble(),pos.y+node.dy.toDouble())
+                    result+=FigureLine(pos,
+                        vectors.Vec2(pos.x + node.dx.toDouble(), pos.y + node.dy.toDouble())
+                    )
+                    pos = vectors.Vec2(pos.x + node.dx.toDouble(), pos.y + node.dy.toDouble())
                 }
                 is PathNode.RelativeMoveTo -> {
-                    pos += Vec2(node.dx.toDouble(),node.dy.toDouble())
+                    pos += vectors.Vec2(node.dx.toDouble(), node.dy.toDouble())
                     if (isBegin){
                         start = pos
                     }
@@ -203,58 +226,79 @@ object NodeParser {
                     result+=FigureBezier(
                         quadraticToCubicBezier(
                             pos,
-                            pos + Vec2(node.dx1.toDouble(),node.dy1.toDouble()),
-                            pos + Vec2(node.dx2.toDouble(),node.dy2.toDouble())
+                            pos + vectors.Vec2(node.dx1.toDouble(), node.dy1.toDouble()),
+                            pos + vectors.Vec2(node.dx2.toDouble(), node.dy2.toDouble())
                         )
                     )
-                    pos += Vec2(node.dx2.toDouble(),node.dy2.toDouble())
+                    pos += vectors.Vec2(node.dx2.toDouble(), node.dy2.toDouble())
                 }
                 is PathNode.RelativeReflectiveCurveTo -> {
                     isBegin = false
                     val b = when (pred){
-                        is PathNode.CurveTo -> Vec2(pred.x2.toDouble(), pred.y2.toDouble())-pos
-                        is PathNode.RelativeCurveTo -> -Vec2(pred.dx2.toDouble(), pred.dy2.toDouble())
-                        is PathNode.ReflectiveCurveTo -> Vec2(pred.x1.toDouble(), pred.y1.toDouble())-pos
-                        is PathNode.RelativeReflectiveCurveTo -> -Vec2(pred.dx1.toDouble(), pred.dy1.toDouble())
-                        else -> Vec2.Zero
+                        is PathNode.CurveTo -> vectors.Vec2(
+                            pred.x2.toDouble(),
+                            pred.y2.toDouble()
+                        ) -pos
+                        is PathNode.RelativeCurveTo -> -vectors.Vec2(
+                            pred.dx2.toDouble(),
+                            pred.dy2.toDouble()
+                        )
+                        is PathNode.ReflectiveCurveTo -> vectors.Vec2(
+                            pred.x1.toDouble(),
+                            pred.y1.toDouble()
+                        ) -pos
+                        is PathNode.RelativeReflectiveCurveTo -> -vectors.Vec2(
+                            pred.dx1.toDouble(),
+                            pred.dy1.toDouble()
+                        )
+                        else -> vectors.Vec2.Zero
                     }
                     result+=FigureBezier(
                         listOf(
                             pos,
                             pos+ b,
-                            pos + Vec2(node.dx1.toDouble(), node.dy1.toDouble()),
-                            pos +Vec2(node.dx2.toDouble(), node.dy2.toDouble()),
+                            pos + vectors.Vec2(node.dx1.toDouble(), node.dy1.toDouble()),
+                            pos + vectors.Vec2(node.dx2.toDouble(), node.dy2.toDouble()),
                         )
                     )
-                    pos += Vec2(node.dx2.toDouble(), node.dy2.toDouble())
+                    pos += vectors.Vec2(node.dx2.toDouble(), node.dy2.toDouble())
                 }
                 is PathNode.RelativeReflectiveQuadTo -> {
                     isBegin = false
                     val b = when (pred){
-                        is PathNode.QuadTo -> Vec2(pred.x2.toDouble(), pred.y2.toDouble())-pos
-                        is PathNode.RelativeQuadTo -> -Vec2(pred.dx2.toDouble(), pred.dy2.toDouble())
-                        is PathNode.ReflectiveQuadTo -> Vec2(pred.x.toDouble(), pred.y.toDouble())-pos
-                        is PathNode.RelativeReflectiveQuadTo -> -Vec2(pred.dx.toDouble(), pred.dy.toDouble())
-                        else -> Vec2.Zero
+                        is PathNode.QuadTo -> vectors.Vec2(pred.x2.toDouble(), pred.y2.toDouble()) -pos
+                        is PathNode.RelativeQuadTo -> -vectors.Vec2(
+                            pred.dx2.toDouble(),
+                            pred.dy2.toDouble()
+                        )
+                        is PathNode.ReflectiveQuadTo -> vectors.Vec2(
+                            pred.x.toDouble(),
+                            pred.y.toDouble()
+                        ) -pos
+                        is PathNode.RelativeReflectiveQuadTo -> -vectors.Vec2(
+                            pred.dx.toDouble(),
+                            pred.dy.toDouble()
+                        )
+                        else -> vectors.Vec2.Zero
                     }
                     result+=FigureBezier(
                         quadraticToCubicBezier(
                             pos,
                             pos+b,
-                            pos+Vec2(node.dx.toDouble(), node.dy.toDouble())
+                            pos+ vectors.Vec2(node.dx.toDouble(), node.dy.toDouble())
                         )
                     )
-                    pos += Vec2(node.dx.toDouble(), node.dy.toDouble())
+                    pos += vectors.Vec2(node.dx.toDouble(), node.dy.toDouble())
                 }
                 is PathNode.RelativeVerticalTo ->  {
                     isBegin = false
-                    result+=FigureLine(pos,Vec2(pos.x,pos.y+node.dy.toDouble()))
-                    pos = Vec2(pos.x,pos.y+node.dy.toDouble())
+                    result+=FigureLine(pos, vectors.Vec2(pos.x, pos.y + node.dy.toDouble()))
+                    pos = vectors.Vec2(pos.x, pos.y + node.dy.toDouble())
                 }
                 is PathNode.VerticalTo -> {
                     isBegin = false
-                    result+=FigureLine(pos,Vec2(pos.x,node.y.toDouble()))
-                    pos = Vec2(pos.x,node.y.toDouble())
+                    result+=FigureLine(pos, vectors.Vec2(pos.x, node.y.toDouble()))
+                    pos = vectors.Vec2(pos.x, node.y.toDouble())
                 }
             }
             pred = node
@@ -283,7 +327,7 @@ object NodeParser {
     }
 
     // Helper function to calculate the center of an SVG arc
-    private fun calculateArcCenter(svgArc: SvgArc): Vec2 {
+    private fun calculateArcCenter(svgArc: SvgArc): vectors.Vec2 {
         // 1. Convert to radians
         val radiansRotation = Math.toRadians(svgArc.rotation)
 
@@ -311,11 +355,11 @@ object NodeParser {
         val cx = cosRotation * cxPrime - sinRotation * cyPrime + (svgArc.startX +svgArc.endX) / 2.0
         val cy = sinRotation * cxPrime + cosRotation * cyPrime + (svgArc.startY + svgArc.endY) / 2.0
 
-        return Vec2(cx, cy)
+        return vectors.Vec2(cx, cy)
     }
 
     // Helper function to calculate the angle of a point relative to the center
-    private fun calculateAngle(x: Double, y: Double, center: Vec2): Double {
+    private fun calculateAngle(x: Double, y: Double, center: vectors.Vec2): Double {
         // 1. Calculate the difference in coordinates
         val dx = x - center.x
         val dy = y - center.y

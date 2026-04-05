@@ -125,7 +125,7 @@ class SplashApproximationUser : SplashApproximation() {
                             if (!xt.isFinite() || !yt.isFinite())
                                 null
                             else
-                                Vec2(xt, yt) to Vec2(xdt, ydt)
+                                vectors.Vec2(xt, yt) to vectors.Vec2(xdt, ydt)
 
                         }
                     }

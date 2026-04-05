@@ -309,15 +309,15 @@ class CadGrid {
                                     }
 
                                     bz.add(FigureCreator.bezierQuartir(
-                                        v = Vec2(c.x * size, c.y * size),
+                                        v = vectors.Vec2(c.x * size, c.y * size),
                                         smoothSize = radius,
                                         g1 = c.g,
                                         g2 = n.g
                                     ));
                                     bz.add(
                                         FigureCreator.bezierLine(
-                                            v = Vec2(c.x * size, c.y * size),
-                                            v2 = Vec2(n.x * size, n.y * size),
+                                            v = vectors.Vec2(c.x * size, c.y * size),
+                                            v2 = vectors.Vec2(n.x * size, n.y * size),
                                             smoothSizeStart = radius,
                                             smoothSizeEnd = radius2,
                                             g1 = n.g + 2,
@@ -337,13 +337,13 @@ class CadGrid {
                         }
                         else
                         {
-                            val points = mutableListOf<Vec2>();
+                            val points = mutableListOf<vectors.Vec2>();
 
 
                             for (w in gp.indices)
                             {
                                 val c = gp[w];
-                                points.add(Vec2(c.x * size, c.y * size));
+                                points.add(vectors.Vec2(c.x * size, c.y * size));
                             }
 
                             group.add(FigureColor(

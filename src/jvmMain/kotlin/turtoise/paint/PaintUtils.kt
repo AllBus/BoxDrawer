@@ -14,7 +14,7 @@ import com.kos.figure.algorithms.findNearestPointOnEllipse
 import com.kos.figure.algorithms.findPathIntersections
 import com.kos.figure.algorithms.pathInteratorIntersections
 import com.kos.figure.collections.SimpleFigure
-import com.kos.figure.complex.model.PathIterator
+import com.kos.figure.segments.model.PathIterator
 import com.kos.figure.complex.model.SimpleElement
 import com.kos.figure.composition.FigureRotate
 import com.kos.figure.composition.FigureTranslate
@@ -29,23 +29,23 @@ import kotlin.math.min
 object PaintUtils {
 
 
-    fun findAllIntersects(figuresLeft: List<IFigure>, figureRight: List<IFigure>): List<Vec2> {
+    fun findAllIntersects(figuresLeft: List<IFigure>, figureRight: List<IFigure>): List<vectors.Vec2> {
         if (figuresLeft.isEmpty() || figureRight.isEmpty())
             return emptyList()
 
         val res = mutableListOf<PathIterator>()
         val resRight = mutableListOf<PathIterator>()
-        val transformLeft = Matrix.identity
-        val transformRight = Matrix.identity
+        val transformLeft = vectors.Matrix.identity
+        val transformRight = vectors.Matrix.identity
         findAllSegments(figuresLeft, transformLeft, res)
         findAllSegments(figureRight, transformRight, resRight)
         val points = pathInteratorIntersections(res, resRight)
         return points
     }
 
-    fun findAllIntersects(figures: List<IFigure>): List<Vec2> {
+    fun findAllIntersects(figures: List<IFigure>): List<vectors.Vec2> {
         val res = mutableListOf<PathIterator>()
-        val transform = Matrix.identity
+        val transform = vectors.Matrix.identity
         findAllSegments(figures, transform, res)
         val points = findPathIntersections(res)
         return points
@@ -53,7 +53,7 @@ object PaintUtils {
 
     private fun findAllSegments(
         figures: List<IFigure>,
-        transform: Matrix,
+        transform: vectors.Matrix,
         result: MutableList<PathIterator>
     ) {
         figures.forEach { f ->
@@ -76,12 +76,12 @@ object PaintUtils {
     }
 
     fun findPointAtCursor(
-        transform: Matrix,
-        position: Vec2,
+        transform: vectors.Matrix,
+        position: vectors.Vec2,
         eps: Double,
         figures: List<IFigure>
-    ): Vec2? {
-        var current: Vec2? = null
+    ): vectors.Vec2? {
+        var current: vectors.Vec2? = null
         var currentDistance = Double.MAX_VALUE
         figures.forEach { f ->
             val mt = transform.copyWithTransform(f.transform)
@@ -91,7 +91,7 @@ object PaintUtils {
             //if ( check(posp, eps, f) ) {
             val r = blizPoint(posp, eps, f)
             if (r != null) {
-                val nd = Vec2.distance(position, r.point)
+                val nd = vectors.Vec2.distance(position, r.point)
                 if (nd < currentDistance) {
                     currentDistance = nd
                     current = r.point
@@ -100,7 +100,7 @@ object PaintUtils {
             //   }else{
             val p = findPointAtCursor(mt, posp, eps, f.collection())
             if (p != null) {
-                val nd = Vec2.distance(position, p)
+                val nd = vectors.Vec2.distance(position, p)
                 if (nd < currentDistance) {
                     currentDistance = nd
                     current = p
@@ -112,8 +112,8 @@ object PaintUtils {
     }
 
     fun findFiguresAtCursor(
-        transform: Matrix,
-        position: Vec2,
+        transform: vectors.Matrix,
+        position: vectors.Vec2,
         eps: Double,
         figures: List<IFigure>
     ): List<FigureInfo> {
@@ -139,14 +139,14 @@ object PaintUtils {
         }
     }
 
-    private fun blizPoint(position: Vec2, eps: Double, figure: IFigure): PointInfo? {
+    private fun blizPoint(position: vectors.Vec2, eps: Double, figure: IFigure): PointInfo? {
         // println("blizPoint $position $eps ${figure::class.name}")
         return when (figure) {
             is Figure -> {
                 val b: PointInfo? = if (inRect(position, eps, figure.rect())) {
                     when (figure) {
                         is FigureCircle -> {
-                            val dist = Vec2.distance(
+                            val dist = vectors.Vec2.distance(
                                 figure.center,
                                 position
                             )
@@ -155,15 +155,15 @@ object PaintUtils {
                                 PointInfo(figure, figure.center, 0)
                             } else {
                                 if (dist < figure.radius + eps && dist > figure.radius - eps) {
-                                    val angle = Vec2.angle(figure.center, position)
-                                    val p = figure.center + Vec2(figure.radius, 0.0).rotate(angle)
+                                    val angle = vectors.Vec2.angle(figure.center, position)
+                                    val p = figure.center + vectors.Vec2(figure.radius, 0.0).rotate(angle)
                                     PointInfo(figure, p, -1)
                                 } else null
                             }
                         }
 
                         is FigureEllipse -> {
-                            val dist = Vec2.distance(
+                            val dist = vectors.Vec2.distance(
                                 figure.center,
                                 position
                             )
@@ -181,7 +181,7 @@ object PaintUtils {
                                         position
                                     )
 
-                                    if (Vec2.distance(p, position) < eps)
+                                    if (vectors.Vec2.distance(p, position) < eps)
                                         PointInfo(figure, p, -1)
                                     else
                                         null
@@ -191,28 +191,28 @@ object PaintUtils {
 
                         is FigurePolyline -> {
                             //   println(figure.points.joinToString(" "))
-                            val minValue = figure.points.minBy { Vec2.distance(it, position) }
-                            if (Vec2.distance(minValue, position) < eps)
+                            val minValue = figure.points.minBy { vectors.Vec2.distance(it, position) }
+                            if (vectors.Vec2.distance(minValue, position) < eps)
                                 PointInfo(figure, minValue, figure.points.indexOf(minValue))
                             else {
                                 val dot =
                                     PolygonUtils.findClosestPointOnPolygon(figure.points, position)
-                                if (Vec2.distance(dot, position) < eps)
+                                if (vectors.Vec2.distance(dot, position) < eps)
                                     PointInfo(figure, dot, -1)
                                 else null
                             }
                         }
 
                         is FigureBezier -> {
-                            val minValue = figure.points.minBy { Vec2.distance(it, position) }
-                            if (Vec2.distance(minValue, position) < eps)
+                            val minValue = figure.points.minBy { vectors.Vec2.distance(it, position) }
+                            if (vectors.Vec2.distance(minValue, position) < eps)
                                 PointInfo(figure, minValue, figure.points.indexOf(minValue))
                             else {
                                 val dot = BezierManipulation.findNearestPointOnCubicBezier(
                                     figure.segments(),
                                     position
                                 )
-                                if (Vec2.distance(dot, position) < eps)
+                                if (vectors.Vec2.distance(dot, position) < eps)
                                     PointInfo(figure, dot, -1)
                                 else null
                             }
@@ -229,17 +229,17 @@ object PaintUtils {
         }
     }
 
-    private fun check(position: Vec2, eps: Double, figure: IFigure): Boolean {
+    private fun check(position: vectors.Vec2, eps: Double, figure: IFigure): Boolean {
         return when (figure) {
             is Figure -> {
                 val b: Boolean = if (inRect(position, eps, figure.rect())) {
                     when (figure) {
                         is FigureCircle ->
-                            Vec2.distance(figure.center, position) < eps + figure.radius
+                            vectors.Vec2.distance(figure.center, position) < eps + figure.radius
 
                         is FigureLine -> {
                             val p = PolygonUtils.findClosestPointOnPolygon(figure.points, position)
-                            if (Vec2.distance(p, position) < 2 * eps) true else false
+                            if (vectors.Vec2.distance(p, position) < 2 * eps) true else false
                         }
 
                         is FigurePolyline ->
@@ -259,12 +259,12 @@ object PaintUtils {
         }
     }
 
-    fun inRect(position: Vec2, eps: Double, rect: BoundingRectangle): Boolean {
+    fun inRect(position: vectors.Vec2, eps: Double, rect: vectors.BoundingRectangle): Boolean {
         return position.x + eps >= rect.min.x && position.x - eps <= rect.max.x &&
                 position.y + eps >= rect.min.y && position.y - eps <= rect.max.y
     }
 
-    fun inside(point: Vec2, vs: List<Vec2>): Boolean {
+    fun inside(point: vectors.Vec2, vs: List<vectors.Vec2>): Boolean {
         // ray-casting algorithm based on
         // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
 
@@ -329,13 +329,13 @@ object PaintUtils {
         return res
     }
 
-    fun takePoint(figures: List<FigureInfo>, point: Vec2, d: Double): PointInfo? {
+    fun takePoint(figures: List<FigureInfo>, point: vectors.Vec2, d: Double): PointInfo? {
 
         var cur : PointInfo? = null
         figures.forEach {
             val r = blizPoint(point, d, it.figure)
             if (r != null) {
-                if (cur == null || Vec2.distance(r.point, point) < Vec2.distance(cur?.point?:Vec2.Zero, point)){
+                if (cur == null || vectors.Vec2.distance(r.point, point) < vectors.Vec2.distance(cur?.point?: vectors.Vec2.Zero, point)){
                     cur = r
                 }
             }

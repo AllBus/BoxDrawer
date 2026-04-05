@@ -16,14 +16,8 @@ import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.PointerButton
 import com.kos.boxdrawer.presentation.display.colorList
-import org.kabeja.dxf.helpers.Edge
-import vectors.Vec2
-import kotlin.math.cos
-import kotlin.math.sin
 
 
 @OptIn(ExperimentalFoundationApi::class)

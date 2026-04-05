@@ -149,7 +149,7 @@ class FormulaData(override val tools: Tools) : SaveFigure {
                 listOf(
                     FigurePolyline(
                         points.map { p ->
-                            Vec2(p.x, p.y)
+                            vectors.Vec2(p.x, p.y)
                         }
                     )
                 )

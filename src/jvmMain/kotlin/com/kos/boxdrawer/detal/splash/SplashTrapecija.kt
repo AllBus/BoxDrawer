@@ -1,6 +1,5 @@
 package com.kos.boxdrawer.detal.splash
 
-import com.kos.figure.FigureLine
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.collections.toFigure
@@ -35,8 +34,8 @@ class SplashTrapecija : ISplashDetail {
             listOf(
                 Vec2(0.0, h),
                 Vec2(tw, h),
-                Vec2(bw-offset, 0.0),
-                Vec2(0-offset, 0.0),
+                Vec2(bw - offset, 0.0),
+                Vec2(0 - offset, 0.0),
             ),
             true
         )

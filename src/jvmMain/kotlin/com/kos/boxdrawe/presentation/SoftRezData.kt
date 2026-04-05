@@ -26,7 +26,7 @@ class SoftRezData(override val tools: ITools, val tortoise: TortoiseData) : Save
         baseFigure = figure
 
         val f = if (figure.count == 0) {
-            FigureLine(Vec2(0.0, 0.0), Vec2(2.0, 0.0))
+            FigureLine(vectors.Vec2(0.0, 0.0), vectors.Vec2(2.0, 0.0))
         } else
             figure
 
@@ -39,7 +39,8 @@ class SoftRezData(override val tools: ITools, val tortoise: TortoiseData) : Save
                 dlina = lineLength.decimal,
                 soedinenie = cellWidthDistance.decimal,
                 firstSmall = firstSmall.value,
-            ), Vec2(width.decimal, 0.0), 90.0,)
+            ),
+                vectors.Vec2(width.decimal, 0.0), 90.0,)
         } else {
             sr.drawRect(
                 w = width.decimal,

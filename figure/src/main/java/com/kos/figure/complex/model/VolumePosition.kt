@@ -4,7 +4,7 @@ import com.kos.figure.IFigure
 import vectors.Matrix
 
 class VolumePosition(
-    val figure:IFigure,
+    val figure: IFigure,
     val x: Double,
     val y: Double,
     val z: Double,
@@ -22,7 +22,7 @@ class VolumePosition(
         mr.rotateY(rotateY)
         mr.rotateZ(rotateZ)
 
-        mr*=(mt)
+        mr *= (mt)
         transform = mr
     }
 
@@ -35,15 +35,15 @@ class VolumePosition(
     }
 
     companion object {
-        fun onXY(figure:IFigure, x: Double, y: Double, z:Double): VolumePosition {
+        fun onXY(figure: IFigure, x: Double, y: Double, z: Double): VolumePosition {
             return VolumePosition(figure, x, y, z, 0.0f, 0.0f, 0.0f)
         }
 
-        fun onXZ(figure:IFigure, x: Double, y: Double, z:Double): VolumePosition {
+        fun onXZ(figure: IFigure, x: Double, y: Double, z: Double): VolumePosition {
             return VolumePosition(figure, x, y, z, 90.0f, 0.0f, 0.0f)
         }
 
-        fun onYZ(figure:IFigure, x: Double, y: Double, z:Double): VolumePosition {
+        fun onYZ(figure: IFigure, x: Double, y: Double, z: Double): VolumePosition {
             return VolumePosition(figure, x, y, z, 0.0f, 0.0f, -90.0f)
         }
     }

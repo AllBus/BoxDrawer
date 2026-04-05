@@ -304,23 +304,23 @@ class Tortoise() : TortoiseSplash() {
 
                     val angle = state.angle
 
-                    val points = mutableListOf<Vec2>()
+                    val points = mutableListOf<vectors.Vec2>()
                     points.add(state.xy)
                     for (d in 0..com.size - 6 step 6) {
                         points.add(
-                            Vec2(
+                            vectors.Vec2(
                                 com[d + 0, memory],
                                 com[d + 1, memory]
                             ).rotate(angle) + state.xy
                         )
 
-                        val xy = Vec2(
+                        val xy = vectors.Vec2(
                             com[d + 4, memory],
                             com[d + 5, memory]
                         ).rotate(angle) + state.xy
 
                         points.add(
-                            Vec2(
+                            vectors.Vec2(
                                 com[d + 2, memory],
                                 com[d + 3, memory]
                             ).rotate(angle) + state.xy
@@ -338,23 +338,23 @@ class Tortoise() : TortoiseSplash() {
 
                     val angle = state.angle
 
-                    val points = mutableListOf<Vec2>()
+                    val points = mutableListOf<vectors.Vec2>()
                     points.add(state.xy)
                     for (d in 0..com.size - 6 step 6) {
                         points.add(
-                            Vec2(
+                            vectors.Vec2(
                                 com[d + 0, memory],
                                 com[d + 1, memory]
                             ).rotate(angle) + state.xy
                         )
                         points.add(
-                            Vec2(
+                            vectors.Vec2(
                                 com[d + 2, memory],
                                 com[d + 3, memory]
                             ).rotate(angle) + state.xy
                         )
                         points.add(
-                            Vec2(
+                            vectors.Vec2(
                                 com[d + 4, memory],
                                 com[d + 5, memory]
                             ).rotate(angle) + state.xy
@@ -372,10 +372,10 @@ class Tortoise() : TortoiseSplash() {
                     val c2 = state.xy
                     val angle = state.angle
 
-                    val points = mutableListOf<Vec2>()
+                    val points = mutableListOf<vectors.Vec2>()
                     for (d in 0..com.size - 2 step 2) {
                         points.add(
-                            Vec2(
+                            vectors.Vec2(
                                 com[d + 0, memory],
                                 com[d + 1, memory]
                             ).rotate(angle) + c2
@@ -465,7 +465,7 @@ class Tortoise() : TortoiseSplash() {
                 }
 
                 TortoiseCommand.TURTOISE_MOVE_TO -> {
-                    state.moveTo(Vec2(com[0, memory], com[1, memory]))
+                    state.moveTo(vectors.Vec2(com[0, memory], com[1, memory]))
                 }
 
                 TortoiseCommand.TURTOISE_MATRIX_TRANSLATE -> {

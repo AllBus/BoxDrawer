@@ -25,16 +25,12 @@ import com.kos.boxdrawe.widget.NumericUpDownLine
 import com.kos.boxdrawe.widget.ToggleButton
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.metricMM
-import com.kos.boxdrawer.presentation.template.TemplateNumericBox
-import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
-import com.kos.boxdrawer.template.TemplateItemAngle
 import org.jetbrains.compose.resources.stringResource
 import vectors.Vec2
 
 @Composable
 fun EditBoxPolka(boxListener : BoxSimpleListener) {
-    Column(
-    ) {
+    Column {
         Label("Добавить полку")
         Row {
 
@@ -56,7 +52,7 @@ fun EditBoxPolka(boxListener : BoxSimpleListener) {
                     }
                 }
 
-            Row() {
+            Row {
                 NumericUpDownLine(
                     "",
                     stringResource(Res.string.metricMM),

@@ -79,5 +79,11 @@ fun DrawInstrumentIcon(instrument:Int){
                 contentDescription = "Pointer"
             )
         }
+        Instruments.INSTRUMENT_MOVE -> {
+            Icon(
+                imageVector = InstrumentIcon.rememberPointerMove(),
+                contentDescription = "Move"
+            )
+        }
     }
 }

@@ -2,13 +2,10 @@ package com.kos.figure.collections
 
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.Approximation
-import com.kos.figure.Figure
 import com.kos.figure.FigureWithApproximation
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
 import vectors.Matrix
-import vectors.Vec2
-
 
 class FigureRing(
     val figures: List<FigureWithApproximation>
@@ -42,13 +39,13 @@ class FigureRing(
     override val hasTransform: Boolean
         get() = false
 
-    override fun approximate(pointCount: Int): List<List<Vec2>> {
+    override fun approximate(pointCount: Int): List<List<vectors.Vec2>> {
         if (figures.isEmpty()) {
             return emptyList()
         }
         val fg = figures.map { it.approximate(pointCount) }
 
-        val fl = fg.fold(listOf<Vec2>()) { acc, next ->
+        val fl = fg.fold(listOf<vectors.Vec2>()) { acc, next ->
             val nf = next.flatten()
             if (acc.isNotEmpty() && nf.isNotEmpty()) {
                 val a = acc.last()

@@ -31,3 +31,5 @@ dependencyResolutionManagement {
 include(":dxfprinter")
 include(":figure")
 include(":commonMain")
+include(":segments")
+include(":vectors")

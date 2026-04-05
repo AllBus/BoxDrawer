@@ -3,7 +3,6 @@ package com.kos.boxdrawer.detal.splash
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
-import com.kos.figure.FigureLine
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.collections.toFigure
@@ -16,7 +15,6 @@ import turtoise.help.HelpDataParam
 import turtoise.parser.TPArg
 import vectors.Vec2
 import kotlin.math.PI
-import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.tan
@@ -58,7 +56,7 @@ class SplashGear : ISplashDetail{
         val ri = com[3, memory]
         val ro = com[4, memory]
         val num = com[5, memory].toInt()
-        val h = com[6, memory]
+        com[6, memory]
         val center = Vec2(cx, cy)
         builder.addProduct(drawGearGost(
             center = center,
@@ -106,8 +104,14 @@ class SplashGear : ISplashDetail{
             val p1 = center + Vec2(baseRadius * cos(angle), baseRadius * sin(angle))
             val p2 = center + Vec2(baseRadius * cos(nextAngle), baseRadius * sin(nextAngle))
             // Точки вершины зуба на внешней окружности
-            val p3 = center + Vec2(outerRadius * cos(nextAngle - angleStep / 2), outerRadius * sin(nextAngle - angleStep / 2))
-            val p4 = center + Vec2(outerRadius * cos(angle + angleStep / 2), outerRadius * sin(angle + angleStep / 2))
+            val p3 = center + Vec2(
+                outerRadius * cos(nextAngle - angleStep / 2),
+                outerRadius * sin(nextAngle - angleStep / 2)
+            )
+            val p4 = center + Vec2(
+                outerRadius * cos(angle + angleStep / 2),
+                outerRadius * sin(angle + angleStep / 2)
+            )
 
             points.addAll(
                 listOf(p1, p3, p4, p2)
@@ -148,7 +152,7 @@ class SplashGear : ISplashDetail{
         val r_a = r + module // радиус окружности вершины зуба
         val r_f = r - 1.25 * module // радиус окружности впадины
         val baseRadius = r * cos(pressureAngle) // радиус основной окружности
-        val toothThickness = PI * module / 2.0 + 2.0 * x * module * tan(pressureAngle)
+        PI * module / 2.0 + 2.0 * x * module * tan(pressureAngle)
         val angleStep = 2 * PI / z
 
         // Нарисовать делительную, вершину и впадину окружности
@@ -165,7 +169,6 @@ class SplashGear : ISplashDetail{
         }
 
         val toothProfile = mutableListOf<Vec2>()
-        val steps = 10
         // Левая сторона зуба (эвольвента от основной до вершины)
 //        for (i in 0..steps) {
 //            val t = i.toDouble() / steps * (acos(baseRadius / r_a) - acos(baseRadius / r))

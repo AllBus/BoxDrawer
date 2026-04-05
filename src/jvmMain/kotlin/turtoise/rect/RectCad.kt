@@ -7,37 +7,37 @@ import vectors.Vec2
 
 @Deprecated("")
 object RectCad {
-    fun createFigureFor(block: RectBlock, position: Vec2): IFigure {
+    fun createFigureFor(block: RectBlock, position: vectors.Vec2): IFigure {
         return FigureCreator.rectangle(position, block.width, block.height)
     }
 
-    fun calculatePosition(block: RectBlock, c: RectBlock, position: Vec2): Vec2 {
+    fun calculatePosition(block: RectBlock, c: RectBlock, position: vectors.Vec2): vectors.Vec2 {
         val pif = c.parentInfo
         val inverse = if (pif.inside) -1.0 else 1.0
         return position + when (c.parentInfo.storona) {
-            EStorona.LEFT -> Vec2(
+            EStorona.LEFT -> vectors.Vec2(
                 -block.width / 2.0 - c.width / 2.0 * inverse,
                 -block.height / 2.0 + pif.bias * block.height + pif.padding
             )
 
-            EStorona.RIGHT -> Vec2(
+            EStorona.RIGHT -> vectors.Vec2(
                 block.width / 2.0 + c.width / 2.0 * inverse,
                 -block.height / 2.0 + pif.bias * block.height + pif.padding
             )
 
-            EStorona.TOP -> Vec2(
+            EStorona.TOP -> vectors.Vec2(
                 -block.width / 2.0 + pif.bias * block.width + pif.padding,
                 -block.height / 2.0 - c.height / 2.0 * inverse
             )
 
-            EStorona.BOTTOM -> Vec2(
+            EStorona.BOTTOM -> vectors.Vec2(
                 -block.width / 2.0 + pif.bias * block.width + pif.padding,
                 block.height / 2.0 + c.height / 2.0 * inverse
             )
         }
     }
 
-    fun createFigure(block: RectBlock, position: Vec2): IFigure {
+    fun createFigure(block: RectBlock, position: vectors.Vec2): IFigure {
         return FigureList(
             listOf(
                 createFigureFor(block, position)
@@ -50,7 +50,7 @@ object RectCad {
         )
     }
 
-    fun calculatePosition(block: RectBlock, center: Vec2): Vec2 {
+    fun calculatePosition(block: RectBlock, center: vectors.Vec2): vectors.Vec2 {
         var p: RectBlock? = block.parent
         var r = block
         var pos = center

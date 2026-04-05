@@ -1,8 +1,6 @@
 package com.kos.figure.composition
 
 import com.kos.drawer.IFigureGraphics
-import com.kos.figure.CropSide
-import com.kos.figure.Figure
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
@@ -34,9 +32,17 @@ class FigureArray(
             listOfNotNull(
                 figureStart?.rect()?.scale(scaleX, scaleY)?.translate(startPoint),
                 figureEnd?.rect()?.scale(scaleX, scaleY)
-                    ?.translate(startPoint + Vec2(distance.x * (columns.toDouble() + u),0.0)),
+                    ?.translate(startPoint + Vec2(
+                        distance.x * (columns.toDouble() + u),
+                        0.0
+                    )
+                    ),
                 r.translate(startPoint + distance * u),
-                r.translate(startPoint + Vec2(distance.x * (columns.toDouble() + u - 1), distance.y * (rows.toDouble() - 1))),
+                r.translate(startPoint + Vec2(
+                    distance.x * (columns.toDouble() + u - 1),
+                    distance.y * (rows.toDouble() - 1)
+                )
+                ),
             )
         )
     }

@@ -71,7 +71,7 @@ class SplashStena : ISplashDetail {
         com.takeBlock(1)?.let { block ->
             figureExtractor.figure(block)?.let { f ->
                 val paths = figureExtractor.collectPaths(f)
-                val (h, we) = com.takeBlock(2)?.let { item ->
+                val (h, _) = com.takeBlock(2)?.let { item ->
                     val h = (item.get(0)?.let { im -> memory.value(im, 0.0) } ?: 10.0)
                     val w = (item.get(1)?.let { im ->
                         memory.value(im, figureExtractor.ds.boardWeight)

@@ -25,7 +25,10 @@ class BezierData(override val tools: Tools) : SaveFigure, PrintCode {
 
     private val cList = MutableStateFlow(
         listOf(
-            Vec2(0.0, 0.0), Vec2(80.0, 20.0), Vec2(20.0, 80.0), Vec2(100.0, 100.0),
+            Vec2(0.0, 0.0),
+            Vec2(80.0, 20.0),
+            Vec2(20.0, 80.0),
+            Vec2(100.0, 100.0),
         )
     )
 
@@ -116,7 +119,10 @@ class BezierData(override val tools: Tools) : SaveFigure, PrintCode {
 
     fun newBezier() {
         cList.value = listOf(
-            Vec2(0.0, 0.0), Vec2(80.0, 20.0), Vec2(20.0, 80.0), Vec2(100.0, 100.0),
+            Vec2(0.0, 0.0),
+            Vec2(80.0, 20.0),
+            Vec2(20.0, 80.0),
+            Vec2(100.0, 100.0),
         )
         redraw()
     }

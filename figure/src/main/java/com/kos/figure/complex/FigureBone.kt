@@ -2,10 +2,9 @@ package com.kos.figure.complex
 
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.IFigure
-import com.kos.figure.complex.model.BoneAnchor
+import com.kos.figure.segments.model.BoneAnchor
 import vectors.BoundingRectangle
 import vectors.Matrix
-import vectors.Vec2
 
 class FigureBone(
     val figure: IFigure,

@@ -1,10 +1,7 @@
-package com.kos.figure.complex.model
+package com.kos.figure.segments.model
 
 import com.kos.drawer.IFigureGraphics
-import com.kos.figure.Figure
-import com.kos.figure.FigureEllipse
-import com.kos.figure.IFigurePath
-import com.kos.figure.PointWithNormal
+import vectors.PointWithNormal
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.abs
@@ -45,20 +42,6 @@ interface Ellipse : PathElement {
         }
     }
 
-    override fun toFigure(): FigureEllipse {
-        return FigureEllipse(
-            center = center,
-            radius = radiusX,
-            radiusMinor = radiusY,
-            rotation = rotation,
-            outSide = outSide,
-            segmentStartAngle = startAngle,
-            segmentSweepAngle = sweepAngle,
-        )
-    }
-
-    override fun toPath(): IFigurePath = toFigure()
-
     fun isFill(): Boolean {
         return abs(sweepAngle) >= PI * 2
     }
@@ -97,9 +80,9 @@ interface Ellipse : PathElement {
 
     val length: Double
 
-    fun position(t:Double):Vec2{
+    fun position(t: Double): Vec2 {
         val rot = (startAngle + t * sweepAngle)
-        return center+Vec2(radiusX * cos(rot), radiusY * sin(rot)).rotate(rotation)
+        return center + Vec2(radiusX * cos(rot), radiusY * sin(rot)).rotate(rotation)
     }
 
     override fun positionInPath(delta: Double): PointWithNormal {
@@ -163,23 +146,8 @@ interface Ellipse : PathElement {
 
     override fun pointAt(t: Double): Vec2 {
         val rot = (startAngle + t * sweepAngle)
-        val pos = center + Vec2(radiusX*cos(rot), radiusY*sin(rot)).rotate(rotation)
+        val pos = center + Vec2(radiusX * cos(rot), radiusY * sin(rot)).rotate(rotation)
         return pos
-    }
-
-    override fun take(startMM: Double, endMM: Double): Figure {
-        val st = startMM / length
-        val end = endMM / length
-        //Todo: Вычислить правильный сегмент
-        return FigureEllipse(
-            center = center,
-            radius = radiusX,
-            radiusMinor = radiusY,
-            rotation = rotation,
-            outSide = outSide,
-            segmentStartAngle = startAngle + sweepAngle * st,
-            segmentSweepAngle = sweepAngle * (end - st),
-        )
     }
 
     override fun translate(xy: Vec2): Ellipse {

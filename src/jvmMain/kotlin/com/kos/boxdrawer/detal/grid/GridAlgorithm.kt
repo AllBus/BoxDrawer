@@ -5,7 +5,7 @@ import com.kos.boxdrawer.detal.grid.GridLoops.ensureClockwiseKubik
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
 import com.kos.figure.complex.FigureDirCubik
-import com.kos.figure.complex.model.CubikDirection
+import com.kos.figure.segments.model.CubikDirection
 import com.kos.figure.complex.model.VolumePosition
 import com.kos.figure.composition.FigureTranslate
 import com.kos.figure.composition.FigureVolume
@@ -143,8 +143,11 @@ class GridAlgorithm(
                                 GridPolygoninfo(start, unionSides(sides, isHole!= null), isHole!= null,
                                     isHole,
                                     isHole?.let{ h ->
-                                        Vec2((h.x -start.x)* params.cellWidth, (h.y-start.y)* params.cellWidth)
-                                    }?:Vec2.Zero
+                                        vectors.Vec2(
+                                            (h.x - start.x) * params.cellWidth,
+                                            (h.y - start.y) * params.cellWidth
+                                        )
+                                    }?: vectors.Vec2.Zero
                                 )
                             }
                         }
@@ -182,8 +185,11 @@ class GridAlgorithm(
                                 val isHole = isHoleXZ(start, pg[start.y])
                                 GridPolygoninfo(start, unionSides(sides, isHole!= null), isHole!= null,
                                     isHole,               isHole?.let{ h ->
-                                        Vec2((h.x -start.x)* params.cellWidth, (h.z-start.z)* params.cellWidth)
-                                    }?:Vec2.Zero)
+                                        vectors.Vec2(
+                                            (h.x - start.x) * params.cellWidth,
+                                            (h.z - start.z) * params.cellWidth
+                                        )
+                                    }?: vectors.Vec2.Zero)
                             }
                         }
 
@@ -219,8 +225,11 @@ class GridAlgorithm(
                                 GridPolygoninfo(start, unionSides(sides, isHole!= null), isHole!= null,
                                     isHole,
                                     isHole?.let{ h ->
-                                        Vec2((h.y -start.y)* params.cellWidth, (h.z-start.z)* params.cellWidth)
-                                    }?:Vec2.Zero
+                                        vectors.Vec2(
+                                            (h.y - start.y) * params.cellWidth,
+                                            (h.z - start.z) * params.cellWidth
+                                        )
+                                    }?: vectors.Vec2.Zero
                                 )
                             }
                         }
@@ -362,7 +371,7 @@ class GridAlgorithm(
             size: Double,
             boardWeight: Double,
         ) {
-            var cur = Vec2.Zero
+            var cur = vectors.Vec2.Zero
 
             val volumes = mutableListOf<VolumePosition>()
 
@@ -445,11 +454,11 @@ class GridAlgorithm(
             yDistance: Double,
             kubikDistance: Double
         ) {
-            var cur = Vec2.Zero
+            var cur = vectors.Vec2.Zero
 
             for (k in kubiks) {
                 for (plane in k.keys) {
-                    val putPosition = mutableMapOf<Coordinates,Vec2>()
+                    val putPosition = mutableMapOf<Coordinates, vectors.Vec2>()
                     k[plane]?.let { edges ->
 
                         var maxHe = 0.0
@@ -465,7 +474,7 @@ class GridAlgorithm(
                                 putPosition[info.start] = position
                                 res += FigureTranslate(f, cur - f.rect().min)
 
-                                cur += Vec2(w + xDistance, 0.0)
+                                cur += vectors.Vec2(w + xDistance, 0.0)
                             }
                         }
                         for (edge in edges) {
@@ -479,10 +488,10 @@ class GridAlgorithm(
                             }
                         }
 
-                        cur = Vec2(0.0, cur.y + maxHe + yDistance)
+                        cur = vectors.Vec2(0.0, cur.y + maxHe + yDistance)
                     }
                 }
-                cur = Vec2(0.0, cur.y + kubikDistance)
+                cur = vectors.Vec2(0.0, cur.y + kubikDistance)
             }
         }
 

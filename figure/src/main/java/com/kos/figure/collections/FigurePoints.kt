@@ -1,19 +1,15 @@
 package com.kos.figure.collections
 
 import com.kos.drawer.IFigureGraphics
-import com.kos.figure.FigureCircle
 import com.kos.figure.IFigure
-import vectors.BoundingRectangle
-import vectors.Matrix
-import vectors.Vec2
 
-class FigurePointsOfFigure(val points: List<Vec2>, val figure: IFigure) : IFigure {
+class FigurePointsOfFigure(val points: List<vectors.Vec2>, val figure: IFigure) : IFigure {
     override val count: Int
         get() = 1
 
-    override fun rect(): BoundingRectangle {
-        if (points.isEmpty()) return BoundingRectangle.Empty
-        return BoundingRectangle.apply(points)
+    override fun rect(): vectors.BoundingRectangle {
+        if (points.isEmpty()) return vectors.BoundingRectangle.Empty
+        return vectors.BoundingRectangle.apply(points)
     }
 
     override fun draw(g: IFigureGraphics) {
@@ -26,7 +22,7 @@ class FigurePointsOfFigure(val points: List<Vec2>, val figure: IFigure) : IFigur
     }
 
     override fun print(): String {
-        return "/points [${figure.print()}] ${points.joinToString(" "){ p -> "${p.x} ${p.y}" }}"
+        return "/points [${figure.print()}] ${points.joinToString(" ") { p -> "${p.x} ${p.y}" }}"
     }
 
     override fun collection(): List<IFigure> {
@@ -37,8 +33,8 @@ class FigurePointsOfFigure(val points: List<Vec2>, val figure: IFigure) : IFigur
         return "PointsFigure ${points.size}"
     }
 
-    override val transform: Matrix
-        get() = Matrix.identity
+    override val transform: vectors.Matrix
+        get() = vectors.Matrix.identity
     override val hasTransform: Boolean
         get() = false
 
@@ -47,13 +43,13 @@ class FigurePointsOfFigure(val points: List<Vec2>, val figure: IFigure) : IFigur
     override fun replaceInner(newCollection: List<IFigure>): IFigure = this
 }
 
-class FigurePoints(val points: List<Vec2>, val radius: Double) : IFigure {
+class FigurePoints(val points: List<vectors.Vec2>, val radius: Double) : IFigure {
     override val count: Int
         get() = 1
 
-    override fun rect(): BoundingRectangle {
-        if (points.isEmpty()) return BoundingRectangle.Empty
-        return BoundingRectangle.apply(points)
+    override fun rect(): vectors.BoundingRectangle {
+        if (points.isEmpty()) return vectors.BoundingRectangle.Empty
+        return vectors.BoundingRectangle.apply(points)
     }
 
     override fun draw(g: IFigureGraphics) {
@@ -63,7 +59,7 @@ class FigurePoints(val points: List<Vec2>, val radius: Double) : IFigure {
     }
 
     override fun print(): String {
-        return "/points $radius ${points.joinToString(" "){ p -> "${p.x} ${p.y}" }}"
+        return "/points $radius ${points.joinToString(" ") { p -> "${p.x} ${p.y}" }}"
     }
 
     override fun collection(): List<IFigure> {
@@ -74,8 +70,8 @@ class FigurePoints(val points: List<Vec2>, val radius: Double) : IFigure {
         return "Points ${points.size}"
     }
 
-    override val transform: Matrix
-        get() = Matrix.identity
+    override val transform: vectors.Matrix
+        get() = vectors.Matrix.identity
     override val hasTransform: Boolean
         get() = false
 

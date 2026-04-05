@@ -1,11 +1,8 @@
 package com.kos.figure.composition
 
-import com.kos.figure.CropSide
-import com.kos.figure.Figure
 import com.kos.figure.IFigure
 import vectors.BoundingRectangle
 import vectors.Matrix
-import vectors.Vec2
 
 abstract class FigureComposition : IFigure {
 

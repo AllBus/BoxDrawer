@@ -64,11 +64,11 @@ abstract class FigurePolygon(val points: List<Vec2>) : Figure(), IFigurePath, IR
     }
 
     override fun startPoint(): Vec2 {
-        return points.firstOrNull()?:Vec2.Zero
+        return points.firstOrNull()?: Vec2.Zero
     }
 
     override fun endPoint(): Vec2 {
-        return points.lastOrNull()?:Vec2.Zero
+        return points.lastOrNull()?: Vec2.Zero
     }
 
     override fun toFigure(): Figure = this

@@ -39,11 +39,11 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-private fun indexOfPoint(points: List<Vec2>, position: Vec2, maxDistance: Double): Int {
+private fun indexOfPoint(points: List<vectors.Vec2>, position: vectors.Vec2, maxDistance: Double): Int {
     var index = -1
     var dist = maxDistance + 1
     points.forEachIndexed { i, v ->
-        val nd = Vec2.distance(v, position)
+        val nd = vectors.Vec2.distance(v, position)
         if (nd < dist) {
             index = i
             dist = nd
@@ -66,8 +66,8 @@ fun DisplayBezier(
 
     val figure = remember { vm.figure }
     val c1 = vm.c1.collectAsState()
-    val cst = vm.startActionPos.collectAsState(Vec2.Zero)
-    val cen = vm.endActionPos.collectAsState(Vec2.Zero)
+    val cst = vm.startActionPos.collectAsState(vectors.Vec2.Zero)
+    val cen = vm.endActionPos.collectAsState(vectors.Vec2.Zero)
     val currentDistance = remember { vm.currentDistance }
     val lastSelectedPoint = remember { vm.lastSelectedPoint }
 
@@ -119,13 +119,13 @@ fun DisplayBezier(
         /// }
 
         if (selectIndex.value < 0) {
-            if (Vec2.distance(cst.value, sp) < 20.0) {
+            if (vectors.Vec2.distance(cst.value, sp) < 20.0) {
                 if (event.button == PointerButton.Secondary)
                     vm.deleteStart()
                 else
                     vm.addStartBezier()
             }
-            if (Vec2.distance(cen.value, sp) < 20.0) {
+            if (vectors.Vec2.distance(cen.value, sp) < 20.0) {
                 if (event.button == PointerButton.Secondary)
                     vm.deleteEnd()
                 else
@@ -151,16 +151,16 @@ fun DisplayBezier(
         selectIndex.value = -1
         selectedType.value = 0
     }.onPointerEvent(PointerEventType.Move) {
-        val sp = Vec2.freqency(
+        val sp = vectors.Vec2.freqency(
             (it.changes.first().position.toVec2() - size.toVec2() / 2.0) / scale.toDouble() - pos.value.toVec2() / scale.toDouble(),
             currentDistance.value
         )
 
         val v = selectIndex.value
-        if (Vec2.distance(cst.value, sp) < 20.0) {
+        if (vectors.Vec2.distance(cst.value, sp) < 20.0) {
             mousePointIndex.value = START_DOT_INDEX
         } else
-            if (Vec2.distance(cen.value, sp) < 20.0) {
+            if (vectors.Vec2.distance(cen.value, sp) < 20.0) {
                 mousePointIndex.value = END_DOT_INDEX
             } else {
                 mousePointIndex.value = indexOfPoint(c1.value, sp, 20.0)

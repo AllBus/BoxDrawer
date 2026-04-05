@@ -29,10 +29,10 @@ class TortoiseState {
         return this
     }
 
-    public val xy : Vec2 get() = Vec2(x, y)
+    val xy : Vec2 get() = Vec2(x, y)
 
     /** radians */
-    public val angle : Double get() = PI * angleInDegrees / 180
+    val angle : Double get() = PI * angleInDegrees / 180
 
     fun move(delta: Double) {
         val angle: Double = PI * angleInDegrees / 180

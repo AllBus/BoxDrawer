@@ -3,7 +3,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.res.loadImageBitmap
 import com.kos.boxdrawe.FigureTransferable
 import com.kos.boxdrawe.corutine.DispatcherList
 import com.kos.boxdrawe.imgprocessing.CounterFinder
@@ -12,9 +11,7 @@ import com.kos.boxdrawe.presentation.ImageUtils.convertToBmp
 import com.kos.boxdrawe.presentation.ImageUtils.formatOfData
 import com.kos.boxdrawe.presentation.ImageUtils.loadImageFromFile
 import com.kos.boxdrawe.widget.NumericTextFieldState
-import com.kos.figure.FigureCircle
 import com.kos.figure.IFigure
-import com.kos.figure.collections.FigurePoints
 import com.kos.figure.collections.FigurePointsOfFigure
 import com.kos.figure.collections.toFigure
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,8 +26,6 @@ import vectors.Vec2
 import java.awt.Color
 import java.awt.Toolkit
 import java.awt.image.BufferedImage
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
 import kotlin.math.abs
@@ -179,7 +174,12 @@ class ImageToolsData(val tools: ITools) {
                     val figure = t.draw(state, tools.ds())
 
                     result+= FigurePointsOfFigure(
-                        pa.map { p -> Vec2(x = p.x.toDouble()*scale, y = p.y.toDouble()*scale) },
+                        pa.map { p ->
+                            Vec2(
+                                x = p.x.toDouble() * scale,
+                                y = p.y.toDouble() * scale
+                            )
+                        },
                         figure
                     )
                 }

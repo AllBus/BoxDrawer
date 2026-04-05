@@ -1,16 +1,14 @@
 package com.kos.boxdrawer.detal.splash
 
-import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.figure.complex.FigureBone
-import com.kos.figure.complex.model.BoneAnchor
+import com.kos.figure.segments.model.BoneAnchor
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
 import turtoise.parser.TPArg
-import turtoise.parser.TPArg.invoke
 import vectors.Vec2
 
 class SplashBone: ISplashDetail {

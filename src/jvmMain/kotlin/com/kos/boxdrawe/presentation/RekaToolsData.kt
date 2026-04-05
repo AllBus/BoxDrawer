@@ -71,7 +71,7 @@ class RekaToolsData(override val tools: ITools) : SaveFigure, PrintCode {
 
     private val rekaDrawResult = combine(redrawEvent, topReka) { e, reka ->
         val result = RekaCad.createFigure(
-            reka, Vec2.Zero, 0.0, memory
+            reka, vectors.Vec2.Zero, 0.0, memory
         )
         result
     }
@@ -89,9 +89,9 @@ class RekaToolsData(override val tools: ITools) : SaveFigure, PrintCode {
                     FigureRotate(
                         FigureColor(0xffff00, 1, f),
                         (rfp?.angle ?: 0.0) * 180 / PI,
-                        Vec2.Zero
+                        vectors.Vec2.Zero
                     ),
-                    rfp?.coord ?: Vec2(0.0, 0.0),
+                    rfp?.coord ?: vectors.Vec2(0.0, 0.0),
                 ),
                 FigureColor(0xffff00,2, RekaCad.centerFigures(result)),
                 FigureColor(0xff00ff, 6, RekaCad.selectPositionFigure(result, cur)),
@@ -101,7 +101,7 @@ class RekaToolsData(override val tools: ITools) : SaveFigure, PrintCode {
 
     fun createRekaFigure() {
         RekaCad.createFigure(
-            currentReka, Vec2.Zero, 0.0, memory
+            currentReka, vectors.Vec2.Zero, 0.0, memory
         )
         rekaFigure.value = FigurePolyline(currentReka.points)
 
@@ -290,17 +290,17 @@ class RekaToolsData(override val tools: ITools) : SaveFigure, PrintCode {
         paddingNext.value = text
     }
 
-    suspend fun onPress(point: Vec2, button: Int, scale: Float) {
+    suspend fun onPress(point: vectors.Vec2, button: Int, scale: Float) {
         val result = rekaDrawResult.first()
         val cv = current.value
         val kubik = result.positions.find {
-            Vec2.distance(it.coord, point) < 5.0
+            vectors.Vec2.distance(it.coord, point) < 5.0
         }
 
         if (kubik == null) {
             val pt = cv.reka.points
             for (i in 1 until pt.size) {
-                if (Vec2.distance(pt[i - 1], pt[i], point) < (5.0 / scale)) {
+                if (vectors.Vec2.distance(pt[i - 1], pt[i], point) < (5.0 / scale)) {
                     current.value = cv.copy(
                         position = cv.position.copy(edge = i)
                     )

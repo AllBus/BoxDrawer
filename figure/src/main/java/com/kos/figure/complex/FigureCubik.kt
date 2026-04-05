@@ -7,7 +7,6 @@ import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.tortoise.ZigzagInfo
 import vectors.BoundingRectangle
-import vectors.Matrix
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.abs
@@ -67,8 +66,8 @@ class FigureCubik(
         }
 
         bound = BoundingRectangle(
-            Vec2(minX*size, minY*size),
-            Vec2(maxX*size, maxY*size)
+            Vec2(minX * size, minY * size),
+            Vec2(maxX * size, maxY * size)
         )
         val lastX = -x
         val lastY = -y
@@ -104,10 +103,10 @@ class FigureCubik(
     fun creteFigureReverse():IFigure{
         val s2 = (size-zigInfo.width)/2
         return FigurePolyline(listOf(
-            Vec2( s2,0.0),
-            Vec2( s2, -zigInfo.height),
-            Vec2(  size - s2, -zigInfo.height),
-            Vec2( size - s2, 0.0),
+            Vec2(s2, 0.0),
+            Vec2(s2, -zigInfo.height),
+            Vec2(size - s2, -zigInfo.height),
+            Vec2(size - s2, 0.0),
         ))
     }
 
@@ -120,7 +119,7 @@ class FigureCubik(
             Vec2(s2, zigInfo.height),
             Vec2(size - s2, zigInfo.height),
             Vec2(size - s2, 0.0),
-            Vec2(size- s1, 0.0),
+            Vec2(size - s1, 0.0),
         ))
     }
 
@@ -188,7 +187,7 @@ class FigureCubik(
             } else{
                 y+=s
             }
-            res.add(Vec2(x*size, y*size))
+            res.add(Vec2(x * size, y * size))
             isX = !isX
         }
         g.drawPolyline(res)

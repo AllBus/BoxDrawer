@@ -75,7 +75,7 @@ fun DisplayDxf(
 
     val scale = displayScale.value
 
-    val points = remember { mutableStateOf(listOf<Vec2>()) }
+    remember { mutableStateOf(listOf<Vec2>()) }
 
     Canvas(modifier = Modifier.fillMaxSize().clipToBounds()
         .onPointerEvent(PointerEventType.Press) { event ->

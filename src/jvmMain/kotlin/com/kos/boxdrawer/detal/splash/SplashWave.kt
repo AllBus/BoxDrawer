@@ -1,6 +1,5 @@
 package com.kos.boxdrawer.detal.splash
 
-import com.kos.boxdrawer.presentation.tabbar.TabBarPreview
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.figure.FigureBezier
 import turtoise.TortoiseBuilder
@@ -44,7 +43,12 @@ class SplashWave : ISplashDetail {
         for (i in 0 until c) {
             val x = i * w
             val y = h * Math.sin(x)
-            val bezier = FigureBezier(listOf(Vec2(x, 0.0), Vec2(x, y), Vec2(x + w, y), Vec2(x + w, 0.0)))
+            val bezier = FigureBezier(listOf(
+                Vec2(x, 0.0),
+                Vec2(x, y),
+                Vec2(x + w, y),
+                Vec2(x + w, 0.0)
+            ))
             builder.addProduct(bezier)
         }
     }

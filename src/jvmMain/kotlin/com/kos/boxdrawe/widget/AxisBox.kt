@@ -123,7 +123,7 @@ private fun calculateMoveXY(
     s: Vec2,
     thumbPosition: MutableState<IntOffset>,
     thumbStartPosition: MutableState<IntOffset>,
-    plusValue:Vec2,
+    plusValue: Vec2,
     onMove: (current: Vec2, change: Vec2, start: Vec2) -> Unit,
     isMove: Boolean,
 ) {
@@ -131,7 +131,10 @@ private fun calculateMoveXY(
     val d = ps / 8.0
 
     val c = if (isMove) {
-        val c2 = d - Vec2( thumbPosition.value.x.toDouble(), thumbPosition.value.y.toDouble())
+        val c2 = d - Vec2(
+            thumbPosition.value.x.toDouble(),
+            thumbPosition.value.y.toDouble()
+        )
         c2
     } else {
         thumbStartPosition.value = IntOffset(d.x.toInt(), d.y.toInt())
@@ -142,7 +145,7 @@ private fun calculateMoveXY(
 
     val ci = thumbStartPosition.value+thumbPosition.value
     onMove(
-        Vec2(ci.x.toDouble(), ci.y.toDouble())+plusValue,
+        Vec2(ci.x.toDouble(), ci.y.toDouble()) +plusValue,
         c,
         plusValue,
     )

@@ -1,4 +1,4 @@
-package com.kos.figure.complex.model
+package com.kos.figure.segments.model
 
 data class CubikDirection(
     val count:Int,

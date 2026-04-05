@@ -42,7 +42,10 @@ object PolygonUtils {
         } else if (t > 1) {
             end // After the segment
         } else {
-            Vec2(start.x + t * segmentVector.x, start.y + t * segmentVector.y) // On the segment
+            Vec2(
+                start.x + t * segmentVector.x,
+                start.y + t * segmentVector.y
+            ) // On the segment
         }
     }
 }

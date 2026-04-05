@@ -2,17 +2,10 @@ package com.kos.figure.complex
 
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.BaseFigure
-import com.kos.figure.Figure
-import com.kos.figure.FigureEmpty
-import com.kos.figure.FigureLine
 import com.kos.figure.IFigure
-import com.kos.figure.collections.FigureList
-import com.kos.figure.composition.FigureArray
 import com.kos.tortoise.ZigzagInfo
 import vectors.BoundingRectangle
-import vectors.Matrix
 import vectors.Vec2
-import kotlin.math.floor
 import kotlin.math.truncate
 
 class FigureZigZag(
@@ -65,13 +58,8 @@ class FigureZigZag(
                 offsetV = (width - deltaV * count + distance) / 2 * bot
 
                 deltaV *= bot.toDouble()
-                if (count > 10000) {
-                    /*  слишком много зигзагов. Нарисуем прямую */
-                    isLine = true
-                } else {
-
-                    isLine = false
-                }
+                isLine = count > 10000
+                /*  слишком много зигзагов. Нарисуем прямую */
                 countV = count
             }
         }
@@ -85,7 +73,7 @@ class FigureZigZag(
     }
 
     override fun rect(): BoundingRectangle {
-        return BoundingRectangle.apply(listOf(origin, origin+Vec2(width,0.0).rotate(angle)))
+        return BoundingRectangle.apply(listOf(origin, origin+ Vec2(width, 0.0).rotate(angle)))
     }
 
     override fun draw(g: IFigureGraphics) {
@@ -99,8 +87,8 @@ class FigureZigZag(
             var pred = Vec2.Zero
             var off = offset
             for (i in 0 until zigCount) {
-                g.drawLine(pred,  Vec2(off, 0.0))
-                pred = Vec2(off+ zigWidth, 0.0)
+                g.drawLine(pred, Vec2(off, 0.0))
+                pred = Vec2(off + zigWidth, 0.0)
 
                 g.save()
                 g.translate(off, 0.0)
@@ -110,7 +98,7 @@ class FigureZigZag(
                 off += distance
             }
             val bot = if (back) -1 else 1
-            g.drawLine(pred, Vec2(width*bot, 0.0))
+            g.drawLine(pred, Vec2(width * bot, 0.0))
 
             g.restore()
         }

@@ -3,16 +3,15 @@ package com.kos.figure
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.FigureEllipse.Companion.digitFormatter
 import com.kos.figure.collections.FigurePath
-import com.kos.figure.complex.model.Arc
-import com.kos.figure.complex.model.CustomPathIterator
-import com.kos.figure.complex.model.OnePathIterator
-import com.kos.figure.complex.model.PathIterator
+import com.kos.figure.segments.model.Arc
+import com.kos.figure.segments.model.OnePathIterator
 import com.kos.figure.complex.model.SimpleElement
 import com.kos.figure.utils.EllipseUtils
 import com.kos.figure.utils.EllipseUtils.normalize
 import com.kos.figure.utils.EllipseUtils.normalizeAngle
 import vectors.BoundingRectangle
 import vectors.Matrix
+import vectors.PointWithNormal
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.abs
@@ -36,7 +35,7 @@ class FigureCircle(
 ) : Figure(), IFigurePath, FigureWithApproximation, IRotable, SimpleElement{
 
     companion object {
-        private fun calcSweep(startArc: Vec2, endArc:Vec2): Double {
+        private fun calcSweep(startArc: Vec2, endArc: Vec2): Double {
             val ea = startArc.angle
             val sa = endArc.angle
             if (sa > ea)
@@ -45,12 +44,10 @@ class FigureCircle(
         }
     }
 
-    constructor(center:Vec2, radius:Double,outSide: Boolean, startArc: Vec2, endArc:Vec2 ): this(
+    constructor(center: Vec2, radius:Double, outSide: Boolean, startArc: Vec2, endArc: Vec2): this(
         center, radius, outSide,  (startArc-center).angle,
        calcSweep(startArc-center, endArc-center)
-    ){
-
-    }
+    )
 
     override fun translate(translateX: Double, translateY: Double): Figure {
         return create(
@@ -70,12 +67,12 @@ class FigureCircle(
         val b = matrix[0, 1].toDouble()
         val c = matrix[1, 0].toDouble()
         val d = matrix[1, 1].toDouble()
-        var delta = a * d - b * c;
+        a * d - b * c
         val newRot = if (a != 0.0 || b != 0.0) {
             val r = Math.sqrt(a * a + b * b)
             if (b > 0.0) Math.acos(a / r) else -Math.acos(a / r)
         } else if (c != 0.0 || d != 0.0) {
-            val s = Math.sqrt(c * c + d * d);
+            val s = Math.sqrt(c * c + d * d)
             Math.PI / 2.0 - (if (d > 0.0) Math.acos(-c / s) else -Math.acos(c / s))
         } else {
             0.0
@@ -140,11 +137,13 @@ class FigureCircle(
     }
 
     override fun rotate(angle: Double): FigureCircle {
-        return FigureCircle(center.rotate(angle), radius, outSide, EllipseUtils.normalizeAngle(segmentStartAngle+angle), segmentSweepAngle)
+        return FigureCircle(center.rotate(angle), radius, outSide,
+            normalizeAngle(segmentStartAngle+angle), segmentSweepAngle)
     }
 
     override fun rotate(angle: Double, rotateCenter: Vec2): FigureCircle {
-        return FigureCircle((center + rotateCenter).rotate(angle) - rotateCenter, radius,outSide, EllipseUtils.normalizeAngle(segmentStartAngle+angle), segmentSweepAngle)
+        return FigureCircle((center + rotateCenter).rotate(angle) - rotateCenter, radius,outSide,
+            normalizeAngle(segmentStartAngle+angle), segmentSweepAngle)
     }
 
     fun create(
@@ -189,7 +188,7 @@ class FigureCircle(
     override fun positionInPath(delta: Double): PointWithNormal {
         val rot = (segmentStartAngle + delta * segmentSweepAngle)
         val pos = center + Vec2(radius, 0.0).rotate(rot)
-        val normal = Vec2(1.0*normalSign, 0.0).rotate(rot)
+        val normal = Vec2(1.0 * normalSign, 0.0).rotate(rot)
         return PointWithNormal(pos, normal)
     }
 

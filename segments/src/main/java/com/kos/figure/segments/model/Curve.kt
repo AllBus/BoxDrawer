@@ -1,14 +1,10 @@
-package com.kos.figure.complex.model
+package com.kos.figure.segments.model
 
 import com.kos.drawer.IFigureGraphics
-import com.kos.figure.Figure
-import com.kos.figure.FigureBezier
-import com.kos.figure.FigureEmpty
-import com.kos.figure.IFigurePath
-import com.kos.figure.PointWithNormal
 import org.apache.commons.math3.linear.Array2DRowRealMatrix
 import org.apache.commons.math3.linear.ArrayRealVector
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression
+import vectors.PointWithNormal
 import vectors.Vec2
 
 private const val DEFAULT_STEP_SIZE = 1000
@@ -238,11 +234,6 @@ class CurveIter(private val points: List<Vec2>, var index: Int) : Curve {
 
     private val length: Double by lazy { Vec2.bezierLength(points, index) }
 
-    override fun toFigure(): FigureBezier {
-        return FigureBezier(points.subList(index, index + 4))
-    }
-
-    override fun toPath(): IFigurePath = toFigure()
 
     override fun perimeter(): Double {
         return length
@@ -257,17 +248,6 @@ class CurveIter(private val points: List<Vec2>, var index: Int) : Curve {
         )
     }
 
-    override fun take(startMM: Double, endMM: Double): Figure {
-        val pe = length
-        if (pe <= 0.0)
-            return FigureEmpty
-
-        val a = (startMM / pe).coerceIn(0.0, 1.0)
-        val b = (endMM / pe).coerceIn(0.0, 1.0)
-
-        val sec = Vec2.casteljauLine(points.subList(index, index + 4), a, b)
-        return FigureBezier(sec)
-    }
 
     override fun draw(g: IFigureGraphics) {
         g.drawBezier(points.subList(index, index + 4))
@@ -288,30 +268,12 @@ data class CurveImpl(
 
     private val length: Double by lazy { Vec2.bezierLength(points) }
 
-    override fun toFigure(): FigureBezier {
-        return FigureBezier(points)
-    }
-
-    override fun toPath(): IFigurePath = toFigure()
-
     override fun perimeter(): Double {
         return length
     }
 
     override fun positionInPath(delta: Double): PointWithNormal {
         return Vec2.bezierPosition(points, delta, DEFAULT_STEP_SIZE, length)
-    }
-
-    override fun take(startMM: Double, endMM: Double): Figure {
-        val pe = length
-        if (pe <= 0.0)
-            return FigureEmpty
-
-        val a = (startMM / pe).coerceIn(0.0, 1.0)
-        val b = (endMM / pe).coerceIn(0.0, 1.0)
-
-        val sec = Vec2.casteljauLine(points, a, b)
-        return FigureBezier(sec)
     }
 
     override fun draw(g: IFigureGraphics) {

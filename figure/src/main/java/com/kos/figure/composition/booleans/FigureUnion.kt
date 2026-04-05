@@ -2,7 +2,6 @@ package com.kos.figure.composition.booleans
 
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.Approximation
-import com.kos.figure.Figure
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import com.kos.figure.algorithms.UnionFigure
@@ -47,7 +46,7 @@ open class FigureUnion(
         get() = unionFigure ?: recalculateFigure()
 
     override fun create(figure: IFigure): FigureComposition {
-        return FigureTranslate(figure, Vec2.Zero)
+        return FigureTranslate(figure, vectors.Vec2.Zero)
     }
 
     override fun draw(g: IFigureGraphics) {
@@ -58,7 +57,7 @@ open class FigureUnion(
         return "Объединние"
     }
 
-    override fun approximate(pointCount: Int): List<List<Vec2>> {
+    override fun approximate(pointCount: Int): List<List<vectors.Vec2>> {
         return (figure as? Approximation)?.approximate(pointCount) ?: emptyList()
     }
 

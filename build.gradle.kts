@@ -115,6 +115,8 @@ kotlin {
             implementation("org.apache.commons:commons-geometry-euclidean:1.0")
             implementation("org.apache.commons:commons-math3:3.6.1")
             compileOnly( "com.google.dagger:dagger-compiler:2.51.1")
+            implementation(project(":segments"))
+            implementation(project(":vectors"))
             implementation(project(":figure"))
             implementation(project(":dxfprinter"))
             implementation(project(":commonMain"))

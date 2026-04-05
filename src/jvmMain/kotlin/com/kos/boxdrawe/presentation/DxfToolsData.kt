@@ -19,8 +19,6 @@ import com.kos.figure.collections.FigurePoints
 import com.kos.figure.composition.FigureColor
 import com.kos.figure.composition.FigureComposition
 import com.kos.figure.composition.FigureTranslate
-import com.kos.figure.composition.FigureVolume
-import com.kos.figure.editor.FigureMutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,7 +43,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
 
     private val loadedFigure = MutableStateFlow<IFigure>(FigureEmpty)
 
-    private val currentFigure = MutableStateFlow<IFigure>(FigureEmpty)
+    private val currentFigure = MutableStateFlow<List<IFigure>>(emptyList())
 
     private val _instrument = MutableStateFlow(Instruments.INSTRUMENT_NONE)
     val instrument: StateFlow<Int> = _instrument
@@ -70,6 +68,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
     private var currentScale: MutableStateFlow<Float> = MutableStateFlow(1.0f)
 
     private val editFigure: MutableStateFlow<FigureBlock> = MutableStateFlow(FigureBlock.Empty)
+    private val hoveredFigure = MutableStateFlow<IFigure>(FigureEmpty)
 
     private var currentPointInfo: PointInfo? = null
 
@@ -84,23 +83,14 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
             )
         }
 
-    // 1. Добавляем состояние
-    private val hoveredFigure = MutableStateFlow<IFigure>(FigureEmpty)
-
-
     val figures =
-        combine(
-            currentFigure,
-            editFigure,
-            vspomogatelnieFigure,
-            hoveredFigure
-        ) { figure, editFigure, pomo, hovered ->
+        combine(currentFigure, editFigure, vspomogatelnieFigure, hoveredFigure) { figure, editFigure, pomo, hovered ->
             FigureList(
-                listOf(
-                    figure,
+                listOfNotNull(
+                    FigureList(figure),
                     pomo,
                     editFigure,
-                    if (hovered != FigureEmpty) FigureCreator.colorDxf(1, hovered) else FigureEmpty
+                    if (hovered != FigureEmpty) FigureCreator.colorDxf(1, hovered) else null
                 )
             )
         }
@@ -108,6 +98,15 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
     fun recalcFigure() {
         val pointList = currentPoint.value
         val delta = (endPoint - startPoint)
+        
+        if (_instrument.value == Instruments.INSTRUMENT_MOVE) {
+            val block = editFigure.value
+            if (block != FigureBlock.Empty) {
+                editFigure.value = block.copy(matrix = Matrix.translate(delta.x, delta.y))
+            }
+            return
+        }
+
         val rawFigure = when (_instrument.value) {
             Instruments.INSTRUMENT_POINTER -> selectedFigure.list.getOrNull(0)?.figure?.let { f ->
                 FigureTranslate(
@@ -186,7 +185,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
         editFigure.value = if (rawFigure != FigureEmpty) {
             FigureBlock(
                 figure = rawFigure,
-                matrix = Matrix.identity, // Можно добавить текущую трансформацию если нужно
+                matrix = Matrix.identity,
                 modifiers = emptyList()
             )
         } else FigureBlock.Empty
@@ -215,13 +214,9 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
         if (ev == FigureEmpty || ev == FigureBlock.Empty)
             return
 
-        recalcIntersectPoints(intersectPoint.value, v, ev)
+        recalcIntersectPoints(intersectPoint.value, FigureList(v), ev)
 
-        currentFigure.value = when (v) {
-            is FigureMutableList -> v.add(ev)
-            is FigureList -> FigureMutableList(mutableListOf<IFigure>(ev).apply { this.addAll(v.collection()) })
-            else -> FigureMutableList(mutableListOf(ev, v))
-        }
+        currentFigure.value = v + ev
 
         editFigure.value = FigureBlock.Empty
         currentPoint.value = emptyList()
@@ -235,7 +230,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
     }
 
     fun recalcIntersectPoints() {
-        intersectPoint.value = PaintUtils.findAllIntersects(listOf(currentFigure.value))
+        intersectPoint.value = PaintUtils.findAllIntersects(listOf(FigureList(currentFigure.value)))
 
     }
 
@@ -266,7 +261,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
 
     override fun print(): String {
         val figures = currentFigure.value
-        return "f (" + figures.print() + ")"
+        return "f (" + FigureList(figures).print() + ")"
     }
 
     private var selectedFigure: ImmutableList<FigureInfo> = ImmutableList(emptyList())
@@ -282,9 +277,26 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
             Instruments.INSTRUMENT_NONE -> {
                 val figure = currentFigure.value
                 val result =
-                    PaintUtils.findFiguresAtCursor(Matrix.identity, point, 1.0, listOf(figure))
+                    PaintUtils.findFiguresAtCursor(Matrix.identity, point, 1.0, figure)
 
                 selectedItem.value = ImmutableList(result)
+            }
+            
+            Instruments.INSTRUMENT_MOVE -> {
+                if (editFigure.value == FigureBlock.Empty) {
+                    val figure = currentFigure.value
+                    val result = PaintUtils.findFiguresAtCursor(Matrix.identity, point, 2.0 / scale, figure)
+                    val target = result.firstOrNull()?.figure
+                    if (target != null) {
+                        val block = target as? FigureBlock ?: FigureBlock(target)
+                        removeFigure(target)
+                        editFigure.value = block
+                        startPoint = point
+                        endPoint = point
+                    }
+                } else {
+                    appendFigure()
+                }
             }
 
             Instruments.INSTRUMENT_POINTER -> {
@@ -321,7 +333,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
     }
 
     private fun removeFigure(figure: IFigure) {
-        currentFigure.value = PaintUtils.removeFigure(currentFigure.value, figure)
+        currentFigure.value = currentFigure.value.filter { it != figure }
     }
 
     val magnetDistance = 10.0
@@ -352,7 +364,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
                 Matrix.identity,
                 point,
                 magnetDistance / scale,
-                listOf(figure)
+                figure
             )
             if (newPoint != null) {
                 magnetPoint.value = newPoint
@@ -386,19 +398,15 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
             currentScale.value = scale
         }
 
-        if (button == Instruments.POINTER_LEFT) {
-
-            hoveredFigure.value = FigureEmpty // Сбрасываем подсветку при рисовании
+        if (button == Instruments.POINTER_LEFT || _instrument.value == Instruments.INSTRUMENT_MOVE) {
+            hoveredFigure.value = FigureEmpty
         } else {
             val figure = currentFigure.value
-            val found = PaintUtils.findFiguresAtCursor(Matrix.identity, point, 2.0 / scale, listOf(figure))
+            val found = PaintUtils.findFiguresAtCursor(Matrix.identity, point, 2.0 / scale, figure)
             hoveredFigure.value = found.firstOrNull()?.figure ?: FigureEmpty
-
-
         }
 
-        //   println("onMove -> $point $button")
-        if (button == Instruments.POINTER_LEFT) {
+        if (button == Instruments.POINTER_LEFT || (_instrument.value == Instruments.INSTRUMENT_MOVE && editFigure.value != FigureBlock.Empty)) {
             when (_instrument.value) {
                 Instruments.INSTRUMENT_MULTI -> {
                     appendPoint()
@@ -430,7 +438,8 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
         scale: Float,
         selectedItem: MutableStateFlow<ImmutableList<FigureInfo>>
     ) {
-        //   println("onRelease -> $point $button")
+        if (_instrument.value == Instruments.INSTRUMENT_MOVE) return
+
         when (Instruments.button(button)) {
             Instruments.POINTER_LEFT ->
                 when (_instrument.value) {
@@ -465,7 +474,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
     }
 
     override suspend fun createFigure(): IFigure {
-        return currentFigure.value
+        return FigureList(currentFigure.value)
     }
 
     fun redrawBox() {
@@ -483,7 +492,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
             val c1 = scaleForColor(com.jsevy.jdxf.DXFColor.getRgbColor(color1), f, scale)
             val c2 = scaleForColor(com.jsevy.jdxf.DXFColor.getRgbColor(color2), c1, scale2)
             val c3 = scaleForColor(com.jsevy.jdxf.DXFColor.getRgbColor(color3), c2, scale3)
-            currentFigure.value = c3
+            currentFigure.value = listOf(FigureBlock(c3))
         }
     }
 
@@ -500,9 +509,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
             )
 
             is FigureColor -> {
-                //  println("Scale for $rgbColor ${figure.color} ${figure.color == rgbColor}")
                 if (figure.color == rgbColor) {
-
                     FigureColor(
                         figure.color,
                         figure.dxfColor,
@@ -526,11 +533,12 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
 
     fun clear() {
         editFigure.value = FigureBlock.Empty
+        hoveredFigure.value = FigureEmpty
         intersectPoint.value = emptyList()
         currentPoint.value = emptyList()
         currentPointInfo = null
         loadedFigure.value = FigureEmpty
-        currentFigure.value = FigureEmpty
+        currentFigure.value = emptyList()
     }
 
 
@@ -543,5 +551,4 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
     val scaleEdit3 = NumericTextFieldState(1.0, digits = 3, minValue = 0.000001) { redrawBox() }
     val scaleColor3 = NumericTextFieldState(0.0, digits = 0, maxValue = 1000.0) { redrawBox() }
 
-    //   val selectedItem = MutableStateFlow<List<IFigure>>(emptyList())
 }

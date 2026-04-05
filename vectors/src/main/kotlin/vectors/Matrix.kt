@@ -2,11 +2,9 @@ package vectors
 
 import kotlin.math.PI
 import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.min
 import kotlin.math.sin
 
-@kotlin.jvm.JvmInline
+@JvmInline
 value class Matrix(
     val values: FloatArray = floatArrayOf(
         1f, 0f, 0f, 0f,

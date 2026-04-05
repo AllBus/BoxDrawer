@@ -12,6 +12,7 @@ object Instruments {
     const val INSTRUMENT_BEZIER_TREE_POINT = 9
     const val INSTRUMENT_POINTER = 100
     const val INSTRUMENT_MULTI = 11
+    const val INSTRUMENT_MOVE = 12
     const val INSTRUMENT_NONE = 0
 
     val NONE = InstrumentState(INSTRUMENT_NONE)

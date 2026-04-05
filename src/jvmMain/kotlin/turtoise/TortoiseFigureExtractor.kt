@@ -4,9 +4,9 @@ import com.kos.figure.FigureEmpty
 import com.kos.figure.FigurePolygon
 import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
-import com.kos.figure.PointWithNormal
 import turtoise.memory.TortoiseMemory
 import turtoise.parser.TortoiseParserStackItem
+import vectors.PointWithNormal
 
 class TortoiseFigureExtractor(
     val ds: DrawerSettings,

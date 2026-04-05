@@ -165,10 +165,10 @@ object RoadCad {
         //Верхняя крышка
         val wd = w - dropRight
         val wrr = w - dropLeft - dropRight
-        val tp1 = Vec2(dropLeft, zighe-hei.right.height)
-        val tp2 = Vec2(dropLeft, rp.width - zighe+hei.left.height)
-        val tp4 = Vec2(wd, zighe-he2.right.height)
-        val tp3 = Vec2(wd, rp.width - zighe+he2.left.height)
+        val tp1 = Vec2(dropLeft, zighe - hei.right.height)
+        val tp2 = Vec2(dropLeft, rp.width - zighe + hei.left.height)
+        val tp4 = Vec2(wd, zighe - he2.right.height)
+        val tp3 = Vec2(wd, rp.width - zighe + he2.left.height)
 
         // Уменьшить отступы на ширину на которую уменьшина ширина крышки
         val li = LineInfo(
@@ -408,7 +408,7 @@ object RoadCad {
             val hei = rp.heights
             if (hei!= null){
                 lpoints.drop(1).dropLast(1).forEach { p ->
-                    result+=FigureLine(p,  Vec2(p.x, 0.0))
+                    result+=FigureLine(p, Vec2(p.x, 0.0))
                 }
             }
 
@@ -856,13 +856,19 @@ object RoadCad {
     private fun verticali(zigzagInfo: ZigzagInfo) = FigureList(
         listOf(
             FigureLine(Vec2.Zero, Vec2(0.0, zigzagInfo.height)),
-            FigureLine(Vec2(zigzagInfo.width, 0.0), Vec2(zigzagInfo.width, zigzagInfo.height))
+            FigureLine(
+                Vec2(zigzagInfo.width, 0.0),
+                Vec2(zigzagInfo.width, zigzagInfo.height)
+            )
         )
     )
 
     private fun verticaliReverse(zigzagInfo: ZigzagInfo) = FigureList(
         listOf(
-            FigureLine(Vec2(zigzagInfo.width, 0.0), Vec2(zigzagInfo.width, -zigzagInfo.height)),
+            FigureLine(
+                Vec2(zigzagInfo.width, 0.0),
+                Vec2(zigzagInfo.width, -zigzagInfo.height)
+            ),
             FigureLine(Vec2.Zero, Vec2(0.0, -zigzagInfo.height)),
         )
     )

@@ -1,6 +1,5 @@
 package vectors
 
-import com.kos.figure.PointWithNormal
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.acos
@@ -70,13 +69,13 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
 
     fun length(): Double = magnitude
     fun distance(b: Vec2): Double = Vec2.distance(this, b)
-    fun lerp(b: Vec2, t:Double): Vec2 = Vec2.lerp(this, b, t)
+    fun lerp(b: Vec2, t: Double): Vec2 = Vec2.lerp(this, b, t)
 
 
     fun normalize(): Vec2 {
         val length = magnitude
         return if (length != 0.0) {
-            Vec2(x / length,y / length)
+            Vec2(x / length, y / length)
         } else {
             this // Return the original vector if it's a zero vector
         }
@@ -156,8 +155,8 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             return a.x * b.x + a.y * b.y
         }
 
-        fun det(a: Vec2, b: Vec2):Double{
-            return (a.x*b.y-a.y*b.x)
+        fun det(a: Vec2, b: Vec2): Double {
+            return (a.x * b.y - a.y * b.x)
         }
 
         fun freqency(a: Vec2, f: Double): Vec2 {
@@ -326,8 +325,8 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
             }
         }
 
-        fun bezierLength(points: List<Vec2>, startIndex:Int): Double {
-            val p = points.subList(startIndex, startIndex+4)
+        fun bezierLength(points: List<Vec2>, startIndex: Int): Double {
+            val p = points.subList(startIndex, startIndex + 4)
             return bezierSingleLength(p.toTypedArray())
         }
 
@@ -459,8 +458,8 @@ data class Vec2(@JvmField val x: Double, @JvmField val y: Double) {
         }
 
 
-        fun decartFromPolar(a:Vec2):Vec2{
-            return Vec2(a.x* sin(a.y), a.x*cos(a.y))
+        fun decartFromPolar(a: Vec2): Vec2 {
+            return Vec2(a.x * sin(a.y), a.x * cos(a.y))
         }
     }
 }

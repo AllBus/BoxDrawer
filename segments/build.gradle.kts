@@ -1,0 +1,16 @@
+@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
+plugins {
+    id("java-library")
+    alias(libs.plugins.org.jetbrains.kotlin.jvm)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    implementation("org.locationtech.jts:jts-core:1.19.0")
+    implementation("org.apache.commons:commons-math3:3.6.1")
+    implementation(project(":vectors"))
+}

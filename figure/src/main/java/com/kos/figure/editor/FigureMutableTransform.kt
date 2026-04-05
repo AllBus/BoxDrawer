@@ -12,7 +12,7 @@ import vectors.Vec2
 import kotlin.math.PI
 
 class FigureMutableTransform(override val figure:IFigure,
-                             var offset:Vec2,
+                             var offset: Vec2,
                              var angleInDegrees:Double
 )
     : FigureComposition(), Approximation {

@@ -58,7 +58,8 @@ fun ToolbarForDxf(vm: DxfToolsData) {
     val instrumentList = remember {
         listOf(
             listOf(
-                Instruments.INSTRUMENT_POINTER
+                Instruments.INSTRUMENT_POINTER,
+                Instruments.INSTRUMENT_MOVE
             ),
             listOf(
                 Instruments.INSTRUMENT_CIRCLE,

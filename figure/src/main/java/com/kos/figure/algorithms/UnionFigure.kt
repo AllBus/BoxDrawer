@@ -1,22 +1,18 @@
 package com.kos.figure.algorithms
 
 import com.kos.figure.Approximation
-import com.kos.figure.Figure
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEmpty
-import com.kos.figure.collections.FigureList
 import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
-import com.kos.figure.collections.toFigure
-import org.locationtech.jts.awt.PointShapeFactory.Circle
+import com.kos.figure.collections.FigureList
 import org.locationtech.jts.awt.PolygonShape
 import org.locationtech.jts.geom.Coordinate
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.geom.GeometryFactory
 import org.locationtech.jts.geom.MultiPolygon
 import org.locationtech.jts.geom.Polygon
-import vectors.Vec2
 import java.awt.Shape
 import java.awt.geom.Arc2D
 import java.awt.geom.Area
@@ -26,7 +22,7 @@ import java.awt.geom.Path2D
 object UnionFigure {
     val factory = GeometryFactory()
 
-    fun diff(a: List<Approximation>, b: List<Approximation>, approximationSize:Int): IFigure {
+    fun diff(a: List<Approximation>, b: List<Approximation>, approximationSize: Int): IFigure {
         return try {
             val pp = multiPolygon(a, approximationSize).union()
             val pb = multiPolygon(b, approximationSize).union()
@@ -40,7 +36,7 @@ object UnionFigure {
         }
     }
 
-    fun symDiff(a: List<Approximation>, b: List<Approximation>, approximationSize:Int): IFigure {
+    fun symDiff(a: List<Approximation>, b: List<Approximation>, approximationSize: Int): IFigure {
         return try {
             val pp = multiPolygon(a, approximationSize).union()
             val pb = multiPolygon(b, approximationSize).union()
@@ -54,10 +50,10 @@ object UnionFigure {
         }
     }
 
-    fun intersect(a: List<Approximation>, b: List<Approximation>, approximationSize:Int): IFigure {
+    fun intersect(a: List<Approximation>, b: List<Approximation>, approximationSize: Int): IFigure {
         return try {
-            val pp = multiPolygon(a,approximationSize).union()
-            val pb = multiPolygon(b,approximationSize).union()
+            val pp = multiPolygon(a, approximationSize).union()
+            val pb = multiPolygon(b, approximationSize).union()
 //
 //           val i= intersectArbitraryPolygons(
 //                a.first().approximate(200).first(),
@@ -73,7 +69,7 @@ object UnionFigure {
         }
     }
 
-    fun union(a: List<Approximation>, approximationSize:Int): IFigure {
+    fun union(a: List<Approximation>, approximationSize: Int): IFigure {
         return try {
             val pp = multiPolygon(a, approximationSize)
 
@@ -86,7 +82,7 @@ object UnionFigure {
         }
     }
 
-    private fun multiPolygon(a: List<Approximation>, approximationSize:Int): MultiPolygon {
+    private fun multiPolygon(a: List<Approximation>, approximationSize: Int): MultiPolygon {
         val pp = factory.createMultiPolygon(
             a.flatMap {
 
@@ -111,7 +107,7 @@ object UnionFigure {
         return FigureList(
             geometries(g).map { u ->
                 FigurePolyline(
-                    u.coordinates.map { Vec2(it.x, it.y) }
+                    u.coordinates.map { vectors.Vec2(it.x, it.y) }
                 )
             }
         )
@@ -137,24 +133,40 @@ object UnionFigure {
         }
     }
 
-    fun figureToArea(figure: IFigure):Area {
-        val a:Shape = when (figure){
-            is FigureCircle -> Arc2D.Double(figure.center.x-figure.radius, figure.center.y-figure.radius,figure.center.x+figure.radius, figure.center.y+figure.radius,Math.toDegrees( figure.segmentStartAngle), Math.toDegrees(figure.segmentSweepAngle), Arc2D.OPEN)
+    fun figureToArea(figure: IFigure): Area {
+        val a: Shape = when (figure) {
+            is FigureCircle -> Arc2D.Double(
+                figure.center.x - figure.radius,
+                figure.center.y - figure.radius,
+                figure.center.x + figure.radius,
+                figure.center.y + figure.radius,
+                Math.toDegrees(figure.segmentStartAngle),
+                Math.toDegrees(figure.segmentSweepAngle),
+                Arc2D.OPEN
+            )
+
             is FigureBezier -> {
                 val p = Path2D.Double()
                 figure.points.windowed(4, 3).forEach { curve ->
-                    p.append(CubicCurve2D.Double(
-                        curve[0].x, curve[0].y,
-                        curve[1].x, curve[1].y,
-                        curve[2].x, curve[2].y,
-                        curve[3].x, curve[3].y,
-                    ), true)
+                    p.append(
+                        CubicCurve2D.Double(
+                            curve[0].x, curve[0].y,
+                            curve[1].x, curve[1].y,
+                            curve[2].x, curve[2].y,
+                            curve[3].x, curve[3].y,
+                        ), true
+                    )
                 }
                 p
             }
-            is FigurePolyline ->{
-                PolygonShape(figure.points.map { Coordinate(it.x, it.y)  }.toTypedArray(), emptyList<Shape>() )
+
+            is FigurePolyline -> {
+                PolygonShape(
+                    figure.points.map { Coordinate(it.x, it.y) }.toTypedArray(),
+                    emptyList<Shape>()
+                )
             }
+
             else -> Area()
         }
         return Area(a)

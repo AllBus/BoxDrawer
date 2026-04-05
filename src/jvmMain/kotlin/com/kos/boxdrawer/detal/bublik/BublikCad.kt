@@ -29,13 +29,13 @@ class BublikCad {
         val xcount = stenaPart
         val ycount = ringPart
 
-        val teta = Math.PI * 2 / xcount;
-        val alpha = Math.PI * 2 / ycount;
+        val teta = Math.PI * 2 / xcount
+        val alpha = Math.PI * 2 / ycount
 
-        val a = 2 * torRadius * sin(teta / 2);
+        val a = 2 * torRadius * sin(teta / 2)
 
-        var predB = 0.0;
-        var b = 0.0;
+        var predB = 0.0
+        var b = 0.0
 
         var maxTrapecijaEdge = 0.0
 
@@ -62,15 +62,15 @@ class BublikCad {
             }
         }
 
-        val zihe = drawerSettings.holeWeight;
+        val zihe = drawerSettings.holeWeight
         val otstup = torRadius + zihe + drawerSettings.holeOffset
 
         if (bublikPaz.center) {
-            list.add(polygon(Vec2(maxTrapecijaEdge+otstup, otstup*3), stenaPart, torRadius))
+            list.add(polygon(Vec2(maxTrapecijaEdge + otstup, otstup * 3), stenaPart, torRadius))
         }
         list.addAll(
             torusCircle(
-                offset = Vec2(maxTrapecijaEdge+otstup, otstup),
+                offset = Vec2(maxTrapecijaEdge + otstup, otstup),
                 radius = torRadius,
                 ringPart = stenaPart,
                 edge = a,
@@ -96,10 +96,10 @@ class BublikCad {
             val sy = sin(alpha)
             val sx = cos(alpha)
 
-            list.add(Vec2(sx * radius, sy * radius) + offset);
+            list.add(Vec2(sx * radius, sy * radius) + offset)
 
             val m3 = Matrix()
-            m3.rotateZ(((delta - Math.PI / 2) * 180 / Math.PI).toFloat());
+            m3.rotateZ(((delta - Math.PI / 2) * 180 / Math.PI).toFloat())
 
             list.addAll(
                 listOf(
@@ -122,12 +122,12 @@ class BublikCad {
         drawerSettings: DrawerSettings,
     ): Collection<IFigure> {
         val list = mutableListOf<IFigure>()
-        val dist = 5;
-        val zig = 8;
-        val zihe = drawerSettings.holeWeight;
+        val dist = 5
+        val zig = 8
+        val zihe = drawerSettings.holeWeight
 
         list.add(FigureCircle(offset, radius + zihe + drawerSettings.holeOffset, outSide = true))
-        var dizig = dist + zig;
+        dist + zig
 
 
         for (i in 0 until ringPart) {
@@ -139,16 +139,16 @@ class BublikCad {
             val sx = Math.cos(alpha)
             val uy = Math.sin(beta)
             val ux = Math.cos(beta)
-            val oy = Math.sin(delta)
-            val ox = Math.cos(delta)
+            Math.sin(delta)
+            Math.cos(delta)
             val cxy = Vec2(sx * rad, sy * rad)
             val exy = Vec2(ux * rad, uy * rad)
             val zig2 = zig.toDouble() / 2
-            val zag2 = zihe / 2
+            zihe / 2
             var oxy: Vec2 = (exy - cxy) * (dist + zig2).toDouble() / edge + offset + cxy
 
             val m3 = Matrix()
-            m3.rotateZ(((delta + Math.PI / 2) * 180 / Math.PI).toFloat());
+            m3.rotateZ(((delta + Math.PI / 2) * 180 / Math.PI).toFloat())
 
             list.add(FigurePolyline(listOf(
                 m3 * Vec3(-zig2, 0.0, 1.0),
@@ -159,7 +159,7 @@ class BublikCad {
             )
             )
 
-            oxy = (cxy - exy) * (dist + zig2) / edge + offset + exy;
+            oxy = (cxy - exy) * (dist + zig2) / edge + offset + exy
 
             list.add(FigurePolyline(listOf(
                 m3 * Vec3(-zig2, 0.0, 1.0),
@@ -241,8 +241,8 @@ class BublikCad {
 
         return if (bublikPaz.center) {
 
-            val zi2 = drawerSettings.holeWeight / 2;
-            val zig2 = (zig - drawerSettings.holeDrop) / 2;
+            val zi2 = drawerSettings.holeWeight / 2
+            val zig2 = (zig - drawerSettings.holeDrop) / 2
             listOf(
                 FigurePolyline(list.toList(), true),
                 FigurePolyline(

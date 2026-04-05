@@ -337,8 +337,6 @@ class Grid3D() {
 
 
     private fun createSidePolygons(c1: Coordinates, c2: Coordinates): List<Path> {
-        val cubeSize = 50f
-        val spacing = 10f
         val polygons = mutableListOf<Path>()
 
         val dx = c2.x - c1.x
@@ -477,9 +475,7 @@ enum class Direction { X, Y, Z }
 
 enum class Plane { XY, XZ, YZ }
 
-class Polygon(val vertices: List<Coordinates>){
-
-}
+class Polygon(val vertices: List<Coordinates>)
 
 /**
  * @param edges все рёбра

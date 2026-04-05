@@ -42,7 +42,7 @@ class SplashPoints: ISplashDetail {
         val coords = mutableListOf<Vec2>()
         for (i in 3 until com.size step 2) {
             val a = Vec2(
-                com[i-1, memory],
+                com[i - 1, memory],
                 com[i, memory],
             ).rotate(builder.angle) + builder.xy
             coords+=a

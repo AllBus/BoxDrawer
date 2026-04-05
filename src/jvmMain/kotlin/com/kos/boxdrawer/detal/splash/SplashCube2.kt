@@ -2,10 +2,8 @@ package com.kos.boxdrawer.detal.splash
 
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
-import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
-import com.kos.figure.complex.FigureCubik
 import com.kos.figure.complex.FigureDirCubik
-import com.kos.figure.complex.model.CubikDirection
+import com.kos.figure.segments.model.CubikDirection
 import turtoise.BlockTortoiseReader
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand

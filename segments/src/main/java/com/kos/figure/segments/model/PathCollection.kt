@@ -1,7 +1,6 @@
-package com.kos.figure.complex.model
+package com.kos.figure.segments.model
 
 import vectors.Vec2
-import java.nio.file.Path
 
 interface PathIterator {
     val size: Int

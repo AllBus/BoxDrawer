@@ -2,9 +2,10 @@ package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.collections.FigurePath
-import com.kos.figure.complex.model.PathIterator
-import com.kos.figure.complex.model.SegmentList
+import com.kos.figure.segments.model.PathIterator
+import com.kos.figure.segments.model.SegmentList
 import com.kos.figure.complex.model.SimpleElement
+import vectors.PointWithNormal
 import vectors.Vec2
 import vectors.Vec2.Companion.coordForX
 import vectors.Vec2.Companion.coordForY
@@ -26,7 +27,7 @@ open class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWit
         if (points.size < 2) {
             return FigureEmpty
         }
-        return cropPolyline(k, cropSide);
+        return cropPolyline(k, cropSide)
     }
 
 
@@ -47,7 +48,7 @@ open class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWit
         }
 
         fun crops(predicate: (Vec2, Double) -> Boolean, coord: (Vec2, Vec2, Double) -> Vec2) {
-            var a = points.first();
+            var a = points.first()
             var predV = predicate(a, k)
 
             for (b in points) {
@@ -55,7 +56,7 @@ open class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWit
                     if (!predV) {
                         result.add(coord(a, b, k))
                     }
-                    result.add(b);
+                    result.add(b)
                     predV = true
                 } else {
                     if (predV) {
@@ -64,7 +65,7 @@ open class FigurePolyline(points: List<Vec2>) : FigurePolygon(points), FigureWit
                         predV = false
                     }
                 }
-                a = b;
+                a = b
             }
             saveFigure()
         }

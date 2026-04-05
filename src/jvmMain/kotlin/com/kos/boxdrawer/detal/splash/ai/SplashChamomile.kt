@@ -5,7 +5,6 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.figure.FigureBezier
 import com.kos.figure.FigureCircle
-import com.kos.figure.FigurePolyline
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
 import turtoise.TortoiseBuilder
@@ -48,7 +47,7 @@ class SplashChamomile: ISplashDetail {
 
 
         // Create center figure
-        val centerFigure = FigureCircle(Vec2(0.0, 0.0), centerRadius, true)
+        val centerFigure = FigureCircle(vectors.Vec2(0.0, 0.0), centerRadius, true)
         figures.add(centerFigure)// Add all figures as a single FigureList
 
 
@@ -89,9 +88,24 @@ class SplashChamomile: ISplashDetail {
 
         // Create Bezier curves for the petal
         return listOf(
-            FigureBezier(listOf(Vec2(startX, startY), Vec2(p1X, p1Y), Vec2(p2X, p2Y), Vec2(notchControl1X, notchControl1Y))),
-            FigureBezier(listOf(Vec2(notchControl1X, notchControl1Y), Vec2(notchX, notchY), Vec2(notchControl2X, notchControl2Y), Vec2(notchControl2X, notchControl2Y))),
-            FigureBezier(listOf(Vec2(notchControl2X, notchControl2Y), Vec2(p3X, p3Y), Vec2(p4X, p4Y), Vec2(endX, endY)))
+            FigureBezier(listOf(
+                vectors.Vec2(startX, startY),
+                vectors.Vec2(p1X, p1Y),
+                vectors.Vec2(p2X, p2Y),
+                vectors.Vec2(notchControl1X, notchControl1Y)
+            )),
+            FigureBezier(listOf(
+                vectors.Vec2(notchControl1X, notchControl1Y),
+                vectors.Vec2(notchX, notchY),
+                vectors.Vec2(notchControl2X, notchControl2Y),
+                vectors.Vec2(notchControl2X, notchControl2Y)
+            )),
+            FigureBezier(listOf(
+                vectors.Vec2(notchControl2X, notchControl2Y),
+                vectors.Vec2(p3X, p3Y),
+                vectors.Vec2(p4X, p4Y),
+                vectors.Vec2(endX, endY)
+            ))
         )
     }
 
@@ -107,12 +121,21 @@ class SplashChamomile: ISplashDetail {
         val endY = centerRadius * sin(endAngle)
 
         // Calculate control points for a more petal-like shape
-        val controlPoint1 = Vec2(startX + (radius - centerRadius) * cos(angle) * 0.7, startY+ (radius - centerRadius) * sin(angle) * 0.7)
-        val controlPoint2 = Vec2(endX + (radius - centerRadius) * cos(angle) * 0.7, endY + (radius - centerRadius) * sin(angle) * 0.7)
+        val controlPoint1 = vectors.Vec2(
+            startX + (radius - centerRadius) * cos(angle) * 0.7,
+            startY + (radius - centerRadius) * sin(angle) * 0.7
+        )
+        val controlPoint2 = vectors.Vec2(
+            endX + (radius - centerRadius) * cos(angle) * 0.7,
+            endY + (radius - centerRadius) * sin(angle) * 0.7
+        )
 
         // Create two Bezier curves and return them as a list
         return listOf(
-            FigureBezier(listOf(Vec2(startX, startY), controlPoint1, controlPoint2, Vec2(endX, endY)))
+            FigureBezier(listOf(
+                vectors.Vec2(startX, startY), controlPoint1, controlPoint2,
+                vectors.Vec2(endX, endY)
+            ))
         )
     }
 }

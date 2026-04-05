@@ -1,10 +1,9 @@
 package com.kos.figure
 
 import com.kos.drawer.IFigureGraphics
-import com.kos.figure.complex.model.PathIterator
-import com.kos.figure.complex.model.Segment
-import com.kos.figure.complex.model.SegmentList
-import com.kos.figure.complex.model.SimpleElement
+import com.kos.figure.segments.model.PathIterator
+import com.kos.figure.segments.model.SegmentList
+import vectors.PointWithNormal
 import vectors.Vec2
 import vectors.Vec2.Companion.calcXPosition
 import vectors.Vec2.Companion.calcYPosition
@@ -24,21 +23,21 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolyline(points
         if (points.size < 2) {
             return FigureEmpty
         }
-        return cropLine(k, cropSide);
+        return cropLine(k, cropSide)
     }
 
     private fun cropLine(k: Double, cropSide: CropSide): Figure {
         when (cropSide) {
             CropSide.LEFT -> {
                 if (points[0].x >= k && points[1].x >= k) {
-                    return this;
+                    return this
                 }
 
-                val r = max(points[0].x, points[1].x);
+                val r = max(points[0].x, points[1].x)
                 if (r < k)
                     return FigureEmpty
 
-                val c = calcYPosition(points[1], points[0], k);
+                val c = calcYPosition(points[1], points[0], k)
 
                 return FigureLine(
                     Vec2(k, c),
@@ -49,13 +48,13 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolyline(points
 
             CropSide.BOTTOM -> {
                 if (points[0].y >= k && points[1].y >= k) {
-                    return this;
+                    return this
                 }
-                val r = max(points[0].y, points[1].y);
+                val r = max(points[0].y, points[1].y)
                 if (r < k)
                     return FigureEmpty
 
-                val c = calcXPosition(points[1], points[0], k);
+                val c = calcXPosition(points[1], points[0], k)
 
                 return FigureLine(
                     Vec2(c, k),
@@ -66,9 +65,9 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolyline(points
 
             CropSide.RIGHT -> {
                 if (points[0].x <= k && points[1].x <= k) {
-                    return this;
+                    return this
                 }
-                val r = min(points[0].x, points[1].x);
+                val r = min(points[0].x, points[1].x)
                 if (r > k)
                     return FigureEmpty
 
@@ -83,13 +82,13 @@ class FigureLine private constructor(points: List<Vec2>) : FigurePolyline(points
 
             CropSide.TOP -> {
                 if (points[0].y <= k && points[1].y <= k) {
-                    return this;
+                    return this
                 }
-                val r = min(points[0].y, points[1].y);
+                val r = min(points[0].y, points[1].y)
                 if (r > k)
                     return FigureEmpty
 
-                val c = calcXPosition(points[1], points[0], k);
+                val c = calcXPosition(points[1], points[0], k)
 
                 return FigureLine(
                     Vec2(c, k),

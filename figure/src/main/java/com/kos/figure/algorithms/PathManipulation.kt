@@ -2,28 +2,34 @@ package com.kos.figure.algorithms
 
 import com.kos.figure.algorithms.BezierManipulation.findBezierArcIntersections
 import com.kos.figure.algorithms.BezierManipulation.findBezierEllipseIntersection
-import com.kos.figure.complex.model.Arc
-import com.kos.figure.complex.model.Curve
-import com.kos.figure.complex.model.Ellipse
-import com.kos.figure.complex.model.PathElement
-import com.kos.figure.complex.model.PathIterator
-import com.kos.figure.complex.model.Segment
-import vectors.Vec2
+import com.kos.figure.segments.model.Arc
+import com.kos.figure.segments.model.Curve
+import com.kos.figure.segments.model.Ellipse
+import com.kos.figure.segments.model.PathElement
+import com.kos.figure.segments.model.PathIterator
+import com.kos.figure.segments.model.Segment
 
-data class IntersectionInfo(val point: Vec2, val element1: PathElement, val element2: PathElement)
+data class IntersectionInfo(
+    val point: vectors.Vec2,
+    val element1: PathElement,
+    val element2: PathElement
+)
 
-data class IntersectionVertex(val point: Vec2, val connectedEdges: MutableList<PathElement> = mutableListOf())
+data class IntersectionVertex(
+    val point: vectors.Vec2,
+    val connectedEdges: MutableList<PathElement> = mutableListOf()
+)
 
-fun findPathIntersections(paths: List<PathIterator>): List<Vec2>{
+fun findPathIntersections(paths: List<PathIterator>): List<vectors.Vec2> {
     val intersections = mutableListOf<IntersectionInfo>()
 
-    for (av in paths.indices){
+    for (av in paths.indices) {
         val a = paths[av]
-        for (ai in 0 until a.size){
+        for (ai in 0 until a.size) {
             val aa = a[ai]
-            for (bv in av+1 until paths.size){
+            for (bv in av + 1 until paths.size) {
                 val b = paths[bv]
-                for (bi in 0 until b.size){
+                for (bi in 0 until b.size) {
                     val bb = b[bi]
                     findIntersection(aa, bb, intersections)
                 }
@@ -33,18 +39,21 @@ fun findPathIntersections(paths: List<PathIterator>): List<Vec2>{
     return intersections.map { it.point }
 }
 
-fun pathInteratorIntersections(path1: List<PathIterator>, path2: List<PathIterator>): List<Vec2>{
+fun pathInteratorIntersections(
+    path1: List<PathIterator>,
+    path2: List<PathIterator>
+): List<vectors.Vec2> {
     val intersections = mutableListOf<IntersectionInfo>()
-    for (av in path1.indices){
+    for (av in path1.indices) {
         val a = path1[av]
-        for (bv in path2.indices){
+        for (bv in path2.indices) {
             val b = path2[bv]
             if (a == b)
                 continue
 
-            for (ai in 0 until a.size){
+            for (ai in 0 until a.size) {
                 val aa = a[ai]
-                for (bi in 0 until b.size){
+                for (bi in 0 until b.size) {
                     val bb = b[bi]
                     findIntersection(aa, bb, intersections)
                 }
@@ -54,7 +63,10 @@ fun pathInteratorIntersections(path1: List<PathIterator>, path2: List<PathIterat
     return intersections.map { it.point }
 }
 
-fun findPathIntersections(path1: List<PathElement>, path2: List<PathElement>): List<IntersectionInfo> {
+fun findPathIntersections(
+    path1: List<PathElement>,
+    path2: List<PathElement>
+): List<IntersectionInfo> {
     val intersections = mutableListOf<IntersectionInfo>()
 
     for (element1 in path1) {
@@ -96,7 +108,11 @@ private fun findIntersection(
         }
 
         element1 is Segment && element2 is Curve -> {
-            val intersection = BezierManipulation.findBezierSegmentIntersectionSubdivision (element2, element1, 1e-6)
+            val intersection = BezierManipulation.findBezierSegmentIntersectionSubdivision(
+                element2,
+                element1,
+                1e-6
+            )
             intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
         }
 
@@ -118,7 +134,11 @@ private fun findIntersection(
         }
 
         element1 is Curve && element2 is Segment -> {
-            val intersection = BezierManipulation.findBezierSegmentIntersectionSubdivision (element1, element2, 1e-6)
+            val intersection = BezierManipulation.findBezierSegmentIntersectionSubdivision(
+                element1,
+                element2,
+                1e-6
+            )
             intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
         }
 
@@ -136,26 +156,32 @@ private fun findIntersection(
             val intersection = findSegmentEllipseIntersection(element1, element2)
             intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
         }
+
         element1 is Ellipse && element2 is Segment -> {
             val intersection = findSegmentEllipseIntersection(element2, element1)
             intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
         }
+
         element1 is Ellipse && element2 is Ellipse -> {
             val intersection = findEllipseEllipseIntersection(element1, element2)
             intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
         }
+
         element1 is Ellipse && element2 is Arc -> {
             val intersection = findCircleEllipseIntersectionSubdivision(element2, element1)
             intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
         }
+
         element1 is Arc && element2 is Ellipse -> {
             val intersection = findCircleEllipseIntersectionSubdivision(element1, element2)
             intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
         }
+
         element1 is Ellipse && element2 is Curve -> {
             val intersection = findBezierEllipseIntersection(element2, element1)
             intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
         }
+
         element1 is Curve && element2 is Ellipse -> {
             val intersection = findBezierEllipseIntersection(element1, element2)
             intersections.addAll(intersection.map { IntersectionInfo(it, element1, element2) })
@@ -164,7 +190,7 @@ private fun findIntersection(
 }
 
 
-fun createIntersectionPath(path1: List<PathElement>, path2: List<PathElement>): List<Vec2> {
+fun createIntersectionPath(path1: List<PathElement>, path2: List<PathElement>): List<vectors.Vec2> {
     // 1. Find Intersections
     val intersectionInfos = findPathIntersections(path1, path2)
 
@@ -172,7 +198,8 @@ fun createIntersectionPath(path1: List<PathElement>, path2: List<PathElement>): 
     val graph = buildIntersectionGraph(intersectionInfos)
 
     // 3. Traverse Graph (starting from an arbitrary intersection point)
-    val startVertex = graph.keys.firstOrNull() ?: return emptyList() //Handle case with no intersections
+    val startVertex =
+        graph.keys.firstOrNull() ?: return emptyList() //Handle case with no intersections
     return traverseIntersectionGraph(graph, startVertex)
 }
 
@@ -213,8 +240,8 @@ fun buildIntersectionGraph(intersectionInfos: List<IntersectionInfo>): Map<Inter
 fun traverseIntersectionGraph(
     graph: Map<IntersectionVertex, List<IntersectionVertex>>,
     startVertex: IntersectionVertex
-): List<Vec2> {
-    val result = mutableListOf<Vec2>()
+): List<vectors.Vec2> {
+    val result = mutableListOf<vectors.Vec2>()
     val visited = mutableSetOf<IntersectionVertex>()
     var currentVertex = startVertex
 
@@ -225,15 +252,19 @@ fun traverseIntersectionGraph(
         // Choose the next unvisited vertex connected by the shortest edge (simple strategy)
         val nextVertex = currentVertex.connectedEdges
             .flatMap { edge ->
-                graph[currentVertex]?.filter { it != currentVertex && !visited.contains(it) && it.connectedEdges.contains(edge) } ?: emptyList()
+                graph[currentVertex]?.filter {
+                    it != currentVertex && !visited.contains(it) && it.connectedEdges.contains(
+                        edge
+                    )
+                } ?: emptyList()
             }
             .minByOrNull { (it.point - currentVertex.point).magnitude }
 
-        currentVertex = nextVertex ?:break // Stop if there are no more unvisited connected vertices
+        currentVertex =
+            nextVertex ?: break // Stop if there are no more unvisited connected vertices
     } while (currentVertex != startVertex) // Stop when we return to the starting point
 
     return result
 }
 
-class PathManipulation {
-}
+class PathManipulation

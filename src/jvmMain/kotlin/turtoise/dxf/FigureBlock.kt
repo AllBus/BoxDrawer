@@ -1,6 +1,5 @@
 package turtoise.dxf
 
-import androidx.compose.ui.platform.PlatformContext
 import com.kos.drawer.IFigureGraphics
 import com.kos.figure.FigureEmpty
 import vectors.Matrix
@@ -12,11 +11,11 @@ import com.kos.figure.IFigure
  */
 data class FigureBlock(
     val figure: IFigure,
-    val matrix: Matrix = Matrix.identity,
+    val matrix: vectors.Matrix = vectors.Matrix.identity,
     val modifiers: List<IFigure> = emptyList() // Здесь могут быть специфичные модификаторы
 ) : IFigure by figure {
 
-    override val transform: Matrix
+    override val transform: vectors.Matrix
         get() = matrix
 
     override val hasTransform: Boolean
