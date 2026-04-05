@@ -1,18 +1,12 @@
 package com.kos.boxdrawe.presentation
 
-import androidx.compose.runtime.collectAsState
-import com.kos.boxdrawe.presentation.model.BlockModifier
 import com.kos.boxdrawe.presentation.model.SegmentBlock
 import com.kos.boxdrawe.presentation.model.SegmentBlockGroup
-import com.kos.figure.Figure
-import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
 import com.kos.figure.complex.transform.toFigure
 import com.kos.figure.composition.Figure3dTransform
-import com.kos.figure.composition.FigureTranslate
-import com.kos.figure.matrix.FigureMatrix
 import com.kos.figure.segments.model.Arc
 import com.kos.figure.segments.model.Curve
 import com.kos.figure.segments.model.Ellipse
@@ -22,13 +16,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import vectors.Matrix
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
+import com.kos.boxdrawe.presentation.segments.SegmentUtils
 
 class SegmentsToolsData(val tools: ITools) {
 
@@ -151,31 +145,13 @@ class SegmentsToolsData(val tools: ITools) {
             val delta = point - dragStartPoint
             val newMatrix = when (_instrument.value) {
                 Instruments.INSTRUMENT_MOVE -> {
-                    originalMatrix.copyWithTransform(Matrix.translate(delta.x, delta.y))
+                    moveElement(delta)
                 }
                 Instruments.INSTRUMENT_ROTATE -> {
-                    val angleStart = (dragStartPoint - pivotPoint).angle
-                    val angleCurrent = (point - pivotPoint).angle
-                    val diffAngle = angleCurrent - angleStart
-
-                    // Вращение вокруг pivotPoint
-                    val m = Matrix.translate(pivotPoint.x, pivotPoint.y)
-                    m.rotateZ((diffAngle * 180 / PI).toFloat())
-                    m.translate(-pivotPoint.x.toFloat(), -pivotPoint.y.toFloat())
-
-                    originalMatrix.copyWithTransform(m)
+                    rotateElement(point)
                 }
                 Instruments.INSTRUMENT_SCALE -> {
-                    val distStart = Vec2.distance(dragStartPoint, pivotPoint)
-                    val distCurrent = Vec2.distance(point, pivotPoint)
-                    val s = if (distStart > 0) distCurrent / distStart else 1.0
-
-                    // Масштабирование относительно pivotPoint
-                    val m = Matrix.translate(pivotPoint.x, pivotPoint.y)
-                    m.scale(s.toFloat(), s.toFloat())
-                    m.translate(-pivotPoint.x.toFloat(), -pivotPoint.y.toFloat())
-
-                    originalMatrix.copyWithTransform(m)
+                    scaleElement(point)
                 }
                 else -> originalMatrix
             }
@@ -192,21 +168,55 @@ class SegmentsToolsData(val tools: ITools) {
         } else {
             previewElement.value = null
 
-            // Поиск ближайшей фигуры
-            val threshold = 5.0 / scale
-            var minDistance = Double.MAX_VALUE
-            var nearest: SegmentBlock? = null
-
-            blocks.value.blocks.forEach { block ->
-                val localPoint = if (block.matrix.isIdentity()) point else block.matrix.getInvert().map(point)
-                val dist = block.element.distance(localPoint)
-                if (dist < minDistance && dist < threshold) {
-                    minDistance = dist
-                    nearest = block
-                }
-            }
-            hoveredBlock.value = nearest
+            hoverElement(scale, point)
         }
+    }
+
+    private fun hoverElement(scale: Float, point: Vec2) {
+        // Поиск ближайшей фигуры
+        val threshold = 5.0 / scale
+        var minDistance = Double.MAX_VALUE
+        var nearest: SegmentBlock? = null
+
+        blocks.value.blocks.forEach { block ->
+            val localPoint =
+                if (block.matrix.isIdentity()) point else block.matrix.getInvert().map(point)
+            val dist = block.element.distance(localPoint)
+            if (dist < minDistance && dist < threshold) {
+                minDistance = dist
+                nearest = block
+            }
+        }
+        hoveredBlock.value = nearest
+    }
+
+    private fun moveElement(delta: Vec2): Matrix =
+        originalMatrix.copyWithTransform(Matrix.translate(delta.x, delta.y))
+
+    private fun scaleElement(point: Vec2): Matrix {
+        val distStart = Vec2.distance(dragStartPoint, pivotPoint)
+        val distCurrent = Vec2.distance(point, pivotPoint)
+        val s = if (distStart > 0) distCurrent / distStart else 1.0
+
+        // Масштабирование относительно pivotPoint
+        val m = Matrix.translate(pivotPoint.x, pivotPoint.y)
+        m.scale(s.toFloat(), s.toFloat())
+        m.translate(-pivotPoint.x.toFloat(), -pivotPoint.y.toFloat())
+
+        return originalMatrix.copyWithTransform(m)
+    }
+
+    private fun rotateElement(point: Vec2): Matrix {
+        val angleStart = (dragStartPoint - pivotPoint).angle
+        val angleCurrent = (point - pivotPoint).angle
+        val diffAngle = angleCurrent - angleStart
+
+        // Вращение вокруг pivotPoint
+        val m = Matrix.translate(pivotPoint.x, pivotPoint.y)
+        m.rotateZ((diffAngle * 180 / PI).toFloat())
+        m.translate(-pivotPoint.x.toFloat(), -pivotPoint.y.toFloat())
+
+        return originalMatrix.copyWithTransform(m)
     }
 
     private fun createPathElement(pts: List<Vec2>, current: Vec2?): PathElement? {
@@ -214,63 +224,22 @@ class SegmentsToolsData(val tools: ITools) {
 
         return when (_instrument.value) {
             Instruments.INSTRUMENT_LINE -> {
-                if (allPoints.size >= 2) Segment(allPoints[0], allPoints[1]) else null
+                SegmentUtils.createPathLine(allPoints)
             }
             Instruments.INSTRUMENT_CIRCLE -> {
-                if (allPoints.size >= 2) {
-                    val radius = Vec2.distance(allPoints[0], allPoints[1])
-                    if (radius > 0) {
-                        Arc(
-                            center = allPoints[0],
-                            radius = radius,
-                            outSide = true,
-                            startAngle = 0.0,
-                            sweepAngle = PI * 2
-                        )
-                    } else null
-                } else null
+                SegmentUtils.createPathCircle(allPoints)
             }
             Instruments.INSTRUMENT_ELLIPSE -> {
-                if (allPoints.size >= 2) {
-                    val center = allPoints[0]
-                    val p1 = allPoints[1]
-                    val diff = p1 - center
-                    val radiusX = diff.magnitude
-                    val rotation = atan2(diff.y, diff.x)
-
-                    val radiusY = if (allPoints.size >= 3) {
-                        val p2 = allPoints[2]
-                        // Проекция p2 на перпендикулярную ось
-                        val p2Local = (p2 - center).rotate(-rotation)
-                        abs(p2Local.y)
-                    } else {
-                        radiusX * 0.5 // Превью второго радиуса
-                    }
-
-                    if (radiusX > 0 && radiusY > 0) {
-                        Ellipse(
-                            center = center,
-                            radiusX = radiusX,
-                            radiusY = radiusY,
-                            rotation = rotation,
-                            startAngle = 0.0,
-                            endAngle = PI * 2,
-                            outSide = true
-                        )
-                    } else null
-                } else null
+                SegmentUtils.createPathEllipse(allPoints)
             }
             Instruments.INSTRUMENT_BEZIER -> {
-                when (allPoints.size) {
-                    2 -> Segment(allPoints[0], allPoints[1])
-                    3 -> Curve(allPoints[0], allPoints[1], allPoints[2], allPoints[2])
-                    4 -> Curve(allPoints[0], allPoints[1], allPoints[2], allPoints[3])
-                    else -> null
-                }
+                SegmentUtils.createPathBezier(allPoints)
             }
             else -> null
         }
     }
+
+
 
     fun onRelease(point: Vec2, button: Int, scale: Float) {
         movingBlock = null
