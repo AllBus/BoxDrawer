@@ -22,4 +22,6 @@ object EmptyPath : PathElement {
     /** До пустого пути дистанция должна уходить в бесконечность*/
     override fun distance(point: Vec2): Double = 10e200
 
+    override val center: Vec2
+        get() = Vec2.Zero
 }

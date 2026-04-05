@@ -118,7 +118,7 @@ class SegmentsToolsData(val tools: ITools) {
             if (hovered != null) {
                 originalMatrix = hovered.matrix
                 // Центр фигуры для вращения/масштабирования
-                pivotPoint = hovered.element.pointAt(0.5).let {
+                pivotPoint = hovered.element.center.let {
                     if (hovered.matrix.isIdentity()) it else hovered.matrix.map(it)
                 }
             }

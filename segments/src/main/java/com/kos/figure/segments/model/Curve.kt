@@ -30,6 +30,8 @@ interface Curve : PathElement {
         )
     }
 
+    override val center: Vec2 get() = pointAt(0.5)
+
     /**
      * Creates a sub-Bezier curve from the current curve based on start and end offsets as percentages of the curve's length.
      *

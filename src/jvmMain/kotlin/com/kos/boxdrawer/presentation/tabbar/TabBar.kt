@@ -353,11 +353,11 @@ object BoxDrawerToolBar {
     const val TAB_TORTOISE = 1
     const val TAB_GRID = 2
     const val TAB_SOFT = 3
-    const val TAB_BEZIER = 4
+    const val TAB_SEGMENT = 4
     const val TAB_BUBLIK = 5
     const val TAB_REKA = 6
     const val TAB_DXF = 7
-    const val TAB_SEGMENT = 8
+    const val TAB_BEZIER = 8
     const val TAB_TOOLS = 9
     const val TAB_IMAGE = 10
     const val TAB_FORMULA = 11
@@ -368,11 +368,11 @@ object BoxDrawerToolBar {
             TabInfo(TAB_TORTOISE, Res.string.tabTortoise),
             TabInfo(TAB_GRID, Res.string.tabGrid),
             TabInfo(TAB_SOFT, Res.string.tabSoft),
-            TabInfo(TAB_BEZIER, Res.string.tabBezier),
+            TabInfo(TAB_SEGMENT, Res.string.tabSegment),
             TabInfo(TAB_BUBLIK, Res.string.tabTor),
             TabInfo(TAB_REKA, Res.string.tabReka),
             TabInfo(TAB_DXF, Res.string.tabDxf),
-            TabInfo(TAB_SEGMENT, Res.string.tabSegment),
+            TabInfo(TAB_BEZIER, Res.string.tabBezier),
             TabInfo(TAB_TOOLS, Res.string.tabSettings),
             TabInfo(TAB_IMAGE, Res.string.tabImage),
             TabInfo(TAB_FORMULA, Res.string.tabFormula),

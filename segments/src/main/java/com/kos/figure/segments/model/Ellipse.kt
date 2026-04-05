@@ -10,7 +10,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 interface Ellipse : PathElement {
-    val center: Vec2
+    override val center: Vec2
     val radiusX: Double
     val radiusY: Double
     val rotation: Double

@@ -7,7 +7,7 @@ import kotlin.math.PI
 import kotlin.math.abs
 
 interface Arc: PathElement {
-    val center: Vec2
+    override val center: Vec2
     val radius: Double
     val startAngle: Double
     val endAngle: Double

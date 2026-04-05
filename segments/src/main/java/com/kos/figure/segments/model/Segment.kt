@@ -43,6 +43,8 @@ interface Segment : PathElement {
         return Vec2.distance(point, projection)
     }
 
+    override val center get() = (start + end) / 2.0
+
     companion object {
         operator fun invoke(start: Vec2, end: Vec2): Segment {
             return SegmentImpl(start, end)

@@ -29,4 +29,6 @@ interface PathElement {
 
     val start: Vec2
     val end: Vec2
+
+    val center: Vec2
 }
