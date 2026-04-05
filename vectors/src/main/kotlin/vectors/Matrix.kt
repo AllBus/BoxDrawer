@@ -1,6 +1,7 @@
 package vectors
 
 import kotlin.math.PI
+import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -25,7 +26,7 @@ value class Matrix(
         return nm
     }
 
-    fun getInvert(): Matrix{
+    fun getInvert(): Matrix {
         val a00 = this[0, 0]
         val a01 = this[0, 1]
         val a02 = this[0, 2]
@@ -77,7 +78,7 @@ value class Matrix(
         res[3, 1] = ((a00 * b09 - a01 * b07 + a02 * b06) * invDet)
         res[3, 2] = ((-a30 * b03 + a31 * b01 - a32 * b00) * invDet)
         res[3, 3] = ((a20 * b03 - a21 * b01 + a22 * b00) * invDet)
-        return  res
+        return res
     }
 
     /**
@@ -390,6 +391,12 @@ value class Matrix(
 //        )
     }
 
+    operator fun times(m: Matrix): Matrix {
+        return this.copyWithTransform(m)
+    }
+
+
+
 
 
     companion object {
@@ -402,7 +409,7 @@ value class Matrix(
          */
         fun translate(tx: Double, ty: Double): Matrix = Matrix(
             floatArrayOf(
-                1f, 0f, 0f,0f,
+                1f, 0f, 0f, 0f,
                 0f, 1f, 0f, 0f,
                 0f, 0f, 1f, 0f,
                 tx.toFloat(), ty.toFloat(), 0f, 1f
@@ -445,5 +452,25 @@ value class Matrix(
             }
         }
         return true
+    }
+
+    fun rotation_matrix_to_euler(): Triple<Float, Float, Float> {
+        val R = this
+        val sy = kotlin.math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
+        val singular = sy < 1e-6
+
+        return if (!singular) {
+            Triple(
+                atan2(R[2, 1], R[2, 2]),
+                atan2(-R[2, 0], sy),
+                atan2(R[1, 0], R[0, 0])
+            )
+        } else {
+            Triple(
+                atan2(-R[1, 2], R[1, 1]),
+                atan2(-R[2, 0], sy),
+                0.0f
+            )
+        }
     }
 }

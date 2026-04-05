@@ -175,17 +175,16 @@ object SegmentUtils {
     }
 
     fun getBlockCenter(block: SegmentBlock): Vec2 {
-        return if (block.isGroup) {
+        val pt =  if (block.isGroup) {
             val childCenters = block.children.map {
-                val c = getBlockCenter(it)
-
-                if (it.matrix.isIdentity()) c else it.matrix.map(c)
+                getBlockCenter(it)
             }
             if (childCenters.isEmpty()) return Vec2.Zero
             Vec2(childCenters.map { it.x }.average(), childCenters.map { it.y }.average())
         } else {
             block.element.center
         }
+        return if (block.matrix.isIdentity()) pt else block.matrix.map(pt)
     }
 
     // 3. Обновляем дистанцию для поиска (hover)

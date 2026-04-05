@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.getSelectedText
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.DrawerViewModel
+import com.kos.boxdrawe.presentation.model.SegmentBlockGroup
 import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar
 import com.kos.boxdrawer.presentation.tabbar.TabBar
@@ -57,6 +58,8 @@ fun App(vm: State<DrawerViewModel>) {
     val figureList = remember(figures) {
         derivedStateOf { ImmutableList(FigureInfo.tree(figures.value)) }
     }
+
+    val blockList = vmv.blockList.collectAsState(SegmentBlockGroup(emptyList()))
     val images = vmv.images.collectAsState(ImageMap.EMPTY)
 
     val commands = vmv.helpInfoList.collectAsState(ImmutableList(emptyList()))
@@ -114,6 +117,7 @@ fun App(vm: State<DrawerViewModel>) {
                             figureList = figureList,
                             selectedItem = selectedItem,
                             commands = commands,
+                            blockList = blockList,
                             onRotateDisplay = remember(vmv) {
                                 {
                                     vmv.tortoise.rotate(

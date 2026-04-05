@@ -47,6 +47,7 @@ import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateInfo
 import turtoise.help.HelpInfoCommand
 import com.kos.boxdrawe.icons.InstrumentIcon.simBackground
+import com.kos.boxdrawe.presentation.model.SegmentBlockGroup
 import com.kos.compose.FigureInfo
 import com.kos.compose.ImmutableList
 
@@ -68,6 +69,7 @@ fun Editor(
     figureList: State<ImmutableList<FigureInfo>>,
     selectedItem: State<ImmutableList<FigureInfo>>,
     commands: State<ImmutableList<HelpInfoCommand>>,
+    blockList: State<SegmentBlockGroup>,
     onRotateDisplay: () -> Unit,
     onPickSelected: () -> String
 ) {
@@ -96,6 +98,7 @@ fun Editor(
             checkboxEditor,
             figureList,
             selectedItem,
+            blockList,
             vm
         )
     }
@@ -112,15 +115,16 @@ private fun BoxScope.FigureListContent(
     checkboxEditor: State<Boolean>,
     figureList: State<ImmutableList<FigureInfo>>,
     selectedItem: State<ImmutableList<FigureInfo>>,
+    blockList: State<SegmentBlockGroup>,
     vm: State<DrawerViewModel>
 ) {
     if ((tabIndex.value == BoxDrawerToolBar.TAB_BOX && view3d.value) || tabIndex.value == BoxDrawerToolBar.TAB_TORTOISE) {
-        val modifier = Modifier.Companion.align(Alignment.TopEnd).width(180.dp)
+        val modifier = Modifier.align(Alignment.TopEnd).width(180.dp)
         Rotate3dController(modifier, dropValueX, dropValueY, dropValueZ, onRotateDisplay)
     } else {
         //  var visible by remember { mutableStateOf(tabIndex.value == BoxDrawerToolBar.TAB_TOOLS && !checkboxEditor.value) }
         Row(
-            modifier = Modifier.Companion.align(Alignment.TopEnd).width(180.dp),
+            modifier = Modifier.align(Alignment.TopEnd).width(180.dp),
             horizontalArrangement = Arrangement.End
         ) {
 
@@ -140,7 +144,24 @@ private fun BoxScope.FigureListContent(
                 FigureListBox(figureList.value, selectedItem) { f ->
                     vm.value.setSelected(ImmutableList(listOf(f)))
                 }
+
             }
+            AnimatedVisibility(
+                tabIndex.value == BoxDrawerToolBar.TAB_SEGMENT
+                //tabIndex.value == BoxDrawerToolBar.TAB_SOFT
+                ,
+                enter = expandHorizontally(
+                    expandFrom = Alignment.Start
+                ),
+                exit = shrinkHorizontally(
+                    shrinkTowards = Alignment.Start
+                )
+            )
+            {
+                FigureSegmentBox(blockList)
+            }
+
+
 
         }
     }
@@ -162,7 +183,7 @@ private fun BoxScope.TemplateContent(
     when (tabIndex.value) {
         BoxDrawerToolBar.TAB_TORTOISE -> {
             Column(
-                Modifier.Companion.align(Alignment.TopStart).padding(8.dp)
+                Modifier.align(Alignment.TopStart).padding(8.dp)
             ) {
                 val state = rememberScrollState()
                 Box {
@@ -202,7 +223,7 @@ private fun BoxScope.TemplateContent(
 
         BoxDrawerToolBar.TAB_BOX -> {
             Column(
-                Modifier.Companion.align(Alignment.TopStart).padding(8.dp)
+                Modifier.align(Alignment.TopStart).padding(8.dp)
             ) {
                 Column(
                     modifier = Modifier.width(350.dp).padding(end = 4.dp).background(
@@ -218,7 +239,7 @@ private fun BoxScope.TemplateContent(
 
         BoxDrawerToolBar.TAB_TOOLS -> {
             Row(
-                modifier = Modifier.Companion.align(Alignment.TopStart)
+                modifier = Modifier.align(Alignment.TopStart)
             ) {
                 TemplateEditorBox(
                     menu = menu,

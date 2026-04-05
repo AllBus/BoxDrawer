@@ -33,6 +33,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kos.boxdrawe.presentation.model.SegmentBlock
+import com.kos.boxdrawe.presentation.model.SegmentBlockGroup
 import com.kos.boxdrawe.themes.ThemeColors
 import com.kos.compose.FigureInfo
 import com.kos.compose.ImmutableList
@@ -70,6 +72,77 @@ fun FigureListBox(
     }
 
 }
+
+@Composable
+fun FigureSegmentBox(
+    figure: State<SegmentBlockGroup>,
+) {
+    val scrollState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    Box {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            state = scrollState,
+            modifier = Modifier.padding(start = 1.dp).fillMaxSize()
+                .draggable(
+                    orientation = Orientation.Vertical,
+                    state = rememberDraggableState { delta ->
+                        coroutineScope.launch {
+                            scrollState.scrollBy(-delta)
+                        }
+                    },
+                )
+        ) {
+            SegmentItems(figure.value.blocks, onClick = {})
+        }
+        VerticalScrollbar(
+            adapter = rememberScrollbarAdapter(scrollState),
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+        )
+    }
+
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+private fun LazyListScope.SegmentItems(
+    figures: List<SegmentBlock>,
+    onClick: (SegmentBlock) -> Unit
+) {
+    items(figures) { figure ->
+        Column(
+            modifier = Modifier.background(
+                ThemeColors.figureListBackground, ThemeColors.figureListItemShape
+            )
+                .width(300.dp).onClick {
+                    onClick(figure)
+                }
+        ) {
+            Text(
+                modifier = Modifier.padding(4.dp),
+                text = figureText(figure),
+                maxLines = 3,
+                overflow = TextOverflow.Clip,
+                textAlign = TextAlign.End,
+                fontSize = 12.sp,
+                lineHeight = 13.sp,
+                color = if (figure.isGroup) ThemeColors.figureListTransformColor else ThemeColors.figureListTextColor
+            )
+//            Text(
+//                text = figure.transform.values.joinToString(" ")
+//            )
+//            Text(
+//                text = figure.figure.transform.values.joinToString(" "),
+//                color = Color.Yellow
+//            )
+        }
+    }
+}
+
+@Composable
+fun figureText(figure: SegmentBlock):String{
+    return "${figure.element.javaClass.simpleName} ${figure.matrix}"
+}
+
 
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyListScope.FigureItems(

@@ -2,10 +2,15 @@ package com.kos.boxdrawe.presentation
 
 import com.kos.boxdrawe.presentation.model.SegmentBlock
 import com.kos.boxdrawe.presentation.model.SegmentBlockGroup
-import com.kos.figure.FigureEmpty
-import com.kos.figure.IFigure
+import com.kos.boxdrawe.presentation.segments.SegmentUtils
+import com.kos.boxdrawe.presentation.segments.SegmentUtils.getBlockCenter
+import com.kos.boxdrawe.presentation.segments.SegmentUtils.getBlockDistance
+import com.kos.boxdrawe.presentation.segments.SegmentUtils.mapBlock
+import com.kos.figure.FigureCircle
 import com.kos.figure.collections.FigureList
 import com.kos.figure.composition.Figure3dTransform
+import com.kos.figure.composition.FigureColor
+import com.kos.figure.segments.model.EmptyPath
 import com.kos.figure.segments.model.PathElement
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,12 +20,6 @@ import kotlinx.coroutines.flow.mapLatest
 import vectors.Matrix
 import vectors.Vec2
 import kotlin.math.PI
-import com.kos.boxdrawe.presentation.segments.SegmentUtils
-import com.kos.boxdrawe.presentation.segments.SegmentUtils.getBlockCenter
-import com.kos.boxdrawe.presentation.segments.SegmentUtils.getBlockDistance
-import com.kos.boxdrawe.presentation.segments.SegmentUtils.mapBlock
-import com.kos.figure.composition.FigureColor
-import com.kos.figure.segments.model.EmptyPath
 
 class SegmentsToolsData(val tools: ITools) {
 
@@ -33,16 +32,31 @@ class SegmentsToolsData(val tools: ITools) {
     private val selectedBlocks = MutableStateFlow<List<SegmentBlock>>(emptyList())
 
 
-
     private val points = mutableListOf<Vec2>()
     private var isDrawing = false
 
     private var movingBlock: SegmentBlock? = null
     private var dragStartPoint: Vec2 = Vec2.Zero
     private var originalMatrix: Matrix = Matrix.identity
-    private var pivotPoint: Vec2 = Vec2.Zero
+    private var pivotPoint = Vec2.Zero
+    private var pivotPointState = MutableStateFlow<Vec2>(Vec2.Zero)
+//
+//    val moved = combine(
+//        previewElement,
+//        hoveredBlock,
+//        selectedBlocks,
+//        pivotPoint
+//    ){
+//
+//    }
 
-    val figures = combine(blocks, previewElement, hoveredBlock, selectedBlocks) { group, preview, hovered, selected ->
+    val figures = combine(
+        blocks,
+        previewElement,
+        hoveredBlock,
+        selectedBlocks,
+        pivotPointState
+    ) { group, preview, hovered, selected, pivotPoint ->
         val blockFigures = group.blocks.map { b ->
             val f = mapBlock(b)
             if (b in selected) {
@@ -50,21 +64,35 @@ class SegmentsToolsData(val tools: ITools) {
                 FigureColor(0xFF0000FF.toInt(), 1, f)
             } else f
         }
-        val previewFigure = FigureList( preview?.map { SegmentUtils.toFigure(it) }.orEmpty())
+        val previewFigure = FigureList(preview?.map { SegmentUtils.toFigure(it) }.orEmpty())
 
         // Подсвечиваем фигуру под курсором красным
         val highlightFigure = hovered?.let {
             if (it !in selected)
-                FigureColor(0xFFFF0000.toInt(), 2, mapBlock(it))
+                FigureColor(
+                    0xFFFF0000.toInt(), 2,
+                    FigureList(
+                        listOf(
+                            mapBlock(it),
+                            FigureCircle(
+                                pivotPoint,
+                                10.0,
+                                true
+                            )
+                        )
+                    )
+                )
             else null
         }
 
-        val list = FigureList(blockFigures + listOfNotNull(previewFigure, highlightFigure))
+
+        val list =
+            FigureList(blockFigures + listOfNotNull(previewFigure, highlightFigure))
 
         if (group.matrix.isIdentity()) {
             list
         } else {
-            Figure3dTransform(group.matrix, list)
+             Figure3dTransform(group.matrix, list)
         }
     }
 
@@ -119,15 +147,18 @@ class SegmentsToolsData(val tools: ITools) {
         }
 
         if (_instrument.value == Instruments.INSTRUMENT_MOVE ||
-                _instrument.value == Instruments.INSTRUMENT_ROTATE ||
-                _instrument.value == Instruments.INSTRUMENT_SCALE ) {
+            _instrument.value == Instruments.INSTRUMENT_ROTATE ||
+            _instrument.value == Instruments.INSTRUMENT_SCALE
+        ) {
 
             movingBlock = hovered
             dragStartPoint = point
             if (hovered != null) {
                 originalMatrix = hovered.matrix
                 // Центр фигуры для вращения/масштабирования
-                pivotPoint = getBlockCenter(hovered)
+                val c = getBlockCenter(hovered)
+                pivotPoint = c
+                pivotPointState.value = c
             }
             return
         }
@@ -140,8 +171,8 @@ class SegmentsToolsData(val tools: ITools) {
             Instruments.INSTRUMENT_CIRCLE -> 2
             Instruments.INSTRUMENT_ELLIPSE -> 3
             Instruments.INSTRUMENT_BEZIER -> 4
-            Instruments.INSTRUMENT_POLYGON ->3
-            Instruments.INSTRUMENT_RECTANGLE ->3
+            Instruments.INSTRUMENT_POLYGON -> 3
+            Instruments.INSTRUMENT_RECTANGLE -> 3
             else -> 0
         }
 
@@ -162,12 +193,15 @@ class SegmentsToolsData(val tools: ITools) {
                 Instruments.INSTRUMENT_MOVE -> {
                     moveElement(delta)
                 }
+
                 Instruments.INSTRUMENT_ROTATE -> {
                     rotateElement(point)
                 }
+
                 Instruments.INSTRUMENT_SCALE -> {
                     scaleElement(point)
                 }
+
                 else -> originalMatrix
             }
 
@@ -247,39 +281,44 @@ class SegmentsToolsData(val tools: ITools) {
             Instruments.INSTRUMENT_LINE -> {
                 listOfNotNull(SegmentUtils.createPathLine(allPoints))
             }
+
             Instruments.INSTRUMENT_CIRCLE -> {
                 listOfNotNull(SegmentUtils.createPathCircle(allPoints))
             }
+
             Instruments.INSTRUMENT_ELLIPSE -> {
                 listOfNotNull(SegmentUtils.createPathEllipse(allPoints))
             }
+
             Instruments.INSTRUMENT_BEZIER -> {
                 listOfNotNull(SegmentUtils.createPathBezier(allPoints))
             }
+
             Instruments.INSTRUMENT_RECTANGLE -> {
                 SegmentUtils.createPathRectangle(allPoints)
             }
+
             Instruments.INSTRUMENT_POLYGON -> {
                 SegmentUtils.createPathPolygon(allPoints)
             }
+
             else -> null
         }
     }
-
 
 
     fun onRelease(point: Vec2, button: Int, scale: Float) {
         movingBlock = null
     }
 
-    fun ungroup(block: SegmentBlock){
-        if (block.isGroup){
+    fun ungroup(block: SegmentBlock) {
+        if (block.isGroup) {
             val children = block.children
             val nw = children.map { child ->
                 child.copy(matrix = child.matrix.copyWithTransform(block.matrix))
             }
             blocks.value = SegmentBlockGroup(
-                blocks = blocks.value.blocks.filter { !it.isSame(block) }+nw
+                blocks = blocks.value.blocks.filter { !it.isSame(block) } + nw
             )
         }
     }

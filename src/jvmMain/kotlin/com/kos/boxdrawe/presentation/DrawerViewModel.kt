@@ -5,6 +5,7 @@ import com.kos.boxdrawe.presentation.ImageUtils.bufferedImageToImageBitmap
 import com.kos.boxdrawe.presentation.ImageUtils.collectImages
 import com.kos.boxdrawe.presentation.ImageUtils.formatOfData
 import com.kos.boxdrawe.presentation.ImageUtils.loadImageFromFile
+import com.kos.boxdrawe.presentation.model.SegmentBlockGroup
 import com.kos.boxdrawer.presentation.model.ImageMap
 import com.kos.boxdrawer.presentation.tabbar.BoxDrawerToolBar
 import com.kos.compose.FigureInfo
@@ -29,6 +30,7 @@ class DrawerViewModel {
 
     private val noneFigure = MutableStateFlow(FigureEmpty).asStateFlow()
     private val noneInstrument = MutableStateFlow(Instruments.NONE).asStateFlow()
+    private val noneBlocks = MutableStateFlow(SegmentBlockGroup(emptyList())).asStateFlow()
     private val _selectedItem = MutableStateFlow(ImmutableList<FigureInfo>(emptyList()))
 
     val tools = Tools()
@@ -68,6 +70,14 @@ class DrawerViewModel {
             BoxDrawerToolBar.TAB_DXF -> dxfData.instrumentState
             BoxDrawerToolBar.TAB_SEGMENT -> segmentData.instrumentState
             else -> noneInstrument
+        }
+    }
+
+    val blockList = tabIndex.flatMapLatest { tab ->
+        when (tab) {
+
+            BoxDrawerToolBar.TAB_SEGMENT -> segmentData.blocks
+            else -> noneBlocks
         }
     }
 
