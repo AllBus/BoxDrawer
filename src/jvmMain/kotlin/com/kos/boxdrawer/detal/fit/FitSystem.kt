@@ -7,14 +7,14 @@ object FitSystem {
     fun packRectangles(rectangles: List<Rectangle>): Rectangle {
         val sortedRectangles = rectangles.sortedByDescending { it.width * it.height }
         var boundingBox = Rectangle(0.0, 0.0)
-        val placements = mutableMapOf<Rectangle, vectors.Vec2>()
+        val placements = mutableMapOf<Rectangle, Vec2>()
 
         for (rect in sortedRectangles) {
-            var bestPosition = vectors.Vec2(0.0, 0.0)
+            var bestPosition = Vec2(0.0, 0.0)
             var bestBoundingBox = boundingBox// Try different positions along the existing bounding box edges
             for ((placedRect, placedPos) in placements) {
-                val rightPos = vectors.Vec2(placedPos.x + placedRect.width, placedPos.y)
-                val topPos = vectors.Vec2(placedPos.x, placedPos.y + placedRect.height)
+                val rightPos = Vec2(placedPos.x + placedRect.width, placedPos.y)
+                val topPos = Vec2(placedPos.x, placedPos.y + placedRect.height)
 
                 // Check if rectangle fits without overlap and update bounding box
                 if (fits(rect, rightPos, placements) &&
@@ -39,17 +39,17 @@ object FitSystem {
     fun packRectanglesBFD(rectangles: List<Rectangle>): Rectangle {
         val sortedRectangles = rectangles.sortedByDescending { it.width * it.height }
         var boundingBox= Rectangle(0.0, 0.0)
-        val placements = mutableMapOf<Rectangle, vectors.Vec2>()
+        val placements = mutableMapOf<Rectangle, Vec2>()
 
         for (rect in sortedRectangles) {
-            var bestPosition = vectors.Vec2(0.0, 0.0)
+            var bestPosition = Vec2(0.0, 0.0)
             var bestBoundingBox = boundingBox
             var minWastedArea = Double.MAX_VALUE
 
             // Try different positions based on existing placements
             for ((placedRect, placedPos) in placements) {
-                val rightPos = vectors.Vec2(placedPos.x + placedRect.width, placedPos.y)
-                val topPos = vectors.Vec2(placedPos.x, placedPos.y + placedRect.height)
+                val rightPos = Vec2(placedPos.x + placedRect.width, placedPos.y)
+                val topPos = Vec2(placedPos.x, placedPos.y + placedRect.height)
 
                 if (fits(rect, rightPos, placements)) {
                     val newBoundingBox = boundingBox(placements + (rect to rightPos))
@@ -74,7 +74,7 @@ object FitSystem {
 
             // If no fit is found, expand the bounding box
             if (minWastedArea == Double.MAX_VALUE) {
-                bestPosition = vectors.Vec2(boundingBox.width, 0.0) // Place to the right
+                bestPosition = Vec2(boundingBox.width, 0.0) // Place to the right
                 bestBoundingBox = Rectangle(boundingBox.width + rect.width, maxOf(boundingBox.height, rect.height))
             }
 
@@ -86,7 +86,7 @@ object FitSystem {
     }
 
     // Checks if a rectangle at a given position overlaps with any other placed rectangle
-    fun fits(rect: Rectangle, position: vectors.Vec2, placements: Map<Rectangle, vectors.Vec2>): Boolean {
+    fun fits(rect: Rectangle, position: Vec2, placements: Map<Rectangle, Vec2>): Boolean {
         val rectToCheck = Rectangle4(position.x, position.y, rect.width, rect.height)
         for ((placedRect, placedPos) in placements) {
             val placedRectToCheck = Rectangle4(placedPos.x, placedPos.y, placedRect.width, placedRect.height)
@@ -98,7 +98,7 @@ object FitSystem {
     }
 
     // Calculates the bounding box that encloses all placed rectangles
-    fun boundingBox(placements: Map<Rectangle, vectors.Vec2>): Rectangle {
+    fun boundingBox(placements: Map<Rectangle, Vec2>): Rectangle {
         if (placements.isEmpty()) {
             return Rectangle(0.0, 0.0)
         }
