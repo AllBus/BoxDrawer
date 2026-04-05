@@ -15,6 +15,7 @@ object Instruments {
     const val INSTRUMENT_MOVE = 12
     const val INSTRUMENT_ROTATE = 13
     const val INSTRUMENT_SCALE = 14
+    const val INSTRUMENT_GROUP = 15
     const val INSTRUMENT_NONE = 0
 
     val NONE = InstrumentState(INSTRUMENT_NONE)

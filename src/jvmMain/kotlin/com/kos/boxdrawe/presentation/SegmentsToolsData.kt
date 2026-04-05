@@ -23,6 +23,11 @@ import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
 import com.kos.boxdrawe.presentation.segments.SegmentUtils
+import com.kos.boxdrawe.presentation.segments.SegmentUtils.getBlockCenter
+import com.kos.boxdrawe.presentation.segments.SegmentUtils.getBlockDistance
+import com.kos.boxdrawe.presentation.segments.SegmentUtils.mapBlock
+import com.kos.figure.composition.FigureColor
+import com.kos.figure.segments.model.EmptyPath
 
 class SegmentsToolsData(val tools: ITools) {
 
@@ -32,6 +37,9 @@ class SegmentsToolsData(val tools: ITools) {
     val blocks = MutableStateFlow<SegmentBlockGroup>(SegmentBlockGroup(emptyList()))
     private val previewElement = MutableStateFlow<PathElement?>(null)
     private val hoveredBlock = MutableStateFlow<SegmentBlock?>(null)
+    private val selectedBlocks = MutableStateFlow<List<SegmentBlock>>(emptyList())
+
+
 
     private val points = mutableListOf<Vec2>()
     private var isDrawing = false
@@ -41,39 +49,29 @@ class SegmentsToolsData(val tools: ITools) {
     private var originalMatrix: Matrix = Matrix.identity
     private var pivotPoint: Vec2 = Vec2.Zero
 
-    val figures = combine(blocks, previewElement, hoveredBlock) { group, preview, hovered ->
-        val blockFigures = group.blocks.map { b -> mapBlock(b) }
-        val previewFigure = preview?.let { toFigure(it) }
+    val figures = combine(blocks, previewElement, hoveredBlock, selectedBlocks) { group, preview, hovered, selected ->
+        val blockFigures = group.blocks.map { b ->
+            val f = mapBlock(b)
+            if (b in selected) {
+                // Выделяем выбранные блоки синим цветом
+                FigureColor(0xFF0000FF.toInt(), 1, f)
+            } else f
+        }
+        val previewFigure = preview?.let { SegmentUtils.toFigure(it) }
 
-        // Подсвечиваем ближайшую фигуру, если она найдена
+        // Подсвечиваем фигуру под курсором красным
         val highlightFigure = hovered?.let {
-            com.kos.figure.composition.FigureColor(0xFFFF0000.toInt(), 1, mapBlock(it))
+            if (it !in selected)
+                FigureColor(0xFFFF0000.toInt(), 2, mapBlock(it))
+            else null
         }
 
         val list = FigureList(blockFigures + listOfNotNull(previewFigure, highlightFigure))
+
         if (group.matrix.isIdentity()) {
             list
         } else {
             Figure3dTransform(group.matrix, list)
-        }
-    }
-
-    private fun toFigure(segment: PathElement): IFigure {
-        return when (segment) {
-            is Segment -> segment.toFigure()
-            is Arc -> segment.toFigure()
-            is Curve -> segment.toFigure()
-            is Ellipse -> segment.toFigure()
-            else -> FigureEmpty
-        }
-    }
-
-    private fun mapBlock(block: SegmentBlock): IFigure {
-        val f = toFigure(block.element)
-        return if (block.matrix.isIdentity()) {
-            f
-        } else {
-            Figure3dTransform(block.matrix, f)
         }
     }
 
@@ -103,18 +101,33 @@ class SegmentsToolsData(val tools: ITools) {
 
         val hovered = hoveredBlock.value
 
+        if (_instrument.value == Instruments.INSTRUMENT_GROUP) {
+            if (hovered != null) {
+                if (hovered in selectedBlocks.value) {
+                    // Если кликнули по уже выбранному — группируем
+                    groupSelected(selectedBlocks.value)
+                    selectedBlocks.value = emptyList()
+                } else {
+                    // Добавляем в список выбора
+                    selectedBlocks.value = selectedBlocks.value + hovered
+                }
+            } else {
+                // Клик по пустому месту — сброс
+                selectedBlocks.value = emptyList()
+            }
+            return
+        }
+
         if (_instrument.value == Instruments.INSTRUMENT_MOVE ||
-                    _instrument.value == Instruments.INSTRUMENT_ROTATE ||
-                    _instrument.value == Instruments.INSTRUMENT_SCALE ) {
+                _instrument.value == Instruments.INSTRUMENT_ROTATE ||
+                _instrument.value == Instruments.INSTRUMENT_SCALE ) {
 
             movingBlock = hovered
             dragStartPoint = point
             if (hovered != null) {
                 originalMatrix = hovered.matrix
                 // Центр фигуры для вращения/масштабирования
-                pivotPoint = hovered.element.center.let {
-                    if (hovered.matrix.isIdentity()) it else hovered.matrix.map(it)
-                }
+                pivotPoint = getBlockCenter(hovered)
             }
             return
         }
@@ -179,9 +192,7 @@ class SegmentsToolsData(val tools: ITools) {
         var nearest: SegmentBlock? = null
 
         blocks.value.blocks.forEach { block ->
-            val localPoint =
-                if (block.matrix.isIdentity()) point else block.matrix.getInvert().map(point)
-            val dist = block.element.distance(localPoint)
+            val dist = getBlockDistance(block, point)
             if (dist < minDistance && dist < threshold) {
                 minDistance = dist
                 nearest = block
@@ -243,5 +254,20 @@ class SegmentsToolsData(val tools: ITools) {
 
     fun onRelease(point: Vec2, button: Int, scale: Float) {
         movingBlock = null
+    }
+
+    fun groupSelected(selected: List<SegmentBlock>) {
+        if (selected.size < 2) return
+
+        // Создаем группу. В качестве element можно передать EmptyPath,
+        // так как вся геометрия теперь в children.
+        val newGroup = SegmentBlock(
+            element = EmptyPath,
+            children = selected
+        )
+
+        blocks.value = SegmentBlockGroup(
+            blocks = blocks.value.blocks.filter { it !in selected } + newGroup
+        )
     }
 }

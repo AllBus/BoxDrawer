@@ -1,5 +1,11 @@
 package com.kos.boxdrawe.presentation.segments
 
+import com.kos.boxdrawe.presentation.model.SegmentBlock
+import com.kos.figure.FigureEmpty
+import com.kos.figure.IFigure
+import com.kos.figure.collections.FigureList
+import com.kos.figure.complex.transform.toFigure
+import com.kos.figure.composition.Figure3dTransform
 import com.kos.figure.segments.model.Arc
 import com.kos.figure.segments.model.Arc.Companion.invoke
 import com.kos.figure.segments.model.Curve
@@ -10,6 +16,7 @@ import com.kos.figure.segments.model.PathElement
 import com.kos.figure.segments.model.Segment
 import com.kos.figure.segments.model.Segment.Companion.invoke
 import vectors.Vec2
+import kotlin.invoke
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -77,4 +84,52 @@ object SegmentUtils {
             )
         } else null
     } else null
+
+
+    fun toFigure(segment: PathElement): IFigure {
+        return when (segment) {
+            is Segment -> segment.toFigure()
+            is Arc -> segment.toFigure()
+            is Curve -> segment.toFigure()
+            is Ellipse -> segment.toFigure()
+            else -> FigureEmpty
+        }
+    }
+
+    fun mapBlock(block: SegmentBlock): IFigure {
+        val baseFigure = if (block.isGroup) {
+            FigureList(block.children.map { mapBlock(it) })
+        } else {
+            toFigure(block.element)
+        }
+
+        return if (block.matrix.isIdentity()) {
+            baseFigure
+        } else {
+            Figure3dTransform(block.matrix, baseFigure)
+        }
+    }
+
+    fun getBlockCenter(block: SegmentBlock): Vec2 {
+        return if (block.isGroup) {
+            val childCenters = block.children.map {
+                val c = getBlockCenter(it)
+
+                if (it.matrix.isIdentity()) c else it.matrix.map(c)
+            }
+            Vec2(childCenters.map { it.x }.average(), childCenters.map { it.y }.average())
+        } else {
+            block.element.center
+        }
+    }
+
+    // 3. Обновляем дистанцию для поиска (hover)
+    fun getBlockDistance(block: SegmentBlock, point: Vec2): Double {
+        val localPoint = if (block.matrix.isIdentity()) point else block.matrix.getInvert().map(point)
+        return if (block.isGroup) {
+            block.children.minOfOrNull { getBlockDistance(it, localPoint) } ?: Double.MAX_VALUE
+        } else {
+            block.element.distance(localPoint)
+        }
+    }
 }

@@ -97,5 +97,11 @@ fun DrawInstrumentIcon(instrument:Int){
                 contentDescription = "Scale"
             )
         }
+        Instruments.INSTRUMENT_GROUP -> {
+            Icon(
+                imageVector = InstrumentIcon.rememberPointerGroup(),
+                contentDescription = "Group"
+            )
+        }
     }
 }

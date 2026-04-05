@@ -514,4 +514,51 @@ object InstrumentIcon {
         }
     }
 
+    @Composable
+    fun rememberPointerGroup(): ImageVector {
+        return remember {
+            ImageVector.Builder(
+                name = "group",
+                defaultWidth = 24.dp,
+                defaultHeight = 24.dp,
+                viewportWidth = 24.0f,
+                viewportHeight = 24.0f
+            ).apply {
+                materialPath {
+                    // Первый объект (квадрат)
+                    moveTo(7f, 7f)
+                    horizontalLineToRelative(6f)
+                    verticalLineToRelative(6f)
+                    horizontalLineToRelative(-6f)
+                    close()
+
+                    // Второй объект (квадрат)
+                    moveTo(11f, 11f)
+                    horizontalLineToRelative(6f)
+                    verticalLineToRelative(6f)
+                    horizontalLineToRelative(-6f)
+                    close()
+
+                    // Уголки "группирующей" рамки
+                    // Верхний левый
+                    moveTo(4f, 4f)
+                    horizontalLineToRelative(6f)
+                    verticalLineToRelative(2f)
+                    horizontalLineToRelative(-4f)
+                    verticalLineToRelative(4f)
+                    horizontalLineTo(4f)
+                    close()
+
+                    // Нижний правый
+                    moveTo(20f, 20f)
+                    horizontalLineToRelative(-6f)
+                    verticalLineToRelative(-2f)
+                    horizontalLineToRelative(4f)
+                    verticalLineToRelative(-4f)
+                    horizontalLineToRelative(2f)
+                    close()
+                }
+            }.build()
+        }
+    }
 }
