@@ -16,6 +16,8 @@ import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 object SegmentUtils {
     fun createPathLine(allPoints: List<Vec2>): Segment? =
@@ -106,13 +108,44 @@ object SegmentUtils {
         val pt3 = p1 + vWidth + vHeight
         val pt4 = p1 + vHeight
 
-        val segments = listOf(
+        return listOf(
             Segment(pt1, pt2),
             Segment(pt2, pt3),
             Segment(pt3, pt4),
             Segment(pt4, pt1)
         )
+    }
 
+    fun createPathPolygon(allPoints: List<Vec2>): List<PathElement>? {
+        if (allPoints.size < 2) return null
+
+        val center = allPoints[0]
+        val p1 = allPoints[1]
+        val diff = p1 - center
+        val radius = diff.magnitude
+        val rotation = diff.angle
+
+        val sides = if (allPoints.size >= 3) {
+            val p3 = allPoints[2]
+            val p3Local = (p3 - center).rotate(-rotation)
+            val d = p3Local.magnitude
+            if (d > 0) {
+                 (p3Local.angle / (2 * PI) * 100).toInt().coerceIn(3, 100)
+            } else 6
+        } else {
+            6
+        }
+
+        val pts = mutableListOf<Vec2>()
+        for (i in 0 until sides) {
+            val angle = rotation + i * 2 * PI / sides
+            pts.add(center + Vec2(radius * cos(angle), radius * sin(angle)))
+        }
+
+        val segments = mutableListOf<PathElement>()
+        for (i in 0 until sides) {
+            segments.add(Segment(pts[i], pts[(i + 1) % sides]))
+        }
         return segments
     }
 

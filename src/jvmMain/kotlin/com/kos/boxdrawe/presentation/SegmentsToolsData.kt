@@ -133,6 +133,7 @@ class SegmentsToolsData(val tools: ITools) {
             Instruments.INSTRUMENT_CIRCLE -> 2
             Instruments.INSTRUMENT_ELLIPSE -> 3
             Instruments.INSTRUMENT_BEZIER -> 4
+            Instruments.INSTRUMENT_POLYGON ->3
             Instruments.INSTRUMENT_RECTANGLE ->3
             else -> 0
         }
@@ -250,6 +251,9 @@ class SegmentsToolsData(val tools: ITools) {
             }
             Instruments.INSTRUMENT_RECTANGLE -> {
                 SegmentUtils.createPathRectangle(allPoints)
+            }
+            Instruments.INSTRUMENT_POLYGON -> {
+                SegmentUtils.createPathPolygon(allPoints)
             }
             else -> null
         }
