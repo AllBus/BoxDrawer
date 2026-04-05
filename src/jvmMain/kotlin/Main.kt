@@ -9,6 +9,7 @@ import com.kos.ariphmetica.Calculator
 import com.kos.boxdrawe.presentation.DrawerViewModel
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.app_name
+import com.kos.boxdrawer.generated.resources.robot
 import com.kos.boxdrawer.presentation.App
 import com.kos.example.Loading
 import com.kos.example.Result
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import java.io.File
 import java.math.BigDecimal
@@ -104,7 +106,7 @@ fun main(args: Array<String>) {
                 model.value.saveState()
                 exitApplication()
             },
-            icon = painterResource( "drawable/robot.ico"),
+            icon = painterResource(Res.drawable.robot),
             title = stringResource(Res.string.app_name),
         ) {
             LaunchedEffect(model.value) {
