@@ -25,7 +25,9 @@ data class FigureBlock(
     override fun draw(g: IFigureGraphics) {
         // Если графика поддерживает матрицы, можно пушить состояние
         // Но обычно в вашей системе за это отвечает IFigure.path(matrix)
-        figure.draw(g)
+        g.transform(matrix) {
+            figure.draw(g)
+        }
     }
 
     // Переопределяем методы, чтобы учитывать вложенность, если это необходимо

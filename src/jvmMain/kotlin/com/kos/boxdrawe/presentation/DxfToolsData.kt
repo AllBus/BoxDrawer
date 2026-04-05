@@ -202,7 +202,7 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
     fun appendFigure() {
         val ev = editFigure.value
         val v = currentFigure.value
-        if (ev == FigureEmpty)
+        if (ev == FigureEmpty || ev == FigureBlock.Empty)
             return
 
         recalcIntersectPoints(intersectPoint.value, v, ev)
