@@ -47,7 +47,7 @@ class TortoiseFigureExtractor(
         block: TortoiseBlock,
         state: TortoiseState,
     ): List<IFigure> {
-        return runner.tortoise.draw(
+        return runner.draw(
             commands = block,
             state = state,
             figureExtractor = this

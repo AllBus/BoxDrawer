@@ -11,7 +11,7 @@ import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_INT
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_TEXT
-import turtoise.SplashMap
+import turtoise.parser.SplashMap
 import turtoise.TortoiseCommand
 import turtoise.parser.TPArg
 import turtoise.parser.TortoiseParser

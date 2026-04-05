@@ -16,10 +16,8 @@ import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
 import turtoise.memory.TortoiseMemory
-import turtoise.memory.keys.MemoryKey
 import turtoise.parser.TPArg
 import turtoise.parser.TortoiseParserStackBlock
-import vectors.Vec2
 import kotlin.math.abs
 
 open class SplashApproximation : ISplashDetail {
@@ -303,7 +301,7 @@ open class SplashApproximation : ISplashDetail {
                     val v = t.substring(0, ti)
                     val n = t.substring(ti + 1)
                     val n2 = if (n.startsWith("@")){
-                        "${memory.value(MemoryKey(n.drop(1)), 0.0)}"
+                        "${memory.value(turtoise.memory.keys.MemoryKey(n.drop(1)), 0.0)}"
                     } else
                         n
                     parse(v) to parse(n2)

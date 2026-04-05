@@ -8,7 +8,6 @@ import com.kos.figure.collections.toFigure
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
 import turtoise.parser.TPArg
-import vectors.Vec2
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor

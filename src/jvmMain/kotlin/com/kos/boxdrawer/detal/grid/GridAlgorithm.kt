@@ -17,7 +17,6 @@ import turtoise.TortoiseBlock
 import turtoise.TortoiseFigureExtractor
 import turtoise.TortoiseState
 import turtoise.parser.TortoiseParserStackItem
-import vectors.Vec2
 import kotlin.math.abs
 import kotlin.math.max
 

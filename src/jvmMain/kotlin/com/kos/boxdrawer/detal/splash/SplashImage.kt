@@ -7,7 +7,6 @@ import turtoise.TortoiseCommand
 import turtoise.TortoiseFigureExtractor
 import turtoise.help.HelpData
 import turtoise.parser.TPArg
-import vectors.Vec2
 
 class SplashImage: ISplashDetail {
     override val names: List<String>

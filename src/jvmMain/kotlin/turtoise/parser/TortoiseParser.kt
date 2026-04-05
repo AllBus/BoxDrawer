@@ -32,25 +32,7 @@ import java.util.Stack
 
 object TortoiseParser {
 
-    private val sep = charArrayOf(' ', '\t', ';', '\n')
-
-    fun closeBrace(brace: Char): Char {
-        return when (brace) {
-            ')' -> '('
-            ']' -> '['
-            '}' -> '{'
-            '>' -> '<'
-            '<' -> '>'
-            '(' -> ')'
-            '[' -> ']'
-            '{' -> '}'
-            '"' -> '"'
-            '\'' -> '\''
-            '/' -> '/'
-            '\\' -> '\\'
-            else -> ' '
-        }
-    }
+    fun closeBrace(brace: Char): Char = TortoiseParserUtils.closeBrace(brace)
 
     val th = TortoiseHelpInfo()
     val helpers = listOf<IHelpInfo>(
@@ -429,7 +411,7 @@ object TortoiseParser {
             Color(0xFF3E2723)  // уровень 5+ — тёмно-коричневый
         )
         val stack = mutableListOf<Char>()
-        val splashKeys = turtoise.SplashMap.splashes.keys
+        val splashKeys = SplashMap.splashes.keys
         while (i < line.length) {
             val c = line[i]
             when {

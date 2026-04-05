@@ -100,7 +100,7 @@ class TemplateFigureEditor(val insertText: (String) -> Unit, val toNextPosition:
             com + buildText(form, memory, "") //buildCommand(creator, ::command, prefix)
         } else {
             val args = selectData.params.map { p ->
-                command(prefix, MemoryKey("@" + p.name))
+                command(prefix, turtoise.memory.keys.MemoryKey("@" + p.name))
             }
             args.joinToString(" ", "$com ")
         }

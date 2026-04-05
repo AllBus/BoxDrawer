@@ -20,7 +20,6 @@ import com.kos.figure.composition.FigureColor
 import kotlinx.coroutines.flow.MutableStateFlow
 import turtoise.DrawerSettings
 import com.kos.tortoise.ZigzagInfo
-import vectors.Vec2
 
 @Stable
 class BoxData(override val tools: ITools): SaveFigure, PrintCode {

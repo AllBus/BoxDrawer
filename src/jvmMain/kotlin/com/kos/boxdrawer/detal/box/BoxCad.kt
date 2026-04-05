@@ -909,7 +909,7 @@ object BoxCad {
         inter: List<Polka>,
         resultMap: MutableMap<Int, MutableList<IFigure>>
     ) {
-        val runner = TortoiseRunner(TortoiseProgram(emptyList(), emptyMap()))
+        val runner = TortoiseRunnerSimple(TortoiseProgram(emptyList(), emptyMap()))
         val state = TortoiseState()
         polka.programs?.forEach { program ->
             val alg = TortoiseParser.extractTortoiseCommands(program.algorithm).second

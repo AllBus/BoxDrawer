@@ -13,15 +13,12 @@ import com.kos.boxdrawe.presentation.template.TemplateMoveListener
 import com.kos.figure.FigureEmpty
 import com.kos.figure.IFigure
 import kotlinx.coroutines.flow.MutableStateFlow
-import sun.awt.geom.AreaOp.IntOp
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
+import turtoise.TortoiseRunnerSimple
 import turtoise.TortoiseState
 import turtoise.parser.TortoiseParser
-import java.awt.geom.Area
-import java.awt.geom.Path2D
 import java.io.File
-import kotlin.math.min
 
 @Stable
 class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
@@ -128,7 +125,7 @@ class TortoiseData(override val tools: ITools) : SaveFigure, SavableData {
 
     private fun create(lines: String): IFigure {
         val program = tortoiseProgram(lines)
-        val t = TortoiseRunner(program)
+        val t = TortoiseRunnerSimple(program)
         val state = TortoiseState()
         val dr = t.draw(state, tools.ds())
         return dr

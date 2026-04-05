@@ -50,7 +50,7 @@ class TortoiseParserStackBlock(
         get() = inner.joinToString(" ") { it.line }
 
     fun closeBrace(): Char {
-        return TortoiseParser.closeBrace(skobka)
+        return TortoiseParserUtils.closeBrace(skobka)
     }
 
     fun add(argument: String) {
@@ -70,11 +70,14 @@ class TortoiseParserStackBlock(
     }
 
     fun add(name: String, argument: String) {
-        add(TortoiseParserStackBlock(MemoryKey(name), MemoryKey(argument)))
+        add(TortoiseParserStackBlock(
+            turtoise.memory.keys.MemoryKey(name),
+            turtoise.memory.keys.MemoryKey(argument)
+        ))
     }
 
     fun add(name: String, argument: MemoryKey) {
-        add(TortoiseParserStackBlock(MemoryKey(name), argument))
+        add(TortoiseParserStackBlock(turtoise.memory.keys.MemoryKey(name), argument))
     }
 
     fun add(arguments: List<String>) {

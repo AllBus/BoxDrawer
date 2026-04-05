@@ -5,8 +5,6 @@ import com.kos.boxdrawer.template.TemplateMemory
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
 
-
-
 class TemplateAlgorithm(
     name: String,
     line: TortoiseParserStackItem,
@@ -38,5 +36,3 @@ class TemplateAlgorithm(
     }
 
 }
-
-

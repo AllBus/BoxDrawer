@@ -6,7 +6,6 @@ import com.kos.ariphmetica.math.algorithms.OutExpression
 import com.kos.ariphmetica.math.algorithms.Replacement
 import com.kos.ariphmetica.math.terms.MathTerm
 import turtoise.memory.TortoiseMemory
-import turtoise.memory.keys.MemoryKey
 
 object FormulaUtils {
 
@@ -60,7 +59,7 @@ object FormulaUtils {
                     val v = t.substring(0, ti)
                     val n = t.substring(ti + 1)
                     val n2 = if (n.startsWith("@")){
-                        "${memory.value(MemoryKey(n.drop(1)), 0.0)}"
+                        "${memory.value(turtoise.memory.keys.MemoryKey(n.drop(1)), 0.0)}"
                     } else
                         n
                     parse(v) to parse(n2)

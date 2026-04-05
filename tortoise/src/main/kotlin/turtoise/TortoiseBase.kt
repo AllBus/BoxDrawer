@@ -1,7 +1,5 @@
 package turtoise
 
-import androidx.compose.ui.graphics.Matrix
-import androidx.compose.ui.graphics.isIdentity
 import com.kos.figure.FigureCircle
 import com.kos.figure.FigureEllipse
 import com.kos.figure.FigureEmpty
@@ -18,6 +16,7 @@ import turtoise.memory.keys.MemoryKey
 import turtoise.memory.keys.MemoryKey.Companion.orEmpty
 import turtoise.parser.TortoiseParserStackBlock
 import turtoise.parser.TortoiseParserStackItem
+import vectors.Matrix
 import vectors.Vec2
 import kotlin.math.PI
 import kotlin.math.abs
@@ -57,10 +56,10 @@ abstract class TortoiseBase {
             val width = com[d, 0.0, memory]
             val height = com[d + 1, width, memory]
             if (d > 0) {
-                c2 += vectors.Vec2(width / 2, 0.0).rotate(angle)
+                c2 += Vec2(width / 2, 0.0).rotate(angle)
             }
             builder.add(rectangle(width, height, c2, angle))
-            c2 += vectors.Vec2(width / 2, 0.0).rotate(angle)
+            c2 += Vec2(width / 2, 0.0).rotate(angle)
         }
     }
 
@@ -78,20 +77,20 @@ abstract class TortoiseBase {
 
             val startWidth = com[0, 0.0, memory]
             val startHeight = com[1, startWidth, memory]
-            val points = mutableListOf<vectors.Vec2>()
-            val endPoints = mutableListOf<vectors.Vec2>()
+            val points = mutableListOf<Vec2>()
+            val endPoints = mutableListOf<Vec2>()
 
-            val c2 = builder.xy + vectors.Vec2(0.0, 0.0)
+            val c2 = builder.xy + Vec2(0.0, 0.0)
             var xp = 0.0 //startWidth/2
 
             for (d in 0 until com.size step 2) {
                 val width = com[d, 0.0, memory]
                 val height = com[d + 1, width, memory]
-                points.add(vectors.Vec2(xp, -height / 2))
-                endPoints.add(vectors.Vec2(xp, height / 2))
+                points.add(Vec2(xp, -height / 2))
+                endPoints.add(Vec2(xp, height / 2))
                 xp += width
-                points.add(vectors.Vec2(xp, -height / 2))
-                endPoints.add(vectors.Vec2(xp, height / 2))
+                points.add(Vec2(xp, -height / 2))
+                endPoints.add(Vec2(xp, height / 2))
             }
             endPoints.reverse()
             builder.add(
@@ -131,17 +130,17 @@ abstract class TortoiseBase {
                 val r = a.getBlockAtName("r")
                 val s = a.getBlockAtName("s")
                 val m = (a.getBlockAtName("m")?.let { item ->
-                    vectors.Vec2(
+                    Vec2(
                         memory.value(item.get(1).orEmpty(), 0.0),
                         memory.value(item.get(2).orEmpty(), 0.0),
                     )
-                } ?: vectors.Vec2.Zero)
+                } ?: Vec2.Zero)
 
                 val columns = memory.value(c?.get(1).orEmpty(), 1.0).toInt()
                 val rows = memory.value(r?.get(1).orEmpty(), 1.0).toInt()
                 val scaleX = memory.value(s?.get(1).orEmpty(), 1.0)
                 val scaleY = memory.value(s?.get(2).orEmpty(), scaleX)
-                val distance = vectors.Vec2(
+                val distance = Vec2(
                     memory.value(c?.get(2).orEmpty(), 1.0),
                     memory.value(r?.get(2).orEmpty(), 1.0),
                 )
@@ -190,7 +189,7 @@ abstract class TortoiseBase {
             g
         else
             Figure3dTransform(
-                vectors.Matrix(mf.values),
+                Matrix(mf.values),
                 g
             )
 
@@ -201,17 +200,17 @@ abstract class TortoiseBase {
                 val r = a.getBlockAtName("r")
                 val s = a.getBlockAtName("s")
                 val m = (a.getBlockAtName("m")?.let { item ->
-                    vectors.Vec2(
+                    Vec2(
                         memory.value(item.get(1).orEmpty(), 0.0),
                         memory.value(item.get(2).orEmpty(), 0.0),
                     )
-                } ?: vectors.Vec2.Zero)
+                } ?: Vec2.Zero)
 
                 val columns = memory.value(c?.get(1).orEmpty(), 1.0).toInt()
                 val rows = memory.value(r?.get(1).orEmpty(), 1.0).toInt()
                 val scaleX = memory.value(s?.get(1).orEmpty(), 1.0)
                 val scaleY = memory.value(s?.get(2).orEmpty(), scaleX)
-                val distance = vectors.Vec2(
+                val distance = Vec2(
                     memory.value(c?.get(2).orEmpty(), 1.0),
                     memory.value(r?.get(2).orEmpty(), 1.0),
                 )
@@ -272,10 +271,10 @@ abstract class TortoiseBase {
         )
         val vv = PI - if (v.isFinite()) v else 0.0
 
-        val points = listOf<vectors.Vec2>(
+        val points = listOf<Vec2>(
             c2,
-            c2 + vectors.Vec2(aa, 0.0).rotate(angle),
-            c2 + vectors.Vec2(aa + bb * cos(vv), bb * sin(vv)).rotate(angle),
+            c2 + Vec2(aa, 0.0).rotate(angle),
+            c2 + Vec2(aa + bb * cos(vv), bb * sin(vv)).rotate(angle),
         )
 
         builder.add(FigurePolyline(points, true))
@@ -284,18 +283,18 @@ abstract class TortoiseBase {
     protected fun rectangle(
         width: Double,
         height: Double,
-        c2: vectors.Vec2,
+        c2: Vec2,
         angle: Double,
     ): IFigure {
         val width2 = width / 2
         val height2 = height / 2
 
-        val points = listOf<vectors.Vec2>(
-            c2 + vectors.Vec2(-width2, -height2).rotate(angle),
-            c2 + vectors.Vec2(width2, -height2).rotate(angle),
-            c2 + vectors.Vec2(width2, height2).rotate(angle),
-            c2 + vectors.Vec2(-width2, height2).rotate(angle),
-            c2 + vectors.Vec2(-width2, -height2).rotate(angle),
+        val points = listOf<Vec2>(
+            c2 + Vec2(-width2, -height2).rotate(angle),
+            c2 + Vec2(width2, -height2).rotate(angle),
+            c2 + Vec2(width2, height2).rotate(angle),
+            c2 + Vec2(-width2, height2).rotate(angle),
+            c2 + Vec2(-width2, -height2).rotate(angle),
         )
 
         return FigurePolyline(points)
@@ -357,8 +356,8 @@ abstract class TortoiseBase {
         val a = com[1, memory] // deg
         val cir = com[2, memory] // deg
 
-        val center = c2 + vectors.Vec2(0.0, r).rotate(angle)
-        val np = center + vectors.Vec2(0.0, -r).rotate(angle + sign(r) * Math.toRadians(a))
+        val center = c2 + Vec2(0.0, r).rotate(angle)
+        val np = center + Vec2(0.0, -r).rotate(angle + sign(r) * Math.toRadians(a))
         if (a == 0.0) {
             //nothing
         } else {
@@ -475,7 +474,7 @@ abstract class TortoiseBase {
                                     1.0,
                                 ) >= 1.0,
                                 angle = valueAt(blockProperties, 3,  memory),
-                                pivot = vectors.Vec2(
+                                pivot = Vec2(
                                     valueAt(blockProperties, 5, memory),
                                     valueAt(blockProperties, 6, memory)
                                 ),

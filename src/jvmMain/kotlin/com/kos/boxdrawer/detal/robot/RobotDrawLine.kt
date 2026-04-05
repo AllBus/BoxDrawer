@@ -1,6 +1,5 @@
 package com.kos.boxdrawer.detal.robot
 
-import androidx.compose.ui.text.AnnotatedString
 import turtoise.DrawerSettings
 import turtoise.TortoiseBlock
 import turtoise.TortoiseCommand

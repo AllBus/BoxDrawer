@@ -7,7 +7,6 @@ import com.kos.figure.FigureLine
 import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
 import turtoise.parser.TPArg
-import vectors.Vec2
 import kotlin.math.PI
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand

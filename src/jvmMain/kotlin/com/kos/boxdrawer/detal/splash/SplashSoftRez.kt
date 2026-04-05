@@ -4,7 +4,6 @@ import com.kos.boxdrawer.detal.soft.SoftRez
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_1
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_2
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_CHECK
-import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_FIGURE
 import com.kos.boxdrawer.template.editor.TemplateField.Companion.FIELD_NONE
 import turtoise.TortoiseBuilder
 import turtoise.TortoiseCommand

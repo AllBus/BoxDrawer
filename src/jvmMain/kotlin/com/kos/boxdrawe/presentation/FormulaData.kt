@@ -15,7 +15,6 @@ import com.kos.figure.IFigure
 import com.kos.figure.collections.FigureList
 import kotlinx.coroutines.flow.MutableStateFlow
 import turtoise.memory.SimpleTortoiseMemory
-import vectors.Vec2
 import kotlin.math.cos
 import kotlin.math.sin
 

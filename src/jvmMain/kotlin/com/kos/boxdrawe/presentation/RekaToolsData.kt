@@ -32,7 +32,6 @@ import turtoise.rect.RekaCad
 import turtoise.rect.RekaCad.newReka
 import turtoise.rect.RekaEndStorona
 import turtoise.rect.RekaStorona
-import vectors.Vec2
 import kotlin.math.PI
 
 @Stable
@@ -214,7 +213,7 @@ class RekaToolsData(override val tools: ITools) : SaveFigure, PrintCode {
         val pt = points.value
         if (pt.isNotEmpty()) {
 
-            parseReka(pt, MemoryKey(paddingNext.value))?.let { b ->
+            parseReka(pt, turtoise.memory.keys.MemoryKey(paddingNext.value))?.let { b ->
                 val cv = current.value
                 if (insertKubik(
                         reka = cv.reka, position = cv.position, newKubik = b
@@ -259,7 +258,7 @@ class RekaToolsData(override val tools: ITools) : SaveFigure, PrintCode {
         val cv = current.value
         val pt = points.value
         if (pt.isNotEmpty()) {
-            parseReka(pt, MemoryKey(paddingNext.value))?.let { f ->
+            parseReka(pt, turtoise.memory.keys.MemoryKey(paddingNext.value))?.let { f ->
                 RekaCad.updateReka(cv.reka, f)
             }
             resetShiftValue()
@@ -280,7 +279,7 @@ class RekaToolsData(override val tools: ITools) : SaveFigure, PrintCode {
 
     fun setPoints(text: String) {
         points.value = text
-        parseReka(points.value, MemoryKey(paddingNext.value))?.let { f ->
+        parseReka(points.value, turtoise.memory.keys.MemoryKey(paddingNext.value))?.let { f ->
             currentReka = f
             createRekaFigure()
         }

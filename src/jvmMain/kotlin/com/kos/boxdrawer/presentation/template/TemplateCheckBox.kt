@@ -12,8 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.kos.boxdrawe.widget.CheckboxK
-import com.kos.boxdrawe.widget.RunCheckBox
-import com.kos.boxdrawer.template.TemplateGeneratorListener
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItem
 import turtoise.parser.TortoiseParserStackItem

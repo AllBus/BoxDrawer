@@ -28,7 +28,7 @@ object RekaCad {
 
     fun updateReka(reka: Reka, tv: List<String>): Reka {
         if (tv.isNotEmpty()) {
-            reka.podoshva = MemoryKey(tv.first())
+            reka.podoshva = turtoise.memory.keys.MemoryKey(tv.first())
             val newStoroni = rekaPoints(tv)
             newStoroni.zip(reka.storoni) { newStorona, old ->
                 newStorona.kubiki.addAll(old.kubiki)
@@ -118,7 +118,7 @@ object RekaCad {
     fun newReka(tv: List<String>, padding: MemoryKey): Reka {
         val reka = if (tv.isNotEmpty()) {
             val currentReka = Reka(
-                MemoryKey(tv.first()),
+                turtoise.memory.keys.MemoryKey(tv.first()),
                 padding,
             )
             currentReka.storoni.addAll(rekaPoints(tv))
@@ -137,11 +137,11 @@ object RekaCad {
             2 -> {
                 listOf(
                     RekaStorona(
-                        length = MemoryKey(tv[1]),
+                        length = turtoise.memory.keys.MemoryKey(tv[1]),
                         angle = MemoryKey.PI2
                     ),
                     RekaStorona(
-                        length = MemoryKey(tv[0]),
+                        length = turtoise.memory.keys.MemoryKey(tv[0]),
                         angle = MemoryKey.PI2
                     ),
                     RekaEndStorona(
@@ -153,9 +153,9 @@ object RekaCad {
 
             3 -> {
 
-                val ma = MemoryKey(tv[0])
-                val mb = MemoryKey(tv[1])
-                val mc = MemoryKey(tv[2])
+                val ma = turtoise.memory.keys.MemoryKey(tv[0])
+                val mb = turtoise.memory.keys.MemoryKey(tv[1])
+                val mc = turtoise.memory.keys.MemoryKey(tv[2])
 
                 listOf(
                     RekaStorona(
@@ -172,11 +172,11 @@ object RekaCad {
             1 -> {
                 listOf(
                     RekaStorona(
-                        length = MemoryKey(tv[0]),
+                        length = turtoise.memory.keys.MemoryKey(tv[0]),
                         angle = MemoryKey.PI2
                     ),
                     RekaStorona(
-                        length = MemoryKey(tv[0]),
+                        length = turtoise.memory.keys.MemoryKey(tv[0]),
                         angle = MemoryKey.PI2
                     ),
                     RekaEndStorona(
@@ -189,10 +189,10 @@ object RekaCad {
             else -> {
                 tv.drop(1).dropLast(1).windowed(2, 2).map { v ->
                     RekaStorona(
-                        length = MemoryKey(v[1]),
-                        angle = DegreesMemoryKey(MemoryKey(v[0])),
+                        length = turtoise.memory.keys.MemoryKey(v[1]),
+                        angle = DegreesMemoryKey(turtoise.memory.keys.MemoryKey(v[0])),
                     )
-                } + RekaEndStorona(tv.lastOrNull().orEmpty().let { MemoryKey(it) })
+                } + RekaEndStorona(tv.lastOrNull().orEmpty().let { turtoise.memory.keys.MemoryKey(it) })
             }
         }
         return st

@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import com.kos.boxdrawe.widget.InputText
-import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.LabelLight
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItem

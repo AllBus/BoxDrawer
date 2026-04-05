@@ -120,6 +120,7 @@ kotlin {
             implementation(project(":figure"))
             implementation(project(":dxfprinter"))
             implementation(project(":commonMain"))
+            implementation(project(":tortoise"))
             // implementation("com.groupdocs:groupdocs-comparison:22.3")
         }
 

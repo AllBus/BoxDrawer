@@ -21,6 +21,7 @@ import turtoise.TemplateAlgorithm
 import turtoise.TortoiseFigureExtractor
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
+import turtoise.TortoiseRunnerSimple
 import turtoise.TortoiseState
 import turtoise.memory.TwoBlockTortoiseMemory
 import turtoise.paint.PaintUtils
@@ -70,7 +71,7 @@ class TemplateData(
     }
 
     fun redraw() {
-        val runner = TortoiseRunner(TortoiseProgram(emptyList(), tools.algorithms().toMap()))
+        val runner = TortoiseRunnerSimple(TortoiseProgram(emptyList(), tools.algorithms().toMap()))
 
         val top = TortoiseParserStackBlock()
         memory.memoryBlock(top)

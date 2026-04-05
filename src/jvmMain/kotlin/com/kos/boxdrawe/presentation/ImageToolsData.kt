@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.withContext
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
+import turtoise.TortoiseRunnerSimple
 import turtoise.TortoiseState
 import turtoise.parser.TortoiseParser
 import vectors.Vec2
@@ -169,7 +170,7 @@ class ImageToolsData(val tools: ITools) {
                     val line = holeFigureText.value.lines().getOrNull(i).orEmpty()
                     if (line.isEmpty()) return@forEachIndexed
                     val program = tortoiseProgram(line)
-                    val t = TortoiseRunner(program)
+                    val t = TortoiseRunnerSimple(program)
                     val state = TortoiseState()
                     val figure = t.draw(state, tools.ds())
 

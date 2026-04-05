@@ -2,18 +2,18 @@ package turtoise
 
 import com.kos.boxdrawer.detal.splash.ISplashDetail
 import com.kos.figure.FigureText
+import turtoise.parser.SplashMap
 import turtoise.parser.TortoiseParserStackBlock
 import vectors.Vec2
 import java.text.DecimalFormat
 import kotlin.math.abs
 
-
-abstract class TortoiseSplash : TortoiseBase() {
+abstract class TortoiseSplash : TortoiseAutomat() {
 
     protected var printFormat = DecimalFormat("0.####")
     val splashMap: Map<String, ISplashDetail> = SplashMap.splashes
 
-    protected fun variablesSplash(
+    override fun variablesSplash(
         builder: TortoiseBuilder,
         com: TortoiseCommand,
         figureExtractor: TortoiseFigureExtractor,
@@ -150,7 +150,7 @@ abstract class TortoiseSplash : TortoiseBase() {
         return pos
     }
 
-    protected fun figuresSplash(
+    override fun figuresSplash(
         builder: TortoiseBuilder,
         com: TortoiseCommand,
         figureExtractor: TortoiseFigureExtractor,

@@ -17,7 +17,6 @@ import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawer.template.TemplateGeneratorSimpleListener
 import com.kos.boxdrawer.template.TemplateItem
 import turtoise.parser.TortoiseParserStackItem
-import vectors.Vec2
 
 @Composable
 fun TemplateSizeBox(

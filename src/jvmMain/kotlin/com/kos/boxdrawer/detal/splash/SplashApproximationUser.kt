@@ -11,7 +11,6 @@ import turtoise.help.HelpData
 import turtoise.help.HelpDataParam
 import turtoise.parser.TPArg
 import turtoise.parser.TortoiseParserStackBlock
-import vectors.Vec2
 
 class SplashApproximationUser : SplashApproximation() {
     override val names: List<String>

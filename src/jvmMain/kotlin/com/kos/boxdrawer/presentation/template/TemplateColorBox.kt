@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.jsevy.jdxf.DXFColor
-import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.LabelLight
 import com.kos.boxdrawe.widget.NumericTextFieldState
 import com.kos.boxdrawe.widget.NumericUpDownLine

@@ -6,14 +6,13 @@ import com.kos.figure.collections.FigureList
 import turtoise.memory.FigureTortoiseMemory
 import turtoise.memory.SimpleTortoiseMemory
 import turtoise.memory.TortoiseMemory
-import turtoise.parser.TortoiseParser
+
 import turtoise.parser.TortoiseParserStackItem
 
-class TortoiseRunner(
+abstract class TortoiseRunner(
     var program: TortoiseProgram,
 ) {
 
-    val tortoise = Tortoise()
     val lineIndex = 10
 
 
@@ -21,6 +20,12 @@ class TortoiseRunner(
 
         //  resetMemory()
     }
+
+    abstract fun draw(
+        commands: TortoiseBlock,
+        state: TortoiseState,
+        figureExtractor: TortoiseFigureExtractor,
+    ): List<IFigure>
 
     fun draw(state: TortoiseState, ds: DrawerSettings): IFigure {
         clear()
@@ -71,7 +76,7 @@ class TortoiseRunner(
         } ?: FigureEmpty
     }
 
-    fun figure(
+    open fun figure(
         block: TortoiseParserStackItem,
         ds: DrawerSettings,
         state: TortoiseState,
@@ -90,21 +95,7 @@ class TortoiseRunner(
                 arguments = block
             )
         } else {
-            val l = TortoiseParser.parseSimpleLine(block)
-            FigureList(
-                l.commands(l.names.first(), ds).flatMap { c ->
-                    tortoise.draw(
-                        commands = c,
-                        state = state,
-                        figureExtractor = TortoiseFigureExtractor(
-                            ds = ds,
-                            maxStackSize = maxStackSize - 1,
-                            memory = memory,
-                            runner = this,
-                        ),
-                    )
-                }
-            )
+            FigureEmpty
         }
     }
 }

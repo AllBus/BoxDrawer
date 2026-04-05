@@ -46,7 +46,7 @@ open class SimpleTortoiseMemory : TortoiseMemory {
                             varName += c
                         }
                     } else {
-                        val e = value(MemoryKey(varName), defaultValue)
+                        val e = value(turtoise.memory.keys.MemoryKey(varName), defaultValue)
 
                         when (com) {
                             '+' -> sum += e
@@ -68,7 +68,7 @@ open class SimpleTortoiseMemory : TortoiseMemory {
         }
 
         if (varName.isNotEmpty()) {
-            val e = value(MemoryKey(varName), defaultValue)
+            val e = value(turtoise.memory.keys.MemoryKey(varName), defaultValue)
             when (com) {
                 '+' -> sum += e
                 '-' -> sum -= e

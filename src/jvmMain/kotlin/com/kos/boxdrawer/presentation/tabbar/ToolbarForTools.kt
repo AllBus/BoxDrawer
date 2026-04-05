@@ -17,10 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.kos.boxdrawe.presentation.ToolsData
@@ -28,13 +25,11 @@ import com.kos.boxdrawe.widget.Label
 import com.kos.boxdrawe.widget.NumericUpDown
 import com.kos.boxdrawe.widget.PrintCodeButton
 import com.kos.boxdrawe.widget.PrintCodeIconButton
-import com.kos.boxdrawe.widget.RunButton
 import com.kos.boxdrawe.widget.RunCheckBox
 import com.kos.boxdrawe.widget.SaveToFileButton
 import com.kos.boxdrawe.widget.SaveToFileIconButton
 import com.kos.boxdrawer.generated.resources.Res
 import com.kos.boxdrawer.generated.resources.metricMM
-import com.kos.boxdrawer.generated.resources.toolsButtonCopyCode
 import com.kos.boxdrawer.generated.resources.toolsCheckBoxTemplateEditor
 import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsBoardLabel
 import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsBoardWeight
@@ -45,7 +40,6 @@ import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsHoleLabel
 import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsHoleOffset
 import com.kos.boxdrawer.generated.resources.toolsDrawerSettingsTemplateComboBox
 import com.kos.boxdrawer.generated.resources.toolsFiguresList
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import turtoise.DrawerSettings
 import turtoise.TemplateAlgorithm

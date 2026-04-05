@@ -309,15 +309,15 @@ class CadGrid {
                                     }
 
                                     bz.add(FigureCreator.bezierQuartir(
-                                        v = vectors.Vec2(c.x * size, c.y * size),
+                                        v = Vec2(c.x * size, c.y * size),
                                         smoothSize = radius,
                                         g1 = c.g,
                                         g2 = n.g
                                     ));
                                     bz.add(
                                         FigureCreator.bezierLine(
-                                            v = vectors.Vec2(c.x * size, c.y * size),
-                                            v2 = vectors.Vec2(n.x * size, n.y * size),
+                                            v = Vec2(c.x * size, c.y * size),
+                                            v2 = Vec2(n.x * size, n.y * size),
                                             smoothSizeStart = radius,
                                             smoothSizeEnd = radius2,
                                             g1 = n.g + 2,

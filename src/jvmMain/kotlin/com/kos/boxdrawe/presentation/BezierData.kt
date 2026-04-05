@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import turtoise.TortoiseProgram
 import turtoise.TortoiseRunner
+import turtoise.TortoiseRunnerSimple
 import turtoise.TortoiseState
 import turtoise.parser.TortoiseParser
 import vectors.Vec2
@@ -328,7 +329,7 @@ class BezierData(override val tools: Tools) : SaveFigure, PrintCode {
 
     fun createFigure(lines: String) {
         val program = tortoiseProgram(lines)
-        val t = TortoiseRunner(program)
+        val t = TortoiseRunnerSimple(program)
         val state = TortoiseState()
         val dr = t.draw(state, tools.ds())
         pathFigure.value = dr
