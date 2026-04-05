@@ -6,10 +6,10 @@ import vectors.Matrix
 
 data class SegmentBlock(
     val element: PathElement,
-    val matrix: Matrix,
-    val modifier: BlockModifier,
+    val matrix: Matrix = Matrix.identity,
+    val modifiers: List<BlockModifier> = emptyList(),
 ) {
     companion object {
-        val EMPTY = SegmentBlock(EmptyPath, Matrix(), BlockModifier(0))
+        val EMPTY = SegmentBlock(EmptyPath, Matrix.identity, emptyList())
     }
 }

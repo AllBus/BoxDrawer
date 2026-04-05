@@ -8,6 +8,9 @@ import com.kos.figure.IFigure
 import com.kos.figure.IFigurePath
 import com.kos.figure.collections.FigurePath
 import com.kos.figure.complex.model.SimpleElement
+import com.kos.figure.complex.transform.take
+import com.kos.figure.complex.transform.toFigure
+import com.kos.figure.complex.transform.toPath
 import com.kos.figure.segments.model.Arc
 import com.kos.figure.segments.model.Curve
 import com.kos.figure.segments.model.CustomPathIterator
@@ -72,30 +75,30 @@ open class FigureRound(
 
     private fun toPath(segment: PathElement): IFigurePath {
         return when (segment){
-//            is Segment -> segment.toPath()
-//            is Arc -> segment.toPath()
-//            is Curve -> segment.toPath()
-           // is Ellipse -> segment.toPath()
+            is Segment -> segment.toPath()
+            is Arc -> segment.toPath()
+            is Curve -> segment.toPath()
+            is Ellipse -> segment.toPath()
             else -> FigureEmpty
         }
     }
 
     private fun take(segment: PathElement, start:Double, end: Double): Figure {
         return when (segment){
-//            is Segment -> segment.take(start, end)
-//            is Arc -> segment.take(start, end)
-//            is Curve -> segment.take(start, end)
-//            is Ellipse -> segment.take(start, end)
+            is Segment -> segment.take(start, end)
+            is Arc -> segment.take(start, end)
+            is Curve -> segment.take(start, end)
+            is Ellipse -> segment.take(start, end)
             else -> FigureEmpty
         }
     }
 
     private fun toFigure(segment: PathElement): Figure {
         return when (segment){
-//            is Segment -> segment.toFigure()
-//            is Arc -> segment.toFigure()
-//            is Curve -> segment.toFigure()
-//            is Ellipse -> segment.toFigure()
+            is Segment -> segment.toFigure()
+            is Arc -> segment.toFigure()
+            is Curve -> segment.toFigure()
+            is Ellipse -> segment.toFigure()
             else -> FigureEmpty
         }
     }
