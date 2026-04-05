@@ -84,13 +84,23 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
             )
         }
 
+    // 1. Добавляем состояние
+    private val hoveredFigure = MutableStateFlow<IFigure>(FigureEmpty)
+
+
     val figures =
-        combine(currentFigure, editFigure, vspomogatelnieFigure) { figure, editFigure, pomo ->
+        combine(
+            currentFigure,
+            editFigure,
+            vspomogatelnieFigure,
+            hoveredFigure
+        ) { figure, editFigure, pomo, hovered ->
             FigureList(
                 listOf(
                     figure,
                     pomo,
                     editFigure,
+                    if (hovered != FigureEmpty) FigureCreator.colorDxf(1, hovered) else FigureEmpty
                 )
             )
         }
@@ -375,6 +385,18 @@ class DxfToolsData(override val tools: ITools) : SaveFigure , PrintCode{
         if (currentScale.value != scale) {
             currentScale.value = scale
         }
+
+        if (button == Instruments.POINTER_LEFT) {
+
+            hoveredFigure.value = FigureEmpty // Сбрасываем подсветку при рисовании
+        } else {
+            val figure = currentFigure.value
+            val found = PaintUtils.findFiguresAtCursor(Matrix.identity, point, 2.0 / scale, listOf(figure))
+            hoveredFigure.value = found.firstOrNull()?.figure ?: FigureEmpty
+
+
+        }
+
         //   println("onMove -> $point $button")
         if (button == Instruments.POINTER_LEFT) {
             when (_instrument.value) {
